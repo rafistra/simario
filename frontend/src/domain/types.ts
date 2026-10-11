@@ -61,6 +61,8 @@ export interface Position {
   positionTypeId: string;
   identity: Record<string, string>;
   active: boolean;
+  deactivatedAt?: ISODateTime | null;
+  deactivationReason?: string | null;
 }
 
 export interface User {
@@ -192,6 +194,8 @@ export interface DataUmumField {
   label: string;
   kind: 'text' | 'number' | 'currency' | 'date' | 'list';
   mandatory: boolean;
+  /** Choices for kind 'list'. */
+  options?: string[];
 }
 
 export interface DataUmumForm {
@@ -201,6 +205,7 @@ export interface DataUmumForm {
   fields: DataUmumField[];
   defaultObjective: string;
   active: boolean;
+  createdAt?: ISODate;
 }
 
 export interface RiskTemplate {
@@ -213,6 +218,8 @@ export interface RiskTemplate {
   description: string;
   order: number;
   active: boolean;
+  /** Last edit date shown in the template list. */
+  updatedAt?: ISODate;
 }
 
 export interface MitigationTemplate {
@@ -238,7 +245,8 @@ export interface ScoreBandVersion {
   id: string;
   number: number;
   effectiveFrom: ISODate;
-  status: 'active' | 'draft' | 'retired';
+  /** draft = being edited; scheduled = saved, waiting for effective_from; active = exactly one (INV-3). */
+  status: 'active' | 'draft' | 'scheduled' | 'retired';
 }
 
 export interface ScoreBand {

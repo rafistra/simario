@@ -13,6 +13,12 @@ import ChangePasswordPage from '@/pages/auth/ChangePasswordPage';
 import LoginPage from '@/pages/auth/LoginPage';
 import { ForbiddenPage, NotFoundPage } from '@/pages/faults/FaultPages';
 import HomePage from '@/pages/home/HomePage';
+import PositionsPage from '@/pages/master/PositionsPage';
+import StagesPage from '@/pages/master/StagesPage';
+import TemplatesPage from '@/pages/master/TemplatesPage';
+import ProposalsPage from '@/pages/master/ProposalsPage';
+import DataUmumPage from '@/pages/master/DataUmumPage';
+import ScoreBandsPage from '@/pages/master/ScoreBandsPage';
 import { Placeholder } from '@/pages/Placeholder';
 import { useAuth } from '@/state/useAuth';
 
@@ -108,12 +114,7 @@ export default function App() {
                 path="jabatan"
                 element={
                   <RequirePermission anyOf={[17, 18]}>
-                    {page(
-                      ['Master Data', 'Jabatan'],
-                      'Jenis Jabatan dan Jabatan',
-                      3,
-                      'Master data',
-                    )}
+                    <PositionsPage />
                   </RequirePermission>
                 }
               />
@@ -121,7 +122,7 @@ export default function App() {
                 path="tahap"
                 element={
                   <RequirePermission anyOf={[15]}>
-                    {page(['Master Data', 'Tahap'], 'Tahap', 3, 'Master data')}
+                    <StagesPage />
                   </RequirePermission>
                 }
               />
@@ -129,12 +130,7 @@ export default function App() {
                 path="template"
                 element={
                   <RequirePermission anyOf={[12]}>
-                    {page(
-                      ['Master Data', 'Template'],
-                      'Template Risiko dan Mitigasi',
-                      3,
-                      'Master data',
-                    )}
+                    <TemplatesPage />
                   </RequirePermission>
                 }
               />
@@ -142,7 +138,7 @@ export default function App() {
                 path="usulan"
                 element={
                   <RequirePermission anyOf={[13]}>
-                    {page(['Master Data', 'Usulan'], 'Antrean Usulan Risiko', 3, 'Master data')}
+                    <ProposalsPage />
                   </RequirePermission>
                 }
               />
@@ -150,7 +146,7 @@ export default function App() {
                 path="data-umum"
                 element={
                   <RequirePermission anyOf={[16]}>
-                    {page(['Master Data', 'Data Umum'], 'Formulir Data Umum', 3, 'Master data')}
+                    <DataUmumPage />
                   </RequirePermission>
                 }
               />
@@ -158,7 +154,7 @@ export default function App() {
                 path="skala-penilaian"
                 element={
                   <RequirePermission anyOf={[14]}>
-                    {page(['Master Data', 'Skala Penilaian'], 'Skala Penilaian', 3, 'Master data')}
+                    <ScoreBandsPage />
                   </RequirePermission>
                 }
               />

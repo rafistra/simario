@@ -58,7 +58,11 @@ function register(
       extra: {},
       ...dataUmum,
     },
-    dataUmumFormId: `du-${positionTypeId}-v1`,
+    // TA 2027 PPK registers started after PPK Versi 2 (4 Jan 2027); others use Versi 1.
+    dataUmumFormId:
+      positionTypeId === 'pt-ppk' && fiscalYear >= 2027
+        ? 'du-pt-ppk-v2'
+        : `du-${positionTypeId}-v1`,
     copiedFromRegisterId,
     publishedAt: published?.at ?? null,
     publishedByUserId: published?.by ?? null,
@@ -280,6 +284,7 @@ register(
     besarAnggaran: 4250000000,
     target:
       'Seluruh paket TA 2027 berkontrak paling lambat Juni 2027 dan realisasi anggaran ≥ 95%.',
+    extra: { sumber_dana: 'Rupiah Murni', kode_paket_rup: '48211904' },
   },
   { at: PUB, by: 'usr-andi' },
   A1_26,

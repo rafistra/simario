@@ -150,3 +150,5 @@ export const preferenceApi = {
 };
 
 export type { Notification };
+
+export { masterApi } from './api/master';
