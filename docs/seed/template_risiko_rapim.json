@@ -1,0 +1,2988 @@
+{
+  "source": "docs/PPT Konsep Pengembangan Sistem Informasi Manajemen Risiko Pengelolaan Anggaran OIKN (Rapim) (1).pptx — Rapim 12 Oktober 2026",
+  "status": "Data referensi final (PRD FR-MST-010, OQ-6 ditutup). Cacat dek dikoreksi dan dicatat di seedNotes.",
+  "riskTypes": [
+    {
+      "code": "kinerja_anggaran",
+      "short": "KA",
+      "label": "Kinerja Anggaran"
+    },
+    {
+      "code": "ketidakpatuhan",
+      "short": "KP",
+      "label": "Ketidakpatuhan"
+    },
+    {
+      "code": "kecurangan",
+      "short": "FR",
+      "label": "Kecurangan"
+    }
+  ],
+  "dataUmum": {
+    "defaultObjective": "Memastikan pelaksanaan anggaran dilaksanakan secara taat azas dan risiko signifikan teridentifikasi.",
+    "fixedFields": [
+      {
+        "key": "tujuan",
+        "label": "Tujuan",
+        "kind": "textarea"
+      },
+      {
+        "key": "kegiatan",
+        "label": "Kegiatan",
+        "kind": "list"
+      },
+      {
+        "key": "besar_anggaran",
+        "label": "Besar Anggaran",
+        "kind": "currency"
+      },
+      {
+        "key": "target",
+        "label": "Target",
+        "kind": "textarea"
+      }
+    ],
+    "identityBlockNote": "Nama Pejabat diambil dari holding aktif; isian identitas lain dari Position.identity sesuai jenis jabatan (PRD FR-REG-001)."
+  },
+  "scoreGuidance": {
+    "source": "Slide 72 — Panduan Skoring dan Self-Assessment untuk Model Tiga Lini",
+    "bands": [
+      {
+        "lowerExclusive": null,
+        "lowerInclusive": 0,
+        "upperInclusive": 2,
+        "predicate": "Kurang Terkendali",
+        "label": "0 sampai dengan 2"
+      },
+      {
+        "lowerExclusive": 2,
+        "upperInclusive": 3,
+        "predicate": "Cukup Terkendali",
+        "label": "2,1 sampai dengan 3"
+      },
+      {
+        "lowerExclusive": 3,
+        "upperInclusive": 4,
+        "predicate": "Terkendali",
+        "label": "3,1 sampai dengan 4"
+      }
+    ]
+  },
+  "positionTypes": [
+    {
+      "code": "KPA",
+      "name": "KPA/Kasatker",
+      "line": 1,
+      "deckSlides": "11–27",
+      "dataUmum": {
+        "identityFields": [
+          {
+            "key": "nama_satker",
+            "label": "Nama Satker",
+            "kind": "text"
+          },
+          {
+            "key": "nomor_dipa_petikan",
+            "label": "Nomor DIPA Petikan",
+            "kind": "text"
+          }
+        ],
+        "kegiatanReference": "Mengacu PMK Nomor 62 Tahun 2023 Pasal 186 ayat 4"
+      },
+      "stages": [
+        {
+          "code": "KPA-T1",
+          "order": 1,
+          "name": "Perencanaan",
+          "deckSlides": "13–16",
+          "templates": [
+            {
+              "code": "KPA-T1-KA-01",
+              "riskType": "kinerja_anggaran",
+              "order": 1,
+              "description": "Adanya angka blokir dan RO (Rincian Output) khusus.",
+              "mitigations": [
+                {
+                  "code": "KPA-T1-KA-01-M1",
+                  "order": 1,
+                  "description": "Reviu kelengkapan syarat pencairan (data dukung, TOR/RAB) sebelum pengajuan revisi anggaran; percepatan pemenuhan dokumen persyaratan pembuka blokir maksimal 14 hari kerja sejak DIPA awal diterbitkan."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T1-KA-02",
+              "riskType": "kinerja_anggaran",
+              "order": 2,
+              "description": "Rencana pelaksanaan kegiatan dan rencana penarikan dana tidak realistis.",
+              "mitigations": [
+                {
+                  "code": "KPA-T1-KA-02-M1",
+                  "order": 1,
+                  "description": "Menetapkan rencana berdasarkan indikator SMART (Specific, Measurable, Achievable, Relevant, dan Time-Bound)."
+                },
+                {
+                  "code": "KPA-T1-KA-02-M2",
+                  "order": 2,
+                  "description": "Alokasi waktu cadangan (buffer time)."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T1-KA-03",
+              "riskType": "kinerja_anggaran",
+              "order": 3,
+              "description": "Deviasi Rencana Penarikan Dana (RPD) yang tinggi.",
+              "mitigations": [
+                {
+                  "code": "KPA-T1-KA-03-M1",
+                  "order": 1,
+                  "description": "Monitoring dan evaluasi berkala, serta penguatan koordinasi internal."
+                },
+                {
+                  "code": "KPA-T1-KA-03-M2",
+                  "order": 2,
+                  "description": "Penyusunan RPD berdasarkan milestone dan jadwal kegiatan yang matang."
+                },
+                {
+                  "code": "KPA-T1-KA-03-M3",
+                  "order": 3,
+                  "description": "Penyusunan Rencana Kerja Bulanan (RKB) yang disusun setiap akhir triwulan berjalan untuk rencana kerja triwulan berikutnya dan komitmen pemilik kegiatan dalam melaksanakan RKB yang telah disusun."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T1-KA-04",
+              "riskType": "kinerja_anggaran",
+              "order": 4,
+              "description": "Belum adanya penetapan Rencana Umum Pengadaan (RUP) Barang/Jasa.",
+              "mitigations": [
+                {
+                  "code": "KPA-T1-KA-04-M1",
+                  "order": 1,
+                  "description": "Mendelegasikan penyusunan RUP kepada PPK."
+                },
+                {
+                  "code": "KPA-T1-KA-04-M2",
+                  "order": 2,
+                  "description": "Menetapkan/mengesahkan RUP."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T1-KA-05",
+              "riskType": "kinerja_anggaran",
+              "order": 5,
+              "description": "Duplikasi usulan kegiatan antar Satker/unit kerja akibat minimnya koordinasi lintas unit dalam penyusunan usulan anggaran.",
+              "mitigations": [
+                {
+                  "code": "KPA-T1-KA-05-M1",
+                  "order": 1,
+                  "description": "Reviu silang (cross-check) usulan kegiatan antar Satker sebelum diajukan ke Biro Perencanaan."
+                },
+                {
+                  "code": "KPA-T1-KA-05-M2",
+                  "order": 2,
+                  "description": "Membangun basis data kegiatan terpadu yang dapat diakses seluruh Satker."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T1-KA-06",
+              "riskType": "kinerja_anggaran",
+              "order": 6,
+              "description": "Perencanaan kebutuhan sumber daya manusia pelaksana kegiatan tidak memadai dibandingkan beban kerja yang direncanakan.",
+              "mitigations": [
+                {
+                  "code": "KPA-T1-KA-06-M1",
+                  "order": 1,
+                  "description": "Analisis beban kerja (workload analysis) sebelum penyusunan RKA."
+                },
+                {
+                  "code": "KPA-T1-KA-06-M2",
+                  "order": 2,
+                  "description": "Koordinasi dengan Biro SDM untuk pemenuhan kebutuhan personel sesuai rencana kegiatan."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T1-KP-01",
+              "riskType": "ketidakpatuhan",
+              "order": 1,
+              "description": "Penetapan PPK, PPSPM, panitia/pejabat dan rencana pelaksanaan kegiatan tidak sesuai dengan ketentuan, kewenangan, dan kompetensi yang dipersyaratkan.",
+              "mitigations": [
+                {
+                  "code": "KPA-T1-KP-01-M1",
+                  "order": 1,
+                  "description": "Verifikasi sertifikasi kompetensi secara berlapis."
+                },
+                {
+                  "code": "KPA-T1-KP-01-M2",
+                  "order": 2,
+                  "description": "Pemeriksaan kepatuhan jabatan dan larangan rangkap."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T1-KP-02",
+              "riskType": "ketidakpatuhan",
+              "order": 2,
+              "description": "Perencanaan tidak tepat sasaran/tidak relevan.",
+              "mitigations": [
+                {
+                  "code": "KPA-T1-KP-02-M1",
+                  "order": 1,
+                  "description": "Mewajibkan feasibility study untuk program skala besar/prioritas."
+                },
+                {
+                  "code": "KPA-T1-KP-02-M2",
+                  "order": 2,
+                  "description": "Koordinasi intensif dengan Kementerian Bappenas."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T1-KP-03",
+              "riskType": "ketidakpatuhan",
+              "order": 3,
+              "description": "Program rutin/berulang.",
+              "mitigations": [
+                {
+                  "code": "KPA-T1-KP-03-M1",
+                  "order": 1,
+                  "description": "Usulan program rutin/berulang harus melampirkan hasil evaluasi tahun sebelumnya."
+                },
+                {
+                  "code": "KPA-T1-KP-03-M2",
+                  "order": 2,
+                  "description": "Melakukan pemilahan program rutin/berulang berdasarkan prioritas."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T1-FR-01",
+              "riskType": "kecurangan",
+              "order": 1,
+              "description": "Terjadinya konflik kepentingan, intervensi dan penyalahgunaan kewenangan KPA.",
+              "mitigations": [
+                {
+                  "code": "KPA-T1-FR-01-M1",
+                  "order": 1,
+                  "description": "Pemisahan tugas (segregation of duties) dengan PPK, PPSPM, Panitia/Pejabat Pengadaan."
+                },
+                {
+                  "code": "KPA-T1-FR-01-M2",
+                  "order": 2,
+                  "description": "Supervisi oleh Lini Kedua dan Lini Ketiga."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T1-FR-02",
+              "riskType": "kecurangan",
+              "order": 2,
+              "description": "Manipulasi Rencana Penarikan Dana (RPD) melalui Halaman III DIPA yang tidak sinkron untuk menciptakan idle cash.",
+              "mitigations": [
+                {
+                  "code": "KPA-T1-FR-02-M1",
+                  "order": 1,
+                  "description": "Rekonsiliasi kas RPD dan Halaman III DIPA secara berkala."
+                },
+                {
+                  "code": "KPA-T1-FR-02-M2",
+                  "order": 2,
+                  "description": "Mewajibkan penandatanganan Pakta Integritas dan Penegakan Pelanggaran Disiplin dan Kode Etik."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T1-FR-03",
+              "riskType": "kecurangan",
+              "order": 3,
+              "description": "Indikasi korupsi, kolusi, dan nepotisme.",
+              "mitigations": [
+                {
+                  "code": "KPA-T1-FR-03-M1",
+                  "order": 1,
+                  "description": "Transparansi dan keterbukaan dalam proses penyusunan Rencana Umum Pengadaan (RUP) Barang/Jasa."
+                },
+                {
+                  "code": "KPA-T1-FR-03-M2",
+                  "order": 2,
+                  "description": "Mempublikasikan Rencana Umum Pengadaan (RUP) Barang/Jasa."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "code": "KPA-T2",
+          "order": 2,
+          "name": "Penganggaran",
+          "deckSlides": "17–19",
+          "templates": [
+            {
+              "code": "KPA-T2-KA-01",
+              "riskType": "kinerja_anggaran",
+              "order": 1,
+              "description": "Perubahan anggaran di luar kendali (blokir anggaran).",
+              "mitigations": [
+                {
+                  "code": "KPA-T2-KA-01-M1",
+                  "order": 1,
+                  "description": "Koordinasi intensif dengan DJA – Kemenkeu untuk pembukaan blokir."
+                },
+                {
+                  "code": "KPA-T2-KA-01-M2",
+                  "order": 2,
+                  "description": "Realokasi anggaran dan penghematan/pemilahan anggaran operasional/seremonial."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T2-KA-02",
+              "riskType": "kinerja_anggaran",
+              "order": 2,
+              "description": "Frekuensi Revisi DIPA yang tinggi.",
+              "mitigations": [
+                {
+                  "code": "KPA-T2-KA-02-M1",
+                  "order": 1,
+                  "description": "Optimalisasi fleksibilitas revisi POK."
+                },
+                {
+                  "code": "KPA-T2-KA-02-M2",
+                  "order": 2,
+                  "description": "Evaluasi rutin kualitas perencanaan."
+                },
+                {
+                  "code": "KPA-T2-KA-02-M3",
+                  "order": 3,
+                  "description": "Menyusun kalender revisi DIPA tahunan yang disepakati di awal tahun; setiap usulan revisi wajib melalui reviu Biro Perencanaan sebelum diajukan ke Kanwil DJPb."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T2-KA-03",
+              "riskType": "kinerja_anggaran",
+              "order": 3,
+              "description": "Halaman III DIPA tidak dimutakhirkan ke Kanwil DJPb.",
+              "mitigations": [
+                {
+                  "code": "KPA-T2-KA-03-M1",
+                  "order": 1,
+                  "description": "Koordinasi intensif dengan DJPb Kanwil."
+                },
+                {
+                  "code": "KPA-T2-KA-03-M2",
+                  "order": 2,
+                  "description": "Pengajuan revisi halaman III DIPA berkala setiap triwulan."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T2-KA-04",
+              "riskType": "kinerja_anggaran",
+              "order": 4,
+              "description": "Pergeseran anggaran antar output/akun yang dilakukan di luar mekanisme revisi resmi (tidak tercatat dalam dokumen revisi).",
+              "mitigations": [
+                {
+                  "code": "KPA-T2-KA-04-M1",
+                  "order": 1,
+                  "description": "Penguncian akses aplikasi anggaran hingga usulan revisi disahkan secara resmi."
+                },
+                {
+                  "code": "KPA-T2-KA-04-M2",
+                  "order": 2,
+                  "description": "Penerapan audit trail otomatis atas setiap perubahan pagu pada sistem."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T2-KP-01",
+              "riskType": "ketidakpatuhan",
+              "order": 1,
+              "description": "Alokasi anggaran tidak sesuai Renstra/Renduk (Dokumen Perencanaan).",
+              "mitigations": [
+                {
+                  "code": "KPA-T2-KP-01-M1",
+                  "order": 1,
+                  "description": "FGD dan sinkronisasi pemahaman atas target Renstra/Renduk."
+                },
+                {
+                  "code": "KPA-T2-KP-01-M2",
+                  "order": 2,
+                  "description": "Verifikasi dan Check & Balance terhadap kesesuaian penyusunan anggaran dengan Renja/Renstra oleh Lini 2 dan 3."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T2-KP-02",
+              "riskType": "ketidakpatuhan",
+              "order": 2,
+              "description": "Alokasi belanja melebihi Standar Biaya (SBM/SBK/SSB).",
+              "mitigations": [
+                {
+                  "code": "KPA-T2-KP-02-M1",
+                  "order": 1,
+                  "description": "Koordinasi dan reviu berjenjang dengan Lini Kedua (Biro POKS)."
+                },
+                {
+                  "code": "KPA-T2-KP-02-M2",
+                  "order": 2,
+                  "description": "Membuat sistem otomatisasi yang mengunci pagu atas standar biaya."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T2-KP-03",
+              "riskType": "ketidakpatuhan",
+              "order": 3,
+              "description": "Alokasi belanja tidak sesuai kode akun Bagan Akun Standar (BAS).",
+              "mitigations": [
+                {
+                  "code": "KPA-T2-KP-03-M1",
+                  "order": 1,
+                  "description": "Koordinasi dan reviu berjenjang dengan Lini Kedua (Biro POKS)."
+                },
+                {
+                  "code": "KPA-T2-KP-03-M2",
+                  "order": 2,
+                  "description": "Membuat sistem otomatisasi yang mengunci standarisasi penggunaan kode akun."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T2-FR-01",
+              "riskType": "kecurangan",
+              "order": 1,
+              "description": "Pengaturan spesifikasi yang diarahkan pada Penyedia/Merk tertentu (tailor-made).",
+              "mitigations": [
+                {
+                  "code": "KPA-T2-FR-01-M1",
+                  "order": 1,
+                  "description": "Melakukan market sounding untuk memastikan banyak ketersediaan penyedia untuk spesifikasi tertentu."
+                },
+                {
+                  "code": "KPA-T2-FR-01-M2",
+                  "order": 2,
+                  "description": "Meminta probity audit oleh APIP."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T2-FR-02",
+              "riskType": "kecurangan",
+              "order": 2,
+              "description": "Penyisipan \"proyek titipan\" atau kegiatan fiktif yang muncul tiba-tiba di luar dokumen Perencanaan.",
+              "mitigations": [
+                {
+                  "code": "KPA-T2-FR-02-M1",
+                  "order": 1,
+                  "description": "Digitalisasi proses perencanaan terintegrasi dan validasi dokumen untuk meningkatkan transparansi."
+                },
+                {
+                  "code": "KPA-T2-FR-02-M2",
+                  "order": 2,
+                  "description": "Mewajibkan penandatanganan Pakta Integritas dan Deklarasi Benturan Kepentingan (Conflict of Interest) bagi seluruh perencana dan pengambil kebijakan."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T2-FR-03",
+              "riskType": "kecurangan",
+              "order": 3,
+              "description": "Pemecahan paket pekerjaan untuk menghindari tender terbuka.",
+              "mitigations": [
+                {
+                  "code": "KPA-T2-FR-03-M1",
+                  "order": 1,
+                  "description": "Pemantauan berkala terhadap akun Inaproc terkait indikasi transaksi berulang, item serupa, atau nominal transaksi tidak normal."
+                },
+                {
+                  "code": "KPA-T2-FR-03-M2",
+                  "order": 2,
+                  "description": "Membatasi belanja yang berurutan dan saling terkait dalam waktu singkat."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "code": "KPA-T3",
+          "order": 3,
+          "name": "Pelaksanaan Anggaran",
+          "deckSlides": "20–23",
+          "templates": [
+            {
+              "code": "KPA-T3-KA-01",
+              "riskType": "kinerja_anggaran",
+              "order": 1,
+              "description": "Penyerapan anggaran tidak mencapai target per Triwulan.",
+              "mitigations": [
+                {
+                  "code": "KPA-T3-KA-01-M1",
+                  "order": 1,
+                  "description": "Real time monitoring dashboard penyerapan anggaran."
+                },
+                {
+                  "code": "KPA-T3-KA-01-M2",
+                  "order": 2,
+                  "description": "Penguatan pengadaan melalui RUP dan pengaturan jadwal, serta penguncian kesiapan paket sejak awal."
+                },
+                {
+                  "code": "KPA-T3-KA-01-M3",
+                  "order": 3,
+                  "description": "Adanya komitmen pemilik kegiatan dalam melaksanakan kegiatan sesuai dengan perencanaan yang telah disepakati pada tahap penyusunan RPD."
+                },
+                {
+                  "code": "KPA-T3-KA-01-M4",
+                  "order": 4,
+                  "description": "Penguatan peran asisten pelaksanaan dan pengawasan dalam melaksanakan monitoring terhadap rencana penyerapan yang telah disusun."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T3-KA-02",
+              "riskType": "kinerja_anggaran",
+              "order": 2,
+              "description": "KPA pasif dalam pengendalian pelaksanaan anggaran.",
+              "mitigations": [
+                {
+                  "code": "KPA-T3-KA-02-M1",
+                  "order": 1,
+                  "description": "Menjadwalkan rapat koordinasi evaluasi pelaksanaan anggaran secara rutin."
+                },
+                {
+                  "code": "KPA-T3-KA-02-M2",
+                  "order": 2,
+                  "description": "Menyusun SOP pengendalian pelaksanaan anggaran."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T3-KA-03",
+              "riskType": "kinerja_anggaran",
+              "order": 3,
+              "description": "Kelalaian input data pada Sistem Akuntansi Tingkat Instansi (SAKTI) terkait Evaluasi Kinerja Anggaran (EKA) dan Indikator Kinerja Pelaksanaan Anggaran (IKPA).",
+              "mitigations": [
+                {
+                  "code": "KPA-T3-KA-03-M1",
+                  "order": 1,
+                  "description": "Pelatihan teknis operator SAKTI dan validasi berlapis sebelum submit."
+                },
+                {
+                  "code": "KPA-T3-KA-03-M2",
+                  "order": 2,
+                  "description": "Rekonsiliasi internal bulanan."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T3-KA-04",
+              "riskType": "kinerja_anggaran",
+              "order": 4,
+              "description": "Penumpukan realisasi dan tagihan menjelang akhir tahun anggaran (Triwulan IV).",
+              "mitigations": [
+                {
+                  "code": "KPA-T3-KA-04-M1",
+                  "order": 1,
+                  "description": "Menetapkan target penyerapan bulanan (bukan hanya triwulanan) per Satker; early warning system atas Satker/kegiatan yang tertinggal dari kurva penyerapan rencana."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T3-KA-05",
+              "riskType": "kinerja_anggaran",
+              "order": 5,
+              "description": "Keterlambatan pelaksanaan kontrak menyebabkan keterlambatan realisasi anggaran dan pencapaian output.",
+              "mitigations": [
+                {
+                  "code": "KPA-T3-KA-05-M1",
+                  "order": 1,
+                  "description": "Penetapan jadwal dan milestone pelaksanaan belanja/pekerjaan sejak awal tahun anggaran."
+                },
+                {
+                  "code": "KPA-T3-KA-05-M2",
+                  "order": 2,
+                  "description": "Monitoring berkala dan pemberian early warning kepada unit kerja untuk memastikan pelaksanaan belanja sesuai jadwal yang telah ditetapkan."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T3-KA-06",
+              "riskType": "kinerja_anggaran",
+              "order": 6,
+              "description": "Ketergantungan tinggi pada satu penyedia/vendor untuk kegiatan strategis sehingga rentan gagal apabila penyedia wanprestasi.",
+              "mitigations": [
+                {
+                  "code": "KPA-T3-KA-06-M1",
+                  "order": 1,
+                  "description": "Diversifikasi penyedia untuk kebutuhan strategis dan berulang."
+                },
+                {
+                  "code": "KPA-T3-KA-06-M2",
+                  "order": 2,
+                  "description": "Penyiapan daftar penyedia alternatif/cadangan sejak tahap perencanaan pengadaan."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T3-KP-01",
+              "riskType": "ketidakpatuhan",
+              "order": 1,
+              "description": "Kelalaian dalam pengujian tagihan dan perintah pembayaran.",
+              "mitigations": [
+                {
+                  "code": "KPA-T3-KP-01-M1",
+                  "order": 1,
+                  "description": "Reviu berjenjang atau verifikasi berlapis di lingkungan internal."
+                },
+                {
+                  "code": "KPA-T3-KP-01-M2",
+                  "order": 2,
+                  "description": "Koordinasi dengan melibatkan Lini Kedua dan Lini Ketiga."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T3-KP-02",
+              "riskType": "ketidakpatuhan",
+              "order": 2,
+              "description": "Kelalaian dalam supervisi, konsultansi, dan pengendalian pelaksanaan anggaran.",
+              "mitigations": [
+                {
+                  "code": "KPA-T3-KP-02-M1",
+                  "order": 1,
+                  "description": "Rapat evaluasi secara berkala."
+                },
+                {
+                  "code": "KPA-T3-KP-02-M2",
+                  "order": 2,
+                  "description": "Tindak lanjut hasil evaluasi berkala."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T3-KP-03",
+              "riskType": "ketidakpatuhan",
+              "order": 3,
+              "description": "Kelalaian dalam Pengawasan Penatausahaan Dokumen dan Transaksi.",
+              "mitigations": [
+                {
+                  "code": "KPA-T3-KP-03-M1",
+                  "order": 1,
+                  "description": "Menyusun SOP Pengawasan Penatausahaan Dokumen dan Transaksi."
+                },
+                {
+                  "code": "KPA-T3-KP-03-M2",
+                  "order": 2,
+                  "description": "Rekonsiliasi internal secara berkala antara catatan manual dengan sistem."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T3-KP-04",
+              "riskType": "ketidakpatuhan",
+              "order": 4,
+              "description": "Pengadaan tidak sesuai dengan harga satuan yang telah ditetapkan.",
+              "mitigations": [
+                {
+                  "code": "KPA-T3-KP-04-M1",
+                  "order": 1,
+                  "description": "Melakukan verifikasi secara berjenjang tingkat Satker sebelum pelaksanaan pengadaan dan setelah pelaksanaan pengadaan."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T3-KP-05",
+              "riskType": "ketidakpatuhan",
+              "order": 5,
+              "description": "Keterlambatan penyampaian/rekam data kontrak ke KPPN.",
+              "mitigations": [
+                {
+                  "code": "KPA-T3-KP-05-M1",
+                  "order": 1,
+                  "description": "Penyusunan SOP usulan pelaksanaan kegiatan yang bersifat kontrak yang berjenjang kepada tim pengawasan."
+                },
+                {
+                  "code": "KPA-T3-KP-05-M2",
+                  "order": 2,
+                  "description": "Pemberitahuan pelaksanaan penandatanganan kontrak kepada tim pengawasan."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T3-FR-01",
+              "riskType": "kecurangan",
+              "order": 1,
+              "description": "Pengesahan/persetujuan atas transaksi fiktif.",
+              "mitigations": [
+                {
+                  "code": "KPA-T3-FR-01-M1",
+                  "order": 1,
+                  "description": "Pengawasan berkala oleh Lini Kedua dan Lini Ketiga."
+                },
+                {
+                  "code": "KPA-T3-FR-01-M2",
+                  "order": 2,
+                  "description": "Pemisahan tugas dan fungsi (tidak boleh tumpang tindih dan rangkap jabatan)."
+                },
+                {
+                  "code": "KPA-T3-FR-01-M3",
+                  "order": 3,
+                  "description": "Pemeriksaan berjenjang terhadap pertanggungjawaban atas pelaksanaan kegiatan yang disertai data dukung valid dan dokumentasi."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T3-FR-02",
+              "riskType": "kecurangan",
+              "order": 2,
+              "description": "Suap dan/atau persekongkolan dengan penyedia.",
+              "mitigations": [
+                {
+                  "code": "KPA-T3-FR-02-M1",
+                  "order": 1,
+                  "description": "Digitalisasi proses pengadaan yang terbuka dan transparan."
+                },
+                {
+                  "code": "KPA-T3-FR-02-M2",
+                  "order": 2,
+                  "description": "Mewajibkan penandatanganan Pakta Integritas dan Deklarasi Benturan Kepentingan (Conflict of Interest) bagi seluruh perencana dan pengambil kebijakan."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T3-FR-03",
+              "riskType": "kecurangan",
+              "order": 3,
+              "description": "Penghilangan/pemusnahan dokumen transaksi secara sengaja.",
+              "mitigations": [
+                {
+                  "code": "KPA-T3-FR-03-M1",
+                  "order": 1,
+                  "description": "Digitalisasi arsip dokumen transaksi."
+                },
+                {
+                  "code": "KPA-T3-FR-03-M2",
+                  "order": 2,
+                  "description": "Pembatasan akses dokumen transaksi."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T3-FR-04",
+              "riskType": "kecurangan",
+              "order": 4,
+              "description": "Pembayaran atas barang/pekerjaan yang volume, kualitas, spesifikasi, atau progresnya tidak sesuai dengan kontrak.",
+              "mitigations": [
+                {
+                  "code": "KPA-T3-FR-04-M1",
+                  "order": 1,
+                  "description": "Pemeriksaan dan verifikasi kesesuaian volume, kualitas, spesifikasi, dan progres pekerjaan dengan dokumen kontrak."
+                },
+                {
+                  "code": "KPA-T3-FR-04-M2",
+                  "order": 2,
+                  "description": "Dokumentasi hasil pemeriksaan melalui berita acara pemeriksaan dan/atau serah terima sebelum dilakukan pembayaran."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "code": "KPA-T4",
+          "order": 4,
+          "name": "Pelaporan",
+          "deckSlides": "24–26",
+          "templates": [
+            {
+              "code": "KPA-T4-KA-01",
+              "riskType": "kinerja_anggaran",
+              "order": 1,
+              "description": "Penurunan Nilai Kinerja Anggaran (NKA).",
+              "mitigations": [
+                {
+                  "code": "KPA-T4-KA-01-M1",
+                  "order": 1,
+                  "description": "Koordinasi intensif dengan DJA – Kemenkeu."
+                },
+                {
+                  "code": "KPA-T4-KA-01-M2",
+                  "order": 2,
+                  "description": "Penetapan NKA sebagai salah satu Indikator Kinerja Utama (IKU)."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T4-KA-02",
+              "riskType": "kinerja_anggaran",
+              "order": 2,
+              "description": "Ketidakakuratan data pelaporan.",
+              "mitigations": [
+                {
+                  "code": "KPA-T4-KA-02-M1",
+                  "order": 1,
+                  "description": "Otomatisasi validasi input data."
+                },
+                {
+                  "code": "KPA-T4-KA-02-M2",
+                  "order": 2,
+                  "description": "Integrasi sistem pelaporan terpusat secara real-time."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T4-KA-03",
+              "riskType": "kinerja_anggaran",
+              "order": 3,
+              "description": "Ketidaksesuaian dengan Capaian Output.",
+              "mitigations": [
+                {
+                  "code": "KPA-T4-KA-03-M1",
+                  "order": 1,
+                  "description": "Koordinasi intensif dengan DJA – Kemenkeu dan Bappenas."
+                },
+                {
+                  "code": "KPA-T4-KA-03-M2",
+                  "order": 2,
+                  "description": "Evaluasi berkala atas keselarasan output dengan realisasi anggaran."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T4-KA-04",
+              "riskType": "kinerja_anggaran",
+              "order": 4,
+              "description": "Nilai IKPA pada indikator tertentu tidak terpantau dan tertangani sejak dini.",
+              "mitigations": [
+                {
+                  "code": "KPA-T4-KA-04-M1",
+                  "order": 1,
+                  "description": "Dashboard monitoring nilai IKPA per indikator (Revisi DIPA, Deviasi Halaman III DIPA, Penyerapan Anggaran, Belanja Kontraktual, Penyelesaian Tagihan, UP/TUP, Capaian Output) direviu bulanan bersama KPA/PPK."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T4-KA-05",
+              "riskType": "kinerja_anggaran",
+              "order": 5,
+              "description": "Data pelaporan kinerja tidak sinkron antara aplikasi SAKTI, e-monev Bappenas, dan laporan manual internal.",
+              "mitigations": [
+                {
+                  "code": "KPA-T4-KA-05-M1",
+                  "order": 1,
+                  "description": "Rekonsiliasi data lintas aplikasi secara bulanan."
+                },
+                {
+                  "code": "KPA-T4-KA-05-M2",
+                  "order": 2,
+                  "description": "Penunjukan penanggung jawab (PIC) data pelaporan terpadu pada tiap Satker."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T4-KP-01",
+              "riskType": "ketidakpatuhan",
+              "order": 1,
+              "description": "Keterlambatan Penyampaian Laporan Keuangan dan Laporan Kinerja.",
+              "mitigations": [
+                {
+                  "code": "KPA-T4-KP-01-M1",
+                  "order": 1,
+                  "description": "Otomatisasi dan digitalisasi pencatatan sistem keuangan dan kinerja."
+                },
+                {
+                  "code": "KPA-T4-KP-01-M2",
+                  "order": 2,
+                  "description": "Penguatan kapasitas SDM, koordinasi internal, dan pemantauan berkala."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T4-KP-02",
+              "riskType": "ketidakpatuhan",
+              "order": 2,
+              "description": "Ketidaksesuaian dengan Standar Akuntansi Pemerintahan.",
+              "mitigations": [
+                {
+                  "code": "KPA-T4-KP-02-M1",
+                  "order": 1,
+                  "description": "Meningkatkan kompetensi SDM."
+                },
+                {
+                  "code": "KPA-T4-KP-02-M2",
+                  "order": 2,
+                  "description": "Pendampingan ahli akuntansi dan pelaporan keuangan."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T4-KP-03",
+              "riskType": "ketidakpatuhan",
+              "order": 3,
+              "description": "Selisih atas pencatatan.",
+              "mitigations": [
+                {
+                  "code": "KPA-T4-KP-03-M1",
+                  "order": 1,
+                  "description": "Rekonsiliasi secara berkala."
+                },
+                {
+                  "code": "KPA-T4-KP-03-M2",
+                  "order": 2,
+                  "description": "Pemisahan tugas dan fungsi sebagai verifikasi berjenjang."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T4-FR-01",
+              "riskType": "kecurangan",
+              "order": 1,
+              "description": "Pengaturan spesifikasi yang diarahkan pada Penyedia/Merk tertentu (tailor-made).",
+              "mitigations": [
+                {
+                  "code": "KPA-T4-FR-01-M1",
+                  "order": 1,
+                  "description": "Melakukan market sounding untuk memastikan banyak ketersediaan penyedia untuk spesifikasi tertentu."
+                },
+                {
+                  "code": "KPA-T4-FR-01-M2",
+                  "order": 2,
+                  "description": "Meminta probity audit oleh APIP."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T4-FR-02",
+              "riskType": "kecurangan",
+              "order": 2,
+              "description": "Penyisipan \"proyek titipan\" atau kegiatan fiktif yang muncul tiba-tiba di luar dokumen Perencanaan.",
+              "mitigations": [
+                {
+                  "code": "KPA-T4-FR-02-M1",
+                  "order": 1,
+                  "description": "Digitalisasi proses perencanaan terintegrasi dan validasi dokumen untuk meningkatkan transparansi."
+                },
+                {
+                  "code": "KPA-T4-FR-02-M2",
+                  "order": 2,
+                  "description": "Mewajibkan penandatanganan Pakta Integritas dan Deklarasi Benturan Kepentingan (Conflict of Interest) bagi seluruh perencana dan pengambil kebijakan."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T4-FR-03",
+              "riskType": "kecurangan",
+              "order": 3,
+              "description": "Pemecahan paket pekerjaan untuk menghindari tender terbuka.",
+              "mitigations": [
+                {
+                  "code": "KPA-T4-FR-03-M1",
+                  "order": 1,
+                  "description": "Pemantauan berkala terhadap akun Inaproc terkait indikasi transaksi berulang, item serupa, atau nominal transaksi tidak normal."
+                },
+                {
+                  "code": "KPA-T4-FR-03-M2",
+                  "order": 2,
+                  "description": "Membatasi belanja yang berurutan dan saling terkait dalam waktu singkat."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "code": "KPA-T5",
+          "order": 5,
+          "name": "Pertanggungjawaban Anggaran",
+          "deckSlides": "27",
+          "templates": [
+            {
+              "code": "KPA-T5-KA-01",
+              "riskType": "kinerja_anggaran",
+              "order": 1,
+              "description": "Dispensasi SPM akibat keterlambatan pertanggungjawaban.",
+              "mitigations": [
+                {
+                  "code": "KPA-T5-KA-01-M1",
+                  "order": 1,
+                  "description": "Koordinasi internal dan eksternal (Penyedia) yang intensif, serta selektif memilih Penyedia."
+                },
+                {
+                  "code": "KPA-T5-KA-01-M2",
+                  "order": 2,
+                  "description": "Pengawasan berjenjang dan rekonsiliasi internal."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T5-KA-02",
+              "riskType": "kinerja_anggaran",
+              "order": 2,
+              "description": "Capaian output tidak sebanding dengan besaran realisasi anggaran.",
+              "mitigations": [
+                {
+                  "code": "KPA-T5-KA-02-M1",
+                  "order": 1,
+                  "description": "Reviu keterkaitan output-realisasi oleh Biro POKS serta Biro Keuangan sebelum pertanggungjawaban akhir tahun; evaluasi kegiatan dengan realisasi tinggi namun output belum optimal."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T5-KA-03",
+              "riskType": "kinerja_anggaran",
+              "order": 3,
+              "description": "Aset/Barang Milik Negara (BMN) hasil pengadaan tidak tercatat atau tidak sinkron dengan aplikasi SIMAK-BMN.",
+              "mitigations": [
+                {
+                  "code": "KPA-T5-KA-03-M1",
+                  "order": 1,
+                  "description": "Rekonsiliasi data BMN dengan realisasi anggaran secara berkala."
+                },
+                {
+                  "code": "KPA-T5-KA-03-M2",
+                  "order": 2,
+                  "description": "Verifikasi fisik aset pada akhir tahun anggaran sebelum penyusunan laporan."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T5-KP-01",
+              "riskType": "ketidakpatuhan",
+              "order": 1,
+              "description": "Sanksi administratif, misalnya pemotongan anggaran.",
+              "mitigations": [
+                {
+                  "code": "KPA-T5-KP-01-M1",
+                  "order": 1,
+                  "description": "Peningkatan kapasitas SDM pengelola keuangan."
+                },
+                {
+                  "code": "KPA-T5-KP-01-M2",
+                  "order": 2,
+                  "description": "Evaluasi kinerja berkala."
+                }
+              ]
+            },
+            {
+              "code": "KPA-T5-FR-01",
+              "riskType": "kecurangan",
+              "order": 1,
+              "description": "Meningkatnya temuan audit atas kelebihan pembayaran/kerugian negara.",
+              "mitigations": [
+                {
+                  "code": "KPA-T5-FR-01-M1",
+                  "order": 1,
+                  "description": "Meningkatkan efektivitas pengendalian intern."
+                },
+                {
+                  "code": "KPA-T5-FR-01-M2",
+                  "order": 2,
+                  "description": "Perbaikan dan peningkatan SOP."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "PPK",
+      "name": "PPK",
+      "line": 1,
+      "deckSlides": "28–51",
+      "dataUmum": {
+        "identityFields": [
+          {
+            "key": "nama_jabatan_ppk",
+            "label": "Nama Jabatan PPK",
+            "kind": "text"
+          },
+          {
+            "key": "nomor_sk",
+            "label": "Nomor SK PPK",
+            "kind": "text"
+          },
+          {
+            "key": "tanggal_sk",
+            "label": "Tanggal SK PPK",
+            "kind": "date"
+          }
+        ],
+        "kegiatanReference": "Mengacu PMK Nomor 62 Tahun 2023 Pasal 188 ayat 2"
+      },
+      "stages": [
+        {
+          "code": "PPK-T1",
+          "order": 1,
+          "name": "Perencanaan Pengadaan",
+          "deckSlides": "30–34",
+          "templates": [
+            {
+              "code": "PPK-T1-KA-01",
+              "riskType": "kinerja_anggaran",
+              "order": 1,
+              "description": "Kebutuhan barang tidak sesuai dengan sasaran program.",
+              "mitigations": [
+                {
+                  "code": "PPK-T1-KA-01-M1",
+                  "order": 1,
+                  "description": "Real-time monitoring dan penguatan jadwal pengadaan dini."
+                },
+                {
+                  "code": "PPK-T1-KA-01-M2",
+                  "order": 2,
+                  "description": "Melakukan reviu secara detail pada saat melakukan identifikasi kebutuhan dan koordinasi antar unit."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T1-KA-02",
+              "riskType": "kinerja_anggaran",
+              "order": 2,
+              "description": "KAK tidak menggambarkan kebutuhan sesuai target capaian pekerjaan yang telah ditetapkan.",
+              "mitigations": [
+                {
+                  "code": "PPK-T1-KA-02-M1",
+                  "order": 1,
+                  "description": "Real-time monitoring penyiapan readiness kriteria."
+                },
+                {
+                  "code": "PPK-T1-KA-02-M2",
+                  "order": 2,
+                  "description": "Melakukan reviu KAK secara detail oleh tim teknis/PPK sebelum dilakukan proses pemilihan penyedia."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T1-KA-03",
+              "riskType": "kinerja_anggaran",
+              "order": 3,
+              "description": "HPS tidak disusun secara cermat sesuai dengan kebutuhan belanja pelaksanaan kegiatan.",
+              "mitigations": [
+                {
+                  "code": "PPK-T1-KA-03-M1",
+                  "order": 1,
+                  "description": "Melakukan reviu HPS secara detail dengan menyesuaikan kebutuhan belanja kegiatan."
+                },
+                {
+                  "code": "PPK-T1-KA-03-M2",
+                  "order": 2,
+                  "description": "Melakukan survei pasar."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T1-KA-04",
+              "riskType": "kinerja_anggaran",
+              "order": 4,
+              "description": "Jadwal pengadaan tidak mempertimbangkan faktor musim/cuaca atau ketersediaan bahan yang memengaruhi pelaksanaan pekerjaan fisik.",
+              "mitigations": [
+                {
+                  "code": "PPK-T1-KA-04-M1",
+                  "order": 1,
+                  "description": "Analisis risiko cuaca/musim dalam penyusunan jadwal pengadaan dan pelaksanaan."
+                },
+                {
+                  "code": "PPK-T1-KA-04-M2",
+                  "order": 2,
+                  "description": "Alokasi waktu cadangan (buffer time) khusus untuk paket pekerjaan konstruksi."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T1-KA-05",
+              "riskType": "kinerja_anggaran",
+              "order": 5,
+              "description": "Sengketa kontrak atau pembatalan kontrak akibat penandatanganan kontrak yang terburu-buru tanpa validasi jaminan, verifikasi kualifikasi, dan penyelarasan klausul yang matang.",
+              "mitigations": [
+                {
+                  "code": "PPK-T1-KA-05-M1",
+                  "order": 1,
+                  "description": "Pelaksanaan prosedur Pre-Construction Meeting (PCM) secara rigid."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T1-KP-01",
+              "riskType": "ketidakpatuhan",
+              "order": 1,
+              "description": "Pengadaan di luar dokumen perencanaan.",
+              "mitigations": [
+                {
+                  "code": "PPK-T1-KP-01-M1",
+                  "order": 1,
+                  "description": "Pengawasan terhadap kesesuaian pengadaan dengan RUP dan RKA K/L."
+                },
+                {
+                  "code": "PPK-T1-KP-01-M2",
+                  "order": 2,
+                  "description": "Peningkatan pengendalian oleh KPA dan Lini Kedua."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T1-KP-02",
+              "riskType": "ketidakpatuhan",
+              "order": 2,
+              "description": "Penetapan cara pengadaan barang/jasa tidak tepat.",
+              "mitigations": [
+                {
+                  "code": "PPK-T1-KP-02-M1",
+                  "order": 1,
+                  "description": "Mewajibkan feasibility study untuk program skala besar/prioritas."
+                },
+                {
+                  "code": "PPK-T1-KP-02-M2",
+                  "order": 2,
+                  "description": "Peningkatan pengendalian oleh KPA dan Lini Kedua."
+                },
+                {
+                  "code": "PPK-T1-KP-02-M3",
+                  "order": 3,
+                  "description": "Mengidentifikasi pelaksanaan pekerjaan yang potensial dan sesuai dengan karakteristik barang/jasa."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T1-KP-03",
+              "riskType": "ketidakpatuhan",
+              "order": 3,
+              "description": "Komponen pembentukan harga perkiraan (RAB/HPS) tidak lengkap.",
+              "mitigations": [
+                {
+                  "code": "PPK-T1-KP-03-M1",
+                  "order": 1,
+                  "description": "Penyusunan RUP dan HPS yang akuntabel."
+                },
+                {
+                  "code": "PPK-T1-KP-03-M2",
+                  "order": 2,
+                  "description": "Analisis value for money (efektif, efisien, dan ekonomis) dan benchmarking (analisis harga satuan) sebelum pengesahan anggaran."
+                },
+                {
+                  "code": "PPK-T1-KP-03-M3",
+                  "order": 3,
+                  "description": "Melakukan survei pembentukan harga perkiraan dan melibatkan tenaga ahli."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T1-KP-04",
+              "riskType": "ketidakpatuhan",
+              "order": 4,
+              "description": "Keterlambatan pencairan Uang Revolving (Uang Persediaan).",
+              "mitigations": [
+                {
+                  "code": "PPK-T1-KP-04-M1",
+                  "order": 1,
+                  "description": "Menggunakan UP Tunai secara efektif dan efisien dengan mempercepat revolving UP Tunai paling sedikit 100% dalam satu bulan."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T1-KP-05",
+              "riskType": "ketidakpatuhan",
+              "order": 5,
+              "description": "Tunggakan tahun berjalan.",
+              "mitigations": [
+                {
+                  "code": "PPK-T1-KP-05-M1",
+                  "order": 1,
+                  "description": "Real-time monitoring dashboard tagihan pembayaran."
+                },
+                {
+                  "code": "PPK-T1-KP-05-M2",
+                  "order": 2,
+                  "description": "Meningkatkan koordinasi internal tim keuangan."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T1-FR-01",
+              "riskType": "kecurangan",
+              "order": 1,
+              "description": "Jaminan pelaksanaan, jaminan pemeliharaan, sertifikat garansi dan jaminan lainnya tidak bisa dicairkan, palsu, atau tidak sah.",
+              "mitigations": [
+                {
+                  "code": "PPK-T1-FR-01-M1",
+                  "order": 1,
+                  "description": "Penguatan pengendalian internal melibatkan Lini Kedua dan Lini Ketiga."
+                },
+                {
+                  "code": "PPK-T1-FR-01-M2",
+                  "order": 2,
+                  "description": "Pemisahan tugas dan cek fisik (opname) secara berkala."
+                },
+                {
+                  "code": "PPK-T1-FR-01-M3",
+                  "order": 3,
+                  "description": "Melakukan konfirmasi keaslian jaminan ke bank atau penerbit resmi."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T1-FR-02",
+              "riskType": "kecurangan",
+              "order": 2,
+              "description": "RAB Mark-Up.",
+              "mitigations": [
+                {
+                  "code": "PPK-T1-FR-02-M1",
+                  "order": 1,
+                  "description": "Standarisasi (SOP) penyusunan justifikasi harga."
+                },
+                {
+                  "code": "PPK-T1-FR-02-M2",
+                  "order": 2,
+                  "description": "Transparansi pengadaan melalui tender atau e-purchasing terbuka."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T1-FR-03",
+              "riskType": "kecurangan",
+              "order": 3,
+              "description": "Pemecahan kontrak.",
+              "mitigations": [
+                {
+                  "code": "PPK-T1-FR-03-M1",
+                  "order": 1,
+                  "description": "Pemantauan berkala terhadap akun Inaproc terkait indikasi transaksi berulang, item serupa, atau nominal transaksi tidak normal."
+                },
+                {
+                  "code": "PPK-T1-FR-03-M2",
+                  "order": 2,
+                  "description": "Membatasi belanja yang berurutan dan saling terkait dalam waktu singkat."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "code": "PPK-T2",
+          "order": 2,
+          "name": "Pengadaan di Bawah Rp50 Juta (Pembelian Langsung/Kuitansi)",
+          "deckSlides": "35–37",
+          "templates": [
+            {
+              "code": "PPK-T2-KA-01",
+              "riskType": "kinerja_anggaran",
+              "order": 1,
+              "description": "Keterlambatan belanja, kontrak/addendum kontrak, dan pertanggungjawaban.",
+              "mitigations": [
+                {
+                  "code": "PPK-T2-KA-01-M1",
+                  "order": 1,
+                  "description": "Real-time monitoring dashboard dan penguatan jadwal pengadaan dini."
+                },
+                {
+                  "code": "PPK-T2-KA-01-M2",
+                  "order": 2,
+                  "description": "Segera melakukan pendaftaran kontrak/addendum kontrak pada SAKTI maksimal 5 hari kerja setelah kontrak/addendum kontrak ditandatangani."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T2-KA-02",
+              "riskType": "kinerja_anggaran",
+              "order": 2,
+              "description": "Penyerapan anggaran tidak mencapai target per Triwulan.",
+              "mitigations": [
+                {
+                  "code": "PPK-T2-KA-02-M1",
+                  "order": 1,
+                  "description": "Real-time monitoring dashboard penyerapan anggaran."
+                },
+                {
+                  "code": "PPK-T2-KA-02-M2",
+                  "order": 2,
+                  "description": "Penguatan pengadaan melalui RUP dan pengaturan jadwal, serta penguncian kesiapan paket sejak awal."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T2-KA-03",
+              "riskType": "kinerja_anggaran",
+              "order": 3,
+              "description": "Perputaran (Revolving) UP/TUP rendah, pengendapan dana, UP KKP tidak termanfaatkan.",
+              "mitigations": [
+                {
+                  "code": "PPK-T2-KA-03-M1",
+                  "order": 1,
+                  "description": "Real-time monitoring dashboard pengelolaan UP/TUP."
+                },
+                {
+                  "code": "PPK-T2-KA-03-M2",
+                  "order": 2,
+                  "description": "Melakukan revolving atau penggantian UP KKP secara tertib."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T2-KA-04",
+              "riskType": "kinerja_anggaran",
+              "order": 4,
+              "description": "Proses pemilihan penyedia molor akibat perubahan spesifikasi/desain teknis di tengah proses.",
+              "mitigations": [
+                {
+                  "code": "PPK-T2-KA-04-M1",
+                  "order": 1,
+                  "description": "Pematangan spesifikasi teknis dan DED sebelum proses pemilihan dimulai, khususnya untuk paket Belanja Modal strategis."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T2-KA-05",
+              "riskType": "kinerja_anggaran",
+              "order": 5,
+              "description": "Pembelian berulang untuk barang sejenis dari penyedia yang sama dalam periode singkat tanpa evaluasi kewajaran harga.",
+              "mitigations": [
+                {
+                  "code": "PPK-T2-KA-05-M1",
+                  "order": 1,
+                  "description": "Monitoring histori transaksi pembelian langsung per penyedia."
+                },
+                {
+                  "code": "PPK-T2-KA-05-M2",
+                  "order": 2,
+                  "description": "Pembandingan harga (price benchmarking) secara berkala."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T2-KP-01",
+              "riskType": "ketidakpatuhan",
+              "order": 1,
+              "description": "Pekerjaan tidak sesuai spesifikasi teknis/KAK.",
+              "mitigations": [
+                {
+                  "code": "PPK-T2-KP-01-M1",
+                  "order": 1,
+                  "description": "Pemeriksaan hasil pekerjaan oleh PPK secara berkala."
+                },
+                {
+                  "code": "PPK-T2-KP-01-M2",
+                  "order": 2,
+                  "description": "Evaluasi terhadap Laporan PPK atas Pelaksanaan dan Penyelesaian Kegiatan oleh PA/KPA."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T2-KP-02",
+              "riskType": "ketidakpatuhan",
+              "order": 2,
+              "description": "Kekurangan volume pekerjaan.",
+              "mitigations": [
+                {
+                  "code": "PPK-T2-KP-02-M1",
+                  "order": 1,
+                  "description": "Evaluasi terhadap Laporan PPK atas Pelaksanaan dan Penyelesaian Kegiatan oleh PA/KPA."
+                },
+                {
+                  "code": "PPK-T2-KP-02-M2",
+                  "order": 2,
+                  "description": "Pemeriksaan hasil pekerjaan oleh PPK secara berkala."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T2-KP-03",
+              "riskType": "ketidakpatuhan",
+              "order": 3,
+              "description": "Keterlambatan penyelesaian pekerjaan.",
+              "mitigations": [
+                {
+                  "code": "PPK-T2-KP-03-M1",
+                  "order": 1,
+                  "description": "Sediakan waktu cadangan (time buffer) pada setiap tahapan krusial guna mengantisipasi hambatan tak terduga."
+                },
+                {
+                  "code": "PPK-T2-KP-03-M2",
+                  "order": 2,
+                  "description": "Monitoring harian/mingguan menggunakan kurva S atau aplikasi manajemen proyek."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T2-FR-01",
+              "riskType": "kecurangan",
+              "order": 1,
+              "description": "Pengadaan Fiktif.",
+              "mitigations": [
+                {
+                  "code": "PPK-T2-FR-01-M1",
+                  "order": 1,
+                  "description": "Penguatan pengendalian internal melibatkan Lini Kedua dan Lini Ketiga."
+                },
+                {
+                  "code": "PPK-T2-FR-01-M2",
+                  "order": 2,
+                  "description": "Pemisahan tugas dan cek fisik (opname) secara berkala."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T2-FR-02",
+              "riskType": "kecurangan",
+              "order": 2,
+              "description": "RAB Mark-Up.",
+              "mitigations": [
+                {
+                  "code": "PPK-T2-FR-02-M1",
+                  "order": 1,
+                  "description": "Standarisasi (SOP) penyusunan justifikasi harga."
+                },
+                {
+                  "code": "PPK-T2-FR-02-M2",
+                  "order": 2,
+                  "description": "Transparansi pengadaan melalui tender atau e-purchasing terbuka."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T2-FR-03",
+              "riskType": "kecurangan",
+              "order": 3,
+              "description": "Pemecahan kontrak.",
+              "mitigations": [
+                {
+                  "code": "PPK-T2-FR-03-M1",
+                  "order": 1,
+                  "description": "Pemantauan berkala terhadap akun Inaproc terkait indikasi transaksi berulang, item serupa, atau nominal transaksi tidak normal."
+                },
+                {
+                  "code": "PPK-T2-FR-03-M2",
+                  "order": 2,
+                  "description": "Membatasi belanja yang berurutan dan saling terkait dalam waktu singkat."
+                },
+                {
+                  "code": "PPK-T2-FR-03-M3",
+                  "order": 3,
+                  "description": "Melakukan proses pengadaan melalui E-Katalog."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "code": "PPK-T3",
+          "order": 3,
+          "name": "Pengadaan Barang/Jasa Lainnya di Atas Rp200 Juta (E-Katalog)",
+          "deckSlides": "38–40",
+          "templates": [
+            {
+              "code": "PPK-T3-KA-01",
+              "riskType": "kinerja_anggaran",
+              "order": 1,
+              "description": "Keterlambatan penyelesaian pekerjaan (Deviasi Negatif)/Wanprestasi waktu.",
+              "mitigations": [
+                {
+                  "code": "PPK-T3-KA-01-M1",
+                  "order": 1,
+                  "description": "Melakukan Rapat Pembuktian (Show Cause Meeting/SCM) secara berjenjang dan pemantauan kurva-S secara ketat."
+                },
+                {
+                  "code": "PPK-T3-KA-01-M2",
+                  "order": 2,
+                  "description": "Pengenaan denda keterlambatan secara tegas sesuai ketentuan kontrak jika terjadi keterlambatan, serta opsi pemutusan kontrak jika deviasi sudah tidak bisa dikejar."
+                },
+                {
+                  "code": "PPK-T3-KA-01-M3",
+                  "order": 3,
+                  "description": "Sebelum jatuh tempo selesai pekerjaan/termin PPK menginformasikan kepada Penyedia untuk segera menyiapkan BAST/BAPP."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T3-KA-02",
+              "riskType": "kinerja_anggaran",
+              "order": 2,
+              "description": "Terlambatnya proses pembayaran termin kepada Penyedia.",
+              "mitigations": [
+                {
+                  "code": "PPK-T3-KA-02-M1",
+                  "order": 1,
+                  "description": "Mendorong penyedia untuk mempercepat penyiapan data dukung dokumen tagihan/BAST sesegera mungkin setelah progres fisik di lapangan tercapai dan dinyatakan sah."
+                },
+                {
+                  "code": "PPK-T3-KA-02-M2",
+                  "order": 2,
+                  "description": "Mempercepat verifikasi dokumen tagihan/BAST sesegera mungkin setelah progres fisik di lapangan tercapai dan dinyatakan sah."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T3-KA-03",
+              "riskType": "kinerja_anggaran",
+              "order": 3,
+              "description": "Keterlambatan proses pemilihan penyedia sehingga kontrak baru efektif mendekati akhir tahun anggaran.",
+              "mitigations": [
+                {
+                  "code": "PPK-T3-KA-03-M1",
+                  "order": 1,
+                  "description": "Penjadwalan proses pemilihan penyedia disusun mundur (backward planning) dari target efektif kontrak, dengan buffer waktu untuk sanggah dan potensi lelang ulang."
+                },
+                {
+                  "code": "PPK-T3-KA-03-M2",
+                  "order": 2,
+                  "description": "Percepatan jadwal proses pemilihan penyedia sejak DIPA efektif."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T3-KA-04",
+              "riskType": "kinerja_anggaran",
+              "order": 4,
+              "description": "Ketidaktersediaan produk pada e-katalog menyebabkan proses pengadaan tertunda atau harus berpindah metode.",
+              "mitigations": [
+                {
+                  "code": "PPK-T3-KA-04-M1",
+                  "order": 1,
+                  "description": "Pengecekan ketersediaan produk pada e-katalog sejak tahap perencanaan."
+                },
+                {
+                  "code": "PPK-T3-KA-04-M2",
+                  "order": 2,
+                  "description": "Penyiapan metode pengadaan alternatif sebagai cadangan (contingency)."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T3-KP-01",
+              "riskType": "ketidakpatuhan",
+              "order": 1,
+              "description": "Perubahan spesifikasi/volume pekerjaan (Addendum) tanpa dasar justifikasi yang sah.",
+              "mitigations": [
+                {
+                  "code": "PPK-T3-KP-01-M1",
+                  "order": 1,
+                  "description": "Mewajibkan kajian teknis lapangan dan reviu berlapis oleh Tim Ahli sebelum menyetujui Contract Change Order (CCO)."
+                },
+                {
+                  "code": "PPK-T3-KP-01-M2",
+                  "order": 2,
+                  "description": "Melibatkan pengawasan tambahan dari Lini Kedua dan Lini Ketiga untuk addendum yang bersifat material atau mengubah nilai kontrak."
+                },
+                {
+                  "code": "PPK-T3-KP-01-M3",
+                  "order": 3,
+                  "description": "Real-time monitoring pelaksanaan pekerjaan di lapangan."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T3-KP-02",
+              "riskType": "ketidakpatuhan",
+              "order": 2,
+              "description": "Penggunaan material/tenaga kerja yang tidak sesuai spesifikasi kontrak (misal: melanggar batas TKDN atau SNI).",
+              "mitigations": [
+                {
+                  "code": "PPK-T3-KP-02-M1",
+                  "order": 1,
+                  "description": "Melakukan inspeksi material di lokasi (material on-site approval) sebelum bahan diizinkan untuk dirakit/digunakan."
+                },
+                {
+                  "code": "PPK-T3-KP-02-M2",
+                  "order": 2,
+                  "description": "Verifikasi ketat terhadap sertifikat garansi, sertifikat asal barang, maupun dokumen pendukung TKDN dari pabrikan."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T3-KP-03",
+              "riskType": "ketidakpatuhan",
+              "order": 3,
+              "description": "Ketidakpatuhan pelaporan progres dan pengelolaan Kontrak.",
+              "mitigations": [
+                {
+                  "code": "PPK-T3-KP-03-M1",
+                  "order": 1,
+                  "description": "Menekankan kewajiban Penyedia untuk menyampaikan laporan harian, mingguan, dan bulanan secara tertib sesuai klausul kontrak."
+                },
+                {
+                  "code": "PPK-T3-KP-03-M2",
+                  "order": 2,
+                  "description": "Monitoring berkala pemutakhiran data kontrak pada sistem informasi pengadaan terintegrasi."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T3-FR-01",
+              "riskType": "kecurangan",
+              "order": 1,
+              "description": "Laporan Progres Fiktif.",
+              "mitigations": [
+                {
+                  "code": "PPK-T3-FR-01-M1",
+                  "order": 1,
+                  "description": "Melakukan cek fisik (opname lapangan) secara mendadak tidak hanya mengandalkan laporan tertulis Penyedia."
+                },
+                {
+                  "code": "PPK-T3-FR-01-M2",
+                  "order": 2,
+                  "description": "Melibatkan pengawas dalam memverifikasi hasil pekerjaan 100% sebelum Berita Acara Serah Terima (BAST) ditandatangani."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T3-FR-02",
+              "riskType": "kecurangan",
+              "order": 2,
+              "description": "Substitusi barang dengan kualitas lebih rendah (Downgrade) yang disengaja dan dibiarkan.",
+              "mitigations": [
+                {
+                  "code": "PPK-T3-FR-02-M1",
+                  "order": 1,
+                  "description": "Inspeksi secara acak ke lokasi pelaksanaan."
+                },
+                {
+                  "code": "PPK-T3-FR-02-M2",
+                  "order": 2,
+                  "description": "Pemberlakuan masa retensi (pemeliharaan) yang ketat serta memastikan keabsahan Jaminan Pemeliharaan dari Bank/Asuransi."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T3-FR-03",
+              "riskType": "kecurangan",
+              "order": 3,
+              "description": "Penyuapan, Gratifikasi, atau Pemerasan.",
+              "mitigations": [
+                {
+                  "code": "PPK-T3-FR-03-M1",
+                  "order": 1,
+                  "description": "Internalisasi Pakta Integritas."
+                },
+                {
+                  "code": "PPK-T3-FR-03-M2",
+                  "order": 2,
+                  "description": "Optimalisasi saluran pengaduan pelanggaran (Whistleblowing System)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "code": "PPK-T4",
+          "order": 4,
+          "name": "Pelaksanaan/Pengendalian Kontrak",
+          "deckSlides": "41–48",
+          "templates": [
+            {
+              "code": "PPK-T4-KA-01",
+              "riskType": "kinerja_anggaran",
+              "order": 1,
+              "description": "Keterlambatan penerbitan Surat Penunjukan Penyedia Barang/Jasa (SPPBJ) dan penandatanganan kontrak.",
+              "mitigations": [
+                {
+                  "code": "PPK-T4-KA-01-M1",
+                  "order": 1,
+                  "description": "Real-time monitoring dashboard pengadaan setiap tahapan pemilihan."
+                },
+                {
+                  "code": "PPK-T4-KA-01-M2",
+                  "order": 2,
+                  "description": "Koordinasi intensif antara PPK dan penyedia terpilih untuk memastikan kelengkapan syarat penandatanganan kontrak (seperti jaminan pelaksanaan) terpenuhi tepat waktu."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T4-KA-02",
+              "riskType": "kinerja_anggaran",
+              "order": 2,
+              "description": "Sanggahan banding dari peserta tender yang menghambat pelaksanaan kontrak.",
+              "mitigations": [
+                {
+                  "code": "PPK-T4-KA-02-M1",
+                  "order": 1,
+                  "description": "Mempercepat supporting dokumen kepada Satker dalam respon sanggah banding."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T4-KA-03",
+              "riskType": "kinerja_anggaran",
+              "order": 3,
+              "description": "Terlambatnya proses pembayaran termin kepada Penyedia.",
+              "mitigations": [
+                {
+                  "code": "PPK-T4-KA-03-M1",
+                  "order": 1,
+                  "description": "Real time monitoring dashboard penyerapan anggaran."
+                },
+                {
+                  "code": "PPK-T4-KA-03-M2",
+                  "order": 2,
+                  "description": "Mendorong penyedia untuk mempercepat penyiapan data dukung dokumen tagihan/BAST sesegera mungkin setelah progres fisik di lapangan tercapai dan dinyatakan sah."
+                },
+                {
+                  "code": "PPK-T4-KA-03-M3",
+                  "order": 3,
+                  "description": "Mempercepat verifikasi dokumen tagihan/BAST sesegera mungkin setelah progres fisik di lapangan tercapai dan dinyatakan sah."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T4-KA-04",
+              "riskType": "kinerja_anggaran",
+              "order": 4,
+              "description": "Pembengkakan Biaya (Cost Over-Run).",
+              "mitigations": [
+                {
+                  "code": "PPK-T4-KA-04-M1",
+                  "order": 1,
+                  "description": "Penetapan lingkup pekerjaan secara rinci dan jelas."
+                },
+                {
+                  "code": "PPK-T4-KA-04-M2",
+                  "order": 2,
+                  "description": "Penyusunan anggaran yang realistis dengan tambahan cadangan kontinjensi."
+                },
+                {
+                  "code": "PPK-T4-KA-04-M3",
+                  "order": 3,
+                  "description": "Menggunakan Tenaga Ahli Quantity Independen sebagai second opinion."
+                },
+                {
+                  "code": "PPK-T4-KA-04-M4",
+                  "order": 4,
+                  "description": "Pendampingan oleh APIP/BPKP."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T4-KA-05",
+              "riskType": "kinerja_anggaran",
+              "order": 5,
+              "description": "Gagal Bayar.",
+              "mitigations": [
+                {
+                  "code": "PPK-T4-KA-05-M1",
+                  "order": 1,
+                  "description": "Memastikan klausul hukum yang protektif."
+                },
+                {
+                  "code": "PPK-T4-KA-05-M2",
+                  "order": 2,
+                  "description": "Pemantauan berkala dan melaporkan indikasi awal yang berpotensi menjadikan pekerjaan gagal bayar."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T4-KP-01",
+              "riskType": "ketidakpatuhan",
+              "order": 1,
+              "description": "Pelaksanaan kontrak tidak sesuai dengan hasil evaluasi penawaran yang sebenarnya.",
+              "mitigations": [
+                {
+                  "code": "PPK-T4-KP-01-M1",
+                  "order": 1,
+                  "description": "Menyusun justifikasi teknis sebelum menyetujui Contract Change Order (CCO)."
+                },
+                {
+                  "code": "PPK-T4-KP-01-M2",
+                  "order": 2,
+                  "description": "Melibatkan Lini Kedua dan Lini Ketiga untuk advis addendum yang bersifat material atau mengubah nilai kontrak."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T4-KP-02",
+              "riskType": "ketidakpatuhan",
+              "order": 2,
+              "description": "Penggunaan material/tenaga kerja yang tidak sesuai spesifikasi kontrak (misal: melanggar batas TKDN atau SNI).",
+              "mitigations": [
+                {
+                  "code": "PPK-T4-KP-02-M1",
+                  "order": 1,
+                  "description": "Melakukan inspeksi material di lokasi (material on-site approval) sebelum bahan diizinkan untuk dirakit/digunakan."
+                },
+                {
+                  "code": "PPK-T4-KP-02-M2",
+                  "order": 2,
+                  "description": "Verifikasi terhadap sertifikat garansi, sertifikat asal barang, maupun dokumen pendukung TKDN dari pabrikan."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T4-KP-03",
+              "riskType": "ketidakpatuhan",
+              "order": 3,
+              "description": "Ketidakpatuhan pelaporan progres dan pengelolaan Kontrak.",
+              "mitigations": [
+                {
+                  "code": "PPK-T4-KP-03-M1",
+                  "order": 1,
+                  "description": "Menekankan kewajiban Penyedia untuk menyampaikan laporan harian, mingguan, dan bulanan secara tertib sesuai klausul kontrak."
+                },
+                {
+                  "code": "PPK-T4-KP-03-M2",
+                  "order": 2,
+                  "description": "Monitoring berkala pemutakhiran data kontrak pada sistem informasi pengadaan terintegrasi."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T4-KP-04",
+              "riskType": "ketidakpatuhan",
+              "order": 4,
+              "description": "Penambahan lingkup pekerjaan dalam addendum tanpa justifikasi teknis yang jelas.",
+              "mitigations": [
+                {
+                  "code": "PPK-T4-KP-04-M1",
+                  "order": 1,
+                  "description": "Menyusun justifikasi teknis sebelum menyetujui Contract Change Order (CCO)."
+                },
+                {
+                  "code": "PPK-T4-KP-04-M2",
+                  "order": 2,
+                  "description": "Melibatkan Lini Kedua dan Lini Ketiga untuk advis addendum yang bersifat material atau mengubah nilai kontrak."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T4-KP-05",
+              "riskType": "ketidakpatuhan",
+              "order": 5,
+              "description": "Kontrak dibuat setelah tanggal pelaksanaan pekerjaan (back-date).",
+              "mitigations": [
+                {
+                  "code": "PPK-T4-KP-05-M1",
+                  "order": 1,
+                  "description": "Reviu dan memastikan semua dokumentasi addendum kontrak sudah diselesaikan sebelum dilaksanakan."
+                },
+                {
+                  "code": "PPK-T4-KP-05-M2",
+                  "order": 2,
+                  "description": "Membuat check list kelengkapan dokumen persyaratan pelaksanaan pekerjaan."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T4-KP-06",
+              "riskType": "ketidakpatuhan",
+              "order": 6,
+              "description": "Kesalahan administrasi, misalnya tanda tangan dilakukan oleh pihak yang tidak berwenang atau keterlambatan penandatanganan kontrak.",
+              "mitigations": [
+                {
+                  "code": "PPK-T4-KP-06-M1",
+                  "order": 1,
+                  "description": "Adanya reviu dan pembuatan check list kelengkapan administrasi sebelum pelaksanaan kontrak."
+                },
+                {
+                  "code": "PPK-T4-KP-06-M2",
+                  "order": 2,
+                  "description": "Melakukan reviu untuk memastikan adanya otorisasi yang sah atas penandatanganan kontrak."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T4-KP-07",
+              "riskType": "ketidakpatuhan",
+              "order": 7,
+              "description": "Keterlambatan pembayaran kepada Penyedia.",
+              "mitigations": [
+                {
+                  "code": "PPK-T4-KP-07-M1",
+                  "order": 1,
+                  "description": "Memastikan alokasi anggaran tersedia, kelengkapan dokumen pembayaran, dan digitalisasi proses verifikasi tagihan."
+                },
+                {
+                  "code": "PPK-T4-KP-07-M2",
+                  "order": 2,
+                  "description": "Mendorong penyedia untuk mempercepat penyiapan data dukung dokumen tagihan/BAST sesegera mungkin setelah progres pekerjaan tercapai dan dinyatakan sah."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T4-KP-08",
+              "riskType": "ketidakpatuhan",
+              "order": 8,
+              "description": "Data dukung pembayaran tidak akurat atau tidak lengkap.",
+              "mitigations": [
+                {
+                  "code": "PPK-T4-KP-08-M1",
+                  "order": 1,
+                  "description": "Melakukan proses pembayaran sesuai dengan SOP Pembayaran kepada Penyedia."
+                },
+                {
+                  "code": "PPK-T4-KP-08-M2",
+                  "order": 2,
+                  "description": "Verifikasi dan validasi data dukung dilakukan secara berjenjang."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T4-FR-01",
+              "riskType": "kecurangan",
+              "order": 1,
+              "description": "Laporan Progres Fiktif.",
+              "mitigations": [
+                {
+                  "code": "PPK-T4-FR-01-M1",
+                  "order": 1,
+                  "description": "Melakukan cek fisik (opname lapangan) secara mendadak tidak hanya mengandalkan laporan tertulis Penyedia."
+                },
+                {
+                  "code": "PPK-T4-FR-01-M2",
+                  "order": 2,
+                  "description": "Melibatkan pengawas dalam memverifikasi hasil pekerjaan 100% sebelum Berita Acara Serah Terima (BAST) ditandatangani."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T4-FR-02",
+              "riskType": "kecurangan",
+              "order": 2,
+              "description": "Substitusi barang dengan kualitas lebih rendah (Downgrade) yang disengaja dan dibiarkan.",
+              "mitigations": [
+                {
+                  "code": "PPK-T4-FR-02-M1",
+                  "order": 1,
+                  "description": "Inspeksi secara acak ke lokasi pelaksanaan."
+                },
+                {
+                  "code": "PPK-T4-FR-02-M2",
+                  "order": 2,
+                  "description": "Pemantauan masa retensi (pemeliharaan) yang ketat serta memastikan keabsahan Jaminan Pemeliharaan dari Bank/Asuransi."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T4-FR-03",
+              "riskType": "kecurangan",
+              "order": 3,
+              "description": "Penyuapan, Gratifikasi, atau Pemerasan.",
+              "mitigations": [
+                {
+                  "code": "PPK-T4-FR-03-M1",
+                  "order": 1,
+                  "description": "Internalisasi Pakta Integritas."
+                },
+                {
+                  "code": "PPK-T4-FR-03-M2",
+                  "order": 2,
+                  "description": "Optimalisasi saluran pengaduan pelanggaran (Whistleblowing System)."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T4-FR-04",
+              "riskType": "kecurangan",
+              "order": 4,
+              "description": "Anomali transaksi: transaksi saat harga naik (kenaikan harga), transaksi berulang ke penyedia tertentu (penunjukan penyedia jasa berulang), transaksi produk yang baru tayang (pertama kali tampil langsung berkontrak), kecepatan persetujuan transaksi (pertama kali dibuat langsung berkontrak).",
+              "mitigations": [
+                {
+                  "code": "PPK-T4-FR-04-M1",
+                  "order": 1,
+                  "description": "Penerapan prinsip kehati-hatian dalam pelaksanaan E-Katalog sesuai dengan Surat Edaran Kepala Otorita IKN."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T4-FR-05",
+              "riskType": "kecurangan",
+              "order": 5,
+              "description": "Addendum menguntungkan pihak tertentu dan merugikan negara.",
+              "mitigations": [
+                {
+                  "code": "PPK-T4-FR-05-M1",
+                  "order": 1,
+                  "description": "Menyusun justifikasi teknis sebelum menyetujui Contract Change Order (CCO)."
+                },
+                {
+                  "code": "PPK-T4-FR-05-M2",
+                  "order": 2,
+                  "description": "Melibatkan Lini Kedua dan Lini Ketiga untuk advis addendum yang bersifat material atau mengubah nilai kontrak."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T4-FR-06",
+              "riskType": "kecurangan",
+              "order": 6,
+              "description": "Terjadinya konflik kepentingan (korupsi, kolusi dan nepotisme).",
+              "mitigations": [
+                {
+                  "code": "PPK-T4-FR-06-M1",
+                  "order": 1,
+                  "description": "Internalisasi Pakta Integritas."
+                },
+                {
+                  "code": "PPK-T4-FR-06-M2",
+                  "order": 2,
+                  "description": "Melakukan pengawasan berjenjang."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T4-FR-07",
+              "riskType": "kecurangan",
+              "order": 7,
+              "description": "Pemalsuan dokumen atau transaksi fiktif.",
+              "mitigations": [
+                {
+                  "code": "PPK-T4-FR-07-M1",
+                  "order": 1,
+                  "description": "Pembatasan akses pada pihak yang tidak berwenang terhadap dokumen atau transaksi."
+                },
+                {
+                  "code": "PPK-T4-FR-07-M2",
+                  "order": 2,
+                  "description": "Mendorong prinsip kehati-hatian pada setiap staf yang terlibat."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T4-FR-08",
+              "riskType": "kecurangan",
+              "order": 8,
+              "description": "Pembayaran ganda (double payment).",
+              "mitigations": [
+                {
+                  "code": "PPK-T4-FR-08-M1",
+                  "order": 1,
+                  "description": "Memastikan dokumen yang akan digunakan untuk pembayaran tidak digunakan kembali (dokumen yang sama)."
+                },
+                {
+                  "code": "PPK-T4-FR-08-M2",
+                  "order": 2,
+                  "description": "Mendorong prinsip kehati-hatian pada setiap staf yang terlibat."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T4-FR-09",
+              "riskType": "kecurangan",
+              "order": 9,
+              "description": "Penagihan berlebihan (over billing).",
+              "mitigations": [
+                {
+                  "code": "PPK-T4-FR-09-M1",
+                  "order": 1,
+                  "description": "Verifikasi dan validasi data dukung dilakukan secara berjenjang."
+                },
+                {
+                  "code": "PPK-T4-FR-09-M2",
+                  "order": 2,
+                  "description": "Melakukan proses pembayaran sesuai dengan SOP Pembayaran kepada Penyedia."
+                },
+                {
+                  "code": "PPK-T4-FR-09-M3",
+                  "order": 3,
+                  "description": "Selain menggunakan aplikasi SAKTI, juga dilakukan pencatatan transaksi dan pemantauan secara berkala."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "code": "PPK-T5",
+          "order": 5,
+          "name": "Serah Terima Hasil Pekerjaan",
+          "deckSlides": "49–51",
+          "templates": [
+            {
+              "code": "PPK-T5-KA-01",
+              "riskType": "kinerja_anggaran",
+              "order": 1,
+              "description": "Keterlambatan penyelesaian pekerjaan (Deviasi Negatif)/Wanprestasi waktu.",
+              "mitigations": [
+                {
+                  "code": "PPK-T5-KA-01-M1",
+                  "order": 1,
+                  "description": "Melakukan monitoring secara intensif dan berkala."
+                },
+                {
+                  "code": "PPK-T5-KA-01-M2",
+                  "order": 2,
+                  "description": "Melakukan Rapat Pembuktian (Show Cause Meeting/SCM) secara berjenjang dan pemantauan kurva-S secara ketat."
+                },
+                {
+                  "code": "PPK-T5-KA-01-M3",
+                  "order": 3,
+                  "description": "Pengenaan denda keterlambatan secara tegas sesuai ketentuan kontrak jika terjadi keterlambatan, serta opsi pemutusan kontrak jika deviasi sudah tidak bisa dikejar."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T5-KP-01",
+              "riskType": "ketidakpatuhan",
+              "order": 1,
+              "description": "Belum ditandatanganinya Berita Acara Serah Terima Barang dengan Penyedia Jasa melalui PHO dan FHO.",
+              "mitigations": [
+                {
+                  "code": "PPK-T5-KP-01-M1",
+                  "order": 1,
+                  "description": "Membuat check list dan memastikan terpenuhinya dokumen-dokumen di dalam check list sebelum dilakukan penandatanganan BAST."
+                },
+                {
+                  "code": "PPK-T5-KP-01-M2",
+                  "order": 2,
+                  "description": "Mendorong percepatan kelengkapan yang tercantum dalam check list."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T5-KP-02",
+              "riskType": "ketidakpatuhan",
+              "order": 2,
+              "description": "Dokumen BAST dibuat setelah barang/jasa digunakan (back-date).",
+              "mitigations": [
+                {
+                  "code": "PPK-T5-KP-02-M1",
+                  "order": 1,
+                  "description": "Pelaksanaan pekerjaan agar dilaksanakan sesuai dengan jadwal yang telah ditetapkan."
+                },
+                {
+                  "code": "PPK-T5-KP-02-M2",
+                  "order": 2,
+                  "description": "Melakukan monitoring secara berjenjang untuk memastikan bahwa pekerjaan dilaksanakan sesuai jadwal."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T5-KP-03",
+              "riskType": "ketidakpatuhan",
+              "order": 3,
+              "description": "Penandatanganan BAST tanpa pemeriksaan lapangan secara memadai (misalnya, progres pekerjaan belum 100%).",
+              "mitigations": [
+                {
+                  "code": "PPK-T5-KP-03-M1",
+                  "order": 1,
+                  "description": "Segera melakukan inventarisasi fisik dan pengecekan defect."
+                },
+                {
+                  "code": "PPK-T5-KP-03-M2",
+                  "order": 2,
+                  "description": "Melakukan monitoring secara berjenjang untuk memastikan bahwa pekerjaan dilaksanakan sesuai jadwal."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T5-FR-01",
+              "riskType": "kecurangan",
+              "order": 1,
+              "description": "Pemalsuan dokumen BAST.",
+              "mitigations": [
+                {
+                  "code": "PPK-T5-FR-01-M1",
+                  "order": 1,
+                  "description": "Pengawasan berkala oleh Lini Kedua dan Lini Ketiga."
+                },
+                {
+                  "code": "PPK-T5-FR-01-M2",
+                  "order": 2,
+                  "description": "Pemisahan tugas dan fungsi (tidak boleh tumpang tindih dan rangkap jabatan)."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T5-FR-02",
+              "riskType": "kecurangan",
+              "order": 2,
+              "description": "BAST tanpa pemeriksaan fisik.",
+              "mitigations": [
+                {
+                  "code": "PPK-T5-FR-02-M1",
+                  "order": 1,
+                  "description": "Melakukan serah terima sesuai dengan SOP Serah Terima Pekerjaan."
+                },
+                {
+                  "code": "PPK-T5-FR-02-M2",
+                  "order": 2,
+                  "description": "Pemisahan tugas dan fungsi (tidak boleh tumpang tindih dan rangkap jabatan)."
+                },
+                {
+                  "code": "PPK-T5-FR-02-M3",
+                  "order": 3,
+                  "description": "Pembuatan Surat Tugas Tim Pemeriksa Serah Terima Pekerjaan yang tidak rangkap jabatan (saling silang)."
+                }
+              ]
+            },
+            {
+              "code": "PPK-T5-FR-03",
+              "riskType": "kecurangan",
+              "order": 3,
+              "description": "Suap dan/atau persekongkolan dengan penyedia.",
+              "mitigations": [
+                {
+                  "code": "PPK-T5-FR-03-M1",
+                  "order": 1,
+                  "description": "Mewajibkan penandatanganan Pakta Integritas dan Deklarasi Benturan Kepentingan (Conflict of Interest)."
+                },
+                {
+                  "code": "PPK-T5-FR-03-M2",
+                  "order": 2,
+                  "description": "Menyalurkan pengaduan dari masyarakat dan mengarahkannya ke saluran resmi OIKN."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "POKJA",
+      "name": "Pokja Pemilihan",
+      "line": 1,
+      "deckSlides": "52–62",
+      "dataUmum": {
+        "identityFields": [
+          {
+            "key": "nama_jabatan_pokja",
+            "label": "Nama Jabatan Pokja",
+            "kind": "text"
+          },
+          {
+            "key": "nomor_sk",
+            "label": "Nomor SK Pokja",
+            "kind": "text"
+          },
+          {
+            "key": "tanggal_sk",
+            "label": "Tanggal SK Pokja",
+            "kind": "date"
+          }
+        ],
+        "kegiatanReference": null
+      },
+      "stages": [
+        {
+          "code": "POKJA-T1",
+          "order": 1,
+          "name": "Persiapan Pemilihan",
+          "deckSlides": "54–56",
+          "templates": [
+            {
+              "code": "POKJA-T1-KA-01",
+              "riskType": "kinerja_anggaran",
+              "order": 1,
+              "description": "Spesifikasi Teknis/KAK tidak jelas.",
+              "mitigations": [
+                {
+                  "code": "POKJA-T1-KA-01-M1",
+                  "order": 1,
+                  "description": "Melakukan reviu terhadap Spesifikasi Teknis/KAK oleh Tim Ahli/Tim Teknis sebelum dimulainya proses pemilihan."
+                },
+                {
+                  "code": "POKJA-T1-KA-01-M2",
+                  "order": 2,
+                  "description": "Menyelenggarakan Bimbingan Teknis terhadap PPK dalam penyusunan Spesifikasi Teknis/KAK."
+                }
+              ]
+            },
+            {
+              "code": "POKJA-T1-KA-02",
+              "riskType": "kinerja_anggaran",
+              "order": 2,
+              "description": "Pengumuman terbatas (tidak/kurang transparan).",
+              "mitigations": [
+                {
+                  "code": "POKJA-T1-KA-02-M1",
+                  "order": 1,
+                  "description": "Menggunakan sarana digital dan terpublikasi umum."
+                },
+                {
+                  "code": "POKJA-T1-KA-02-M2",
+                  "order": 2,
+                  "description": "Menetapkan standar durasi waktu minimal pengumuman sesuai dengan ketentuan perundang-undangan yang berlaku agar memberikan kesempatan yang luas bagi para pelaku usaha."
+                }
+              ]
+            },
+            {
+              "code": "POKJA-T1-KP-01",
+              "riskType": "ketidakpatuhan",
+              "order": 1,
+              "description": "Pengumuman jadwal pemilihan dibuat dalam waktu singkat.",
+              "mitigations": [
+                {
+                  "code": "POKJA-T1-KP-01-M1",
+                  "order": 1,
+                  "description": "Mensosialisasikan SOP mengenai penetapan jadwal pemilihan penyedia sesuai Peraturan LKPP Nomor 12 Tahun 2021 tentang pedoman pelaksanaan PBJ melalui penyedia."
+                }
+              ]
+            },
+            {
+              "code": "POKJA-T1-KP-02",
+              "riskType": "ketidakpatuhan",
+              "order": 2,
+              "description": "Kesalahan dalam penetapan metode pemilihan Penyedia.",
+              "mitigations": [
+                {
+                  "code": "POKJA-T1-KP-02-M1",
+                  "order": 1,
+                  "description": "Melakukan verifikasi kesesuaian metode pemilihan dengan nilai kompleksitas paket pekerjaan."
+                },
+                {
+                  "code": "POKJA-T1-KP-02-M2",
+                  "order": 2,
+                  "description": "Melakukan peningkatan kompetensi PPK/Pokja terkait regulasi PBJ."
+                },
+                {
+                  "code": "POKJA-T1-KP-02-M3",
+                  "order": 3,
+                  "description": "Melakukan reviu berjenjang dalam penetapan metode pemilihan penyedia."
+                }
+              ]
+            },
+            {
+              "code": "POKJA-T1-FR-01",
+              "riskType": "kecurangan",
+              "order": 1,
+              "description": "Memberikan informasi DED dan KAK (Dokumen Persiapan) kepada calon penyedia tertentu.",
+              "mitigations": [
+                {
+                  "code": "POKJA-T1-FR-01-M1",
+                  "order": 1,
+                  "description": "Menandatangani Pakta Integritas dan melaksanakannya secara konsisten."
+                },
+                {
+                  "code": "POKJA-T1-FR-01-M2",
+                  "order": 2,
+                  "description": "Menyalurkan pengaduan dari masyarakat dan mengarahkannya ke saluran resmi OIKN."
+                }
+              ]
+            },
+            {
+              "code": "POKJA-T1-FR-02",
+              "riskType": "kecurangan",
+              "order": 2,
+              "description": "Kebocoran Informasi Persyaratan.",
+              "mitigations": [
+                {
+                  "code": "POKJA-T1-FR-02-M1",
+                  "order": 1,
+                  "description": "Memberikan akses terbatas untuk setiap dokumen yang direviu di dalam persiapan pengadaan."
+                },
+                {
+                  "code": "POKJA-T1-FR-02-M2",
+                  "order": 2,
+                  "description": "Menyalurkan pengaduan dari masyarakat dan mengarahkannya ke saluran resmi OIKN."
+                }
+              ]
+            },
+            {
+              "code": "POKJA-T1-FR-03",
+              "riskType": "kecurangan",
+              "order": 3,
+              "description": "Pemalsuan dokumen pendukung kualifikasi oleh penyedia.",
+              "mitigations": [
+                {
+                  "code": "POKJA-T1-FR-03-M1",
+                  "order": 1,
+                  "description": "Mewajibkan konfirmasi/klarifikasi keabsahan dokumen untuk dokumen krusial."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "code": "POKJA-T2",
+          "order": 2,
+          "name": "Pemilihan Penyedia",
+          "deckSlides": "57–59",
+          "templates": [
+            {
+              "code": "POKJA-T2-KA-01",
+              "riskType": "kinerja_anggaran",
+              "order": 1,
+              "description": "Dokumen pemilihan tidak lengkap.",
+              "mitigations": [
+                {
+                  "code": "POKJA-T2-KA-01-M1",
+                  "order": 1,
+                  "description": "Siapkan checklist untuk kelengkapan dokumen sebagai pegangan Pokja."
+                }
+              ]
+            },
+            {
+              "code": "POKJA-T2-KA-02",
+              "riskType": "kinerja_anggaran",
+              "order": 2,
+              "description": "Lamanya durasi pelaksanaan pemilihan.",
+              "mitigations": [
+                {
+                  "code": "POKJA-T2-KA-02-M1",
+                  "order": 1,
+                  "description": "Menyusun jadwal proses pemilihan yang selaras dengan target pelaksanaan dan penyerapan anggaran."
+                },
+                {
+                  "code": "POKJA-T2-KA-02-M2",
+                  "order": 2,
+                  "description": "Melakukan monitoring progres pelaksanaan pemilihan secara rutin agar sesuai target penyerapan."
+                },
+                {
+                  "code": "POKJA-T2-KA-02-M3",
+                  "order": 3,
+                  "description": "Berkoordinasi dengan THD untuk membangun sistem informasi database pengadaan barang/jasa."
+                }
+              ]
+            },
+            {
+              "code": "POKJA-T2-KA-03",
+              "riskType": "kinerja_anggaran",
+              "order": 3,
+              "description": "Adanya sanggah pada tahap prakualifikasi.",
+              "mitigations": [
+                {
+                  "code": "POKJA-T2-KA-03-M1",
+                  "order": 1,
+                  "description": "Melakukan reviu dokumen secara komprehensif agar tidak terjadi kesalahan dokumen."
+                },
+                {
+                  "code": "POKJA-T2-KA-03-M2",
+                  "order": 2,
+                  "description": "Melakukan peningkatan kualitas SDM Pokja Pemilihan melalui Bimbingan Teknis secara terus menerus."
+                }
+              ]
+            },
+            {
+              "code": "POKJA-T2-KP-01",
+              "riskType": "ketidakpatuhan",
+              "order": 1,
+              "description": "Kriteria evaluasi tidak objektif.",
+              "mitigations": [
+                {
+                  "code": "POKJA-T2-KP-01-M1",
+                  "order": 1,
+                  "description": "Melakukan telaah sejawat atas dokumen pemilihan penyedia."
+                },
+                {
+                  "code": "POKJA-T2-KP-01-M2",
+                  "order": 2,
+                  "description": "Melakukan rotasi Pokja secara berkala dan membuka ruang sanggah/banding bagi penyedia."
+                },
+                {
+                  "code": "POKJA-T2-KP-01-M3",
+                  "order": 3,
+                  "description": "Memastikan bahwa kriteria evaluasi telah mendapatkan persetujuan dari Eselon 1."
+                }
+              ]
+            },
+            {
+              "code": "POKJA-T2-KP-02",
+              "riskType": "ketidakpatuhan",
+              "order": 2,
+              "description": "Penetapan Pemenang tidak sesuai dengan kriteria evaluasi.",
+              "mitigations": [
+                {
+                  "code": "POKJA-T2-KP-02-M1",
+                  "order": 1,
+                  "description": "Melibatkan Tenaga Ahli dalam memberikan advis teknis pada evaluasi penawaran teknis."
+                },
+                {
+                  "code": "POKJA-T2-KP-02-M2",
+                  "order": 2,
+                  "description": "Peningkatan kompetensi teknis pada Pokja Pemilihan."
+                }
+              ]
+            },
+            {
+              "code": "POKJA-T2-KP-03",
+              "riskType": "ketidakpatuhan",
+              "order": 3,
+              "description": "Tidak terjadinya kompetisi secara sehat.",
+              "mitigations": [
+                {
+                  "code": "POKJA-T2-KP-03-M1",
+                  "order": 1,
+                  "description": "Lakukan analisis pola penawaran yang mengindikasikan terjadinya kolusi antar penyedia."
+                },
+                {
+                  "code": "POKJA-T2-KP-03-M2",
+                  "order": 2,
+                  "description": "Mengusulkan pemberian sanksi daftar hitam kepada seluruh peserta yang terlibat dalam kolusi."
+                }
+              ]
+            },
+            {
+              "code": "POKJA-T2-FR-01",
+              "riskType": "kecurangan",
+              "order": 1,
+              "description": "Kebocoran Informasi Hasil Evaluasi Penawaran.",
+              "mitigations": [
+                {
+                  "code": "POKJA-T2-FR-01-M1",
+                  "order": 1,
+                  "description": "Penandatanganan Pakta Integritas."
+                },
+                {
+                  "code": "POKJA-T2-FR-01-M2",
+                  "order": 2,
+                  "description": "Melibatkan APIP melakukan penegakan Kode Etik dan Perilaku serta Penegakan Disiplin Pegawai."
+                }
+              ]
+            },
+            {
+              "code": "POKJA-T2-FR-02",
+              "riskType": "kecurangan",
+              "order": 2,
+              "description": "Konflik kepentingan Pokja Pemilihan.",
+              "mitigations": [
+                {
+                  "code": "POKJA-T2-FR-02-M1",
+                  "order": 1,
+                  "description": "Penandatanganan Pakta Integritas."
+                },
+                {
+                  "code": "POKJA-T2-FR-02-M2",
+                  "order": 2,
+                  "description": "Melakukan rotasi Pokja secara berkala."
+                }
+              ]
+            },
+            {
+              "code": "POKJA-T2-FR-03",
+              "riskType": "kecurangan",
+              "order": 3,
+              "description": "Manipulasi hasil evaluasi untuk memenangkan peserta tender/seleksi tertentu.",
+              "mitigations": [
+                {
+                  "code": "POKJA-T2-FR-03-M1",
+                  "order": 1,
+                  "description": "Mengoptimalkan kinerja Tim Peneliti."
+                },
+                {
+                  "code": "POKJA-T2-FR-03-M2",
+                  "order": 2,
+                  "description": "Memastikan seluruh hasil evaluasi didukung oleh bukti dan dokumentasi yang memadai."
+                }
+              ]
+            },
+            {
+              "code": "POKJA-T2-FR-04",
+              "riskType": "kecurangan",
+              "order": 4,
+              "description": "Rekayasa dalam proses pemilihan penyedia.",
+              "mitigations": [
+                {
+                  "code": "POKJA-T2-FR-04-M1",
+                  "order": 1,
+                  "description": "Penandatanganan Pakta Integritas dan melaksanakannya secara konsisten."
+                },
+                {
+                  "code": "POKJA-T2-FR-04-M2",
+                  "order": 2,
+                  "description": "Melakukan telaah sejawat atas dokumen pemilihan penyedia."
+                },
+                {
+                  "code": "POKJA-T2-FR-04-M3",
+                  "order": 3,
+                  "description": "Melakukan rotasi Pokja secara berkala; membuka ruang sanggah/banding bagi penyedia."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "code": "POKJA-T3",
+          "order": 3,
+          "name": "Penetapan Pemenang",
+          "deckSlides": "60–62",
+          "templates": [
+            {
+              "code": "POKJA-T3-KA-01",
+              "riskType": "kinerja_anggaran",
+              "order": 1,
+              "description": "Keterlambatan penetapan Pemenang yang menyebabkan mundurnya pelaksanaan kontrak dan berdampak pada realisasi anggaran.",
+              "mitigations": [
+                {
+                  "code": "POKJA-T3-KA-01-M1",
+                  "order": 1,
+                  "description": "Mengawal secara terus menerus agar pelaksanaan evaluasi dan penetapan pemenang sesuai dengan jadwal proses pemilihan yang telah ditetapkan."
+                },
+                {
+                  "code": "POKJA-T3-KA-01-M2",
+                  "order": 2,
+                  "description": "Mengoptimalkan kinerja Tim Peneliti/TPM agar proses penetapan pemenang tidak terlambat."
+                }
+              ]
+            },
+            {
+              "code": "POKJA-T3-KA-02",
+              "riskType": "kinerja_anggaran",
+              "order": 2,
+              "description": "Sanggah/Sanggah Banding dari Peserta Tender/Seleksi yang menyebabkan tertundanya pelaksanaan penandatanganan kontrak.",
+              "mitigations": [
+                {
+                  "code": "POKJA-T3-KA-02-M1",
+                  "order": 1,
+                  "description": "Mempercepat Pokja Pemilihan/KPA untuk menjawab sanggah/sanggah banding."
+                },
+                {
+                  "code": "POKJA-T3-KA-02-M2",
+                  "order": 2,
+                  "description": "Menghindari terjadinya kesalahan dokumen, kesalahan evaluasi, dan kesalahan prosedur dalam proses pemilihan."
+                }
+              ]
+            },
+            {
+              "code": "POKJA-T3-KP-01",
+              "riskType": "ketidakpatuhan",
+              "order": 1,
+              "description": "Penetapan pemenang yang salah.",
+              "mitigations": [
+                {
+                  "code": "POKJA-T3-KP-01-M1",
+                  "order": 1,
+                  "description": "Tingkatkan kompetensi pemahaman Pokja dan tim peneliti terhadap regulasi yang ada."
+                },
+                {
+                  "code": "POKJA-T3-KP-01-M2",
+                  "order": 2,
+                  "description": "Lakukan quality assurance secara teliti dan berulang."
+                }
+              ]
+            },
+            {
+              "code": "POKJA-T3-FR-01",
+              "riskType": "kecurangan",
+              "order": 1,
+              "description": "Kickback/gratifikasi dalam penetapan pemenang pengadaan barang dan jasa.",
+              "mitigations": [
+                {
+                  "code": "POKJA-T3-FR-01-M1",
+                  "order": 1,
+                  "description": "Sosialisasi anti gratifikasi bagi pegawai, pemasangan banner/poster untuk tidak menerima pemberian dari pihak manapun."
+                },
+                {
+                  "code": "POKJA-T3-FR-01-M2",
+                  "order": 2,
+                  "description": "Penegakan Kode Etik dan Perilaku serta Penegakan Disiplin Pegawai."
+                },
+                {
+                  "code": "POKJA-T3-FR-01-M3",
+                  "order": 3,
+                  "description": "Menyalurkan pengaduan dari masyarakat dan mengarahkannya ke saluran resmi OIKN."
+                }
+              ]
+            },
+            {
+              "code": "POKJA-T3-FR-02",
+              "riskType": "kecurangan",
+              "order": 2,
+              "description": "Konflik kepentingan untuk memenangkan penyedia tertentu.",
+              "mitigations": [
+                {
+                  "code": "POKJA-T3-FR-02-M1",
+                  "order": 1,
+                  "description": "Penandatanganan Pakta Integritas dan melaksanakannya secara konsisten."
+                },
+                {
+                  "code": "POKJA-T3-FR-02-M2",
+                  "order": 2,
+                  "description": "Optimalkan kinerja Tim Peneliti/Tim TPM dalam memeriksa hasil evaluasi Pokja Pemilihan."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "PJP",
+      "name": "Pejabat Pengadaan",
+      "line": 1,
+      "deckSlides": "63–67",
+      "dataUmum": {
+        "identityFields": [
+          {
+            "key": "nama_pejabat_pengadaan",
+            "label": "Nama Jabatan Pejabat Pengadaan",
+            "kind": "text"
+          },
+          {
+            "key": "nomor_sk",
+            "label": "Nomor SK Pejabat Pengadaan",
+            "kind": "text"
+          },
+          {
+            "key": "tanggal_sk",
+            "label": "Tanggal SK Pejabat Pengadaan",
+            "kind": "date"
+          }
+        ],
+        "kegiatanReference": "Mengacu PMK Nomor 62 Tahun 2023 Pasal 186 ayat 4"
+      },
+      "stages": [
+        {
+          "code": "PJP-T1",
+          "order": 1,
+          "name": "Pengadaan Antara Rp50 Juta s.d. Rp200 Juta",
+          "deckSlides": "65–67",
+          "templates": [
+            {
+              "code": "PJP-T1-KA-01",
+              "riskType": "kinerja_anggaran",
+              "order": 1,
+              "description": "Keterlambatan pemilihan penyedia yang menyebabkan mundurnya pelaksanaan kontrak dan berdampak pada realisasi anggaran.",
+              "mitigations": [
+                {
+                  "code": "PJP-T1-KA-01-M1",
+                  "order": 1,
+                  "description": "Mengawal secara terus menerus agar pelaksanaan evaluasi dan pemilihan penyedia sesuai dengan jadwal proses pemilihan yang telah ditetapkan."
+                },
+                {
+                  "code": "PJP-T1-KA-01-M2",
+                  "order": 2,
+                  "description": "Lakukan pengadaan secara E-Purchasing melalui E-Katalog."
+                }
+              ]
+            },
+            {
+              "code": "PJP-T1-KA-02",
+              "riskType": "kinerja_anggaran",
+              "order": 2,
+              "description": "Penumpukan proses pengadaan langsung di akhir tahun anggaran yang menyebabkan penyerapan tidak optimal.",
+              "mitigations": [
+                {
+                  "code": "PJP-T1-KA-02-M1",
+                  "order": 1,
+                  "description": "Menyusun jadwal pelaksanaan pengadaan secara triwulan yang diselaraskan dengan RUP (Rencana Umum Pengadaan)."
+                },
+                {
+                  "code": "PJP-T1-KA-02-M2",
+                  "order": 2,
+                  "description": "Melakukan monitoring progres pengadaan langsung secara berkala bersama PPK."
+                }
+              ]
+            },
+            {
+              "code": "PJP-T1-KP-01",
+              "riskType": "ketidakpatuhan",
+              "order": 1,
+              "description": "Evaluasi penawaran Penyedia yang tidak sesuai dengan spesifikasi teknis/KAK.",
+              "mitigations": [
+                {
+                  "code": "PJP-T1-KP-01-M1",
+                  "order": 1,
+                  "description": "Melakukan reviu secara cermat terhadap kesesuaian spesifikasi antara dokumen penawaran dan KAK."
+                },
+                {
+                  "code": "PJP-T1-KP-01-M2",
+                  "order": 2,
+                  "description": "Pemeriksaan hasil pekerjaan oleh PPK secara berkala."
+                }
+              ]
+            },
+            {
+              "code": "PJP-T1-KP-02",
+              "riskType": "ketidakpatuhan",
+              "order": 2,
+              "description": "Tidak terjadinya kompetisi secara sehat pada pelaksanaan pengadaan barang/jasa melalui Mini Kompetisi.",
+              "mitigations": [
+                {
+                  "code": "PJP-T1-KP-02-M1",
+                  "order": 1,
+                  "description": "Lakukan analisis pola penawaran yang mengindikasikan terjadinya kolusi antar penyedia."
+                },
+                {
+                  "code": "PJP-T1-KP-02-M2",
+                  "order": 2,
+                  "description": "Mengusulkan pemberian sanksi daftar hitam kepada seluruh peserta yang terlibat dalam kolusi."
+                }
+              ]
+            },
+            {
+              "code": "PJP-T1-FR-01",
+              "riskType": "kecurangan",
+              "order": 1,
+              "description": "Komunikasi Pejabat Pengadaan dengan Penyedia di luar sistem SPSE (Sistem Pengadaan Secara Elektronik).",
+              "mitigations": [
+                {
+                  "code": "PJP-T1-FR-01-M1",
+                  "order": 1,
+                  "description": "Penandatanganan Pakta Integritas."
+                },
+                {
+                  "code": "PJP-T1-FR-01-M2",
+                  "order": 2,
+                  "description": "Melibatkan APIP melakukan penegakan Kode Etik dan Perilaku serta Penegakan Disiplin Pegawai."
+                }
+              ]
+            },
+            {
+              "code": "PJP-T1-FR-02",
+              "riskType": "kecurangan",
+              "order": 2,
+              "description": "Konflik kepentingan Pejabat Pengadaan.",
+              "mitigations": [
+                {
+                  "code": "PJP-T1-FR-02-M1",
+                  "order": 1,
+                  "description": "Penandatanganan Pakta Integritas."
+                },
+                {
+                  "code": "PJP-T1-FR-02-M2",
+                  "order": 2,
+                  "description": "Melakukan rotasi Pejabat Pengadaan secara berkala."
+                }
+              ]
+            },
+            {
+              "code": "PJP-T1-FR-03",
+              "riskType": "kecurangan",
+              "order": 3,
+              "description": "Manipulasi hasil evaluasi untuk memenangkan Penyedia tertentu.",
+              "mitigations": [
+                {
+                  "code": "PJP-T1-FR-03-M1",
+                  "order": 1,
+                  "description": "Mengoptimalkan kinerja PPK dalam menyetujui usulan penetapan Penyedia."
+                },
+                {
+                  "code": "PJP-T1-FR-03-M2",
+                  "order": 2,
+                  "description": "Memastikan seluruh hasil evaluasi didukung oleh bukti dan dokumentasi yang memadai."
+                }
+              ]
+            },
+            {
+              "code": "PJP-T1-FR-04",
+              "riskType": "kecurangan",
+              "order": 4,
+              "description": "Rekayasa dalam proses pemilihan penyedia.",
+              "mitigations": [
+                {
+                  "code": "PJP-T1-FR-04-M1",
+                  "order": 1,
+                  "description": "Penandatanganan Pakta Integritas dan melaksanakannya secara konsisten."
+                },
+                {
+                  "code": "PJP-T1-FR-04-M2",
+                  "order": 2,
+                  "description": "Melakukan rotasi Pejabat Pengadaan secara berkala."
+                },
+                {
+                  "code": "PJP-T1-FR-04-M3",
+                  "order": 3,
+                  "description": "Melibatkan APIP melakukan penegakan Kode Etik dan Perilaku serta Penegakan Disiplin Pegawai."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "seedNotes": [
+    "KPA Perencanaan KA Risiko 6: mitigasi di dek berlabel \"Risiko 6.a/6.b\" — dijadikan mitigasi.",
+    "KPA Pertanggungjawaban Anggaran (slide 27): judul A/B/C bertumpuk dalam satu slide; tabel pertama = Kinerja Anggaran (3 risiko), kedua = Ketidakpatuhan, ketiga = Kecurangan. Mitigasi Risiko 1 berlabel \"2.b\" dikoreksi menjadi mitigasi kedua Risiko 1; mitigasi Risiko 3 berlabel \"Risiko 3.a/3.b\" dijadikan mitigasi; catatan \"(tambahan: Biro Keu)\" dihapus dari uraian.",
+    "KPA Pelaporan Kecurangan (slide 26) identik dengan KPA Penganggaran Kecurangan (slide 19) di dek; dipertahankan sebagai template terpisah per tahap — dikonfirmasi pengguna 11 Okt 2026: dipertahankan apa adanya.",
+    "PPK Perencanaan Pengadaan KP Risiko 4 dan PPK E-Katalog KA Risiko 4: mitigasi berlabel \"Risiko 4.a/4.b\" dijadikan mitigasi.",
+    "PPK Pelaksanaan/Pengendalian Kontrak KP Risiko 4: \"Pekerjaan lingkup pekerjaan dalam addendum…\" diperbaiki menjadi \"Penambahan lingkup pekerjaan dalam addendum…\".",
+    "Pokja Pemilihan Penyedia (slide 58, 59) dan Pejabat Pengadaan (slide 67): sel tabel tergabung (Mitigasi 2.b / Risiko 3 / Mitigasi 3.a…) dipecah menjadi risiko dan mitigasi masing-masing.",
+    "Pejabat Pengadaan Data Umum (slide 64) memakai \"Nomor DIPA Petikan\" (salinan dari KPA); diganti Nomor dan Tanggal SK Pejabat Pengadaan, sejajar dengan PPK dan Pokja. Dikonfirmasi pengguna 11 Okt 2026.",
+    "Pokja Data Umum (slide 53) tidak mencantumkan rujukan PMK; dibiarkan kosong.",
+    "Salah ketik dikoreksi: \"kotrak\"→\"kontrak\", \"kontak\"→\"kontrak\", \"proges\"→\"progres\", \"komperhensif\"→\"komprehensif\", \"Pemantuan\"→\"Pemantauan\", \"tetentu\"→\"tertentu\", \"kontijensi\"→\"kontinjensi\", \"pengadaaan\"→\"pengadaan\", \"advise\"→\"advis\", \"review\"→\"reviu\"; spasi ganda dan titik akhir diseragamkan; huruf awal kalimat dikapitalkan.",
+    "Slide 68–71 (Panduan Media Komunikasi Tiga Lini) dan 74 (Lembar Mutu) menggambarkan siklus bulanan; PRD v2.2+ menggantinya dengan siklus triwulan dan utas per risiko. Tidak di-seed sebagai template (dikonfirmasi pengguna 11 Okt 2026)."
+  ],
+  "totals": {
+    "positionTypes": 4,
+    "stages": 14,
+    "risks": 146,
+    "mitigations": 302
+  }
+}
