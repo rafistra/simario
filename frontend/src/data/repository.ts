@@ -155,3 +155,4 @@ export { masterApi } from './api/master';
 export { registerApi } from './api/register';
 export { threadApi } from './api/thread';
 export { boardApi } from './api/board';
+export { assessmentApi } from './api/assessment';

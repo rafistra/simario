@@ -22,6 +22,8 @@ import ScoreBandsPage from '@/pages/master/ScoreBandsPage';
 import RegisterPage from '@/pages/register/RegisterPage';
 import BoardPage from '@/pages/board/BoardPage';
 import ThreadPage from '@/pages/board/ThreadPage';
+import AssessmentPage from '@/pages/assessment/AssessmentPage';
+import QueuePage from '@/pages/assessment/QueuePage';
 import { Placeholder } from '@/pages/Placeholder';
 import { useAuth } from '@/state/useAuth';
 
@@ -97,7 +99,7 @@ export default function App() {
               path="penilaian"
               element={
                 <RequirePermission anyOf={[8]}>
-                  {page(['Antrean Penilaian'], 'Antrean Penilaian', 6)}
+                  <QueuePage />
                 </RequirePermission>
               }
             />
@@ -107,7 +109,7 @@ export default function App() {
               <Route path="papan/:ta" element={<BoardPage />} />
               <Route path="papan/:ta/risiko/:rid" element={<ThreadPage />} />
               <Route path="register/:ta" element={<RegisterPage />} />
-              <Route path="penilaian/:ta/:tw" element={<WorkspaceTab tab="penilaian" />} />
+              <Route path="penilaian/:ta/:tw" element={<AssessmentPage />} />
               <Route path="riwayat" element={<WorkspaceTab tab="riwayat" />} />
               <Route path="lembar/:ta/:tw" element={<WorkspaceTab tab="lembar" />} />
             </Route>

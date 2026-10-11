@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
-import { getDb } from './data/local/store';
+import { getDb, useDb } from './data/local/store';
 import { runScheduledTasks } from './data/local/scheduler';
 import { applyTheme, getTheme } from './lib/theme';
 import { useClock } from './state/clock';
@@ -17,7 +17,11 @@ if (persona && getDb().users.some((u) => u.id === persona && u.active)) {
   useSession.getState().signIn(persona);
 }
 const at = params.get('waktu');
-if (at && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(at)) useClock.getState().setNow(at);
+if (at && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(at)) {
+  useClock.getState().setNow(at);
+  // `&data=sesuai` also rolls the sample data back to that moment (scenario links).
+  if (params.get('data') === 'sesuai') useDb.getState().reset(at);
+}
 
 // Scheduled tasks run at start-up and whenever the simulated clock moves.
 runScheduledTasks();

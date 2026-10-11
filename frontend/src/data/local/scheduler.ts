@@ -7,6 +7,7 @@ import { assessedInQuarter } from '@/domain/rules/register';
 import type { ISODateTime } from '@/domain/types';
 import { now } from '@/state/clock';
 import type { DB } from '../db';
+import { runComparisons } from './comparisons';
 import { mutateDb } from './store';
 
 export type ScheduledTask = (draft: DB, at: ISODateTime) => void;
@@ -81,3 +82,5 @@ export const ensureRiskQuarters: ScheduledTask = (draft, at) => {
 registerTask('attachment-scan', finishAttachmentScans);
 registerTask('risk-quarters', ensureRiskQuarters);
 registerTask('score-bands', activateScoreBands);
+/** §2.5: comparisons open per risk at the Lini 3 deadline or when every assessor has finalised. */
+registerTask('comparisons', (draft, at) => runComparisons(draft, at));

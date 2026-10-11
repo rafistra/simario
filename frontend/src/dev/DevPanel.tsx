@@ -3,6 +3,7 @@ import { useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, ConfirmDialog, Select, Toggle, toast } from '@/components';
 import { authApi } from '@/data/repository';
+import { runScheduledTasks } from '@/data/local/scheduler';
 import { useDb } from '@/data/local/store';
 import { useFocusTrap } from '@/lib/useFocusTrap';
 import { formatDateTime } from '@/lib/format';
@@ -26,6 +27,7 @@ const PRESETS: { label: string; at: string }[] = [
 export function DevPanel() {
   const [open, setOpen] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
+  const [confirmAsOf, setConfirmAsOf] = useState(false);
   const threadRisk = /\/risiko\/([^/?#]+)/.exec(useLocation().pathname)?.[1];
   const [theme, setThemeState] = useState<Theme>(getTheme());
   const ref = useRef<HTMLDivElement>(null);
@@ -121,6 +123,9 @@ export function DevPanel() {
                     </button>
                   ))}
                 </div>
+                <Button variant="secondary" icon={RotateCcw} onClick={() => setConfirmAsOf(true)}>
+                  Sesuaikan data ke tanggal ini
+                </Button>
               </section>
 
               <section className="dev-panel__section">
@@ -216,6 +221,26 @@ export function DevPanel() {
         }}
       >
         Semua perubahan yang Anda buat di browser ini akan hilang dan data kembali seperti awal.
+      </ConfirmDialog>
+      <ConfirmDialog
+        open={confirmAsOf}
+        destructive
+        title="Sesuaikan data contoh ke tanggal simulasi?"
+        confirmLabel="Sesuaikan Data"
+        onCancel={() => setConfirmAsOf(false)}
+        onConfirm={() => {
+          reset(now);
+          runScheduledTasks();
+          setConfirmAsOf(false);
+          toast.success(
+            'Data contoh disesuaikan',
+            `Data kini seperti pada ${formatDateTime(now)}.`,
+          );
+        }}
+      >
+        Data contoh dimuat ulang seperti keadaannya pada {formatDateTime(now)}: komentar, penilaian,
+        hasil perbandingan, notifikasi, dan jejak audit sesudah tanggal itu dihapus. Perubahan Anda
+        di browser ini hilang.
       </ConfirmDialog>
     </>
   );

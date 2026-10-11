@@ -5,6 +5,7 @@ import { produce } from 'immer';
 import { create } from 'zustand';
 import { COLLECTIONS, SCHEMA_VERSION, STORAGE_PREFIX, type DB } from '../db';
 import { buildSeed } from '../seed';
+import { seedAsOf } from '../seed/asOf';
 
 const VERSION_KEY = `${STORAGE_PREFIX}schemaVersion`;
 
@@ -48,7 +49,8 @@ interface DbState {
   /** Bumped on every mutation; queries re-run when it changes. */
   version: number;
   mutate: (recipe: (draft: DB) => void) => void;
-  reset: () => void;
+  /** Reloads the sample data; with `asOf`, as it stood at that moment (prototype scenarios). */
+  reset: (asOf?: string) => void;
 }
 
 export const useDb = create<DbState>((set, get) => ({
@@ -62,8 +64,8 @@ export const useDb = create<DbState>((set, get) => ({
     writeStorage(next, changed);
     set((s) => ({ db: next, version: s.version + 1 }));
   },
-  reset: () => {
-    const seed = buildSeed();
+  reset: (asOf) => {
+    const seed = asOf ? seedAsOf(buildSeed(), asOf) : buildSeed();
     writeStorage(seed);
     set((s) => ({ db: seed, version: s.version + 1 }));
   },
