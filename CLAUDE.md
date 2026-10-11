@@ -26,7 +26,7 @@ Bila PRD dan mockup berbeda, ikuti PRD dan catat perbedaannya di laporan.
 
 ## 3. Stack & struktur
 
-- **React 18 + Vite + TypeScript** (PRD §2.1), React Router, Zustand, `lucide-react`.
+- **React 18 + Vite + TypeScript** (PRD §2.1), React Router, Zustand, `lucide-react`. Versi dikunci persis di `frontend/package.json` (React 18.3.1, Vite 6.4, React Router 7 — v6 punya kerentanan, v7 tetap mendukung React 18 —, Vitest 5). Alias impor: `@/` → `src/`, `@seed/` → `docs/seed/`.
 - CSS biasa berbasis variabel token (tanpa Tailwind, tanpa UI kit). CSS Modules atau satu berkas CSS per komponen.
 - Fon: Newsreader, Plus Jakarta Sans, JetBrains Mono (Google Fonts / `@fontsource`).
 - Kode berada di `frontend/`. Git diinisialisasi di root `simario2/`.
@@ -138,13 +138,13 @@ Status tahap ditulis di judul: `⬜ belum` · `🟨 berjalan` · `✅ selesai`.
 
 ---
 
-### Tahap 0 — Inisialisasi ⬜
+### Tahap 0 — Inisialisasi ✅
 
 Hasil:
-- [ ] `git init` di root `simario2/`, `.gitignore`, komit awal berisi `docs/`, `Simario.pen`, `CLAUDE.md`
-- [ ] `frontend/` dibuat dengan Vite (React + TS), React Router, Zustand, lucide-react, Vitest, ESLint, Prettier
-- [ ] Skrip `dev`, `build` (`tsc --noEmit && vite build`), `test`, `lint` berjalan
-- [ ] Struktur folder sesuai §3 (folder kosong boleh berisi `index.ts`)
+- [x] `git init` di root `simario2/`, `.gitignore`, `.gitattributes` (LF), komit awal berisi `docs/`, `CLAUDE.md` — `Simario.pen` menyusul setelah disimpan dari aplikasi Pencil (berkas di disk masih kosong)
+- [x] `frontend/` dibuat dengan Vite (React + TS), React Router, Zustand, lucide-react, Vitest, ESLint, Prettier
+- [x] Skrip `dev`, `build` (`tsc -b && vite build`), `test`, `lint` (ESLint + Prettier) berjalan
+- [x] Struktur folder sesuai §3 (folder kosong berisi `index.ts`)
 
 Skenario uji: `npm run dev` menampilkan halaman kosong tanpa galat konsol.
 
