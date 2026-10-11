@@ -281,6 +281,11 @@ export interface Register {
   copiedFromRegisterId: string | null;
   publishedAt: ISODateTime | null;
   publishedByUserId: string | null;
+  /** Last autosave ("Draf tersimpan HH.MM"). */
+  updatedAt?: ISODateTime | null;
+  updatedByUserId?: string | null;
+  readyAt?: ISODateTime | null;
+  readyByUserId?: string | null;
 }
 
 export interface RegisterStageDeclaration {
@@ -312,6 +317,9 @@ export interface RegisterRisk {
   lineageId: string;
   flags: RiskFlag[];
   order: number;
+  createdAt?: ISODateTime | null;
+  createdByUserId?: string | null;
+  readyAt?: ISODateTime | null;
 }
 
 export interface RegisterMitigation {
@@ -323,6 +331,10 @@ export interface RegisterMitigation {
   order: number;
   status: ItemStatus;
   deactivationReason: string | null;
+  publishedAt?: ISODateTime | null;
+  createdAt?: ISODateTime | null;
+  createdByUserId?: string | null;
+  readyAt?: ISODateTime | null;
 }
 
 /* ---------- Board ---------- */

@@ -19,6 +19,7 @@ import TemplatesPage from '@/pages/master/TemplatesPage';
 import ProposalsPage from '@/pages/master/ProposalsPage';
 import DataUmumPage from '@/pages/master/DataUmumPage';
 import ScoreBandsPage from '@/pages/master/ScoreBandsPage';
+import RegisterPage from '@/pages/register/RegisterPage';
 import { Placeholder } from '@/pages/Placeholder';
 import { useAuth } from '@/state/useAuth';
 
@@ -103,7 +104,7 @@ export default function App() {
               <Route index element={<WorkspaceRedirect />} />
               <Route path="papan/:ta" element={<WorkspaceTab tab="papan" />} />
               <Route path="papan/:ta/risiko/:rid" element={<WorkspaceTab tab="utas" />} />
-              <Route path="register/:ta" element={<WorkspaceTab tab="register" />} />
+              <Route path="register/:ta" element={<RegisterPage />} />
               <Route path="penilaian/:ta/:tw" element={<WorkspaceTab tab="penilaian" />} />
               <Route path="riwayat" element={<WorkspaceTab tab="riwayat" />} />
               <Route path="lembar/:ta/:tw" element={<WorkspaceTab tab="lembar" />} />

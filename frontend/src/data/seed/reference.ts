@@ -221,3 +221,9 @@ export const quarterAssessors: QuarterAssessor[] = [
     excludedByUserId: null,
   })),
 );
+
+// A template deactivated during 2027 (FR-MST-004): kept in registers that used it; copy-forward
+// marks it "Template sudah tidak aktif".
+const rupTemplate = riskTemplates.find((t) => t.code === 'KPA-T1-KA-04')!;
+rupTemplate.active = false;
+rupTemplate.updatedAt = '2027-09-03';
