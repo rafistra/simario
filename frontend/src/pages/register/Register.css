@@ -57,18 +57,6 @@
   border-radius: var(--radius-md);
 }
 
-.text-link {
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--text-link);
-  font: inherit;
-  text-align: left;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  cursor: pointer;
-}
-
 /* Additions strip (FR-REG-008) */
 .additions {
   padding: 14px 16px;
@@ -609,11 +597,6 @@
   cursor: pointer;
 }
 
-.icon-btn--sm {
-  width: 32px;
-  height: 32px;
-}
-
 .link-add {
   display: inline-flex;
   align-self: flex-start;
@@ -649,57 +632,6 @@
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-}
-
-/* ⋯ menu */
-.menu-wrap {
-  position: relative;
-}
-
-.menu {
-  position: absolute;
-  top: calc(100% + 4px);
-  right: 0;
-  z-index: 30;
-  display: flex;
-  flex-direction: column;
-  min-width: 200px;
-  padding: 6px;
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  background: var(--bg-surface);
-  box-shadow: var(--shadow-md);
-}
-
-.menu__item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 40px;
-  padding: 0 10px;
-  border: 0;
-  border-radius: var(--radius-sm);
-  background: none;
-  color: var(--text-strong);
-  font-size: 13px;
-  font-weight: 500;
-  text-align: left;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.menu__item svg {
-  width: 16px;
-  height: 16px;
-}
-
-.menu__item:hover,
-.menu__item:focus-visible {
-  background: var(--bg-surface-muted);
-}
-
-.menu__item--danger {
-  color: var(--danger-fg);
 }
 
 /* Dialog bodies */

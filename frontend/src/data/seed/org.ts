@@ -199,8 +199,20 @@ export const positions: Position[] = [
     'ou-ukpbj',
     'pt-unit-pendukung',
   ),
-  pos('pos-kepatuhan', 'DKP', 'Direktorat Kepatuhan', 'ou-kepatuhan', 'pt-penjamin-mutu'),
-  pos('pos-pai', 'DPAI', 'Direktorat Pengawasan dan Audit Internal', 'ou-pai', 'pt-penjamin-mutu'),
+  {
+    ...pos('pos-kepatuhan', 'DKP', 'Direktorat Kepatuhan', 'ou-kepatuhan', 'pt-penjamin-mutu'),
+    shortName: 'KEP',
+  },
+  {
+    ...pos(
+      'pos-pai',
+      'DPAI',
+      'Direktorat Pengawasan dan Audit Internal',
+      'ou-pai',
+      'pt-penjamin-mutu',
+    ),
+    shortName: 'PAI',
+  },
 ];
 
 const user = (
@@ -290,6 +302,8 @@ export const users: User[] = [
     password: 'Simario-Admin-2027!',
   }),
   user('usr-fajar', 'Fajar Nugroho', '199805082023011002', 'fajar.nugroho@ikn.go.id', 'ou-ukpbj'),
+  // Reader within scope who is not a thread participant (mockup S9lsp1, FR-PPN-003).
+  user('usr-dewi', 'Dewi Anggraini', '198412032009022001', 'dewi.anggraini@ikn.go.id', 'ou-ddkb'),
 ];
 
 /**
@@ -433,6 +447,8 @@ export const roles: Role[] = [
   { id: 'role-pmt', code: 'PMT', name: 'Pemantau', isLocked: false },
   { id: 'role-pjm', code: 'PJM', name: 'Penjamin Mutu', isLocked: false },
   { id: 'role-pmd', code: 'PMD', name: 'Pengelola Master Data', isLocked: false },
+  // Custom role (FR-ADM-003): read-only view of the work unit's positions.
+  { id: 'role-pmu', code: 'PMU', name: 'Pimpinan Unit Kerja', isLocked: false },
 ];
 
 const grant = (roleId: string, entries: [number, Scope | null][]): RolePermission[] =>
@@ -466,6 +482,7 @@ export const rolePermissions: RolePermission[] = [
     [11, null],
     [23, 'semua'],
   ]),
+  ...grant('role-pmu', [[1, 'unit']]),
   ...grant('role-pmd', [
     [12, null],
     [13, null],
@@ -487,6 +504,7 @@ export const rolePermissions: RolePermission[] = [
 export const userRoles: UserRole[] = [
   { userId: 'usr-admin', roleId: 'role-sad', source: 'manual' },
   { userId: 'usr-nur', roleId: 'role-pmd', source: 'manual' },
+  { userId: 'usr-dewi', roleId: 'role-pmu', source: 'manual' },
 ];
 
 const SUPPORTS = [

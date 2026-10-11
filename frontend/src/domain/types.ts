@@ -63,6 +63,8 @@ export interface Position {
   active: boolean;
   deactivatedAt?: ISODateTime | null;
   deactivationReason?: string | null;
+  /** Short label for predicate chips (Lini 3: "KEP", "PAI"). */
+  shortName?: string;
 }
 
 export interface User {

@@ -1,0 +1,361 @@
+/* Risk Board — .pen IMYa4 (list), siATl (empty), BoardHeaderRow z5ZwlF, BoardRiskRow k3vfup. */
+
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: var(--content-max);
+}
+
+.board__filters {
+  display: grid;
+  grid-template-columns: minmax(0, 280px) minmax(0, 220px) auto;
+  align-items: end;
+  gap: 12px 16px;
+}
+
+.board__filters .toggle {
+  justify-self: end;
+  min-height: 44px;
+}
+
+.board__pills {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.board__count {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.board__reset {
+  font-family: var(--font-sans);
+  font-size: 13px;
+}
+
+.board__table {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.board__head,
+.brow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 130px 300px 200px 110px;
+  align-items: start;
+  gap: 16px;
+  padding: 14px 20px;
+}
+
+.board__head {
+  padding-block: 12px;
+  background: var(--bg-surface-muted);
+  border-bottom: 1px solid var(--border-subtle);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.board__stage + .board__stage {
+  border-top: 1px solid var(--border-default);
+}
+
+.board__stage-head {
+  padding: 14px 20px 6px;
+}
+
+.board__stage-head [role='rowheader'] {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.board__stage-name {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.board__type {
+  padding: 8px 20px;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-surface-muted);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.board__type-count {
+  margin-left: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.board__decl {
+  margin: 0;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border-subtle);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.brow {
+  position: relative;
+  border-top: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: background-color 120ms ease-out;
+}
+
+.brow:hover {
+  background: var(--action-hover-bg);
+}
+
+.brow:focus-within {
+  background: var(--action-hover-bg);
+}
+
+.brow.is-recurring {
+  box-shadow: inset 3px 0 0 var(--berulang-edge);
+}
+
+.brow.is-inactive > :not(.brow__markers) {
+  opacity: 0.55;
+}
+
+.brow--skeleton {
+  cursor: default;
+}
+
+.brow__risk {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.brow__dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  margin-top: 6px;
+  border-radius: 50%;
+}
+
+.brow__dot.is-on {
+  background: var(--action-primary);
+}
+
+.brow__titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.brow__title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-strong);
+  text-decoration: none;
+}
+
+.brow__title:hover {
+  text-decoration: underline;
+}
+
+.brow__title:focus-visible {
+  outline: 2px solid var(--ring-focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.brow__meta {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.brow__counts {
+  display: flex;
+  gap: 4px;
+}
+
+.lcount {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.lcount span {
+  font-size: 10px;
+}
+
+.lcount--l1 {
+  background: var(--lini1-bg);
+  color: var(--lini1-fg);
+}
+
+.lcount--l2 {
+  background: var(--lini2-bg);
+  color: var(--lini2-fg);
+}
+
+.lcount--l3 {
+  background: var(--lini3-bg);
+  color: var(--lini3-fg);
+}
+
+.brow__preds {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.brow__mlabel {
+  display: none;
+}
+
+.brow__qlabel {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.brow__markers {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.brow__none,
+.pchips__none {
+  color: var(--text-muted);
+}
+
+.brow__activity {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Predicate chips */
+.pchips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pchip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pchip__who {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.pchip svg {
+  width: 13px;
+  height: 13px;
+}
+
+.pchip--terkendali {
+  background: var(--pred-terkendali-bg);
+  color: var(--pred-terkendali-fg);
+}
+
+.pchip--cukup {
+  background: var(--pred-cukup-bg);
+  color: var(--pred-cukup-fg);
+}
+
+.pchip--kurang {
+  background: var(--pred-kurang-bg);
+  color: var(--pred-kurang-fg);
+}
+
+.pchip--none {
+  background: var(--bg-surface-muted);
+  color: var(--text-muted);
+}
+
+@media (max-width: 1199.98px) {
+  .board__head,
+  .brow {
+    grid-template-columns: minmax(0, 1fr) 120px 240px 180px 90px;
+  }
+}
+
+@media (max-width: 899.98px) {
+  .board__filters {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .board__filters .toggle {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .board__head {
+    display: none;
+  }
+
+  .brow {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px 16px;
+  }
+
+  .brow__mlabel {
+    display: block;
+    width: 100%;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .brow__markers {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .board__stage-head,
+  .board__type,
+  .board__decl {
+    padding-inline: 16px;
+  }
+}
