@@ -241,16 +241,18 @@ Skenario uji: Hendra melampirkan berkas konfidensial → Andi hanya melihat "1 l
 
 ---
 
-### Tahap 6 — Penilaian Triwulan (NIL) ⬜
+### Tahap 6 — Penilaian Triwulan (NIL) ✅
 
 Hasil:
-- [ ] `/jabatan/:jid/penilaian/:ta/:tw` — header strip, pemilih TW, daftar per tahap › jenis, ScoreInput + predikat langsung, "Belum relevan" + alasan, lampiran, catatan Lini 3, jendela belum dibuka
-- [ ] Operator "Tandai Siap"; Pejabat "Tuntaskan Penilaian" (dialog ringkasan, flag `no_evidence`, keterlambatan), "Buka Kembali" per baris
-- [ ] Pembukaan perbandingan (penuh / sebagian / menunggu), "Tidak dinilai Lini 1", Sesuai / Tidak Sesuai / Tidak dapat dibandingkan, VIS-1/5/9
-- [ ] Penjelasan per direktorat (wajib/opsional, "Gunakan penjelasan yang sama…", tenggat hari kerja, "Kirim Penjelasan")
-- [ ] Deteksi Berulang lintas kuartal/tahun; tampilan buta Superadmin (dialog + audit)
-- [ ] `/penilaian` — antrean Lini 3 dengan filter dan "Register belum terbit"
-- [ ] Test unit untuk pembukaan perbandingan, keterlambatan, penjelasan, Berulang, dan visibilitas
+- [x] `/jabatan/:jid/penilaian/:ta/:tw` — header strip, pemilih TW, daftar per tahap › jenis, ScoreInput + predikat langsung, "Belum relevan" + alasan, lampiran, catatan Lini 3, jendela belum dibuka
+- [x] Operator "Tandai Siap"; Pejabat "Tuntaskan Penilaian" (dialog ringkasan, flag `no_evidence`, keterlambatan), "Buka Kembali" per baris
+- [x] Pembukaan perbandingan (penuh / sebagian / menunggu), "Tidak dinilai Lini 1", Sesuai / Tidak Sesuai / Tidak dapat dibandingkan, VIS-1/5/9
+- [x] Penjelasan per direktorat (wajib/opsional, "Gunakan penjelasan yang sama…", tenggat hari kerja, "Kirim Penjelasan")
+- [x] Deteksi Berulang lintas kuartal/tahun; tampilan buta Superadmin (dialog + audit)
+- [x] `/penilaian` — antrean Lini 3 dengan filter dan "Register belum terbit"
+- [x] Test unit untuk pembukaan perbandingan, keterlambatan, penjelasan, Berulang, dan visibilitas
+
+Catatan Tahap 6: data contoh bersifat statis (TW I sudah dibuka per 6 Apr 2027), jadi skenario lain memakai **"Sesuaikan data ke tanggal ini"** di DevPanel atau tautan `?sebagai=…&waktu=2027-03-18T09:00&data=sesuai` — data dimuat ulang seperti keadaannya pada tanggal itu (komentar, penilaian, hasil, notifikasi, dan audit sesudahnya dihapus; penilaian yang dituntaskan sesudahnya dianggap belum dimulai). Pembukaan perbandingan, "Tidak dinilai Lini 1", Berulang, dan notifikasi FR-NTF-007/008/009/010 berjalan sebagai tugas terjadwal `comparisons` dan setelah setiap Tuntaskan. Notifikasi pengingat jendela/tenggat (FR-NTF-005/006, H-7/H-1) menyusul di Tahap 7. Komponen baru `ScoreInput`. "Kirim Penjelasan" mengirim penjelasan yang sudah lengkap; yang wajib tetapi kosong disebutkan saat tombol ditekan.
 
 Skenario uji: geser tanggal 18 Mar 2027 → Rafi mengisi, Andi menuntaskan; Hendra & Maya menilai; tanggal 3 Apr → perbandingan terbuka sebagian; Andi wajib menjelaskan hasil Tidak Sesuai.
 
