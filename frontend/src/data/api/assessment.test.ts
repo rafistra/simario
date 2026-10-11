@@ -113,7 +113,9 @@ describe('TW I cycle from 18 Mar 2027', () => {
       explanationDueOn: '2027-04-08',
     });
     expect(
-      getDb().notifications.some((n) => n.userId === 'usr-andi' && n.kind === 'explanation_due'),
+      getDb().notifications.some(
+        (n) => n.userId === 'usr-andi' && n.kind === 'explanation_required',
+      ),
     ).toBe(true);
 
     // Pemecahan: PAI has not finalised; at the Lini 3 deadline (2 Apr) KEP opens partially.
@@ -205,7 +207,7 @@ describe('explanations and recurrence (default data, 6 Apr 2027)', () => {
     expect(before.blind.allowed).toBe(true);
     await assessmentApi.logBlindView(A1, 'q-2027-2');
     expect(getDb().audit.at(-1)).toMatchObject({
-      action: 'lihat_penilaian_buta',
+      action: 'lihat_penilaian_sebelum_dibuka',
       actorUserId: 'usr-admin',
     });
     const after = buildAssessment(getDb(), 'usr-admin', A1, 2027, 2, '2027-04-06T09:00', true);

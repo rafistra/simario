@@ -1,6 +1,14 @@
 import { Calendar, ChevronDown } from 'lucide-react';
 import { useEffect } from 'react';
-import { Link, Navigate, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+import {
+  Link,
+  Navigate,
+  Outlet,
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 import { LineChip } from '@/components';
 import { useDb } from '@/data/local/store';
 import { canViewPosition, officialsOf, positionLine } from '@/domain/rules/access';
@@ -29,6 +37,7 @@ export interface WorkspaceOutletContext {
 /** Position workspace (PRD §1.8.1) — header, fiscal-year selector, tabs; guards scope (403/404). */
 export function WorkspaceLayout() {
   const { jid = '', ta, tw } = useParams();
+  const [search] = useSearchParams();
   const auth = useAuth();
   const db = useDb((s) => s.db);
   const setActive = useSession((s) => s.setActivePosition);
@@ -48,7 +57,8 @@ export function WorkspaceLayout() {
   if (!held && !canViewPosition(db, auth.user.id, jid, auth.today)) return <ForbiddenPage />;
 
   const unit = db.orgUnits.find((o) => o.id === position.orgUnitId)!;
-  const fiscalYear = Number(ta ?? auth.currentFiscalYear);
+  // Riwayat has no year segment; its fiscal year travels as ?ta= (FR-RWY-004).
+  const fiscalYear = Number(ta ?? search.get('ta') ?? auth.currentFiscalYear);
   const currentQ = auth.currentQuarter;
   const quarter = Number(tw ?? (currentQ?.fiscalYear === fiscalYear ? currentQ.number : 4));
   const years = [

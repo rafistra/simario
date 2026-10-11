@@ -26,3 +26,4 @@ export type { Column } from './Table/Table';
 export { ConfirmDialog, SlideOver } from './Overlay/Overlay';
 export { BottomBar } from './BottomBar/BottomBar';
 export { ScoreInput } from './ScoreInput/ScoreInput';
+export { NotificationPanel, NotificationItem } from './NotificationPanel/NotificationPanel';

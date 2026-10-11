@@ -1,0 +1,385 @@
+/* Risk history — .pen rF5kS (matrix), pqQvJ (cell detail), tJvPS (across years). */
+
+.history {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: var(--content-max);
+}
+
+.history__print {
+  display: inline-flex;
+  align-self: flex-end;
+  align-items: center;
+  gap: 6px;
+  margin-top: -8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-link);
+}
+
+.history__print svg {
+  width: 16px;
+  height: 16px;
+}
+
+.mutu,
+.matrix {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.mutu__head,
+.matrix__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding: 16px 20px 12px;
+}
+
+.matrix__title {
+  margin: 2px 0 0;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.mutu__note,
+.matrix__legend-text {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.matrix__legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.mutu__row,
+.matrix__head,
+.mrow {
+  display: grid;
+  grid-template-columns: minmax(200px, 1.4fr) repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  padding: 10px 20px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.mutu__row--head,
+.matrix__head {
+  background: var(--bg-surface-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.mutu__type {
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.mutu__cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 13px;
+}
+
+.mutu__cell.is-waiting,
+.mcell.is-waiting {
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--hidden-bg);
+  color: var(--hidden-fg);
+  font-size: 12px;
+  font-style: italic;
+}
+
+.mutu__line {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mutu__who {
+  min-width: 30px;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.mutu__muted {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.mutu__counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+  margin: 0;
+  padding: 10px 20px 14px;
+  border-top: 1px solid var(--border-subtle);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.matrix__filters {
+  display: grid;
+  grid-template-columns: minmax(0, 280px) minmax(0, 220px) 1fr;
+  align-items: end;
+  gap: 12px;
+  padding: 0 20px 14px;
+}
+
+.matrix__group {
+  margin: 0;
+  padding: 8px 20px;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-surface-muted);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.matrix__empty {
+  margin: 0;
+  padding: 16px 20px;
+  color: var(--text-muted);
+}
+
+.mrow {
+  align-items: start;
+}
+
+.mrow.is-recurring {
+  box-shadow: inset 3px 0 0 var(--berulang-edge);
+}
+
+.mrow.is-inactive .mrow__desc,
+.mrow.is-inactive .mcell {
+  opacity: 0.55;
+}
+
+.mrow--lineage {
+  background: var(--bg-surface-muted);
+}
+
+.mrow__risk {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.mrow__desc {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-strong);
+}
+
+.mrow__year {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.mrow__years {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-link);
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mrow__years svg {
+  width: 14px;
+  height: 14px;
+}
+
+.mrow__years svg.is-open {
+  transform: rotate(180deg);
+}
+
+.mcell {
+  display: flex;
+  min-width: 0;
+}
+
+.mcell.is-none {
+  justify-content: center;
+  padding: 6px;
+  color: var(--text-muted);
+}
+
+.mcell__btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  width: 100%;
+  padding: 6px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: none;
+  cursor: pointer;
+}
+
+.mcell__btn:hover {
+  border-color: var(--border-subtle);
+  background: var(--action-hover-bg);
+}
+
+.mcell__btn:focus-visible {
+  outline: 2px solid var(--ring-focus);
+  outline-offset: 1px;
+}
+
+/* Cell detail */
+.cdetail {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.cdetail__block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.cdetail__score {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.cdetail__strong {
+  margin: 0;
+  font-weight: 600;
+}
+
+.cdetail__note {
+  margin: 0;
+  font-size: 13px;
+  font-style: italic;
+}
+
+.cdetail__muted {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.cdetail__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.cdetail__expl {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface-muted);
+  font-size: 13px;
+}
+
+.cdetail__expl p {
+  margin: 0;
+}
+
+.cdetail__thread {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  color: var(--text-link);
+}
+
+.cdetail__thread svg {
+  width: 14px;
+  height: 14px;
+}
+
+@media (max-width: 899.98px) {
+  .matrix__filters {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .matrix__filters .filter-pills {
+    grid-column: 1 / -1;
+  }
+
+  .mutu__row,
+  .matrix__head,
+  .mrow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding-inline: 16px;
+  }
+
+  .mutu__row > :first-child,
+  .mrow > :first-child {
+    grid-column: 1 / -1;
+  }
+
+  .matrix__head > :first-child,
+  .mutu__row--head > :first-child {
+    display: none;
+  }
+
+  .matrix__head,
+  .mutu__row--head {
+    display: none;
+  }
+
+  .mcell,
+  .mutu__cell {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .mcell::before,
+  .mutu__cell::before {
+    content: attr(data-label);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-style: normal;
+  }
+}

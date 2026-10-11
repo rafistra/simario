@@ -132,7 +132,7 @@ describe('edit window and notifications (INV-19, FR-NTF-003/004)', () => {
     const forAndi = db.notifications.filter(
       (n) =>
         n.userId === 'usr-andi' &&
-        n.kind === 'thread_comments' &&
+        n.kind === 'new_comments' &&
         !n.readAt &&
         n.targetUrl.endsWith('rr-a1-pembayaran'),
     );

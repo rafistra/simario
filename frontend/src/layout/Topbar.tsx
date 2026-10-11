@@ -6,6 +6,7 @@ import { lini1PositionsInScope } from '@/domain/rules/access';
 import { useFocusTrap } from '@/lib/useFocusTrap';
 import { useAuth } from '@/state/useAuth';
 import { navFor } from './nav';
+import { NotificationPanel } from '@/components/NotificationPanel/NotificationPanel';
 import { usePageMetaStore } from './pageMeta';
 import './Shell.css';
 
@@ -87,6 +88,7 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
     (s) => s.db.notifications.filter((n) => n.userId === auth.user.id && !n.readAt).length,
   );
   const [searching, setSearching] = useState(false);
+  const [panel, setPanel] = useState(false);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -123,14 +125,28 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
           <span className="search-pill__text">Cari risiko atau jabatan…</span>
           <kbd>Ctrl K</kbd>
         </button>
-        <Link
-          to="/notifikasi"
-          className="bell"
-          aria-label={unread ? `Notifikasi, ${unread} belum dibaca` : 'Notifikasi'}
-        >
-          <Bell aria-hidden />
-          {unread > 0 && <span className="bell__badge">{unread > 9 ? '9+' : unread}</span>}
-        </Link>
+        <div className="bell-wrap">
+          <button
+            type="button"
+            className="bell"
+            aria-label={unread ? `Notifikasi, ${unread} belum dibaca` : 'Notifikasi'}
+            aria-haspopup="dialog"
+            aria-expanded={panel}
+            onClick={() => setPanel((v) => !v)}
+          >
+            <Bell aria-hidden />
+            {unread > 0 && <span className="bell__badge">{unread > 9 ? '9+' : unread}</span>}
+          </button>
+          {panel && (
+            <NotificationPanel
+              userId={auth.user.id}
+              onClose={() => {
+                setPanel(false);
+                document.querySelector<HTMLElement>('.bell')?.focus();
+              }}
+            />
+          )}
+        </div>
         {context && (
           <Link to={context.to} className="btn btn--secondary topbar__context">
             {ContextIcon && <ContextIcon className="btn__icon" aria-hidden />}

@@ -136,7 +136,7 @@ export function runComparisons(d: DB, at: ISODateTime, rqIds?: string[]) {
       for (const userId of holdersOf(d, [g.positionId], today))
         writeNotification(d, {
           userId,
-          kind: 'explanation_due',
+          kind: 'explanation_required',
           text: `${risks} risiko memerlukan penjelasan paling lambat ${formatDate(due)}`,
           targetUrl: url,
           createdAt: at,

@@ -8,6 +8,7 @@ import type { ISODateTime } from '@/domain/types';
 import { now } from '@/state/clock';
 import type { DB } from '../db';
 import { runComparisons } from './comparisons';
+import { runReminders } from './reminders';
 import { mutateDb } from './store';
 
 export type ScheduledTask = (draft: DB, at: ISODateTime) => void;
@@ -84,3 +85,5 @@ registerTask('risk-quarters', ensureRiskQuarters);
 registerTask('score-bands', activateScoreBands);
 /** §2.5: comparisons open per risk at the Lini 3 deadline or when every assessor has finalised. */
 registerTask('comparisons', (draft, at) => runComparisons(draft, at));
+/** FR-NTF-005/006/009/012 reminders. */
+registerTask('reminders', runReminders);

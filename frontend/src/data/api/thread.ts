@@ -230,8 +230,7 @@ export const threadApi = {
         for (const m of mentions) recipients.delete(m);
         for (const r of recipients) {
           const open = d.notifications.find(
-            (n) =>
-              n.userId === r && n.kind === 'thread_comments' && !n.readAt && n.targetUrl === base,
+            (n) => n.userId === r && n.kind === 'new_comments' && !n.readAt && n.targetUrl === base,
           );
           if (open) {
             const count = Number(/^(\d+)/.exec(open.text)?.[1] ?? '1') + 1;
@@ -240,7 +239,7 @@ export const threadApi = {
           } else
             writeNotification(d, {
               userId: r,
-              kind: 'thread_comments',
+              kind: 'new_comments',
               text: `1 komentar baru di '${shortDesc(risk)}'`,
               targetUrl: base,
               createdAt: at,

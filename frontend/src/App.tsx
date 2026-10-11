@@ -24,6 +24,9 @@ import BoardPage from '@/pages/board/BoardPage';
 import ThreadPage from '@/pages/board/ThreadPage';
 import AssessmentPage from '@/pages/assessment/AssessmentPage';
 import QueuePage from '@/pages/assessment/QueuePage';
+import HistoryPage from '@/pages/history/HistoryPage';
+import PositionListPage from '@/pages/home/PositionListPage';
+import NotificationsPage from '@/pages/notifications/NotificationsPage';
 import { Placeholder } from '@/pages/Placeholder';
 import { useAuth } from '@/state/useAuth';
 
@@ -76,7 +79,7 @@ export default function App() {
 
           <Route element={<AppShell />}>
             <Route index element={<HomePage />} />
-            <Route path="notifikasi" element={page(['Notifikasi'], 'Semua Notifikasi', 7)} />
+            <Route path="notifikasi" element={<NotificationsPage />} />
             <Route
               path="jabatan-saya"
               element={<RequireHolding>{page(['Jabatan Saya'], 'Jabatan Saya', 9)}</RequireHolding>}
@@ -84,14 +87,16 @@ export default function App() {
             <Route
               path="jabatan"
               element={
-                <RequireWideScope>{page(['Daftar Jabatan'], 'Daftar Jabatan', 7)}</RequireWideScope>
+                <RequireWideScope>
+                  <PositionListPage variant="direktori" />
+                </RequireWideScope>
               }
             />
             <Route
               path="pantauan"
               element={
                 <RequireHolding line={2}>
-                  {page(['Jabatan Dipantau'], 'Jabatan Dipantau', 7)}
+                  <PositionListPage variant="pantauan" />
                 </RequireHolding>
               }
             />
@@ -110,7 +115,7 @@ export default function App() {
               <Route path="papan/:ta/risiko/:rid" element={<ThreadPage />} />
               <Route path="register/:ta" element={<RegisterPage />} />
               <Route path="penilaian/:ta/:tw" element={<AssessmentPage />} />
-              <Route path="riwayat" element={<WorkspaceTab tab="riwayat" />} />
+              <Route path="riwayat" element={<HistoryPage />} />
               <Route path="lembar/:ta/:tw" element={<WorkspaceTab tab="lembar" />} />
             </Route>
 

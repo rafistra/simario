@@ -258,13 +258,15 @@ Skenario uji: geser tanggal 18 Mar 2027 → Rafi mengisi, Andi menuntaskan; Hend
 
 ---
 
-### Tahap 7 — Riwayat, Notifikasi, Beranda (RWY, NTF, BRD) ⬜
+### Tahap 7 — Riwayat, Notifikasi, Beranda (RWY, NTF, BRD) ✅
 
 Hasil:
-- [ ] `/jabatan/:jid/riwayat` — ringkasan Lembar Mutu, matriks risiko × TW, slide-over detail sel, lintas tahun, filter
-- [ ] Panel notifikasi (380 px) dan `/notifikasi` (filter, paginasi); semua event FR-NTF-001…012, idempoten
-- [ ] `/` — kartu per lini sesuai FR-BRD-010 (Lini 1 Pejabat/Operator, Lini 2, Lini 3, Superadmin, PMD tanpa jabatan, kosong)
-- [ ] `/jabatan` dan `/pantauan`
+- [x] `/jabatan/:jid/riwayat` — ringkasan Lembar Mutu, matriks risiko × TW, slide-over detail sel, lintas tahun, filter
+- [x] Panel notifikasi (380 px) dan `/notifikasi` (filter, paginasi); semua event FR-NTF-001…012, idempoten
+- [x] `/` — kartu per lini sesuai FR-BRD-010 (Lini 1 Pejabat/Operator, Lini 2, Lini 3, Superadmin, PMD tanpa jabatan, kosong)
+- [x] `/jabatan` dan `/pantauan`
+
+Catatan Tahap 7: seed TA 2026 TW I–III untuk PPK A-1 ditambahkan (riwayat lintas tahun); SCHEMA_VERSION 5. Lembar Mutu dihitung di `domain/rules/sheets.ts` (dipakai ulang Tahap 8). Pengingat FR-NTF-005/006/009 (H-1)/012 berjalan sebagai tugas terjadwal `reminders`; peristiwa yang lebih tua dari 3 hari tidak dimunculkan mundur. Jenis notifikasi diseragamkan dengan seed (`new_comments`, `explanation_required`, `deadline`). Superadmin tidak melihat kartu sambutan PMD. FR-NTF-011 (penunjukan Operator) dibangun bersama `/jabatan-saya` di Tahap 9.
 
 Skenario uji: Beranda tiap persona cocok dengan frame Beranda di `.pen`; klik notifikasi membuka konteks yang tepat.
 

@@ -823,7 +823,7 @@ export const assessmentApi = {
         x.predicate = predicateIn(d, q, x.score);
         x.updatedAt = a.at;
         if (x.status === 'ready') x.status = 'draft';
-        audit(d, a, 'ubah_draf_penilaian', 'Assessment', x.id, before, patch);
+        audit(d, a, 'simpan_draf_penilaian', 'Assessment', x.id, before, patch);
       });
     }),
 
@@ -1149,7 +1149,7 @@ export const assessmentApi = {
           actorUserId: userId,
           actingAs: 'superadmin',
           actingPositionId: null,
-          action: 'lihat_penilaian_buta',
+          action: 'lihat_penilaian_sebelum_dibuka',
           entityType: 'Quarter',
           entityId: quarterId,
           before: null,

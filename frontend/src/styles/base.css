@@ -233,3 +233,53 @@ svg {
   width: 32px;
   height: 32px;
 }
+
+/* Mini predicate chips (history matrix, Lembar Mutu summaries). */
+.mchip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.mchip svg {
+  width: 12px;
+  height: 12px;
+}
+
+.mchip__who {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+.mchip__pred {
+  padding: 0 4px;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.mchip--terkendali {
+  background: var(--pred-terkendali-bg);
+  color: var(--pred-terkendali-fg);
+}
+
+.mchip--cukup {
+  background: var(--pred-cukup-bg);
+  color: var(--pred-cukup-fg);
+}
+
+.mchip--kurang {
+  background: var(--pred-kurang-bg);
+  color: var(--pred-kurang-fg);
+}
+
+.mchip--none {
+  background: var(--bg-surface-muted);
+  color: var(--text-muted);
+}

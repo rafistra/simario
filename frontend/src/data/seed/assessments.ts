@@ -184,6 +184,64 @@ function seedQuarter(spec: QuarterSpec, rows: RowSpec[]) {
   }
 }
 
+/* ---------- PPK A-1 · TW I–III 2026 (archived; history across years, FR-RWY-004) ---------- */
+
+for (const [n, l1At, l3At, rows] of [
+  [
+    1,
+    { at: '2026-03-26T14:00', deadline: '2026-03-27' },
+    { at: '2026-04-02T10:00', deadline: '2026-04-03' },
+    [
+      { riskId: 'rr26-pemecahan', l1: 2.8, kep: 2.6, pai: 2.5 },
+      { riskId: 'rr26-penyerapan', l1: 2.6, kep: 2.4, pai: 2.2 },
+      { riskId: 'rr26-pembayaran', l1: 3.2, kep: 3.3, pai: 3.1 },
+      { riskId: 'rr26-pl', l1: 2.7, kep: 2.9, pai: 2.8 },
+    ],
+  ],
+  [
+    2,
+    { at: '2026-06-24T15:30', deadline: '2026-06-26' },
+    { at: '2026-07-02T11:00', deadline: '2026-07-03' },
+    [
+      { riskId: 'rr26-pemecahan', l1: 2.7, kep: 2.5, pai: 2.3 },
+      { riskId: 'rr26-penyerapan', l1: 2.9, kep: 3.0, pai: 2.7 },
+      { riskId: 'rr26-pembayaran', l1: 3.3, kep: 3.2, pai: 3.4 },
+      { riskId: 'rr26-pl', l1: 2.6, kep: 2.5, pai: 2.6 },
+    ],
+  ],
+  [
+    3,
+    { at: '2026-09-24T10:00', deadline: '2026-09-25' },
+    { at: '2026-10-01T16:00', deadline: '2026-10-02' },
+    [
+      { riskId: 'rr26-pemecahan', l1: 2.6, kep: 2.2, pai: 2.1 },
+      {
+        riskId: 'rr26-penyerapan',
+        l1: 3.0,
+        kep: 3.2,
+        pai: 2.9,
+        kepNote: 'Realisasi TW III melampaui RPD.',
+      },
+      { riskId: 'rr26-pembayaran', l1: 3.4, kep: 3.3, pai: 3.2 },
+      { riskId: 'rr26-pl', l1: 2.8, kep: 2.7, pai: 2.9 },
+    ],
+  ],
+] as const) {
+  seedQuarter(
+    {
+      quarterId: `q-2026-${n}`,
+      l1Pos: 'pos-ppk-a1',
+      l1Default: { ...l1At, by: 'usr-andi' },
+      kepDefault: { ...l3At, by: 'usr-hendra' },
+      paiDefault: { ...l3At, by: 'usr-maya' },
+      fullOpenAt: () => l3At.at,
+      deadlinePassedAt: `${l3At.deadline}T23:59`,
+      explanationWorkdays: 5,
+    },
+    rows.map((r) => ({ ...r })),
+  );
+}
+
 /* ---------- PPK A-1 · TW IV 2026 (archived) ---------- */
 
 seedQuarter(

@@ -62,7 +62,7 @@ export function workspacePaths(positionId: string, year: number, quarter: number
     papan: `${base}/papan/${year}`,
     register: `${base}/register/${year}`,
     penilaian: `${base}/penilaian/${year}/${quarter}`,
-    riwayat: `${base}/riwayat`,
+    riwayat: `${base}/riwayat?ta=${year}`,
     lembar: `${base}/lembar/${year}/${quarter}`,
   };
 }
