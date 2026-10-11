@@ -35,6 +35,43 @@ export function formatDate(iso: string): string {
   return `${d} ${MONTHS_SHORT[m - 1]} ${y}`;
 }
 
+const MONTHS_LONG = [
+  'Januari',
+  'Februari',
+  'Maret',
+  'April',
+  'Mei',
+  'Juni',
+  'Juli',
+  'Agustus',
+  'September',
+  'Oktober',
+  'November',
+  'Desember',
+];
+const WEEKDAYS = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+/** ISO date → "Selasa, 6 April 2027". */
+export function formatDateLong(iso: string): string {
+  const [y, m, d] = iso.slice(0, 10).split('-').map(Number);
+  const weekday = WEEKDAYS[new Date(Date.UTC(y!, m! - 1, d!)).getUTCDay()];
+  return `${weekday}, ${d} ${MONTHS_LONG[m! - 1]} ${y}`;
+}
+
+/** "x menit lalu" style relative time against the simulated now. */
+export function formatRelative(iso: string, nowIso: string): string {
+  const diff =
+    (new Date(`${nowIso.slice(0, 16)}:00Z`).getTime() -
+      new Date(`${iso.slice(0, 16)}:00Z`).getTime()) /
+    60_000;
+  if (diff < 1) return 'baru saja';
+  if (diff < 60) return `${Math.floor(diff)} menit lalu`;
+  if (diff < 24 * 60) return `${Math.floor(diff / 60)} jam lalu`;
+  if (diff < 48 * 60) return 'kemarin';
+  if (diff < 7 * 24 * 60) return `${Math.floor(diff / (24 * 60))} hari lalu`;
+  return formatDate(iso);
+}
+
 /** ISO datetime → "6 Apr 2027 09.41" (Indonesian time separator). */
 export function formatDateTime(iso: string): string {
   const time = iso.slice(11, 16).replace(':', '.');

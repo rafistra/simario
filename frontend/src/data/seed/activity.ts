@@ -1,0 +1,306 @@
+// Notifications and audit trail seed (FR-NTF-*, FR-ADM-008). Notification texts follow the
+// PRD §11.2 templates; links open the exact context.
+
+import type { AuditLog, Notification } from '@/domain/types';
+
+let seq = 1;
+const n = (
+  userId: string,
+  kind: string,
+  text: string,
+  targetUrl: string,
+  createdAt: string,
+  readAt: string | null = null,
+): Notification => ({
+  id: `ntf-${seq++}`,
+  userId,
+  kind,
+  text,
+  targetUrl,
+  createdAt,
+  readAt,
+  eventKey: `seed-${seq}`,
+});
+
+const A1_BOARD = '/jabatan/pos-ppk-a1/papan/2027';
+const A1_TW1 = '/jabatan/pos-ppk-a1/penilaian/2027/1';
+
+export const notifications: Notification[] = [
+  // Andi Wirawan — Pejabat PPK A-1
+  n(
+    'usr-andi',
+    'explanation_required',
+    '2 risiko memerlukan penjelasan paling lambat 9 Apr 2027',
+    A1_TW1,
+    '2027-04-02T11:05',
+  ),
+  n(
+    'usr-andi',
+    'comparison_opened',
+    'Perbandingan TW I PPK A-1 dibuka: 5 Sesuai, 7 Tidak Sesuai',
+    A1_TW1,
+    '2027-04-06T08:31',
+  ),
+  n(
+    'usr-andi',
+    'recurring',
+    "Risiko 'Pemecahan kontrak.' dinilai Kurang Terkendali oleh Lini 3 dua triwulan berturut-turut",
+    `${A1_BOARD}/risiko/rr-a1-pemecahan`,
+    '2027-04-02T11:06',
+  ),
+  n(
+    'usr-andi',
+    'mention',
+    "Maya Kusuma menyebut Anda di utas 'Pemecahan kontrak.'",
+    `${A1_BOARD}/risiko/rr-a1-pemecahan#cm-14`,
+    '2027-04-02T15:00',
+  ),
+  n(
+    'usr-andi',
+    'ready',
+    'Rafi Ananda menandai register tambahan PPK A-1 siap untuk Anda tuntaskan',
+    '/jabatan/pos-ppk-a1/register/2027',
+    '2027-04-05T10:00',
+  ),
+  n(
+    'usr-andi',
+    'ready',
+    'Rafi Ananda menandai penjelasan PPK A-1 siap untuk Anda tuntaskan',
+    A1_TW1,
+    '2027-04-05T15:40',
+    '2027-04-05T16:00',
+  ),
+  n(
+    'usr-andi',
+    'new_comments',
+    "2 komentar baru di 'Penyerapan anggaran tidak mencapai target per Triwulan.'",
+    `${A1_BOARD}/risiko/rr-a1-penyerapan`,
+    '2027-04-06T08:05',
+  ),
+  // Rafi Ananda — Operator PPK A-1
+  n(
+    'usr-rafi',
+    'operator_appointed',
+    'Anda ditunjuk sebagai operator untuk PPK A-1 oleh Andi Wirawan',
+    '/jabatan-saya',
+    '2027-01-11T09:00',
+    '2027-01-11T09:30',
+  ),
+  n(
+    'usr-rafi',
+    'explanation_required',
+    '2 risiko memerlukan penjelasan paling lambat 9 Apr 2027',
+    A1_TW1,
+    '2027-04-02T11:05',
+  ),
+  n(
+    'usr-rafi',
+    'new_comments',
+    "1 komentar baru di 'Penyerapan anggaran tidak mencapai target per Triwulan.'",
+    `${A1_BOARD}/risiko/rr-a1-penyerapan`,
+    '2027-04-06T08:05',
+  ),
+  // Siti Rahmawati — Lini 2 lead
+  n(
+    'usr-siti',
+    'comparison_opened',
+    'Perbandingan TW I PPK A-1 dibuka: 5 Sesuai, 7 Tidak Sesuai',
+    A1_TW1,
+    '2027-04-06T08:31',
+  ),
+  n(
+    'usr-siti',
+    'mention',
+    "Rafi Ananda menyebut Anda di utas 'Penyerapan anggaran tidak mencapai target per Triwulan.'",
+    `${A1_BOARD}/risiko/rr-a1-penyerapan#cm-1`,
+    '2027-02-03T09:12',
+    '2027-02-03T10:00',
+  ),
+  n(
+    'usr-siti',
+    'recurring',
+    "Risiko 'Pemecahan kontrak.' dinilai Kurang Terkendali oleh Lini 3 dua triwulan berturut-turut",
+    `${A1_BOARD}/risiko/rr-a1-pemecahan`,
+    '2027-04-02T11:06',
+  ),
+  // Hendra Gunawan — Kepatuhan
+  n(
+    'usr-hendra',
+    'lini3_window',
+    'Penilaian Lini 3 TW II: 0 dari 12 risiko sudah dinilai',
+    '/penilaian',
+    '2027-04-01T07:00',
+  ),
+  n(
+    'usr-hendra',
+    'comparison_opened',
+    'Perbandingan TW I PPK A-1 dibuka: 3 Sesuai, 3 Tidak Sesuai',
+    A1_TW1,
+    '2027-04-02T11:05',
+    '2027-04-02T13:00',
+  ),
+  // Maya Kusuma — PAI
+  n(
+    'usr-maya',
+    'lini3_window',
+    'Penilaian Lini 3 TW II: 0 dari 12 risiko sudah dinilai',
+    '/penilaian',
+    '2027-04-01T07:00',
+  ),
+  n(
+    'usr-maya',
+    'deadline',
+    'Penilaian Lini 3 TW I: 0 dari 13 risiko sudah dinilai',
+    '/penilaian',
+    '2027-04-01T07:00',
+    '2027-04-01T08:00',
+  ),
+  // Dimas Prasetyo
+  n(
+    'usr-dimas',
+    'operator_appointed',
+    'Anda ditunjuk sebagai operator untuk Pejabat Pengadaan Satker B oleh Wulan Sari',
+    '/jabatan-saya',
+    '2027-01-20T10:00',
+    '2027-01-20T11:00',
+  ),
+  // Lestari Wulandari
+  n(
+    'usr-lestari',
+    'operator_appointed',
+    'Anda ditunjuk sebagai operator untuk Unit Pendukung Pemantauan UKPBJ oleh Wahyu Hidayat',
+    '/jabatan-saya',
+    '2027-01-04T09:00',
+  ),
+];
+
+let auditSeq = 1;
+const a = (entry: Omit<AuditLog, 'id'>): AuditLog => ({ id: `aud-${auditSeq++}`, ...entry });
+
+export const audit: AuditLog[] = [
+  a({
+    at: '2027-01-11T09:00',
+    actorUserId: 'usr-andi',
+    actingAs: 'pejabat',
+    actingPositionId: 'pos-ppk-a1',
+    action: 'tunjuk_operator',
+    entityType: 'PositionDelegate',
+    entityId: 'del-rafi-a1',
+    before: null,
+    after: { userId: 'usr-rafi', letterNo: 'ND-045/DKB/2027' },
+  }),
+  a({
+    at: '2027-01-20T10:15',
+    actorUserId: 'usr-andi',
+    actingAs: 'pejabat',
+    actingPositionId: 'pos-ppk-a1',
+    action: 'terbitkan_register',
+    entityType: 'Register',
+    entityId: 'reg-ppk-a1-2027',
+    before: { status: 'ready' },
+    after: { status: 'published', risks: 7 },
+  }),
+  a({
+    at: '2027-02-20T15:30',
+    actorUserId: 'usr-hendra',
+    actingAs: 'pejabat',
+    actingPositionId: 'pos-kepatuhan',
+    action: 'unggah_lampiran',
+    entityType: 'Attachment',
+    entityId: 'att-5',
+    before: null,
+    after: { filename: 'Kertas_Kerja_Kepatuhan_Paket_Lisensi.xlsx', confidential: true },
+  }),
+  a({
+    at: '2027-03-14T11:06',
+    actorUserId: 'usr-rafi',
+    actingAs: 'operator',
+    actingPositionId: 'pos-ppk-a1',
+    action: 'tarik_komentar',
+    entityType: 'Comment',
+    entityId: 'cm-13',
+    before: { body: 'Draf jadwal penggabungan paket (salah unggah).' },
+    after: { withdrawn: true },
+  }),
+  a({
+    at: '2027-03-20T14:00',
+    actorUserId: 'usr-andi',
+    actingAs: 'pejabat',
+    actingPositionId: 'pos-ppk-a1',
+    action: 'nonaktifkan_risiko',
+    entityType: 'RegisterRisk',
+    entityId: 'rr-a1-rpd',
+    before: { status: 'active' },
+    after: { status: 'inactive', fromQuarter: 'TW II 2027' },
+  }),
+  a({
+    at: '2027-03-25T16:20',
+    actorUserId: 'usr-andi',
+    actingAs: 'pejabat',
+    actingPositionId: 'pos-ppk-a1',
+    action: 'tuntaskan_penilaian',
+    entityType: 'Assessment',
+    entityId: 'as-rq-rr-a1-penyerapan-q-2027-1-pos-ppk-a1',
+    before: { status: 'ready', score: 2.4, predicate: 'cukup' },
+    after: { status: 'final', score: 2.4, predicate: 'cukup' },
+  }),
+  a({
+    at: '2027-04-01T15:00',
+    actorUserId: 'usr-hendra',
+    actingAs: 'pejabat',
+    actingPositionId: 'pos-kepatuhan',
+    action: 'tuntaskan_penilaian',
+    entityType: 'Assessment',
+    entityId: 'as-rq-rr-a1-pemecahan-q-2027-1-pos-kepatuhan',
+    before: {
+      status: 'draft',
+      score: 1.6,
+      predicate: 'kurang',
+      note: 'Dua kontrak lisensi sejenis…',
+    },
+    after: {
+      status: 'final',
+      score: 1.6,
+      predicate: 'kurang',
+      note: 'Dua kontrak lisensi sejenis…',
+    },
+  }),
+  a({
+    at: '2027-04-03T00:00',
+    actorUserId: null,
+    actingAs: 'sistem',
+    actingPositionId: null,
+    action: 'buka_perbandingan',
+    entityType: 'RiskQuarter',
+    entityId: 'rq-rr-a1-pembayaran-q-2027-1',
+    before: { comparisonStatus: 'waiting' },
+    after: { comparisonStatus: 'partial' },
+  }),
+  a({
+    at: '2027-04-05T16:45',
+    actorUserId: 'usr-hendra',
+    actingAs: 'pejabat',
+    actingPositionId: 'pos-kepatuhan',
+    action: 'simpan_draf_penilaian',
+    entityType: 'Assessment',
+    entityId: 'as-rq-rr-a1-pemecahan-q-2027-2-pos-kepatuhan',
+    before: null,
+    after: {
+      status: 'draft',
+      score: 1.8,
+      predicate: 'kurang',
+      note: 'Belum ada bukti penggabungan paket.',
+    },
+  }),
+  a({
+    at: '2027-04-05T17:10',
+    actorUserId: 'usr-admin',
+    actingAs: 'superadmin',
+    actingPositionId: null,
+    action: 'lihat_penilaian_sebelum_dibuka',
+    entityType: 'Quarter',
+    entityId: 'q-2027-2',
+    before: null,
+    after: { position: 'pos-ppk-a1' },
+  }),
+];
