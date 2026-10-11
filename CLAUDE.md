@@ -235,7 +235,7 @@ Hasil:
 - [x] Sunting ≤15 menit "(disunting)", tarik komentar, ikuti/berhenti mengikuti, banner "[n] komentar baru", pembaca bukan peserta, utas diarsipkan
 - [x] Penanda sepi, langganan, notifikasi sebut & komentar baru
 
-Catatan Tahap 5: pembaca bukan peserta memakai persona baru **Dewi Anggraini** (DDKB) dengan peran kustom "Pimpinan Unit Kerja" (izin 1, cakupan Unit) — seed sebelumnya tidak punya pembaca sah untuk PPK A-1. Hasil perbandingan seed dianggap terbuka hanya bila `openedAt` ≤ jam simulasi (Tahap 6 mengambil alih pembukaan). Lini 3 punya `shortName` (KEP, PAI) untuk chip predikat. Pemindaian lampiran disimulasikan 2 detik; isi berkas tidak disimpan (unduhan berupa berkas contoh). Banner "[n] komentar baru" dapat didemokan lewat DevPanel → "Simulasikan komentar masuk" atau dua tab berbeda. SCHEMA_VERSION naik ke 4.
+Catatan Tahap 5: pembaca bukan peserta memakai persona baru **Dewi Anggraini** (DDKB) dengan peran kustom "Pimpinan Unit Kerja" (izin 1, cakupan Unit; dikonfirmasi pengguna) — seed sebelumnya tidak punya pembaca sah untuk PPK A-1. Hasil perbandingan seed dianggap terbuka hanya bila `openedAt` ≤ jam simulasi (Tahap 6 mengambil alih pembukaan). Lini 3 punya `shortName` (KEP, PAI) untuk chip predikat. Pemindaian lampiran disimulasikan 2 detik; isi berkas tidak disimpan (unduhan berupa berkas contoh). Banner "[n] komentar baru" dapat didemokan lewat DevPanel → "Simulasikan komentar masuk" atau dua tab berbeda. SCHEMA_VERSION naik ke 4.
 
 Skenario uji: Hendra melampirkan berkas konfidensial → Andi hanya melihat "1 lampiran konfidensial"; Langkah Andi menghapus penanda sepi.
 
