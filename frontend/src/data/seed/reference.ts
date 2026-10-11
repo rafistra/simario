@@ -51,6 +51,7 @@ for (const type of rapim.positionTypes) {
         description: tpl.description,
         order: tpl.order,
         active: true,
+        updatedAt: '2026-10-12',
       });
       for (const m of tpl.mitigations) {
         mitigationTemplates.push({
@@ -81,8 +82,29 @@ export const dataUmumForms: DataUmumForm[] = Object.values(TYPE_ID).map((positio
   version: 1,
   fields: [],
   defaultObjective: rapim.dataUmum.defaultObjective,
-  active: true,
+  // PPK moved to Versi 2 (Sumber Dana, Kode Paket RUP) on 4 Jan 2027 — frame IIM4I.
+  active: positionTypeId !== 'pt-ppk',
+  createdAt: '2026-10-12',
 }));
+
+dataUmumForms.push({
+  id: 'du-pt-ppk-v2',
+  positionTypeId: 'pt-ppk',
+  version: 2,
+  fields: [
+    {
+      key: 'sumber_dana',
+      label: 'Sumber Dana',
+      kind: 'list',
+      mandatory: true,
+      options: ['Rupiah Murni', 'PNBP', 'PHLN', 'SBSN'],
+    },
+    { key: 'kode_paket_rup', label: 'Kode Paket RUP', kind: 'text', mandatory: false },
+  ],
+  defaultObjective: rapim.dataUmum.defaultObjective,
+  active: true,
+  createdAt: '2027-01-04',
+});
 
 /* ---------- Score bands (confirmed by the user: 0–2 K · 2,1–3 C · 3,1–4 T) ---------- */
 

@@ -26,6 +26,8 @@
   width: 100%;
   max-width: calc(var(--content-max) + 2 * var(--page-pad-desktop));
   padding: var(--page-pad-desktop);
+  /* Room for the floating prototype button. */
+  padding-bottom: 88px;
 }
 
 .shell__content:focus {
@@ -959,6 +961,7 @@ kbd {
   .shell__content {
     gap: 16px;
     padding: var(--page-pad-mobile);
+    padding-bottom: 80px;
   }
 
   .workspace__top {

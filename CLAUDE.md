@@ -193,15 +193,18 @@ Skenario uji: masuk sebagai Andi, Rafi, Siti, Hendra, Nur Aini, Admin DKB — me
 
 ---
 
-### Tahap 3 — Master Data (MST) ⬜
+### Tahap 3 — Master Data (MST) ✅
 
 Hasil:
-- [ ] `/master/jabatan` — jenis jabatan per lini, tabel jabatan, formulir dengan isian identitas per jenis, nonaktifkan (ditolak bila dipakai, sesuai frame)
-- [ ] `/master/tahap` — akordeon per jenis, ubah nama inline, urutkan dengan seret, aktif/nonaktif
-- [ ] `/master/template` — pohon 280 px, daftar, slide-over sunting, peringatan "Dipakai [N] jabatan", nonaktifkan
-- [ ] `/master/usulan` — antrean, "Jadikan Template", "Tolak" dengan alasan
-- [ ] `/master/data-umum` — pembangun formulir berversi
-- [ ] `/master/skala-penilaian` — versi, tabel pita, galat celah/tumpang tindih, pratinjau 0–4, panduan per predikat
+- [x] `/master/jabatan` — jenis jabatan per lini (nonaktif ditolak bila dipakai + "Lihat N Jabatan"), tabel jabatan berfilter (Pejabat kosong merah), slide-over dengan isian identitas per jenis, nonaktifkan dengan alasan & dampak (Operator berakhir), aktifkan kembali
+- [x] `/master/tahap` — akordeon per jenis, ubah nama inline (Enter/Esc), urutkan dengan seret atau Alt+↑/↓ (tersimpan seketika), aktif/nonaktif, tambah, hapus hanya bila belum dipakai & tanpa template
+- [x] `/master/template` — pohon 280 px (jadi 3 dropdown < 900 px), pencarian, daftar dengan "Dipakai [N] jabatan" / "dapat dihapus", toggle aktif, slide-over sunting (mitigasi urut seret/Alt+↑/↓), hapus hanya untuk yang belum pernah dipakai
+- [x] `/master/usulan` — filter status, "Jadikan Template" (slide-over terisi dari risiko sendiri), "Tolak" dengan alasan wajib; pengusul diberi notifikasi
+- [x] `/master/data-umum` — pembangun formulir berversi (isian tetap terkunci, teks bawaan Tujuan, isian tambahan + daftar pilihan), peringatan perubahan belum tersimpan, simpan = versi baru
+- [x] `/master/skala-penilaian` — versi & status (draf/terjadwal/aktif/tidak berlaku), tabel pita, galat celah/tumpang tindih, pratinjau 0–4, panduan per predikat; versi tersimpan aktif lewat penjadwal pada tanggal berlaku, triwulan mengunci versinya saat jendela pertama dibuka
+- [x] `data/api/master.ts`: izin dicek di repository, validasi sesuai catatan frame, audit untuk setiap perubahan; test API & UI
+
+Catatan Tahap 3: hitungan template di mockup bersifat ilustratif — aplikasi memakai hitungan berkas seed (mis. PPK › Perencanaan Pengadaan 13). Formulir Data Umum PPK di-seed sebagai Versi 2 (Sumber Dana, Kode Paket RUP) sesuai frame IIM4I. Status `scheduled` ditambahkan ke `ScoreBandVersion` untuk versi yang sudah disimpan tetapi belum berlaku.
 
 Skenario uji: Nur Aini membuka `/master/template` → pohon menampilkan 4 jenis dan 14 tahap dengan hitungan sesuai berkas seed (mis. PPK › Pelaksanaan/Pengendalian Kontrak: 5 / 8 / 9); membuat draf pita dengan celah → simpan ditolak; nonaktifkan template → hilang dari pilihan register baru.
 
