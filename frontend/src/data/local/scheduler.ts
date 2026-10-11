@@ -9,6 +9,7 @@ import { now } from '@/state/clock';
 import type { DB } from '../db';
 import { runComparisons } from './comparisons';
 import { runReminders } from './reminders';
+import { runSheetFreeze } from '../api/sheets';
 import { mutateDb } from './store';
 
 export type ScheduledTask = (draft: DB, at: ISODateTime) => void;
@@ -87,3 +88,5 @@ registerTask('score-bands', activateScoreBands);
 registerTask('comparisons', (draft, at) => runComparisons(draft, at));
 /** FR-NTF-005/006/009/012 reminders. */
 registerTask('reminders', runReminders);
+/** FR-LBR-009 automatic sheet versions. */
+registerTask('sheet-freeze', runSheetFreeze);

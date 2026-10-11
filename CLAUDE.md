@@ -272,13 +272,15 @@ Skenario uji: Beranda tiap persona cocok dengan frame Beranda di `.pen`; klik no
 
 ---
 
-### Tahap 8 — Lembar & Cetak (LBR) ⬜
+### Tahap 8 — Lembar & Cetak (LBR) ✅
 
 Hasil:
-- [ ] `/jabatan/:jid/lembar/:ta/:tw` — Lembar Komunikasi (Bagian A/B/C) dan Lembar Mutu, semuanya turunan dan netral-pembaca (VIS-7)
-- [ ] Pilih foto (maks 5 per bagian), panel versi, cari nomor snapshot, salinan beku, penyamaran untuk direktorat terlambat (VIS-9)
-- [ ] Cetak: snapshot `trigger=print`, nomor `SIMARIO/[LK|LM]/…`, watermark "SEMENTARA", blok tanda tangan, catatan status dokumen, `print.css` A4
-- [ ] Versi otomatis (`auto_freeze`) dan `superseded_by`
+- [x] `/jabatan/:jid/lembar/:ta/:tw` — Lembar Komunikasi (Bagian A/B/C) dan Lembar Mutu, semuanya turunan dan netral-pembaca (VIS-7)
+- [x] Pilih foto (maks 5 per bagian), panel versi, cari nomor snapshot, salinan beku, penyamaran untuk direktorat terlambat (VIS-9)
+- [x] Cetak: snapshot `trigger=print`, nomor `SIMARIO/[LK|LM]/…`, watermark "SEMENTARA", blok tanda tangan, catatan status dokumen, `print.css` A4
+- [x] Versi otomatis (`auto_freeze`) dan `superseded_by`
+
+Catatan Tahap 8: payload lembar (`domain/rules/sheetPayload.ts`) netral-pembaca dan menyimpan nilai per risiko; penyamaran VIS-9 dan perhitungan Lembar Mutu dilakukan dari payload. Versi otomatis dibuat tugas terjadwal `sheet-freeze` (contoh: geser ke 21 Apr 2027 → Versi 1 TW I PPK A-1). Seed: TW IV 2026 Versi 1 (14 Jan 2027) dan cetak sementara TW I 2027 nomor 001 (3 Apr 2027). Pilihan foto disimpan bersama per jabatan × triwulan × bagian (preferensi dengan pengguna `*`). Gambar lampiran tampil sebagai placeholder karena isi berkas tidak disimpan. `?salinan=…&cetak=pratinjau` menahan tata letak cetak untuk pratinjau PDF. Versi `archive` dibuat bersama arsip TA di Tahap 9. SCHEMA_VERSION 6.
 
 Skenario uji: cetak dari tampilan berjalan membuat snapshot baru; mencetak versi beku tidak membuat snapshot; pratinjau cetak cocok dengan frame A4.
 

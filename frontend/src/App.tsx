@@ -1,14 +1,10 @@
 import { lazy, Suspense, type ReactNode } from 'react';
-import { BrowserRouter, Route, Routes, useOutletContext } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Toaster } from '@/components';
 import { DevPanel } from '@/dev/DevPanel';
 import { AppShell } from '@/layout/AppShell';
 import { RequireHolding, RequirePermission } from '@/layout/RequirePermission';
-import {
-  WorkspaceLayout,
-  WorkspaceRedirect,
-  type WorkspaceOutletContext,
-} from '@/layout/Workspace';
+import { WorkspaceLayout, WorkspaceRedirect } from '@/layout/Workspace';
 import ChangePasswordPage from '@/pages/auth/ChangePasswordPage';
 import LoginPage from '@/pages/auth/LoginPage';
 import { ForbiddenPage, NotFoundPage } from '@/pages/faults/FaultPages';
@@ -27,6 +23,7 @@ import QueuePage from '@/pages/assessment/QueuePage';
 import HistoryPage from '@/pages/history/HistoryPage';
 import PositionListPage from '@/pages/home/PositionListPage';
 import NotificationsPage from '@/pages/notifications/NotificationsPage';
+import SheetPage from '@/pages/sheets/SheetPage';
 import { Placeholder } from '@/pages/Placeholder';
 import { useAuth } from '@/state/useAuth';
 
@@ -37,31 +34,6 @@ const ComponentGallery = import.meta.env.DEV ? lazy(() => import('./dev/Componen
 function RequireWideScope({ children }: { children: ReactNode }) {
   const scope = useAuth().permissions.get(1);
   return scope === 'unit' || scope === 'semua' ? <>{children}</> : <ForbiddenPage />;
-}
-
-function WorkspaceTab({
-  tab,
-}: {
-  tab: 'papan' | 'utas' | 'register' | 'penilaian' | 'riwayat' | 'lembar';
-}) {
-  const { position, unitCode } = useOutletContext<WorkspaceOutletContext>();
-  const map = {
-    papan: { title: 'Papan Risiko', stage: 5 },
-    utas: { title: 'Utas Risiko', stage: 5 },
-    register: { title: 'Register', stage: 4 },
-    penilaian: { title: 'Penilaian Triwulan', stage: 6 },
-    riwayat: { title: 'Riwayat Risiko', stage: 7 },
-    lembar: { title: 'Lembar Komunikasi dan Lembar Mutu', stage: 8 },
-  }[tab];
-  // Breadcrumb per the mockups: "Papan Risiko › PPK A-1 · DDKB".
-  return (
-    <Placeholder
-      bare
-      crumbs={[map.title, `${position.name} · ${unitCode}`]}
-      title={map.title}
-      stage={map.stage}
-    />
-  );
 }
 
 const page = (crumbs: string[], title: string, stage: number, eyebrow?: string) => (
@@ -116,7 +88,7 @@ export default function App() {
               <Route path="register/:ta" element={<RegisterPage />} />
               <Route path="penilaian/:ta/:tw" element={<AssessmentPage />} />
               <Route path="riwayat" element={<HistoryPage />} />
-              <Route path="lembar/:ta/:tw" element={<WorkspaceTab tab="lembar" />} />
+              <Route path="lembar/:ta/:tw" element={<SheetPage />} />
             </Route>
 
             <Route path="master">
