@@ -1003,3 +1003,22 @@ button.bell {
   border-color: var(--action-primary);
   box-shadow: 0 0 0 2px var(--ring-focus);
 }
+
+/* Scrollbars — thin, no arrow buttons, tinted to the surface they sit on. */
+.sidebar__nav {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  scrollbar-gutter: stable;
+  transition: scrollbar-color 160ms ease-out;
+}
+
+.sidebar__nav:hover,
+.sidebar__nav:focus-within {
+  scrollbar-color: color-mix(in srgb, var(--sidebar-text-muted) 45%, transparent) transparent;
+}
+
+.switcher__menu,
+.search-dialog__list {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}

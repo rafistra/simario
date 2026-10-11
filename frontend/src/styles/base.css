@@ -325,3 +325,16 @@ svg {
     inset: -12px -4px;
   }
 }
+
+/* Page and panel scrollbars follow the theme tokens. */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) var(--bg-page);
+}
+
+.ntf-panel__list,
+.slide-over__body,
+.fy__table {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
