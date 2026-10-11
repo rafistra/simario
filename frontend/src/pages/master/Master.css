@@ -800,3 +800,11 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Long version labels wrap instead of widening the page on phones. */
+.band-versions .chip {
+  height: auto;
+  min-height: 24px;
+  white-space: normal;
+  text-align: left;
+}

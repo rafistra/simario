@@ -49,6 +49,15 @@ function PasswordForm({ forced, onDone }: { forced: boolean; onDone: () => void 
 
   return (
     <form className="auth__form" onSubmit={submit} noValidate>
+      {/* Lets password managers associate the new password with the account (NIP). */}
+      <input
+        type="text"
+        name="username"
+        autoComplete="username"
+        value={auth.user.nip}
+        readOnly
+        hidden
+      />
       {error && <InlineAlert variant="error" title={error} />}
       {!forced && (
         <TextInput

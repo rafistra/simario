@@ -7,6 +7,8 @@ import {
   KeyRound,
   Landmark,
   LogOut,
+  Moon,
+  Sun,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -17,6 +19,7 @@ import { ROLE_VIEW_LABEL } from '@/domain/permissions';
 import { positionLine } from '@/domain/rules/access';
 import type { Line } from '@/domain/types';
 import { initials } from '@/lib/format';
+import { applyTheme, getTheme } from '@/lib/theme';
 import { useSession } from '@/state/session';
 import { useAuth } from '@/state/useAuth';
 import { isActive, navFor } from './nav';
@@ -203,6 +206,19 @@ function UserBlock({ onNavigate }: { onNavigate?: () => void }) {
               <KeyRound aria-hidden /> Ganti Kata Sandi
             </button>
           )}
+          <button
+            type="button"
+            role="menuitem"
+            className="user-menu__item"
+            onClick={() => {
+              const next = getTheme() === 'dark' ? 'light' : 'dark';
+              applyTheme(next);
+              setOpen(false);
+            }}
+          >
+            {getTheme() === 'dark' ? <Sun aria-hidden /> : <Moon aria-hidden />}
+            {getTheme() === 'dark' ? 'Mode terang' : 'Mode gelap'}
+          </button>
           <button
             type="button"
             role="menuitem"
