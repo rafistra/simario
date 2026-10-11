@@ -1,0 +1,11 @@
+/* Placeholder Tahap 0 — token dan gaya dasar diisi di Tahap 1. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
