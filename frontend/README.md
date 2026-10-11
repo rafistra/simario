@@ -18,6 +18,15 @@ Buka http://localhost:5173. Perintah lain:
 | `npm run lint`   | ESLint + Prettier                                                   |
 | `npm run tokens` | Membuat ulang `src/styles/tokens.css` dari snapshot variabel Pencil |
 
+## Publikasi (Netlify)
+
+Konfigurasi ada di `netlify.toml` (root repositori): base `frontend`, perintah `npm run build`, publish `dist`, Node 22, pengalihan semua rute ke `index.html`, header `noindex` dan keamanan dasar.
+
+- **Lewat Git:** hubungkan repositori di Netlify (Add new site → Import an existing project); tidak perlu pengaturan tambahan di dasbor. Setiap push terbit ulang.
+- **Seret-lepas:** jalankan `npm run build`, lalu seret folder `frontend/dist` ke app.netlify.com/drop. Berkas `public/_redirects` ikut tersalin sehingga muat ulang di rute dalam tidak 404.
+
+Catatan: setiap pengunjung memegang salinan data contoh sendiri di browsernya; siapa pun yang memiliki tautan dapat masuk sebagai persona mana pun, jadi hanya gunakan data fiktif.
+
 ## Masuk dan persona
 
 Di `/login`, tombol SSO membuka pemilih persona. Akun lokal (Lestari Wulandari, Admin DKB) masuk dengan NIP dan kata sandi dari data contoh. Persona utama:
