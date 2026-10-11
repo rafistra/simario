@@ -153,3 +153,5 @@ export type { Notification };
 
 export { masterApi } from './api/master';
 export { registerApi } from './api/register';
+export { threadApi } from './api/thread';
+export { boardApi } from './api/board';

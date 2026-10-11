@@ -20,6 +20,8 @@ import ProposalsPage from '@/pages/master/ProposalsPage';
 import DataUmumPage from '@/pages/master/DataUmumPage';
 import ScoreBandsPage from '@/pages/master/ScoreBandsPage';
 import RegisterPage from '@/pages/register/RegisterPage';
+import BoardPage from '@/pages/board/BoardPage';
+import ThreadPage from '@/pages/board/ThreadPage';
 import { Placeholder } from '@/pages/Placeholder';
 import { useAuth } from '@/state/useAuth';
 
@@ -102,8 +104,8 @@ export default function App() {
 
             <Route path="jabatan/:jid" element={<WorkspaceLayout />}>
               <Route index element={<WorkspaceRedirect />} />
-              <Route path="papan/:ta" element={<WorkspaceTab tab="papan" />} />
-              <Route path="papan/:ta/risiko/:rid" element={<WorkspaceTab tab="utas" />} />
+              <Route path="papan/:ta" element={<BoardPage />} />
+              <Route path="papan/:ta/risiko/:rid" element={<ThreadPage />} />
               <Route path="register/:ta" element={<RegisterPage />} />
               <Route path="penilaian/:ta/:tw" element={<WorkspaceTab tab="penilaian" />} />
               <Route path="riwayat" element={<WorkspaceTab tab="riwayat" />} />

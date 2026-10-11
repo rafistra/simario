@@ -298,6 +298,33 @@ c({
   body: 'Justifikasi harga lisensi disusun dari tiga penawaran pembanding.',
 });
 
+/* Sub-utas mitigasi: Menyusun jadwal penarikan dana bulanan bersama Biro Keuangan. */
+c({
+  id: 'cm-20',
+  risk: 'rr-a1-penyerapan',
+  mitigation: 'rr-a1-penyerapan-m3',
+  author: 'usr-rafi',
+  line: 1,
+  as: 'operator',
+  pos: A1,
+  q: TW1,
+  at: '2027-03-21T10:02',
+  step: true,
+  body: 'Realisasi Februari 14,9% (target 15%). BAST termin pertama terlampir; SP2D terbit 19 Maret 2027.',
+  files: [{ name: 'BAST_Termin1_PPK-A1.pdf', size: 1887436, mime: PDF }],
+});
+c({
+  id: 'cm-21',
+  risk: 'rr-a1-penyerapan',
+  mitigation: 'rr-a1-penyerapan-m3',
+  author: 'usr-siti',
+  line: 2,
+  pos: 'pos-pj-pemantauan',
+  q: TW1,
+  at: '2027-03-21T13:40',
+  body: 'Terima kasih, data realisasi sudah sesuai dengan laporan Biro Keuangan.',
+});
+
 export const subscriptions: ThreadSubscription[] = [
   { userId: 'usr-siti', registerRiskId: 'rr-a1-penyerapan', muted: false },
   { userId: 'usr-siti', registerRiskId: 'rr-a1-pemecahan', muted: false },

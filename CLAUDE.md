@@ -226,14 +226,16 @@ Skenario uji: Rafi menyusun lalu menandai siap → Andi menerima notifikasi dan 
 
 ---
 
-### Tahap 5 — Papan Risiko & Utas (PPN) ⬜
+### Tahap 5 — Papan Risiko & Utas (PPN) ✅
 
 Hasil:
-- [ ] `/jabatan/:jid/papan/:ta` — dikelompokkan tahap › jenis, kolom per FR-PPN-001, penanda, filter (tersimpan per pengguna per jabatan), titik aktivitas baru, keadaan kosong
-- [ ] `/jabatan/:jid/papan/:ta/risiko/:rid` — header, linimasa per TW, sub-utas mitigasi (`#mitigasi-:mid`), panel kanan ringkasan triwulan (VIS-1/2)
-- [ ] Composer: @sebut (hanya peserta), lampiran (≤10, "Memindai…"), "Tandai sebagai Langkah" (Lini 1), "Konfidensial" per berkas (Lini 3), "Terkait TW [n]" (RB-PPN-004), peringatan fase buta Lini 3, Ctrl+Enter
-- [ ] Sunting ≤15 menit "(disunting)", tarik komentar, ikuti/berhenti mengikuti, banner "[n] komentar baru", pembaca bukan peserta, utas diarsipkan
-- [ ] Penanda sepi, langganan, notifikasi sebut & komentar baru
+- [x] `/jabatan/:jid/papan/:ta` — dikelompokkan tahap › jenis, kolom per FR-PPN-001, penanda, filter (tersimpan per pengguna per jabatan), titik aktivitas baru, keadaan kosong
+- [x] `/jabatan/:jid/papan/:ta/risiko/:rid` — header, linimasa per TW, sub-utas mitigasi (`#mitigasi-:mid`), panel kanan ringkasan triwulan (VIS-1/2)
+- [x] Composer: @sebut (hanya peserta), lampiran (≤10, "Memindai…"), "Tandai sebagai Langkah" (Lini 1), "Konfidensial" per berkas (Lini 3), "Terkait TW [n]" (RB-PPN-004), peringatan fase buta Lini 3, Ctrl+Enter
+- [x] Sunting ≤15 menit "(disunting)", tarik komentar, ikuti/berhenti mengikuti, banner "[n] komentar baru", pembaca bukan peserta, utas diarsipkan
+- [x] Penanda sepi, langganan, notifikasi sebut & komentar baru
+
+Catatan Tahap 5: pembaca bukan peserta memakai persona baru **Dewi Anggraini** (DDKB) dengan peran kustom "Pimpinan Unit Kerja" (izin 1, cakupan Unit) — seed sebelumnya tidak punya pembaca sah untuk PPK A-1. Hasil perbandingan seed dianggap terbuka hanya bila `openedAt` ≤ jam simulasi (Tahap 6 mengambil alih pembukaan). Lini 3 punya `shortName` (KEP, PAI) untuk chip predikat. Pemindaian lampiran disimulasikan 2 detik; isi berkas tidak disimpan (unduhan berupa berkas contoh). Banner "[n] komentar baru" dapat didemokan lewat DevPanel → "Simulasikan komentar masuk" atau dua tab berbeda. SCHEMA_VERSION naik ke 4.
 
 Skenario uji: Hendra melampirkan berkas konfidensial → Andi hanya melihat "1 lampiran konfidensial"; Langkah Andi menghapus penanda sepi.
 

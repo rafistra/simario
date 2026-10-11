@@ -1,6 +1,6 @@
-import { FlaskConical, Moon, RotateCcw, Sun, X } from 'lucide-react';
+import { FlaskConical, MessageSquarePlus, Moon, RotateCcw, Sun, X } from 'lucide-react';
 import { useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, ConfirmDialog, Select, Toggle, toast } from '@/components';
 import { authApi } from '@/data/repository';
 import { useDb } from '@/data/local/store';
@@ -10,6 +10,7 @@ import { applyTheme, getTheme, type Theme } from '@/lib/theme';
 import { DEFAULT_NOW, useClock, useNow } from '@/state/clock';
 import { useDevSettings } from '@/state/devSettings';
 import { useSession } from '@/state/session';
+import { simulateIncomingComment } from './simulate';
 import './DevPanel.css';
 
 const PRESETS: { label: string; at: string }[] = [
@@ -25,6 +26,7 @@ const PRESETS: { label: string; at: string }[] = [
 export function DevPanel() {
   const [open, setOpen] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
+  const threadRisk = /\/risiko\/([^/?#]+)/.exec(useLocation().pathname)?.[1];
   const [theme, setThemeState] = useState<Theme>(getTheme());
   const ref = useRef<HTMLDivElement>(null);
   useFocusTrap(ref, open, () => setOpen(false));
@@ -170,6 +172,25 @@ export function DevPanel() {
                 >
                   {theme === 'light' ? 'Mode gelap' : 'Mode terang'}
                 </Button>
+                {threadRisk && (
+                  <Button
+                    variant="secondary"
+                    icon={MessageSquarePlus}
+                    onClick={() => {
+                      const name = simulateIncomingComment(
+                        threadRisk,
+                        useSession.getState().userId ?? '',
+                      );
+                      if (name)
+                        toast.success(
+                          'Komentar masuk disimulasikan',
+                          `${name} mengirim komentar di utas ini.`,
+                        );
+                    }}
+                  >
+                    Simulasikan komentar masuk
+                  </Button>
+                )}
                 <Button
                   variant="destructive"
                   icon={RotateCcw}

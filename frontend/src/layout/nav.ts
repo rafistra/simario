@@ -172,6 +172,10 @@ export function navFor(view: RoleViewCode | null, auth: AuthContext): NavSection
         {
           items: [
             HOME,
+            // Readers with Unit/All scope (e.g. a custom role) still reach the position directory (§1.8).
+            ...(auth.permissions.get(1) === 'unit' || auth.permissions.get(1) === 'semua'
+              ? [{ label: 'Daftar Jabatan', icon: Building2, to: '/jabatan', match: '/jabatan' }]
+              : []),
             { label: 'Notifikasi', icon: Activity, to: '/notifikasi', match: '/notifikasi' },
           ],
         },
