@@ -99,13 +99,15 @@ Pencil adalah **sumber ukuran dan gaya**, bukan sumber kode. Ekspor HTML Pencil 
 
 Alur per komponen/halaman:
 
-1. **Token (sekali, Tahap 1)** — `Print(GetVariables())` lewat `mcp__pencil__execute`, lalu tulis `styles/tokens.css` secara otomatis (skrip di `frontend/scripts/`): nama variabel `.pen` → `--nama`, mode `light` di `:root`, mode `dark` di `[data-theme="dark"]`. Jangan mengetik nilai token dengan tangan.
+1. **Token** — `Print(JSON.stringify(GetVariables()))` lewat `mcp__pencil__execute`, simpan hasilnya ke `frontend/scripts/pencil-variables.json`, lalu `npm run tokens` menulis `src/styles/tokens.css` (`--nama`, mode `light` di `:root`, `dark` di `[data-theme="dark"]`). Ulangi bila token di `.pen` berubah; jangan mengedit `tokens.css` dengan tangan.
 2. **Baca node, bukan ekspor** — `Print(Get("<id>", {depth: 3}))` untuk komponen library, atau cari frame halaman lewat FrameIndex lalu baca subtree-nya. Nilai di node masih berupa token (`$bg-surface`, `$radius-lg`) plus padding/gap/ukuran/font numerik — terjemahkan 1:1 ke CSS (`var(--bg-surface)`, `padding: 24px`, `gap: 16px`). `layout: vertical/horizontal` → flex column/row; `fill_container` → `flex: 1`/`width: 100%`; `fit_content` → ukuran alami.
 3. **Baca konteks** — `context` di node dan note di samping frame berisi perilaku, validasi, izin, dan FR id. Itu spesifikasi; ikuti bersama PRD.
 4. **Instans & override** — node `ref` menunjuk komponen library (id di DesignBrief); `descendants` berisi override (teks, ikon, keadaan). Petakan ke props komponen React, jangan membuat salinan komponen.
 5. **Responsif & keadaan** — frame `.pen` berukuran tetap (1440 / 390). Bangun layout cair dengan breakpoint 900 px; keadaan hover/fokus/nonaktif diambil dari matriks keadaan di SourceOfTruth.
 6. **Verifikasi** — `TakeScreenshot([frameId])` lalu bandingkan dengan tampilan aplikasi di lebar yang sama. Perbedaan yang disengaja dicatat di laporan checkpoint.
 7. **Ekspor HTML hanya sebagai referensi ukuran** bila struktur node sulit dibaca — simpan di scratchpad, tidak di repositori.
+
+Verifikasi visual tanpa ekstensi Chrome: jalankan `npx vite` di latar, lalu Edge headless (`msedge --headless=new --screenshot=… --window-size=1440,5200 <url>`). Edge headless punya lebar jendela minimum di atas 390 px — untuk ponsel, muat halaman di dalam `<iframe>` selebar 390 px dari berkas sementara di `frontend/public/` (hapus setelahnya). Browser terintegrasi Pencil sering macet saat screenshot.
 
 Batasan MCP Pencil: hanya baca (kecuali diminta mengubah mockup); visitor `Get` pada seluruh dokumen dengan `resolveInstances` bisa kena batas waktu — baca per frame atau per kolom modul; variabel tidak bertahan antar panggilan `execute` — pakai id literal.
 
@@ -150,16 +152,16 @@ Skenario uji: `npm run dev` menampilkan halaman kosong tanpa galat konsol.
 
 ---
 
-### Tahap 1 — Fondasi visual ⬜
+### Tahap 1 — Fondasi visual ✅
 
 Hasil:
-- [ ] `styles/tokens.css` diekspor dari variabel `Simario.pen` (terang + gelap, termasuk `--text-link`)
-- [ ] Fon Newsreader, Plus Jakarta Sans, JetBrains Mono termuat
-- [ ] Komponen dasar dengan semua keadaan (default, hover, fokus, ditekan, nonaktif, memuat, galat): Button (Primary, Secondary, Ghost, Destructive, FinalizeOperator), TextInput, Textarea, Select, DatePickerField, SearchField, Checkbox, Toggle, FileDrop
-- [ ] Chip & lencana: LineChip, CapacityChip, PredicateBadge, StatusChip, MarkerBadge, Avatar, AttachmentChip
-- [ ] Umpan balik: InlineAlert (4 varian), Toast, EmptyState, Skeleton
-- [ ] Wadah: Card, SummaryStrip, FilterPills, DataTable + TableCardMobile, Pagination, ConfirmDialog, SlideOver
-- [ ] Halaman `/_komponen` (hanya mode dev) memamerkan semua komponen, terang dan gelap
+- [x] `styles/tokens.css` dihasilkan `npm run tokens` dari `scripts/pencil-variables.json` (snapshot `GetVariables()` Pencil; 165 token, 69 nilai gelap, termasuk `--text-link`) + bayangan komposit
+- [x] Fon Newsreader, Plus Jakarta Sans, JetBrains Mono termuat (`@fontsource-variable`)
+- [x] Komponen dasar dengan semua keadaan (default, hover, fokus, ditekan, nonaktif, memuat, galat): Button (Primary, Secondary, Ghost, Destructive, FinalizeOperator), TextInput, Textarea, Select, DatePickerField, SearchField, Checkbox, Toggle, FileDrop
+- [x] Chip & lencana: LineChip, CapacityChip, PredicateBadge, StatusChip, MarkerBadge, Avatar, AttachmentChip (berkas, gambar, memindai, konfidensial tersamar)
+- [x] Umpan balik: InlineAlert (4 varian, "Coba Lagi"), Toast (4 detik, maks 3), EmptyState, Skeleton
+- [x] Wadah: Card, PageHeader, SummaryStrip, FilterPills, DataTable (kartu bertumpuk < 900 px) + TableCardMobile, Pagination, ConfirmDialog, SlideOver (fokus terkunci, Esc)
+- [x] Halaman `/_komponen` (hanya mode dev) memamerkan semua komponen; `?tema=gelap` untuk mode gelap
 
 Skenario uji: bandingkan `/_komponen` dengan bagian SourceOfTruth di `.pen`; navigasi keyboard menampilkan cincin fokus di semua kontrol.
 
@@ -318,6 +320,7 @@ npm run lint
 
 - Repositori di root `simario2/`; `.gitignore` mencakup `node_modules`, `dist`, `.env*`.
 - Komit kecil per tahap/fitur, pesan dalam bahasa Inggris berbentuk imperatif (`Add assessment comparison rules`).
+- **Tanpa baris `Co-Authored-By` atau atribusi Claude apa pun** di pesan komit (permintaan pengguna).
 - Jangan push atau membuat remote tanpa permintaan pengguna.
 
 ## 12. Jangan
