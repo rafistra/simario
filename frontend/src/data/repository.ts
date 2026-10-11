@@ -159,3 +159,7 @@ export { assessmentApi } from './api/assessment';
 export { historyApi } from './api/history';
 export { homeApi } from './api/home';
 export { sheetApi } from './api/sheets';
+export { adminApi } from './api/admin';
+export { calendarApi } from './api/calendar';
+export { importApi } from './api/importer';
+export { insightsApi } from './api/insights';

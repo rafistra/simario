@@ -24,7 +24,14 @@ import HistoryPage from '@/pages/history/HistoryPage';
 import PositionListPage from '@/pages/home/PositionListPage';
 import NotificationsPage from '@/pages/notifications/NotificationsPage';
 import SheetPage from '@/pages/sheets/SheetPage';
-import { Placeholder } from '@/pages/Placeholder';
+import UsersPage from '@/pages/admin/UsersPage';
+import RolesPage from '@/pages/admin/RolesPage';
+import AssignmentsPage from '@/pages/admin/AssignmentsPage';
+import FiscalYearsPage from '@/pages/admin/FiscalYearsPage';
+import ImportPage from '@/pages/admin/ImportPage';
+import MyPositionsPage from '@/pages/admin/MyPositionsPage';
+import MetricsPage from '@/pages/admin/MetricsPage';
+import AuditPage from '@/pages/admin/AuditPage';
 import { useAuth } from '@/state/useAuth';
 
 // Dev-only component gallery (Tahap 1); excluded from production bundles.
@@ -35,10 +42,6 @@ function RequireWideScope({ children }: { children: ReactNode }) {
   const scope = useAuth().permissions.get(1);
   return scope === 'unit' || scope === 'semua' ? <>{children}</> : <ForbiddenPage />;
 }
-
-const page = (crumbs: string[], title: string, stage: number, eyebrow?: string) => (
-  <Placeholder crumbs={crumbs} title={title} stage={stage} eyebrow={eyebrow} />
-);
 
 export default function App() {
   return (
@@ -54,7 +57,11 @@ export default function App() {
             <Route path="notifikasi" element={<NotificationsPage />} />
             <Route
               path="jabatan-saya"
-              element={<RequireHolding>{page(['Jabatan Saya'], 'Jabatan Saya', 9)}</RequireHolding>}
+              element={
+                <RequireHolding>
+                  <MyPositionsPage />
+                </RequireHolding>
+              }
             />
             <Route
               path="jabatan"
@@ -147,7 +154,7 @@ export default function App() {
                 path="pengguna"
                 element={
                   <RequirePermission anyOf={[21]}>
-                    {page(['Pengaturan', 'Pengguna'], 'Pengguna dan Jabatan', 9, 'Pengaturan')}
+                    <UsersPage />
                   </RequirePermission>
                 }
               />
@@ -155,7 +162,7 @@ export default function App() {
                 path="peran"
                 element={
                   <RequirePermission anyOf={[22]}>
-                    {page(['Pengaturan', 'Peran'], 'Peran dan Izin', 9, 'Pengaturan')}
+                    <RolesPage />
                   </RequirePermission>
                 }
               />
@@ -163,12 +170,7 @@ export default function App() {
                 path="penugasan-pemantauan"
                 element={
                   <RequirePermission anyOf={[20]}>
-                    {page(
-                      ['Pengaturan', 'Penugasan Pemantauan'],
-                      'Penugasan Pemantauan',
-                      9,
-                      'Pengaturan',
-                    )}
+                    <AssignmentsPage />
                   </RequirePermission>
                 }
               />
@@ -176,7 +178,7 @@ export default function App() {
                 path="tahun-anggaran"
                 element={
                   <RequirePermission anyOf={[19]}>
-                    {page(['Pengaturan', 'Tahun Anggaran'], 'Tahun Anggaran', 9, 'Pengaturan')}
+                    <FiscalYearsPage />
                   </RequirePermission>
                 }
               />
@@ -184,7 +186,7 @@ export default function App() {
                 path="impor"
                 element={
                   <RequirePermission anyOf={[18, 20, 21]}>
-                    {page(['Pengaturan', 'Impor Data'], 'Impor Data', 9, 'Pengaturan')}
+                    <ImportPage />
                   </RequirePermission>
                 }
               />
@@ -193,7 +195,7 @@ export default function App() {
               path="metrik"
               element={
                 <RequirePermission anyOf={[22]}>
-                  {page(['Metrik'], 'Metrik Produk', 9)}
+                  <MetricsPage />
                 </RequirePermission>
               }
             />
@@ -201,7 +203,7 @@ export default function App() {
               path="jejak-audit"
               element={
                 <RequirePermission anyOf={[23]}>
-                  {page(['Jejak Audit'], 'Jejak Audit', 9)}
+                  <AuditPage />
                 </RequirePermission>
               }
             />

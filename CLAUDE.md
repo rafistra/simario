@@ -286,17 +286,19 @@ Skenario uji: cetak dari tampilan berjalan membuat snapshot baru; mencetak versi
 
 ---
 
-### Tahap 9 — Administrasi & Metrik (ADM) ⬜
+### Tahap 9 — Administrasi & Metrik (ADM) ✅
 
 Hasil:
-- [ ] `/pengaturan/pengguna` — tabel, Tambah Pengguna, Tetapkan Jabatan (Pokja + Pengisi), Alih Pejabat, Atur Ulang Kata Sandi, Nonaktifkan (+ penolakan Pengisi)
-- [ ] `/pengaturan/peran` — daftar peran, tabel 26 izin dengan cakupan, "Hanya Pejabat", Superadmin terkunci, penjaga INV-5
-- [ ] `/pengaturan/penugasan-pemantauan` — tabel, kartu "Belum ditugaskan", dialog massal, INV-14
-- [ ] `/pengaturan/tahun-anggaran` — buat TA, editor kuartal, validasi INV-9, panel arsip, pengecualian Lini 3, arsip manual
-- [ ] `/pengaturan/impor` — 3 jenis, unduh templat CSV, uji coba (dry run) dengan laporan galat, "Terapkan", riwayat
-- [ ] `/jabatan-saya` — kartu Pejabat/Operator, Tunjuk Operator, Cabut
-- [ ] `/metrik` — kartu tujuan 1, 2, 3, 4, 8, 9 dengan kueri, "Data belum cukup", unduh CSV
-- [ ] `/jejak-audit` — filter, baris dapat dibuka (sebelum/sesudah), redaksi VIS-8, "Tampilkan nilai asli" (izin 24, dicatat)
+- [x] `/pengaturan/pengguna` — tabel, Tambah Pengguna, Tetapkan Jabatan (Pokja + Pengisi), Alih Pejabat, Atur Ulang Kata Sandi, Nonaktifkan (+ penolakan Pengisi)
+- [x] `/pengaturan/peran` — daftar peran, tabel 26 izin dengan cakupan, "Hanya Pejabat", Superadmin terkunci, penjaga INV-5
+- [x] `/pengaturan/penugasan-pemantauan` — tabel, kartu "Belum ditugaskan", dialog massal, INV-14
+- [x] `/pengaturan/tahun-anggaran` — buat TA, editor kuartal, validasi INV-9, panel arsip, pengecualian Lini 3, arsip manual
+- [x] `/pengaturan/impor` — 3 jenis, unduh templat CSV, uji coba (dry run) dengan laporan galat, "Terapkan", riwayat
+- [x] `/jabatan-saya` — kartu Pejabat/Operator, Tunjuk Operator, Cabut
+- [x] `/metrik` — kartu tujuan 1, 2, 3, 4, 8, 9 dengan kueri, "Data belum cukup", unduh CSV
+- [x] `/jejak-audit` — filter, baris dapat dibuka (sebelum/sesudah), redaksi VIS-8, "Tampilkan nilai asli" (izin 24, dicatat)
+
+Catatan Tahap 9: arsip TA berjalan otomatis lewat tugas terjadwal `calendar` pada batas akhir yang diperpanjang (§2.5) atau manual (izin 26) bila TW IV lengkap; saat arsip, penilaian belum tuntas → Tidak dinilai, penjelasan wajib → Tidak dikirim, versi lembar `archive` dibuat bila isi berubah. Set penilai Lini 3 dicatat otomatis saat jendela Lini 3 dibuka. Berkas SK/surat dicatat sebagai nama berkas (prototipe). Kata sandi sementara akun lokal ditampilkan sekali kepada admin. Metrik Tujuan 8 menampilkan "Data belum cukup" karena instrumentasi waktu-di-halaman belum ada. Riwayat impor dibaca dari jejak audit (`impor_*`). Placeholder tahap dihapus — semua rute §1.8 kini berisi halaman.
 
 Skenario uji: Admin DKB melakukan Alih Pejabat PPK A-1 → operator lama berakhir otomatis; Andi menunjuk Galih Pratama sebagai operator → Galih bisa masuk.
 

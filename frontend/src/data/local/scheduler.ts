@@ -10,6 +10,8 @@ import type { DB } from '../db';
 import { runComparisons } from './comparisons';
 import { runReminders } from './reminders';
 import { runSheetFreeze } from '../api/sheets';
+import { runCalendar } from '../api/calendar';
+import { expireDelegations } from '../api/admin';
 import { mutateDb } from './store';
 
 export type ScheduledTask = (draft: DB, at: ISODateTime) => void;
@@ -90,3 +92,6 @@ registerTask('comparisons', (draft, at) => runComparisons(draft, at));
 registerTask('reminders', runReminders);
 /** FR-LBR-009 automatic sheet versions. */
 registerTask('sheet-freeze', runSheetFreeze);
+/** §2.5 year status, expected Lini 3 sets, archive at the hard limit; expired delegations. */
+registerTask('calendar', runCalendar);
+registerTask('delegations', expireDelegations);
