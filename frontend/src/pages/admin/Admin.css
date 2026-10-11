@@ -1,0 +1,615 @@
+/* Administration — .pen Gtxmt (users), d9dXY (roles), QhkQe (assignments), uOPuk (fiscal years),
+   Lpxws (import), C2FUo5 (my positions), e0kPe (metrics), AdJ11 (audit). */
+@import '../assessment/Assessment.css';
+
+.adm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: var(--content-max);
+}
+
+.adm--narrow {
+  max-width: 1000px;
+}
+
+.adm__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.adm__filters {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr));
+  align-items: end;
+  gap: 12px;
+}
+
+.audit__filters {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.adm__who {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.adm__sub {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.adm__warn {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--warn-fg);
+}
+
+.adm__danger {
+  color: var(--danger-fg);
+}
+
+.adm__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+}
+
+.adm__chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.adm__role {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  line-height: 1.5;
+  background: var(--info-bg);
+  color: var(--info-fg);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.adm__role.is-auto {
+  background: var(--bg-surface-muted);
+  color: var(--text-muted);
+}
+
+.adm__role svg {
+  width: 11px;
+  height: 11px;
+  margin-right: 3px;
+  vertical-align: -1px;
+}
+
+.adm__form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.adm__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.adm__row > .field {
+  flex: 1;
+  min-width: 160px;
+}
+
+.adm__fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.adm__support {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.adm__support .control {
+  width: 180px;
+  height: 36px;
+}
+
+.adm__bullets {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  font-size: 13px;
+}
+
+.adm__kv {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px 20px;
+  margin: 0 0 8px;
+}
+
+.adm__kv dt {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.adm__kv dd {
+  margin: 2px 0 0;
+  font-size: 14px;
+}
+
+.adm__h2 {
+  margin: 8px 0 0;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.adm__h3 {
+  margin: 12px 0 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.adm__ops {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+}
+
+.adm__ops li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.adm__ops.is-past li {
+  opacity: 0.65;
+}
+
+.adm__past summary {
+  margin-top: 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.adm__picks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: -6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.adm__pick {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  text-align: left;
+  cursor: pointer;
+}
+
+.adm__pick.is-on {
+  border-color: var(--action-primary);
+  box-shadow: inset 3px 0 0 var(--action-primary);
+}
+
+.adm__warncard {
+  border-color: var(--warning-500);
+}
+
+/* Roles */
+.roles,
+.fy {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+}
+
+.roles__list,
+.fy__years {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.roles__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  color: var(--text-strong);
+  text-align: left;
+  cursor: pointer;
+}
+
+.roles__item.is-active {
+  border-color: var(--action-primary);
+  box-shadow: inset 3px 0 0 var(--action-primary);
+}
+
+.roles__badge {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.roles__name {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  font-weight: 600;
+}
+
+.roles__lock {
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted);
+}
+
+.roles__add {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.roles__panel,
+.fy__main {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.roles__panel {
+  padding: 16px 20px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+}
+
+.roles__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.roles__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+}
+
+.perm {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.perm th,
+.perm td {
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--border-subtle);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.perm thead th,
+.perm__group th {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.perm__group th {
+  padding-top: 14px;
+  background: var(--bg-surface-muted);
+}
+
+.perm__label {
+  font-weight: 500;
+}
+
+.perm__code {
+  display: inline-block;
+  min-width: 22px;
+  color: var(--text-muted);
+}
+
+.perm__tag {
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  background: var(--capacity-pejabat-bg);
+  color: var(--capacity-pejabat-fg);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.perm__tag--draft {
+  background: var(--info-bg);
+  color: var(--info-fg);
+}
+
+.perm__check {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--action-primary);
+}
+
+.perm__scope {
+  width: 120px;
+  height: 34px;
+  font-size: 12px;
+}
+
+/* Fiscal years */
+.fy__table {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-x: auto;
+}
+
+.fy__row {
+  display: grid;
+  grid-template-columns: 56px repeat(6, minmax(150px, 1fr)) 90px 80px;
+  align-items: center;
+  gap: 6px;
+  min-width: 1180px;
+}
+
+.fy__row--head {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.fy__date,
+.fy__num {
+  height: 38px;
+  font-size: 12px;
+}
+
+.fy__date.is-bad {
+  border-color: var(--danger-500);
+  background: var(--danger-bg);
+}
+
+.fy__assessors {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 13px;
+}
+
+.fy__assessor {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Metrics */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.metric__value {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0 0 12px;
+}
+
+.metric__figure {
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 600;
+}
+
+.metric__status {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--success-fg);
+}
+
+.metric__status.is-low {
+  color: var(--danger-fg);
+}
+
+.metric__none {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0 0 12px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface-muted);
+}
+
+.metric__points {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 10px;
+  padding: 0;
+  list-style: none;
+}
+
+.metric__points li {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.metric__bar {
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface-muted);
+  overflow: hidden;
+}
+
+.metric__bar span {
+  display: block;
+  height: 100%;
+  background: var(--action-primary);
+}
+
+.metric__pval {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.metric__query {
+  margin: 0;
+  font-size: 11px;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+/* Audit */
+.audit {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  list-style: none;
+  overflow: hidden;
+}
+
+.audit__row + .audit__row {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.audit__head {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.2fr) 20px;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 14px;
+  border: 0;
+  background: none;
+  color: var(--text-strong);
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.audit__head:hover {
+  background: var(--action-hover-bg);
+}
+
+.audit__head svg {
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+}
+
+.audit__head svg.is-open {
+  transform: rotate(180deg);
+}
+
+.audit__time {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.audit__action {
+  font-weight: 600;
+}
+
+.audit__diff {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0 14px 14px;
+}
+
+.audit__diff pre {
+  margin: 4px 0 0;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 899.98px) {
+  .adm__filters,
+  .audit__filters {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .roles,
+  .fy,
+  .metrics,
+  .audit__diff {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .audit__head {
+    grid-template-columns: minmax(0, 1fr) 20px;
+  }
+
+  .audit__head > :not(:first-child):not(:last-child):not(.audit__action) {
+    grid-column: 1;
+  }
+}
