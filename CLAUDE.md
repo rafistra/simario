@@ -38,7 +38,8 @@ frontend/src/
   layout/        AppShell, Sidebar, Topbar, WorkspaceHeader, MobileDrawer
   pages/         per modul: auth, home, register, board, assessment, history, sheets, master, notifications, admin, faults
   domain/        types.ts (entitas PRD §2.8.1), rules/ (fungsi murni aturan bisnis), visibility.ts (VIS-1…9)
-  data/          repository.ts (antarmuka), local/ (implementasi localStorage), seed/ (data contoh)
+  data/          db.ts (koleksi), repository.ts (antarmuka async), local/ (store, call, writers, scheduler), seed/ (data contoh)
+  lib/           format, useQuery, useFocusTrap, theme
   state/         session (persona, jabatan aktif, tampilan peran), clock (tanggal simulasi), toast
   dev/           DevPanel (ganti persona, geser tanggal, reset data)
 ```
@@ -167,20 +168,26 @@ Skenario uji: bandingkan `/_komponen` dengan bagian SourceOfTruth di `.pen`; nav
 
 ---
 
-### Tahap 2 — Fondasi aplikasi ⬜
+### Tahap 2 — Fondasi aplikasi ✅
 
 Hasil:
-- [ ] `domain/types.ts`: semua entitas PRD §2.8.1
-- [ ] `data/repository.ts` + implementasi localStorage (`simario:v1:`), latensi simulasi, reset
-- [ ] Seed lengkap: unit kerja, jenis jabatan, jabatan, pengguna & persona, holding Pejabat/Operator, peran & 26 izin, penugasan pemantauan, TA 2026 (diarsipkan) & TA 2027 dengan kuartal, versi pita skor, formulir Data Umum, register PPK A-1 dan contoh lain, komentar, penilaian TW I, snapshot, notifikasi, audit — konsisten dengan DesignBrief
-- [ ] Tahap & template diimpor dari `docs/seed/template_risiko_rapim.json`; test memastikan jumlahnya 4 jenis / 14 tahap / 146 risiko / 302 mitigasi dan setiap risiko register contoh yang `is_custom = false` cocok persis dengan salah satu template di tahap & jenis risikonya
-- [ ] `state/clock` (default 6 Apr 2027) dan evaluator tugas terjadwal
-- [ ] Sesi: `/login` (SSO → pemilih persona; akun lokal; galat; terkunci 5×), `/ganti-kata-sandi` (wajib & mandiri), batas 60 menit tidak aktif
-- [ ] AppShell: Sidebar (pemilih jabatan "JABATAN AKTIF", menu per tampilan peran, blok pengguna + menu ⋯), Topbar (breadcrumb, cari Ctrl K, lonceng, tombol kontekstual), WorkspaceHeader + tab, OperatorNotice, drawer < 900 px
-- [ ] Router untuk semua rute §1.8 (halaman belum dibangun tampil sebagai placeholder) + 403, 404, 500, luring
-- [ ] `domain/rules/permissions.ts` (izin + holding + Pejabat/Pengisi) dan `domain/visibility.ts` (VIS-1…9) dengan test
-- [ ] Penulis AuditLog dan Notification terpusat
-- [ ] DevPanel: ganti persona, geser tanggal, matikan latensi, reset data
+- [x] `domain/types.ts`: semua entitas PRD §2.8.1 (camelCase) + `domain/permissions.ts` (26 izin FR-ADM-002), `domain/calendar.ts` (default triwulan §2.5, hari kerja, keterlambatan), `domain/scoreBands.ts`
+- [x] `data/repository.ts` (pintu tunggal; `authApi`, `notificationApi`, `preferenceApi` — modul lain menambah namespace) + `data/local/` (store immer + localStorage `simario:v1:`, `call()` dengan latensi/galat/luring, penulis audit & notifikasi, `scheduler.ts`), reset dari DevPanel
+- [x] Seed (`data/seed/`): unit kerja, 7 jenis jabatan, 12 jabatan, 20 pengguna, holding Pejabat/Operator (termasuk Pokja multi-Pejabat dan delegasi berakhir), 5 peran + izin default, penugasan pemantauan, TA 2026 (diarsipkan) & TA 2027, pita skor (Versi 1 aktif, draf Versi 2 bercelah), formulir Data Umum, register PPK A-1 2026/2027, PPK A-2, KPA Satker A, Pokja 03, Pejabat Pengadaan Satker B, 18 komentar + lampiran, penilaian TW IV 2026 & TW I 2027 (+ draf buta TW II), hasil perbandingan, notifikasi, audit
+- [x] Tahap & template diimpor dari `docs/seed/template_risiko_rapim.json`; test memastikan 4 / 14 / 146 / 302 dan uraian risiko register = template (tahap & jenis sama)
+- [x] `state/clock` (default 6 Apr 2027 09.00, berjalan mengikuti waktu nyata) dan evaluator tugas terjadwal (`registerTask`; tugas pemindaian lampiran — Tahap 6 menambah pembukaan perbandingan dll.)
+- [x] Sesi: `/login` (SSO → pemilih persona; akun lokal; galat; terkunci 5×/15 menit), `/ganti-kata-sandi` (wajib tanpa sidebar & mandiri), batas tidak aktif (60 menit; bisa dipercepat di DevPanel) → `/login?alasan=sesi-berakhir`
+- [x] AppShell: Sidebar (kartu "JABATAN AKTIF" + menu jabatan per lini, menu per tampilan peran, blok pengguna + menu ⋯), Topbar (breadcrumb, cari Ctrl K, lonceng + jumlah, tombol kontekstual), WorkspaceHeader + pemilih TA + tab, OperatorNotice, banner luring, drawer < 900 px, tautan "Lewati ke konten"
+- [x] Router untuk semua rute §1.8 dengan penjaga izin/cakupan (halaman belum dibangun = placeholder bertanda tahap) + 403, 404, 500 (error boundary), keadaan luring
+- [x] `domain/rules/access.ts` (izin + holding + Pejabat/Pengisi + cakupan + partisipasi) dan `domain/rules/visibility.ts` (VIS-1…9) dengan test
+- [x] Penulis AuditLog (hanya tambah) dan Notification (idempoten per `eventKey`) terpusat
+- [x] DevPanel: ganti persona, geser tanggal (+ preset tanggal mockup), latensi, gagalkan panggilan berikutnya, luring, batas sesi, tema, reset data. Tautan demo: `?sebagai=usr-andi&waktu=2027-03-18T09:00`
+
+Catatan Tahap 2 (keputusan & perbedaan dari mockup):
+- Snapshot cetak (`PrintSnapshot`) di-seed pada Tahap 8 bersama pembuat payload Lembar; data TW I–III 2026 untuk riwayat lintas tahun ditambahkan pada Tahap 7.
+- Mockup Beranda Superadmin menyebut "Unit Pendukung Pemantauan UKPBJ" tanpa Pejabat, padahal Lestari adalah Operatornya (INV-11 mensyaratkan Pejabat aktif). Seed memberi UKPBJ Pejabat Wahyu Hidayat; jabatan tanpa Pejabat: PPK B-2 dan Pejabat Pengadaan Satker C.
+- Mockup "Pembaca Bukan Peserta" memakai Dimas pada PPK A-1, tetapi cakupan "Sendiri" Dimas tidak mencakup PPK A-1 (§1.5). Tahap 5 memakai pembaca lain yang sah (mis. pengguna dengan cakupan Unit).
+- Contoh risiko mockup yang tidak ada di dek: "Keterlambatan revisi DIPA…" dan "Deviasi RPD…" (PPK) menjadi risiko sendiri + usulan; "Spesifikasi produk E-Katalog…" → template `PPK-T3-KP-02`; "Persekongkolan…" → `PPK-T3-FR-03`; "Penyerapan anggaran…" pindah ke tahap PPK-T2 sesuai dek.
 
 Skenario uji: masuk sebagai Andi, Rafi, Siti, Hendra, Nur Aini, Admin DKB — menu sidebar dan pemilih jabatan sesuai; buka `/pengaturan/pengguna` sebagai Andi → 403; rute asal → 404.
 
