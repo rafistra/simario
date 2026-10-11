@@ -99,7 +99,7 @@ describe('Penilaian Triwulan', () => {
     ).toBeInTheDocument();
     fireEvent.click(within(dialog).getByRole('button', { name: 'Lihat dan Catat' }));
     expect(await screen.findByText(/Tampilan buta tercatat di jejak audit/)).toBeInTheDocument();
-    expect(getDb().audit.at(-1)?.action).toBe('lihat_penilaian_buta');
+    expect(getDb().audit.at(-1)?.action).toBe('lihat_penilaian_sebelum_dibuka');
   });
 
   it('lists positions for the Lini 3 queue, including unpublished registers', async () => {

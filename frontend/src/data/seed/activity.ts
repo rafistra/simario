@@ -52,7 +52,7 @@ export const notifications: Notification[] = [
     'usr-andi',
     'mention',
     "Maya Kusuma menyebut Anda di utas 'Pemecahan kontrak.'",
-    `${A1_BOARD}/risiko/rr-a1-pemecahan#cm-14`,
+    `${A1_BOARD}/risiko/rr-a1-pemecahan#komentar-cm-14`,
     '2027-04-02T15:00',
   ),
   n(
@@ -112,7 +112,7 @@ export const notifications: Notification[] = [
     'usr-siti',
     'mention',
     "Rafi Ananda menyebut Anda di utas 'Penyerapan anggaran tidak mencapai target per Triwulan.'",
-    `${A1_BOARD}/risiko/rr-a1-penyerapan#cm-1`,
+    `${A1_BOARD}/risiko/rr-a1-penyerapan#komentar-cm-1`,
     '2027-02-03T09:12',
     '2027-02-03T10:00',
   ),

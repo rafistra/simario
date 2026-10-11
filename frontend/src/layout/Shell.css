@@ -990,3 +990,16 @@ kbd {
     font-size: 12.5px;
   }
 }
+
+.bell-wrap {
+  position: relative;
+}
+
+button.bell {
+  cursor: pointer;
+}
+
+.bell[aria-expanded='true'] {
+  border-color: var(--action-primary);
+  box-shadow: 0 0 0 2px var(--ring-focus);
+}
