@@ -73,8 +73,10 @@ describe('routing and access guards', () => {
     ).toBeInTheDocument();
   });
 
-  it('lets Superadmin reach configuration pages', () => {
+  it('lets Superadmin reach configuration pages', async () => {
     visit('/pengaturan/pengguna', 'usr-admin');
-    expect(screen.getByRole('heading', { name: 'Pengguna dan Jabatan' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Pengguna dan Jabatan' }),
+    ).toBeInTheDocument();
   });
 });

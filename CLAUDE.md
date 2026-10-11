@@ -304,15 +304,17 @@ Skenario uji: Admin DKB melakukan Alih Pejabat PPK A-1 → operator lama berakhi
 
 ---
 
-### Tahap 10 — Penyelesaian & verifikasi ⬜
+### Tahap 10 — Penyelesaian & verifikasi ✅
 
 Hasil:
-- [ ] Semua halaman diperiksa pada 390 px: kartu bertumpuk, drawer, BottomBar ponsel, target ≥44 px, tanpa gulir horizontal
-- [ ] Mode gelap di semua halaman (toggle di menu pengguna)
-- [ ] Aksesibilitas: urutan fokus, tautan lewati, peran ARIA, kontras, `prefers-reduced-motion`
-- [ ] Skeleton & keadaan galat di setiap halaman berdata; halaman 403/404/500/luring/sesi berakhir
-- [ ] Verifikasi silang: setiap frame di FrameIndex `.pen` punya padanan di aplikasi; daftar perbedaan yang tersisa
-- [ ] README singkat di `frontend/` (cara menjalankan, persona, DevPanel)
+- [x] Semua halaman diperiksa pada 390 px: kartu bertumpuk, drawer, BottomBar ponsel, target ≥44 px, tanpa gulir horizontal
+- [x] Mode gelap di semua halaman (toggle di menu pengguna)
+- [x] Aksesibilitas: urutan fokus, tautan lewati, peran ARIA, kontras, `prefers-reduced-motion`
+- [x] Skeleton & keadaan galat di setiap halaman berdata; halaman 403/404/500/luring/sesi berakhir
+- [x] Verifikasi silang: setiap frame di FrameIndex `.pen` punya padanan di aplikasi; daftar perbedaan yang tersisa
+- [x] README singkat di `frontend/` (cara menjalankan, persona, DevPanel)
+
+Catatan Tahap 10: audit otomatis 390 px atas 35 rute (iframe + pengukuran `scrollWidth`) — tanpa gulir horizontal dan tanpa galat JavaScript; target sentuh kecil diperbesar lewat aturan seluler di `base.css` (sakelar memakai area sentuh `::after`, tautan di dalam kalimat dikecualikan sesuai WCAG). Mode gelap ditambahkan di menu pengguna. Halaman yang membaca store langsung dibungkus `DataGate` agar punya skeleton dan galat + "Coba Lagi". Alur penuh TW I diuji di `data/api/flow.test.ts`. Padanan frame dan perbedaan yang disengaja tercatat di `frontend/README.md`.
 
 Skenario uji: alur penuh TW I dari pengisian sampai cetak Lembar dengan mengganti persona dan tanggal, tanpa galat konsol.
 

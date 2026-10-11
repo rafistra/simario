@@ -283,3 +283,45 @@ svg {
   background: var(--bg-surface-muted);
   color: var(--text-muted);
 }
+
+/* Touch targets ≥ 44 px on phones (AccessibilityContract) for compact controls defined per page. */
+@media (max-width: 899.98px) {
+  html .link-add,
+  html .thread__back,
+  html .thread__link,
+  html .hstrip__tab,
+  html .mrow__years,
+  html .qcard__link,
+  html .history__print,
+  html .mit-row__action,
+  html .comment__file-action,
+  html .acell__reopen,
+  html .adm__danger {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  html .icon-btn.icon-btn--sm {
+    width: 44px;
+    height: 44px;
+  }
+
+  html .perm__scope,
+  html .fy__date,
+  html .fy__num,
+  html .composer__quarter .control {
+    height: 44px;
+  }
+
+  /* The visual switch stays compact; its hit area grows to 44 px. */
+  html .toggle__track {
+    position: relative;
+  }
+
+  html .toggle__track::after {
+    content: '';
+    position: absolute;
+    inset: -12px -4px;
+  }
+}

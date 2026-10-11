@@ -1,6 +1,6 @@
 import { lazy, Suspense, type ReactNode } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { Toaster } from '@/components';
+import { DataGate, Toaster } from '@/components';
 import { DevPanel } from '@/dev/DevPanel';
 import { AppShell } from '@/layout/AppShell';
 import { RequireHolding, RequirePermission } from '@/layout/RequirePermission';
@@ -54,12 +54,21 @@ export default function App() {
 
           <Route element={<AppShell />}>
             <Route index element={<HomePage />} />
-            <Route path="notifikasi" element={<NotificationsPage />} />
+            <Route
+              path="notifikasi"
+              element={
+                <DataGate>
+                  <NotificationsPage />
+                </DataGate>
+              }
+            />
             <Route
               path="jabatan-saya"
               element={
                 <RequireHolding>
-                  <MyPositionsPage />
+                  <DataGate>
+                    <MyPositionsPage />
+                  </DataGate>
                 </RequireHolding>
               }
             />
@@ -92,7 +101,14 @@ export default function App() {
               <Route index element={<WorkspaceRedirect />} />
               <Route path="papan/:ta" element={<BoardPage />} />
               <Route path="papan/:ta/risiko/:rid" element={<ThreadPage />} />
-              <Route path="register/:ta" element={<RegisterPage />} />
+              <Route
+                path="register/:ta"
+                element={
+                  <DataGate>
+                    <RegisterPage />
+                  </DataGate>
+                }
+              />
               <Route path="penilaian/:ta/:tw" element={<AssessmentPage />} />
               <Route path="riwayat" element={<HistoryPage />} />
               <Route path="lembar/:ta/:tw" element={<SheetPage />} />
@@ -103,7 +119,9 @@ export default function App() {
                 path="jabatan"
                 element={
                   <RequirePermission anyOf={[17, 18]}>
-                    <PositionsPage />
+                    <DataGate>
+                      <PositionsPage />
+                    </DataGate>
                   </RequirePermission>
                 }
               />
@@ -111,7 +129,9 @@ export default function App() {
                 path="tahap"
                 element={
                   <RequirePermission anyOf={[15]}>
-                    <StagesPage />
+                    <DataGate>
+                      <StagesPage />
+                    </DataGate>
                   </RequirePermission>
                 }
               />
@@ -119,7 +139,9 @@ export default function App() {
                 path="template"
                 element={
                   <RequirePermission anyOf={[12]}>
-                    <TemplatesPage />
+                    <DataGate>
+                      <TemplatesPage />
+                    </DataGate>
                   </RequirePermission>
                 }
               />
@@ -127,7 +149,9 @@ export default function App() {
                 path="usulan"
                 element={
                   <RequirePermission anyOf={[13]}>
-                    <ProposalsPage />
+                    <DataGate>
+                      <ProposalsPage />
+                    </DataGate>
                   </RequirePermission>
                 }
               />
@@ -135,7 +159,9 @@ export default function App() {
                 path="data-umum"
                 element={
                   <RequirePermission anyOf={[16]}>
-                    <DataUmumPage />
+                    <DataGate>
+                      <DataUmumPage />
+                    </DataGate>
                   </RequirePermission>
                 }
               />
@@ -143,7 +169,9 @@ export default function App() {
                 path="skala-penilaian"
                 element={
                   <RequirePermission anyOf={[14]}>
-                    <ScoreBandsPage />
+                    <DataGate>
+                      <ScoreBandsPage />
+                    </DataGate>
                   </RequirePermission>
                 }
               />
@@ -154,7 +182,9 @@ export default function App() {
                 path="pengguna"
                 element={
                   <RequirePermission anyOf={[21]}>
-                    <UsersPage />
+                    <DataGate>
+                      <UsersPage />
+                    </DataGate>
                   </RequirePermission>
                 }
               />
@@ -162,7 +192,9 @@ export default function App() {
                 path="peran"
                 element={
                   <RequirePermission anyOf={[22]}>
-                    <RolesPage />
+                    <DataGate>
+                      <RolesPage />
+                    </DataGate>
                   </RequirePermission>
                 }
               />
@@ -170,7 +202,9 @@ export default function App() {
                 path="penugasan-pemantauan"
                 element={
                   <RequirePermission anyOf={[20]}>
-                    <AssignmentsPage />
+                    <DataGate>
+                      <AssignmentsPage />
+                    </DataGate>
                   </RequirePermission>
                 }
               />
@@ -178,7 +212,9 @@ export default function App() {
                 path="tahun-anggaran"
                 element={
                   <RequirePermission anyOf={[19]}>
-                    <FiscalYearsPage />
+                    <DataGate>
+                      <FiscalYearsPage />
+                    </DataGate>
                   </RequirePermission>
                 }
               />
@@ -186,7 +222,9 @@ export default function App() {
                 path="impor"
                 element={
                   <RequirePermission anyOf={[18, 20, 21]}>
-                    <ImportPage />
+                    <DataGate>
+                      <ImportPage />
+                    </DataGate>
                   </RequirePermission>
                 }
               />
