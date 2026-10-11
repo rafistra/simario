@@ -210,15 +210,17 @@ Skenario uji: Nur Aini membuka `/master/template` → pohon menampilkan 4 jenis 
 
 ---
 
-### Tahap 4 — Register (REG) ⬜
+### Tahap 4 — Register (REG) ✅
 
 Hasil:
-- [ ] `/jabatan/:jid/register/:ta` — Data Umum + blok identitas, bagian tahap (3 jenis risiko), kartu risiko template → mitigasi, "+ Risiko sendiri", "+ Mitigasi sendiri", "Tidak ada risiko", "Tahap tidak relevan"
-- [ ] BottomBar: autosave, jumlah celah, Operator "Tandai Siap Diterbitkan", Pejabat "Terbitkan Register" / "Terbitkan Tambahan" (daftar celah, dialog konfirmasi, flag `no_mitigation`)
-- [ ] Salin dari TA sebelumnya + ringkasan salin
-- [ ] Tambahan tengah tahun, nonaktifkan risiko/mitigasi (termasuk kasus TW IV), hapus draf
-- [ ] Tampilan baca (Lini 2/3, anggota Pokja bukan Pengisi), register diarsipkan
-- [ ] Usulan risiko dibuat saat terbit; Lini 2 diberi notifikasi; semua perubahan ke audit
+- [x] `/jabatan/:jid/register/:ta` — Data Umum + blok identitas, bagian tahap (3 jenis risiko), kartu risiko template → mitigasi, "+ Risiko sendiri", "+ Mitigasi sendiri", "Tidak ada risiko", "Tahap tidak relevan"
+- [x] BottomBar: autosave, jumlah celah, Operator "Tandai Siap Diterbitkan", Pejabat "Terbitkan Register" / "Terbitkan Tambahan" (daftar celah, dialog konfirmasi, flag `no_mitigation`)
+- [x] Salin dari TA sebelumnya + ringkasan salin
+- [x] Tambahan tengah tahun, nonaktifkan risiko/mitigasi (termasuk kasus TW IV), hapus draf
+- [x] Tampilan baca (Lini 2/3, anggota Pokja bukan Pengisi), register diarsipkan
+- [x] Usulan risiko dibuat saat terbit; Lini 2 diberi notifikasi; semua perubahan ke audit
+
+Catatan Tahap 4: seed KPA Satker A diubah menjadi register TA 2026 (diarsipkan) tanpa register TA 2027 agar alur "Salin dari TA 2026" dapat didemokan; template KPA-T1-KA-04 dinonaktifkan untuk demo penanda "Template sudah tidak aktif". SCHEMA_VERSION naik ke 3. Baris RiskQuarter dibuat saat terbit dan oleh tugas terjadwal `risk-quarters` (RB-REG-006). Mitigasi seed tidak membawa `publishedAt`; status active/inactive dianggap sudah terbit. Pembaca (non-pemegang jabatan) tidak melihat tambahan draf/siap; register yang belum pernah terbit tampil sebagai keadaan kosong bagi mereka.
 
 Skenario uji: Rafi menyusun lalu menandai siap → Andi menerima notifikasi dan menerbitkan; gerbang struktural memblokir, risiko tanpa mitigasi tetap terbit dengan flag.
 

@@ -459,27 +459,61 @@ for (const s of ['T2', 'T3', 'T4', 'T5'])
     'Paket lisensi diadakan melalui satu kali proses perencanaan dan E-Purchasing.',
   );
 
-/* ---------- KPA Satker A · TA 2027 (draft) ---------- */
+/* ---------- KPA Satker A · TA 2026 (archived) — no TA 2027 register yet ---------- */
+// Demonstrates "Salin dari TA 2026" (FR-REG-009) for Hadi Susanto, including a risk whose template
+// has since been deactivated (KPA-T1-KA-04) and one deactivated risk that is not copied.
 
-const KPA = 'reg-kpa-a-2027';
-register(KPA, 'pos-kpa-satker-a', 2027, 'draft', 'pt-kpa', {
-  kegiatan: ['Pembangunan Jalan Kawasan Inti'],
-  besarAnggaran: 18500000000,
-});
-templateRisk('KPA-T1-KA-03', {
-  id: 'rr-kpa-rpd',
-  registerId: KPA,
-  order: 1,
-  status: 'draft',
-  mitigations: [1, 2],
-});
-templateRisk('KPA-T1-KA-01', {
-  id: 'rr-kpa-blokir',
-  registerId: KPA,
+const KPA26 = 'reg-kpa-a-2026';
+const PUB_KPA26 = '2026-01-26T09:00';
+register(
+  KPA26,
+  'pos-kpa-satker-a',
+  2026,
+  'archived',
+  'pt-kpa',
+  {
+    kegiatan: ['Pembangunan Jalan Kawasan Inti', 'Penataan Drainase Kawasan'],
+    besarAnggaran: 16200000000,
+    target: 'Realisasi anggaran ≥ 95% dan jalan kawasan inti fungsional Desember 2026.',
+  },
+  { at: PUB_KPA26, by: 'usr-hadi' },
+);
+for (const [code, id, picks] of [
+  ['KPA-T1-KA-01', 'rr26-kpa-blokir', [1]],
+  ['KPA-T1-KA-03', 'rr26-kpa-rpd', [1, 2, 3]],
+  ['KPA-T1-KA-04', 'rr26-kpa-rup', [1, 2]],
+  ['KPA-T1-KP-02', 'rr26-kpa-sasaran', [1, 2]],
+  ['KPA-T1-FR-01', 'rr26-kpa-konflik', [1, 2]],
+  ['KPA-T3-KA-01', 'rr26-kpa-serapan', [1, 2, 3]],
+  ['KPA-T3-KP-01', 'rr26-kpa-tagihan', [1, 2]],
+  ['KPA-T3-FR-02', 'rr26-kpa-suap', [1, 2]],
+] as const)
+  templateRisk(code, {
+    id,
+    registerId: KPA26,
+    order: 1,
+    publishedAt: PUB_KPA26,
+    mitigations: [...picks],
+  });
+templateRisk('KPA-T1-KA-02', {
+  id: 'rr26-kpa-rencana',
+  registerId: KPA26,
   order: 2,
-  status: 'draft',
+  publishedAt: PUB_KPA26,
   mitigations: [1],
+  deactivated: {
+    at: '2026-06-10T10:00',
+    fromQuarterId: 'q-2026-3',
+    reason: 'Rencana kegiatan disusun ulang bersama Biro Perencanaan.',
+  },
 });
+for (const stage of ['KPA-T2', 'KPA-T4', 'KPA-T5'])
+  declare(
+    KPA26,
+    `stg-${stage}`,
+    null,
+    'Ditangani pada tingkat Biro Perencanaan dan Biro Keuangan untuk Satker A.',
+  );
 
 /* ---------- Pokja Pemilihan 03 · TA 2027 (draft) ---------- */
 

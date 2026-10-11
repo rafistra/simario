@@ -213,7 +213,7 @@ describe('Data Umum forms (FR-MST-006)', () => {
     const forms = getDb().dataUmumForms.filter((f) => f.positionTypeId === 'pt-kpa');
     expect(forms.filter((f) => f.active).map((f) => f.version)).toEqual([2]);
     // Registers keep the version they started with.
-    expect(getDb().registers.find((r) => r.id === 'reg-kpa-a-2027')!.dataUmumFormId).toBe(
+    expect(getDb().registers.find((r) => r.id === 'reg-kpa-a-2026')!.dataUmumFormId).toBe(
       'du-pt-kpa-v1',
     );
   });

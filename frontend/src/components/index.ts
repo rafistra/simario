@@ -24,3 +24,4 @@ export type { SummaryItem, FilterPillItem } from './Surfaces/Surfaces';
 export { DataTable, TableCardMobile, Pagination } from './Table/Table';
 export type { Column } from './Table/Table';
 export { ConfirmDialog, SlideOver } from './Overlay/Overlay';
+export { BottomBar } from './BottomBar/BottomBar';

@@ -3,6 +3,7 @@
 // Later stages register comparison opening, lateness, recurrence detection, sheet freezing, and
 // archiving here.
 
+import { assessedInQuarter } from '@/domain/rules/register';
 import type { ISODateTime } from '@/domain/types';
 import { now } from '@/state/clock';
 import type { DB } from '../db';
@@ -52,5 +53,31 @@ export const activateScoreBands: ScheduledTask = (draft, at) => {
   }
 };
 
+/**
+ * RB-REG-006: when a quarter starts, every risk assessed in it gets its RiskQuarter row (risks
+ * published mid-quarter get theirs at publish). Archived years are left as they are.
+ */
+export const ensureRiskQuarters: ScheduledTask = (draft, at) => {
+  const day = at.slice(0, 10);
+  const open = new Set(draft.fiscalYears.filter((f) => f.status !== 'archived').map((f) => f.year));
+  const existing = new Set(draft.riskQuarters.map((rq) => `${rq.registerRiskId}|${rq.quarterId}`));
+  for (const q of draft.quarters) {
+    if (!open.has(q.fiscalYear) || q.startsOn > day) continue;
+    for (const risk of draft.risks) {
+      if (existing.has(`${risk.id}|${q.id}`) || !assessedInQuarter(draft, risk, q)) continue;
+      draft.riskQuarters.push({
+        id: `rq-${risk.id}-${q.id}`,
+        registerRiskId: risk.id,
+        quarterId: q.id,
+        comparisonStatus: 'waiting',
+        firstOpenedAt: null,
+        recurring: false,
+      });
+      existing.add(`${risk.id}|${q.id}`);
+    }
+  }
+};
+
 registerTask('attachment-scan', finishAttachmentScans);
+registerTask('risk-quarters', ensureRiskQuarters);
 registerTask('score-bands', activateScoreBands);

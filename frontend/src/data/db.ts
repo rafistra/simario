@@ -118,7 +118,7 @@ export const COLLECTIONS: Collection[] = [
 ];
 
 /** Bump when the seed or entity shapes change: stored data is then re-seeded. */
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 export const STORAGE_PREFIX = 'simario:v1:';
 
