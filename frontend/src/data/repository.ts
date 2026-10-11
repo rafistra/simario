@@ -158,3 +158,4 @@ export { boardApi } from './api/board';
 export { assessmentApi } from './api/assessment';
 export { historyApi } from './api/history';
 export { homeApi } from './api/home';
+export { sheetApi } from './api/sheets';

@@ -1,0 +1,44 @@
+/* Print stylesheet (FR-LBR-006): A4 portrait; only the snapshot being printed is shown. */
+
+@page {
+  size: A4 portrait;
+  margin: 14mm 12mm;
+}
+
+@media print {
+  body > *:not(.print-root) {
+    display: none !important;
+  }
+
+  .print-root {
+    display: block !important;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  .print-root .doc {
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+    border-radius: 0;
+    overflow: visible;
+    background: transparent;
+    color: #000;
+  }
+
+  .print-root .doc + .doc {
+    break-before: page;
+  }
+
+  .print-root .doc__watermark {
+    position: fixed;
+    opacity: 0.12;
+  }
+
+  .print-root .no-print,
+  .print-root button {
+    display: none !important;
+  }
+}

@@ -91,6 +91,7 @@ export function seedAsOf(db: DB, cutoff: string): DB {
     audit: db.audit.filter((a) => !after(a.at)),
     threadViews: db.threadViews.filter((v) => !after(v.lastSeenAt)),
     proposals: db.proposals.filter((p) => !after(p.createdAt)),
+    snapshots: db.snapshots.filter((x) => !after(x.createdAt)),
     fiscalYears: db.fiscalYears.map((f) =>
       after(f.archivedAt)
         ? { ...f, status: 'open' as const, archivedAt: null, archivedBy: null }

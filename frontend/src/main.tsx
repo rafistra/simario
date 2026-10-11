@@ -7,6 +7,7 @@ import { applyTheme, getTheme } from './lib/theme';
 import { useClock } from './state/clock';
 import { useSession } from './state/session';
 import './styles/base.css';
+import './styles/print.css';
 
 applyTheme(getTheme());
 
