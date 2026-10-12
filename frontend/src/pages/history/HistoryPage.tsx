@@ -16,7 +16,7 @@ import type { ChipView, HistoryCell, HistoryRow, HistoryView } from '@/data/api/
 import { historyApi } from '@/data/repository';
 import { QUARTER_ROMAN } from '@/domain/calendar';
 import type { LembarMutu } from '@/domain/rules/sheets';
-import { RISK_TYPE_LABEL, RISK_TYPES, type Predicate } from '@/domain/types';
+import { PREDICATE_INITIAL as SHORT, RISK_TYPE_LABEL, RISK_TYPES } from '@/domain/types';
 import type { WorkspaceOutletContext } from '@/layout/Workspace';
 import { usePageMeta } from '@/layout/pageMeta';
 import { formatDate, formatDateTime, formatScore } from '@/lib/format';
@@ -24,7 +24,6 @@ import { useQuery } from '@/lib/useQuery';
 import './History.css';
 
 const tw = (n: number) => `TW ${QUARTER_ROMAN[n - 1]}`;
-const SHORT: Record<Predicate, string> = { kurang: 'K', cukup: 'C', terkendali: 'T' };
 
 /** /jabatan/:jid/riwayat — FR-RWY-001 … 006. */
 export default function HistoryPage() {

@@ -15,6 +15,13 @@ export const PREDICATE_LABEL: Record<Predicate, string> = {
   terkendali: 'Terkendali dengan Baik',
 };
 
+/** Abbreviations for compact cells (history matrix, home, score-band summary). */
+export const PREDICATE_INITIAL: Record<Predicate, string> = {
+  kurang: 'K',
+  cukup: 'C',
+  terkendali: 'TB',
+};
+
 export const PREDICATE_RANK: Record<Predicate, number> = { kurang: 0, cukup: 1, terkendali: 2 };
 
 export const RISK_TYPES: RiskType[] = ['kinerja_anggaran', 'ketidakpatuhan', 'kecurangan'];

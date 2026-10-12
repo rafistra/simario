@@ -17,7 +17,12 @@ import {
 import { ApiError, masterApi } from '@/data/repository';
 import { useDb } from '@/data/local/store';
 import { validateBands, type BandProblem } from '@/domain/scoreBands';
-import { PREDICATE_LABEL, type ScoreBand, type ScoreBandVersion } from '@/domain/types';
+import {
+  PREDICATE_INITIAL,
+  PREDICATE_LABEL,
+  type ScoreBand,
+  type ScoreBandVersion,
+} from '@/domain/types';
 import { usePageMeta } from '@/layout/pageMeta';
 import { formatDate, formatScore, parseScore } from '@/lib/format';
 import { useAuth } from '@/state/useAuth';
@@ -38,7 +43,7 @@ const bandSummary = (bands: ScoreBand[]) =>
         b.lowerExclusive === null
           ? '0'
           : formatScore(Math.round((b.lowerExclusive + 0.1) * 10) / 10);
-      return `${lo}–${formatScore(b.upperInclusive)} ${PREDICATE_LABEL[b.predicate].split(' ')[0]!.charAt(0)}`;
+      return `${lo}–${formatScore(b.upperInclusive)} ${PREDICATE_INITIAL[b.predicate]}`;
     })
     .join(' · ');
 
