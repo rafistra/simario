@@ -447,6 +447,8 @@
   list-style: none;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
+  /* Clip row backgrounds to the rounded corners. */
+  overflow: hidden;
 }
 
 .du-fixed li {
