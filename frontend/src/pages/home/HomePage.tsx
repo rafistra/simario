@@ -15,7 +15,7 @@ import type { ActivityRow, HomeView, Obligation } from '@/data/api/home';
 import { homeApi } from '@/data/repository';
 import { QUARTER_ROMAN } from '@/domain/calendar';
 import type { LembarMutu } from '@/domain/rules/sheets';
-import { RISK_TYPE_LABEL, type Predicate } from '@/domain/types';
+import { PREDICATE_INITIAL as SHORT, RISK_TYPE_LABEL } from '@/domain/types';
 import { usePageMeta } from '@/layout/pageMeta';
 import { formatDate, formatDateLong, formatRelative, formatScore } from '@/lib/format';
 import { useQuery } from '@/lib/useQuery';
@@ -25,7 +25,6 @@ import './Home.css';
 
 const tw = (q: { number: number; fiscalYear: number }) =>
   `TW ${QUARTER_ROMAN[q.number - 1]} ${q.fiscalYear}`;
-const SHORT: Record<Predicate, string> = { kurang: 'K', cukup: 'C', terkendali: 'T' };
 
 /** Home (/) — FR-BRD-001 … 010; cards follow the active holding's line. */
 export default function HomePage() {
