@@ -33,8 +33,6 @@ export const risks: RegisterRisk[] = [];
 export const mitigations: RegisterMitigation[] = [];
 export const proposals: RiskProposal[] = [];
 
-const OBJECTIVE = rapim.dataUmum.defaultObjective;
-
 function register(
   id: string,
   positionId: string,
@@ -51,7 +49,7 @@ function register(
     fiscalYear,
     status,
     dataUmum: {
-      tujuan: OBJECTIVE,
+      tujuan: '',
       kegiatan: [],
       besarAnggaran: null,
       target: '',

@@ -20,7 +20,6 @@ import { useAuth } from '@/state/useAuth';
 import './Master.css';
 
 const FIXED = [
-  { label: 'Tujuan', kind: 'Teks panjang' },
   { label: 'Kegiatan', kind: 'Daftar' },
   { label: 'Besar Anggaran', kind: 'Mata uang (Rp)' },
   { label: 'Target', kind: 'Teks panjang' },
@@ -44,6 +43,7 @@ export default function DataUmumPage() {
   const [pendingType, setPendingType] = useState<string | null>(null);
   const form = db.dataUmumForms.find((f) => f.positionTypeId === typeId && f.active)!;
   const [objective, setObjective] = useState(form.defaultObjective);
+  const [objectiveOn, setObjectiveOn] = useState(form.objectiveEnabled);
   const [fields, setFields] = useState<DataUmumField[]>(form.fields);
   const [optionText, setOptionText] = useState<Record<number, string>>({});
   const [errors, setErrors] = useState<Record<number, string>>({});
@@ -51,6 +51,7 @@ export default function DataUmumPage() {
 
   useEffect(() => {
     setObjective(form.defaultObjective);
+    setObjectiveOn(form.objectiveEnabled);
     setFields(form.fields);
     setOptionText(Object.fromEntries(form.fields.map((f, i) => [i, (f.options ?? []).join(', ')])));
     setErrors({});
@@ -58,8 +59,10 @@ export default function DataUmumPage() {
 
   const dirty = useMemo(
     () =>
-      objective !== form.defaultObjective || JSON.stringify(fields) !== JSON.stringify(form.fields),
-    [objective, fields, form],
+      objective !== form.defaultObjective ||
+      objectiveOn !== form.objectiveEnabled ||
+      JSON.stringify(fields) !== JSON.stringify(form.fields),
+    [objective, objectiveOn, fields, form],
   );
 
   // Warn before leaving with unsaved changes (StateContract).
@@ -85,7 +88,7 @@ export default function DataUmumPage() {
   const save = async () => {
     setSaving(true);
     try {
-      const version = await masterApi.saveDataUmumForm(typeId, objective, fields);
+      const version = await masterApi.saveDataUmumForm(typeId, objective, fields, objectiveOn);
       setErrors({});
       toast.success(
         `Formulir disimpan sebagai Versi ${version}`,
@@ -146,13 +149,25 @@ export default function DataUmumPage() {
               </li>
             ))}
           </ul>
-          <Textarea
-            label="Teks bawaan Tujuan (dapat diubah pengguna)"
-            rows={2}
-            value={objective}
-            onChange={(e) => setObjective(e.target.value)}
-            error={!objective.trim() ? 'Teks bawaan Tujuan wajib diisi.' : undefined}
-          />
+
+          <p className="t-eyebrow du-section">Isian opsional</p>
+          <ul className="du-fixed du-optional">
+            <li>
+              <span className="du-fixed__label">Tujuan</span>
+              <span className="t-caption">Teks panjang · tidak wajib</span>
+              <Toggle label="Aktif" checked={objectiveOn} onChange={setObjectiveOn} />
+            </li>
+          </ul>
+          {objectiveOn ? (
+            <Textarea
+              label="Teks bawaan Tujuan (dapat diubah pengguna)"
+              rows={2}
+              value={objective}
+              onChange={(e) => setObjective(e.target.value)}
+            />
+          ) : (
+            <p className="t-caption">Tujuan tidak ditampilkan di register dan lembar.</p>
+          )}
 
           <p className="t-eyebrow du-section">Isian tambahan</p>
           {fields.length === 0 && (

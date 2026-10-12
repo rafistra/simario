@@ -212,10 +212,12 @@ export function KomunikasiDocument({
           <dt>Jabatan</dt>
           <dd>{id.positionName}</dd>
         </div>
-        <div>
-          <dt>Tujuan</dt>
-          <dd>{id.tujuan}</dd>
-        </div>
+        {id.tujuan && (
+          <div>
+            <dt>Tujuan</dt>
+            <dd>{id.tujuan}</dd>
+          </div>
+        )}
         <div>
           <dt>Pejabat</dt>
           <dd>{id.officialName || '—'}</dd>

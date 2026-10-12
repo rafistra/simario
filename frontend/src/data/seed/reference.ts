@@ -81,6 +81,7 @@ export const dataUmumForms: DataUmumForm[] = Object.values(TYPE_ID).map((positio
   positionTypeId,
   version: 1,
   fields: [],
+  objectiveEnabled: false,
   defaultObjective: rapim.dataUmum.defaultObjective,
   // PPK moved to Versi 2 (Sumber Dana, Kode Paket RUP) on 4 Jan 2027 — frame IIM4I.
   active: positionTypeId !== 'pt-ppk',
@@ -101,6 +102,7 @@ dataUmumForms.push({
     },
     { key: 'kode_paket_rup', label: 'Kode Paket RUP', kind: 'text', mandatory: false },
   ],
+  objectiveEnabled: false,
   defaultObjective: rapim.dataUmum.defaultObjective,
   active: true,
   createdAt: '2027-01-04',

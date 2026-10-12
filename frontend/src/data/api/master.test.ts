@@ -217,4 +217,13 @@ describe('Data Umum forms (FR-MST-006)', () => {
       'du-pt-kpa-v1',
     );
   });
+
+  it('keeps Tujuan optional and off by default; a saved version can switch it on', async () => {
+    const forms = () => getDb().dataUmumForms.filter((f) => f.active);
+    expect(forms().every((f) => !f.objectiveEnabled)).toBe(true);
+    await masterApi.saveDataUmumForm('pt-kpa', '', [], true);
+    const kpa = forms().find((f) => f.positionTypeId === 'pt-kpa')!;
+    expect(kpa.objectiveEnabled).toBe(true);
+    expect(kpa.defaultObjective).toBe('');
+  });
 });

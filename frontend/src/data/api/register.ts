@@ -88,7 +88,7 @@ function ensureRegister(d: DB, positionId: string, fiscalYear: number, a: Conten
     fiscalYear,
     status: 'draft',
     dataUmum: {
-      tujuan: form.defaultObjective,
+      tujuan: form.objectiveEnabled ? form.defaultObjective : '',
       kegiatan: [],
       besarAnggaran: null,
       target: '',
