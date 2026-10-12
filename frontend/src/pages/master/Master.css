@@ -608,11 +608,25 @@
 .band-preview__seg {
   display: grid;
   place-items: center;
+  /* Width follows the score range only, not the label length. */
+  flex-basis: 0;
   min-width: 6px;
   overflow: hidden;
   font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
+}
+
+.band-preview__label {
+  max-width: 100%;
+  padding: 0 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.band-preview__seg--gap .band-preview__label {
+  padding: 0;
+  text-overflow: clip;
 }
 
 .band-preview__seg--kurang {

@@ -63,7 +63,7 @@
       {
         "lowerExclusive": 3,
         "upperInclusive": 4,
-        "predicate": "Terkendali",
+        "predicate": "Terkendali dengan Baik",
         "label": "3,1 sampai dengan 4"
       }
     ]
@@ -2977,7 +2977,8 @@
     "Pejabat Pengadaan Data Umum (slide 64) memakai \"Nomor DIPA Petikan\" (salinan dari KPA); diganti Nomor dan Tanggal SK Pejabat Pengadaan, sejajar dengan PPK dan Pokja. Dikonfirmasi pengguna 11 Okt 2026.",
     "Pokja Data Umum (slide 53) tidak mencantumkan rujukan PMK; dibiarkan kosong.",
     "Salah ketik dikoreksi: \"kotrak\"→\"kontrak\", \"kontak\"→\"kontrak\", \"proges\"→\"progres\", \"komperhensif\"→\"komprehensif\", \"Pemantuan\"→\"Pemantauan\", \"tetentu\"→\"tertentu\", \"kontijensi\"→\"kontinjensi\", \"pengadaaan\"→\"pengadaan\", \"advise\"→\"advis\", \"review\"→\"reviu\"; spasi ganda dan titik akhir diseragamkan; huruf awal kalimat dikapitalkan.",
-    "Slide 68–71 (Panduan Media Komunikasi Tiga Lini) dan 74 (Lembar Mutu) menggambarkan siklus bulanan; PRD v2.2+ menggantinya dengan siklus triwulan dan utas per risiko. Tidak di-seed sebagai template (dikonfirmasi pengguna 11 Okt 2026)."
+    "Slide 68–71 (Panduan Media Komunikasi Tiga Lini) dan 74 (Lembar Mutu) menggambarkan siklus bulanan; PRD v2.2+ menggantinya dengan siklus triwulan dan utas per risiko. Tidak di-seed sebagai template (dikonfirmasi pengguna 11 Okt 2026).",
+    "Predikat tertinggi \"Terkendali\" diganti menjadi \"Terkendali dengan Baik\" (keputusan pengguna, 12 Okt 2026)."
   ],
   "totals": {
     "positionTypes": 4,

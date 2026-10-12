@@ -28,7 +28,7 @@
 |---|---|---|---|
 | `color-khatulistiwa` | Khatulistiwa | `#185088` | Tombol utama, tautan, ikon aktif |
 | `color-terakota` | Terakota | `#DBAF6C` | Aksen: garis kiri item menu aktif, ikon jabatan aktif, sorotan |
-| `color-jagawana` | Jagawana | `#428A40` | Sukses, predikat Terkendali |
+| `color-jagawana` | Jagawana | `#428A40` | Sukses, predikat Terkendali dengan Baik |
 | `color-pertiwi` | Pertiwi | `#FBF9D5` | Latar catatan Operator, area draf |
 | `color-buana` | Buana | `#04182A` | Teks paling gelap (jarang) |
 | `color-samudra` | Samudra | `#0A2342` | Sidebar, pil filter aktif, latar terbalik |
@@ -85,7 +85,7 @@
 
 | Peran | Teks / ikon | Latar | Garis | Catatan |
 |---|---|---|---|---|
-| **Terkendali** | `#2C5C2B` (success-700) | `#D5E9D4` (success-100) | — | Selalu dengan teks predikat |
+| **Terkendali dengan Baik** | `#2C5C2B` (success-700) | `#D5E9D4` (success-100) | — | Selalu dengan teks predikat |
 | **Cukup Terkendali** | `#815028` (accent-700) | `#F3E7CD` (accent-100) | — | Kontras ≥ 4,5:1 |
 | **Kurang Terkendali** | `#A81A12` (danger-700) | `#FBD0CD` (danger-100) | — | |
 | **Lini 1** | `#123F6D` (primary-700) | `#E3ECF6` | — | Chip teks "Lini 1" |

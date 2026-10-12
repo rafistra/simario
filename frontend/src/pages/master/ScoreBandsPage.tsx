@@ -83,7 +83,9 @@ function BandPreview({ bands, problems }: { bands: ScoreBand[]; problems: BandPr
             style={{ flexGrow: Math.max(s.to - s.from, 0.05) }}
             title={s.label}
           >
-            {s.to - s.from >= 0.6 ? s.label : s.kind === 'gap' ? '!' : ''}
+            <span className="band-preview__label">
+              {s.to - s.from >= 0.6 ? s.label : s.kind === 'gap' ? '!' : ''}
+            </span>
           </span>
         ))}
       </div>

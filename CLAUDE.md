@@ -69,7 +69,7 @@ frontend/src/
 - Linimasa TA 2027 (dari DesignBrief): TW I — Lini 3 buka 1 Jan, Lini 1 buka 1 Mar, tenggat L1 26 Mar, tenggat L3 2 Apr; TW II 1 Apr/1 Jun/25 Jun/2 Jul; TW III 1 Jul/1 Sep/24 Sep/1 Okt; TW IV 1 Okt/1 Des/31 Des/7 Jan 2028. Toleransi 7 hari, masa arsip 30 hari. TA 2026 diarsipkan 7 Feb 2027.
 - **Template risiko:** `Stage`, `RiskTemplate`, dan `MitigationTemplate` di-seed **hanya** dari `docs/seed/template_risiko_rapim.json` — impor berkas itu, jangan menyalin ulang teksnya ke kode. Pertahankan `code` template (mis. `PPK-T4-FR-03`) sebagai kunci stabil. Default objective Data Umum dan isian identitas per jenis juga dari berkas itu.
 - **Register contoh** (PPK A-1 dan lainnya) memilih risiko dari template tersebut dengan uraian persis (`description_snapshot`). Contoh uraian di mockup `.pen` bersifat ilustratif: bila tidak ada di dek, pakai template terdekat dari tahap yang benar, atau jadikan **risiko sendiri** (`is_custom = true`) yang sengaja menghasilkan usulan di `/master/usulan`. Contoh: "Penyerapan anggaran tidak mencapai target per Triwulan" ada di PPK tahap 2, bukan tahap 1; "Keterlambatan revisi DIPA menghambat jadwal pengadaan" tidak ada di dek → risiko sendiri.
-- **Pita skor aktif (dikonfirmasi pengguna):** 0–2,0 Kurang Terkendali · 2,1–3,0 Cukup Terkendali · 3,1–4,0 Terkendali. Batas bawah eksklusif, batas atas inklusif.
+- **Pita skor aktif (dikonfirmasi pengguna):** 0–2,0 Kurang Terkendali · 2,1–3,0 Cukup Terkendali · 3,1–4,0 Terkendali dengan Baik. Batas bawah eksklusif, batas atas inklusif.
 
 ## 6. Aturan bisnis yang wajib benar
 

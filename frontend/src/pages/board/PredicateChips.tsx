@@ -1,17 +1,14 @@
 import { Check, X } from 'lucide-react';
 import type { OpenedChip } from '@/domain/rules/board';
-import type { Predicate } from '@/domain/types';
+import { PREDICATE_LABEL, type Predicate } from '@/domain/types';
 
+// "Terkendali dengan Baik" has no short form (user decision).
 const SHORT: Record<Predicate, string> = {
   kurang: 'Kurang',
   cukup: 'Cukup',
-  terkendali: 'Terkendali',
+  terkendali: PREDICATE_LABEL.terkendali,
 };
-const LONG: Record<Predicate, string> = {
-  kurang: 'Kurang Terkendali',
-  cukup: 'Cukup Terkendali',
-  terkendali: 'Terkendali',
-};
+const LONG = PREDICATE_LABEL;
 
 /** Latest opened predicate chips (L1, each Lini 3 with ✓/✕) — FR-PPN-001, VIS-2. */
 export function PredicateChips({ chips, hidden }: { chips: OpenedChip[]; hidden?: boolean }) {
