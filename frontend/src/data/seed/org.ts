@@ -16,24 +16,25 @@ import type {
 } from '@/domain/types';
 import { PERMISSIONS } from '@/domain/permissions';
 
+// Names follow the Otorita IKN work-unit export (12 Oct 2026); only units used by the seed.
 export const orgUnits: OrgUnit[] = [
   { id: 'ou-ddkb', code: 'DDKB', name: 'Direktorat Data dan Kecerdasan Buatan', active: true },
   {
-    id: 'ou-satker-a',
-    code: 'SKA',
-    name: 'Satker A — Direktorat Pembangunan Kawasan',
+    id: 'ou-pgkp',
+    code: 'DPGKP',
+    name: 'Direktorat Pengelolaan Gedung, Kawasan dan Perkotaan',
     active: true,
   },
-  { id: 'ou-satker-b', code: 'SKB', name: 'Satker B — Direktorat Sarana Kawasan', active: true },
-  { id: 'ou-satker-c', code: 'SKC', name: 'Satker C — Direktorat Pelayanan Dasar', active: true },
-  { id: 'ou-ukpbj', code: 'UKPBJ', name: 'Unit Kerja Pengadaan Barang/Jasa', active: true },
+  { id: 'ou-spd', code: 'DSPD', name: 'Direktorat Sarana Prasarana Dasar', active: true },
+  { id: 'ou-pelayanan-dasar', code: 'DPLD', name: 'Direktorat Pelayanan Dasar', active: true },
+  { id: 'ou-biro-umum', code: 'BUPBJ', name: 'Biro Umum dan Pengadaan Barang/Jasa', active: true },
   {
     id: 'ou-birokeu',
     code: 'BKBA',
     name: 'Biro Keuangan, Barang Milik Negara, dan Aset Dalam Penguasaan',
     active: true,
   },
-  { id: 'ou-dep-pendanaan', code: 'DPD', name: 'Deputi Bidang Pendanaan', active: true },
+  { id: 'ou-pendanaan', code: 'DPDN', name: 'Direktorat Pendanaan', active: true },
   { id: 'ou-kepatuhan', code: 'DKP', name: 'Direktorat Kepatuhan', active: true },
   { id: 'ou-pai', code: 'DPAI', name: 'Direktorat Pengawasan dan Audit Internal', active: true },
 ];
@@ -150,8 +151,8 @@ const pos = (
 ): Position => ({ id, code, name, orgUnitId, positionTypeId, identity, active: true });
 
 export const positions: Position[] = [
-  pos('pos-kpa-satker-a', 'KPA-A', 'KPA Satker A', 'ou-satker-a', 'pt-kpa', {
-    nama_satker: 'Satker A — Direktorat Pembangunan Kawasan',
+  pos('pos-kpa-satker-a', 'KPA-A', 'KPA Satker A', 'ou-pgkp', 'pt-kpa', {
+    nama_satker: 'Satker A — Direktorat Pengelolaan Gedung, Kawasan dan Perkotaan',
     nomor_dipa_petikan: 'SP DIPA-129.01.1.690451/2027',
   }),
   pos('pos-ppk-a1', 'PPKA1', 'PPK A-1', 'ou-ddkb', 'pt-ppk', {
@@ -164,25 +165,25 @@ export const positions: Position[] = [
     nomor_sk: 'KEP-13/OIKN/2027',
     tanggal_sk: '2027-01-04',
   }),
-  pos('pos-ppk-b2', 'PPKB2', 'PPK B-2', 'ou-satker-b', 'pt-ppk', {
+  pos('pos-ppk-b2', 'PPKB2', 'PPK B-2', 'ou-spd', 'pt-ppk', {
     nama_jabatan_ppk: 'Pejabat Pembuat Komitmen B-2 Satker B',
   }),
-  pos('pos-pokja-03', 'POKJA03', 'Pokja Pemilihan 03', 'ou-ukpbj', 'pt-pokja', {
+  pos('pos-pokja-03', 'POKJA03', 'Pokja Pemilihan 03', 'ou-biro-umum', 'pt-pokja', {
     nama_jabatan_pokja: 'Kelompok Kerja Pemilihan 03 UKPBJ',
     nomor_sk: 'KEP-31/UKPBJ/2027',
     tanggal_sk: '2027-01-08',
   }),
-  pos('pos-pjp-satker-b', 'PJPB', 'Pejabat Pengadaan Satker B', 'ou-satker-b', 'pt-pjp', {
+  pos('pos-pjp-satker-b', 'PJPB', 'Pejabat Pengadaan Satker B', 'ou-spd', 'pt-pjp', {
     nama_pejabat_pengadaan: 'Pejabat Pengadaan Satker B',
     nomor_sk: 'KEP-07/SKB/2027',
     tanggal_sk: '2027-01-06',
   }),
-  pos('pos-pjp-satker-c', 'PJPC', 'Pejabat Pengadaan Satker C', 'ou-satker-c', 'pt-pjp'),
+  pos('pos-pjp-satker-c', 'PJPC', 'Pejabat Pengadaan Satker C', 'ou-pelayanan-dasar', 'pt-pjp'),
   pos(
     'pos-pj-pemantauan',
-    'PJPM-DPD',
-    'Penanggung Jawab Pemantauan Deputi Bidang Pendanaan',
-    'ou-dep-pendanaan',
+    'PJPM-DPDN',
+    'Penanggung Jawab Pemantauan Direktorat Pendanaan',
+    'ou-pendanaan',
     'pt-pj-pemantauan',
   ),
   pos(
@@ -196,7 +197,7 @@ export const positions: Position[] = [
     'pos-sup-ukpbj',
     'UPPM-UKPBJ',
     'Unit Pendukung Pemantauan UKPBJ',
-    'ou-ukpbj',
+    'ou-biro-umum',
     'pt-unit-pendukung',
   ),
   {
@@ -247,33 +248,51 @@ export const users: User[] = [
     'bambang.hartono@ikn.go.id',
     'ou-ddkb',
   ),
-  user('usr-dimas', 'Dimas Prasetyo', '199102142015031001', 'dimas.prasetyo@ikn.go.id', 'ou-ukpbj'),
-  user('usr-ratna', 'Ratna Sari', '199306102018012002', 'ratna.sari@ikn.go.id', 'ou-ukpbj'),
-  user('usr-yohanes', 'Yohanes Lubis', '198812302014021001', 'yohanes.lubis@ikn.go.id', 'ou-ukpbj'),
-  user('usr-rina', 'Rina Kartika', '199709182022032001', 'rina.kartika@ikn.go.id', 'ou-ukpbj', {
+  user(
+    'usr-dimas',
+    'Dimas Prasetyo',
+    '199102142015031001',
+    'dimas.prasetyo@ikn.go.id',
+    'ou-biro-umum',
+  ),
+  user('usr-ratna', 'Ratna Sari', '199306102018012002', 'ratna.sari@ikn.go.id', 'ou-biro-umum'),
+  user(
+    'usr-yohanes',
+    'Yohanes Lubis',
+    '198812302014021001',
+    'yohanes.lubis@ikn.go.id',
+    'ou-biro-umum',
+  ),
+  user('usr-rina', 'Rina Kartika', '199709182022032001', 'rina.kartika@ikn.go.id', 'ou-biro-umum', {
     createdVia: 'delegation',
   }),
-  user('usr-budi', 'Budi Santoso', '199001012016011001', 'budi.santoso@ikn.go.id', 'ou-ukpbj', {
+  user('usr-budi', 'Budi Santoso', '199001012016011001', 'budi.santoso@ikn.go.id', 'ou-biro-umum', {
     createdVia: 'delegation',
     active: false,
   }),
-  user('usr-wulan', 'Wulan Sari', '198505202010012003', 'wulan.sari@ikn.go.id', 'ou-satker-b'),
-  user('usr-hadi', 'Hadi Susanto', '197603112003121001', 'hadi.susanto@ikn.go.id', 'ou-satker-a'),
+  user('usr-wulan', 'Wulan Sari', '198505202010012003', 'wulan.sari@ikn.go.id', 'ou-spd'),
+  user('usr-hadi', 'Hadi Susanto', '197603112003121001', 'hadi.susanto@ikn.go.id', 'ou-pgkp'),
   user(
     'usr-siti',
     'Siti Rahmawati',
     '197808252005012002',
     'siti.rahmawati@ikn.go.id',
-    'ou-dep-pendanaan',
+    'ou-pendanaan',
   ),
   user('usr-yudi', 'Yudi Saputra', '198107142007011004', 'yudi.saputra@ikn.go.id', 'ou-birokeu'),
-  user('usr-wahyu', 'Wahyu Hidayat', '198309302009011002', 'wahyu.hidayat@ikn.go.id', 'ou-ukpbj'),
+  user(
+    'usr-wahyu',
+    'Wahyu Hidayat',
+    '198309302009011002',
+    'wahyu.hidayat@ikn.go.id',
+    'ou-biro-umum',
+  ),
   user(
     'usr-lestari',
     'Lestari Wulandari',
     '199404052019032003',
     'lestari.wulandari@ikn.go.id',
-    'ou-ukpbj',
+    'ou-biro-umum',
     {
       isLocalAccount: true,
       mustChangePassword: true,
@@ -301,7 +320,13 @@ export const users: User[] = [
     isLocalAccount: true,
     password: 'Simario-Admin-2027!',
   }),
-  user('usr-fajar', 'Fajar Nugroho', '199805082023011002', 'fajar.nugroho@ikn.go.id', 'ou-ukpbj'),
+  user(
+    'usr-fajar',
+    'Fajar Nugroho',
+    '199805082023011002',
+    'fajar.nugroho@ikn.go.id',
+    'ou-biro-umum',
+  ),
   // Reader within scope who is not a thread participant (mockup S9lsp1, FR-PPN-003).
   user('usr-dewi', 'Dewi Anggraini', '198412032009022001', 'dewi.anggraini@ikn.go.id', 'ou-ddkb'),
 ];
@@ -327,7 +352,7 @@ export const staffDirectory = [
     nip: '199607302021031002',
     fullName: 'Arif Setiawan',
     email: 'arif.setiawan@ikn.go.id',
-    orgUnitId: 'ou-satker-a',
+    orgUnitId: 'ou-pgkp',
   },
 ];
 
