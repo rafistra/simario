@@ -12,7 +12,7 @@ export type RiskType = 'kinerja_anggaran' | 'ketidakpatuhan' | 'kecurangan';
 export const PREDICATE_LABEL: Record<Predicate, string> = {
   kurang: 'Kurang Terkendali',
   cukup: 'Cukup Terkendali',
-  terkendali: 'Terkendali',
+  terkendali: 'Terkendali dengan Baik',
 };
 
 export const PREDICATE_RANK: Record<Predicate, number> = { kurang: 0, cukup: 1, terkendali: 2 };

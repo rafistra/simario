@@ -291,7 +291,7 @@ For Pemilik Risiko the sidebar items are shortcuts into the workspace of the pos
 | **Mitigation** | A planned action under a risk; on the board it is a **sub-thread**. Mitigations are not assessed |
 | **Langkah** | A Lini 1 comment marked as an action taken; feeds Section A of the Lembar Komunikasi |
 | **Score** (*Skor*) | A number 0.0–4.0 given to a risk in a quarter |
-| **Predicate** (*Predikat*) | Kurang Terkendali / Cukup Terkendali / Terkendali, derived from the score by the active score bands |
+| **Predicate** (*Predikat*) | Kurang Terkendali / Cukup Terkendali / Terkendali dengan Baik, derived from the score by the active score bands |
 | **Blind assessment** | No assessor sees another assessor's score for the same risk and quarter until the comparison opens |
 | **Comparison** (*Perbandingan*) | Lini 1 predicate vs. each Lini 3 predicate: **Sesuai** or **Tidak Sesuai** |
 | **Explanation** (*Penjelasan*) | Lini 1's reason/obstacle and follow-up plan for one Tidak Sesuai comparison result (i.e. per Lini 3 directorate) |
@@ -469,7 +469,7 @@ Taken from the OIKN house stack used by LANTARA and Aksara, so the application i
 | Tables on narrow screens | Become stacked cards. **No** horizontal scrolling |
 | Sidebar | 240 px, fixed on desktop; Samudra navy; holds the position switcher card (Aksara "Portal Aktif" pattern) |
 | Topbar | Sticky; breadcrumb, global search, notification bell, contextual button |
-| Predicate colours | Kurang Terkendali (danger), Cukup Terkendali (accent/amber), Terkendali (success), exact tokens in the design system §2.4. Every badge carries text; colour is never the only signal |
+| Predicate colours | Kurang Terkendali (danger), Cukup Terkendali (accent/amber), Terkendali dengan Baik (success), exact tokens in the design system §2.4. Every badge carries text; colour is never the only signal |
 | Line labels on comments | Lini 1, Lini 2, Lini 3 as text chips, design system §2.4 |
 | Content padding | 32 px desktop, 16 px phone |
 | Palette and type | Nusantara palette with full hex values (Khatulistiwa `#185088`, Terakota `#DBAF6C`, Jagawana `#428A40`, Pertiwi `#FBF9D5`, Buana `#04182A`, Samudra `#0A2342`, Langit `#3A7BC8`, Tirta `#E3ECF6`, Saka `#EE2F24`); fonts Newsreader (display), Plus Jakarta Sans (UI), JetBrains Mono (numbers, eyebrows). Light mode in v1.0; dark tokens prepared. See the design system |
@@ -633,7 +633,7 @@ These override data scope (§1.5). Each is enforced in the API serializer, not o
 | `MitigationTemplate` | `id`, `risk_template_id`, `description`, `order`, `active` | |
 | `RiskProposal` | `id`, `source_register_risk_id`, `description`, `proposer_user_id`, `status`, `rejection_reason` | |
 | `ScoreBandVersion` | `id`, `effective_from`, `status` | Exactly one `active` |
-| `ScoreBand` | `version_id`, `lower_exclusive`, `upper_inclusive`, `predicate`, `order` | Seed: [0, 2.0] Kurang · (2.0, 3.0] Cukup · (3.0, 4.0] Terkendali |
+| `ScoreBand` | `version_id`, `lower_exclusive`, `upper_inclusive`, `predicate`, `order` | Seed: [0, 2.0] Kurang · (2.0, 3.0] Cukup · (3.0, 4.0] Terkendali dengan Baik |
 | `ScaleCriteriaVersion`, `ScaleCriteriaRow`, `RiskLevelMapping` | as v2.0 | **Provisioned, unused** |
 
 **Register**
