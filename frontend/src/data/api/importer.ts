@@ -86,8 +86,8 @@ export function csvTemplate(db: DB, kind: ImportKind): string {
     ].join('\n');
   }
   if (kind === 'pejabat')
-    return 'nip,nama_lengkap,email,kode_unit,kode_jabatan,nomor_sk,tanggal_sk,tanggal_mulai,pengisi\n199812012024011001,Galih Pratama,galih.pratama@ikn.go.id,SKB,PPKB2,KEP-40/OIKN/2027,2027-04-01,2027-04-01,ya';
-  return 'kode_unit_lini1,kode_jabatan_lini1,kode_unit_pj,kode_jabatan_pj,pendukung,tw_mulai,tw_selesai,nomor_sk\nSKB,PPKB2,DPD,PJPM-DPD,BKBA/UPPM-BKBA:kinerja_anggaran;UKPBJ/UPPM-UKPBJ:pbj,2027-2,2027-4,KEP-41/OIKN/2027';
+    return 'nip,nama_lengkap,email,kode_unit,kode_jabatan,nomor_sk,tanggal_sk,tanggal_mulai,pengisi\n199812012024011001,Galih Pratama,galih.pratama@ikn.go.id,DSPD,PPKB2,KEP-40/OIKN/2027,2027-04-01,2027-04-01,ya';
+  return 'kode_unit_lini1,kode_jabatan_lini1,kode_unit_pj,kode_jabatan_pj,pendukung,tw_mulai,tw_selesai,nomor_sk\nDSPD,PPKB2,DPDN,PJPM-DPDN,BKBA/UPPM-BKBA:kinerja_anggaran;BUPBJ/UPPM-UKPBJ:pbj,2027-2,2027-4,KEP-41/OIKN/2027';
 }
 
 interface Plan {

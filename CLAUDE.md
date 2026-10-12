@@ -316,6 +316,8 @@ Hasil:
 
 Catatan Tahap 10: audit otomatis 390 px atas 35 rute (iframe + pengukuran `scrollWidth`) — tanpa gulir horizontal dan tanpa galat JavaScript; target sentuh kecil diperbesar lewat aturan seluler di `base.css` (sakelar memakai area sentuh `::after`, tautan di dalam kalimat dikecualikan sesuai WCAG). Mode gelap ditambahkan di menu pengguna. Halaman yang membaca store langsung dibungkus `DataGate` agar punya skeleton dan galat + "Coba Lagi". Alur penuh TW I diuji di `data/api/flow.test.ts`. Padanan frame dan perbedaan yang disengaja tercatat di `frontend/README.md`.
 
+Catatan pascatahap (unit kerja): seed memakai nama unit kerja resmi Otorita IKN dari ekspor 12 Okt 2026 (hanya yang dipakai, 9 unit). Pemetaan: UKPBJ → Biro Umum dan Pengadaan Barang/Jasa (BUPBJ), Satker A → Direktorat Pengelolaan Gedung, Kawasan dan Perkotaan (DPGKP), Satker B → Direktorat Sarana Prasarana Dasar (DSPD), Satker C → Direktorat Pelayanan Dasar (DPLD), Deputi Bidang Pendanaan → Direktorat Pendanaan (DPDN). Label jabatan Satker/UKPBJ dipertahankan (keputusan pengguna); jabatan Lini 2 Siti menjadi "Penanggung Jawab Pemantauan Direktorat Pendanaan" (PJPM-DPDN). SCHEMA_VERSION 7.
+
 Skenario uji: alur penuh TW I dari pengisian sampai cetak Lembar dengan mengganti persona dan tanggal, tanpa galat konsol.
 
 ## 10. Perintah
