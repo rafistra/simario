@@ -52,7 +52,6 @@ export function registerGaps(db: DB, registerId: string): RegisterGap[] {
       anchor: dataUmumAnchor(field),
       message: `Data Umum — ${label} wajib diisi sebelum register diterbitkan.`,
     });
-  if (!du.tujuan.trim()) missing('tujuan', 'Tujuan');
   if (!du.kegiatan.some((k) => k.trim())) missing('kegiatan', 'Kegiatan');
   if (du.besarAnggaran === null || du.besarAnggaran <= 0)
     missing('besarAnggaran', 'Besar Anggaran');

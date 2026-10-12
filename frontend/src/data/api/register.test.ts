@@ -125,6 +125,9 @@ describe('publishing (FR-REG-007, 008)', () => {
       ),
     ).toBe(true);
     expect(gaps.some((g) => g.message.includes('belum ada risiko atau pernyataan'))).toBe(true);
+    // Tujuan is optional (off by default) and never a gap.
+    expect(kpaRegister()!.dataUmum.tujuan).toBe('');
+    expect(gaps.some((g) => g.message.includes('Tujuan'))).toBe(false);
     expect(kpaRegister()!.status).toBe('draft');
   });
 

@@ -42,7 +42,11 @@ export function DataUmumSection({
   const form =
     db.dataUmumForms.find((f) => f.id === register?.dataUmumFormId) ??
     db.dataUmumForms.find((f) => f.positionTypeId === position.positionTypeId && f.active);
-  const saved = register?.dataUmum ?? { ...EMPTY, tujuan: form?.defaultObjective ?? '' };
+  const objectiveOn = form?.objectiveEnabled ?? false;
+  const saved = register?.dataUmum ?? {
+    ...EMPTY,
+    tujuan: objectiveOn ? (form?.defaultObjective ?? '') : '',
+  };
   const [values, setValues] = useState<DataUmumValues>(saved);
   const savedKey = JSON.stringify(saved);
   useEffect(() => setValues(JSON.parse(savedKey) as DataUmumValues), [savedKey]);
@@ -84,7 +88,7 @@ export function DataUmumSection({
 
   if (!editing) {
     const rows: [string, React.ReactNode][] = [
-      ['Tujuan', saved.tujuan || '—'],
+      ...(objectiveOn ? [['Tujuan', saved.tujuan || '—'] as [string, React.ReactNode]] : []),
       [
         'Kegiatan',
         saved.kegiatan.filter(Boolean).length ? (
@@ -143,17 +147,17 @@ export function DataUmumSection({
     <Card {...header} className="du-card">
       <div className="du-grid">
         <div className="du-fields">
-          <div id={dataUmumAnchor('tujuan')}>
-            <Textarea
-              label="Tujuan"
-              required
-              rows={3}
-              value={values.tujuan}
-              error={err('tujuan', 'Tujuan')}
-              onChange={(e) => setValues({ ...values, tujuan: e.target.value })}
-              onBlur={() => commit({ tujuan: values.tujuan })}
-            />
-          </div>
+          {objectiveOn && (
+            <div id={dataUmumAnchor('tujuan')}>
+              <Textarea
+                label="Tujuan"
+                rows={3}
+                value={values.tujuan}
+                onChange={(e) => setValues({ ...values, tujuan: e.target.value })}
+                onBlur={() => commit({ tujuan: values.tujuan })}
+              />
+            </div>
+          )}
           <fieldset id={dataUmumAnchor('kegiatan')} className="du-kegiatan">
             <legend className="field__label">
               Kegiatan{' '}

@@ -546,7 +546,12 @@ export const masterApi = {
     }),
 
   /* --- Data Umum forms (FR-MST-006) --- */
-  saveDataUmumForm: (positionTypeId: string, defaultObjective: string, fields: DataUmumField[]) =>
+  saveDataUmumForm: (
+    positionTypeId: string,
+    defaultObjective: string,
+    fields: DataUmumField[],
+    objectiveEnabled = false,
+  ) =>
     call(() => {
       const actor = requireActor([16]);
       const errors: Record<number, string> = {};
@@ -559,8 +564,6 @@ export const masterApi = {
         if (f.kind === 'list' && (f.options ?? []).filter((o) => o.trim()).length < 2)
           errors[i] = 'Tambahkan minimal dua pilihan.';
       });
-      if (!defaultObjective.trim())
-        throw new ApiError('validation', 'Teks bawaan Tujuan wajib diisi.');
       if (Object.keys(errors).length)
         throw new ApiError('validation', 'Periksa kembali isian tambahan.', errors);
       let version = 0;
@@ -573,6 +576,7 @@ export const masterApi = {
           id,
           positionTypeId,
           version,
+          objectiveEnabled,
           defaultObjective: defaultObjective.trim(),
           active: true,
           createdAt: actor.today,

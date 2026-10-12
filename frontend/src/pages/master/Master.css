@@ -475,6 +475,11 @@
   color: var(--text-strong);
 }
 
+.du-fixed.du-optional li {
+  grid-template-columns: minmax(0, 1fr) 160px auto;
+  background: var(--bg-surface);
+}
+
 .du-req {
   font-size: 12px;
   font-weight: 600;
@@ -790,6 +795,10 @@
 
   .du-fixed li {
     grid-template-columns: 16px minmax(0, 1fr) 52px;
+  }
+
+  .du-fixed.du-optional li {
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 
   .du-fixed li .t-caption {

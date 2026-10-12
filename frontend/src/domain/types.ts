@@ -205,6 +205,8 @@ export interface DataUmumForm {
   positionTypeId: string;
   version: number;
   fields: DataUmumField[];
+  /** Tujuan is optional and off unless enabled per form version. */
+  objectiveEnabled: boolean;
   defaultObjective: string;
   active: boolean;
   createdAt?: ISODate;
