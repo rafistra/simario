@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { useToastStore } from '@/components/Feedback/toastStore';
 import { useDb } from '@/data/local/store';
 import { useClock } from '@/state/clock';
 import { useDevSettings } from '@/state/devSettings';
@@ -12,6 +13,7 @@ beforeEach(() => {
     useDevSettings.getState().set({ latency: false, offline: false, failNext: false });
     useClock.getState().setNow('2027-10-12T09:00');
     useDb.getState().reset();
+    useToastStore.setState({ toasts: [] });
     useSession.getState().signIn('usr-nur');
   });
 });
@@ -119,5 +121,28 @@ describe('Skala Penilaian', () => {
     expect(useDb.getState().db.scoreBandVersions.find((v) => v.id === 'sbv-2')!.status).toBe(
       'draft',
     );
+    expect(
+      useToastStore.getState().toasts.some((t) => t.title === 'Versi tidak dapat disimpan'),
+    ).toBe(false);
+  });
+
+  it('reverts only the refused statement on the active version and says why', async () => {
+    renderPage(<ScoreBandsPage />);
+    fireEvent.change(screen.getByLabelText('Versi'), { target: { value: 'sbv-1' } });
+    const labels = () => screen.getAllByRole('textbox', { name: /^Kalimat pilihan/ });
+    const original = (labels()[1] as HTMLInputElement).value;
+    const taken = (labels()[0] as HTMLInputElement).value;
+    fireEvent.change(labels()[1]!, { target: { value: taken } });
+    fireEvent.blur(labels()[1]!);
+    fireEvent.change(labels()[2]!, { target: { value: 'Teks sedang diketik' } });
+    await waitFor(() =>
+      expect(useToastStore.getState().toasts[0]).toMatchObject({
+        variant: 'error',
+        title: 'Kalimat tidak dapat disimpan',
+        message: 'Kalimat sudah dipakai pilihan lain.',
+      }),
+    );
+    expect(labels()[1]).toHaveValue(original);
+    expect(labels()[2]).toHaveValue('Teks sedang diketik');
   });
 });

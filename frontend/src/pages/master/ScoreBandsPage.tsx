@@ -78,6 +78,22 @@ function optionProblemSummary(problems: OptionProblem[]): string[] {
     .map((p) => `Predikat ${PREDICATE_LABEL[p.predicate!]} belum punya kalimat.`);
 }
 
+const LABEL_ERROR: Partial<Record<OptionProblem['kind'], string>> = {
+  'empty-label': 'Kalimat wajib diisi.',
+  'duplicate-label': 'Kalimat sudah dipakai pilihan lain.',
+};
+
+/** Why an active-version statement edit was refused (falls back to the API message). */
+function labelCommitReason(e: Error, optionId: string): string {
+  const problems =
+    e instanceof ApiError && Array.isArray(e.details) ? (e.details as OptionProblem[]) : [];
+  const reasons = problems
+    .filter((p) => p.optionId === optionId)
+    .map((p) => LABEL_ERROR[p.kind])
+    .filter(Boolean);
+  return reasons.length > 0 ? reasons.join(' ') : e.message;
+}
+
 /** 0–4 bar previewing the bands in colour with text labels; gaps in red (frame Sskiw). */
 function BandPreview({
   bands,
@@ -86,7 +102,7 @@ function BandPreview({
 }: {
   bands: ScoreBand[];
   problems: BandProblem[];
-  values: number[];
+  values: { id: string; value: number }[];
 }) {
   const segments = [
     ...bands.map((b) => ({
@@ -120,9 +136,15 @@ function BandPreview({
         ))}
       </div>
       <div className="band-preview__markers" aria-hidden>
-        {values.filter(Number.isFinite).map((v) => (
-          <span key={v} className="band-preview__marker" style={{ left: `${(v / 4) * 100}%` }} />
-        ))}
+        {values
+          .filter((o) => Number.isFinite(o.value) && o.value >= 0 && o.value <= 4)
+          .map((o) => (
+            <span
+              key={o.id}
+              className="band-preview__marker"
+              style={{ left: `${(o.value / 4) * 100}%` }}
+            />
+          ))}
       </div>
       <div className="band-preview__ticks t-mono">
         {[0, 1, 2, 3, 4].map((n) => (
@@ -390,11 +412,7 @@ export default function ScoreBandsPage() {
             );
           })}
         </div>
-        <BandPreview
-          bands={bands}
-          problems={isDraft ? problems : []}
-          values={options.map((o) => o.value)}
-        />
+        <BandPreview bands={bands} problems={isDraft ? problems : []} values={options} />
       </Card>
 
       <ScoreOptionsCard
@@ -406,13 +424,19 @@ export default function ScoreBandsPage() {
         onPersist={() => isDraft && void persistDraft()}
         onLabelCommit={(id, label) => {
           optionsDirty.current = false;
-          if (label === storedOptions.find((o) => o.id === id)?.label) return;
+          const storedLabel = storedOptions.find((o) => o.id === id)?.label;
+          if (label === storedLabel) return;
           masterApi
             .updateOptionLabel(id, label)
             .then(() => toast.success('Kalimat diperbarui'))
             .catch((e: Error) => {
-              toast.error('Kalimat tidak dapat disimpan', e.message);
-              setOptions(storedOptions);
+              toast.error('Kalimat tidak dapat disimpan', labelCommitReason(e, id));
+              // Revert only this row; text being typed in other rows stays.
+              setOptions(
+                optionsRef.current.map((o) =>
+                  o.id === id ? { ...o, label: storedLabel ?? o.label } : o,
+                ),
+              );
             });
         }}
       />
