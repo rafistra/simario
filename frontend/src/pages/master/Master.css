@@ -5,10 +5,6 @@
   min-width: 0;
 }
 
-.master-page--narrow {
-  max-width: 1000px;
-}
-
 .master-actions {
   display: flex;
   justify-content: flex-end;

@@ -126,6 +126,14 @@
   width: var(--sidebar-collapsed-width);
 }
 
+/* The width the collapsed rail gives up goes to the content (PRD §2.2: 1200 + 168 when collapsed). */
+.shell--collapsed .shell__content {
+  max-width: calc(
+    var(--content-max) + var(--sidebar-width) - var(--sidebar-collapsed-width) + 2 *
+      var(--page-pad-desktop)
+  );
+}
+
 .sidebar.is-collapsed .sidebar__logo {
   justify-content: center;
   padding: 0;

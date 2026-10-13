@@ -283,7 +283,7 @@ export default function StagesPage() {
   const types = useDb((s) => s.db.positionTypes).filter((t) => t.line === 1 && t.hasTemplates);
   const [open, setOpen] = useState<string[]>(['pt-ppk']);
   return (
-    <div className="master-page master-page--narrow">
+    <div className="master-page">
       <PageHeader
         eyebrow={`Master data · TA ${auth.currentFiscalYear}`}
         title="Tahap per Jenis Pemilik Risiko"

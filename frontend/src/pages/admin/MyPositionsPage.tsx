@@ -52,7 +52,7 @@ export default function MyPositionsPage() {
   const year = Number(today.slice(0, 4));
 
   return (
-    <div className="adm adm--narrow">
+    <div className="adm">
       <PageHeader eyebrow="Akun" title="Jabatan Saya" subtitle={auth.user.fullName} />
       {occ.length > 0 && <h2 className="adm__h2">Sebagai Pejabat</h2>}
       {occ.map((o) => {

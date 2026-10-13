@@ -267,7 +267,7 @@ export default function ScoreBandsPage() {
   };
 
   return (
-    <div className="master-page master-page--narrow">
+    <div className="master-page">
       <PageHeader
         eyebrow={`Master data · TA ${auth.currentFiscalYear}`}
         title="Skala Penilaian"

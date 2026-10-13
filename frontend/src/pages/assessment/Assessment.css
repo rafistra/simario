@@ -5,7 +5,6 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-width: var(--content-max);
 }
 
 .hstrip {
@@ -565,7 +564,6 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-width: var(--content-max);
 }
 
 .queue__filters {

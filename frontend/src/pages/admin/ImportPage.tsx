@@ -99,7 +99,7 @@ export default function ImportPage() {
   ];
 
   return (
-    <div className="adm adm--narrow">
+    <div className="adm">
       <PageHeader
         eyebrow="Pengaturan"
         title="Impor Data"

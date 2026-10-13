@@ -49,4 +49,12 @@ describe('Sidebar collapse', () => {
     expect(screen.getByRole('link', { name: 'Template' })).not.toHaveAttribute('title');
     expect(preferenceApi.get('usr-nur', 'sidebarCollapsed')).toBe(false);
   });
+
+  it("follows the signed-in user's own choice when the persona changes", () => {
+    act(() => preferenceApi.set('usr-admin', 'sidebarCollapsed', true));
+    const { container } = renderShell();
+    expect(container.querySelector('.shell')).not.toHaveClass('shell--collapsed');
+    act(() => useSession.getState().signIn('usr-admin'));
+    expect(container.querySelector('.shell')).toHaveClass('shell--collapsed');
+  });
 });

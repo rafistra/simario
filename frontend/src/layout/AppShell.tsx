@@ -93,13 +93,15 @@ export function AppShell({ children }: { children?: ReactNode }) {
   const offline = useDevSettings((s) => s.offline);
   const [drawer, setDrawer] = useState(false);
   const userId = auth?.user.id;
-  const [collapsed, setCollapsed] = useState(
-    () => (userId && preferenceApi.get<boolean>(userId, SIDEBAR_COLLAPSED)) || false,
-  );
+  // Each user's own stored choice; a local override only applies to the user who made it, so a
+  // persona switch without reload picks up the new user's preference.
+  const stored = (userId && preferenceApi.get<boolean>(userId, SIDEBAR_COLLAPSED)) || false;
+  const [override, setOverride] = useState<{ userId: string; value: boolean } | null>(null);
+  const collapsed = override && override.userId === userId ? override.value : stored;
   const toggleCollapsed = () => {
-    const next = !collapsed;
-    setCollapsed(next);
-    if (userId) preferenceApi.set(userId, SIDEBAR_COLLAPSED, next);
+    if (!userId) return;
+    setOverride({ userId, value: !collapsed });
+    preferenceApi.set(userId, SIDEBAR_COLLAPSED, !collapsed);
   };
   useIdleSignOut();
 

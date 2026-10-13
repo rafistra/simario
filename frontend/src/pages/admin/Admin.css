@@ -6,11 +6,6 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-width: var(--content-max);
-}
-
-.adm--narrow {
-  max-width: 1000px;
 }
 
 .adm__actions {
