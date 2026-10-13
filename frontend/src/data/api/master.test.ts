@@ -259,6 +259,32 @@ describe('score bands (FR-MST-007, INV-3)', () => {
       [3, 4],
       [4, 5],
     ]);
+    // The audit records the statements as persisted (sorted, trimmed), not the raw input.
+    expect(getDb().audit.at(-1)).toMatchObject({
+      action: 'simpan_versi_skala',
+      after: {
+        options: opts('sbv-2').map((o) => ({
+          id: o.id,
+          value: o.value,
+          label: o.label,
+          order: o.order,
+        })),
+      },
+    });
+  });
+
+  it('refuses to save a version that is not a draft', async () => {
+    const before = opts('sbv-1');
+    const bands = getDb().scoreBands.filter((b) => b.versionId === 'sbv-1');
+    await expect(
+      masterApi.saveBandVersion('sbv-1', {
+        effectiveFrom: '2028-01-01',
+        bands,
+        options: before.map((o) => ({ ...o, label: `${o.label} baru` })),
+      }),
+    ).rejects.toMatchObject({ code: 'validation' });
+    expect(opts('sbv-1')).toEqual(before);
+    expect(getDb().scoreBandVersions.find((v) => v.id === 'sbv-1')!.status).toBe('active');
   });
 });
 

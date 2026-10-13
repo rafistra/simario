@@ -655,6 +655,9 @@ export const masterApi = {
   ) =>
     call(() => {
       const actor = requireActor([14]);
+      const current = getDb().scoreBandVersions.find((x) => x.id === versionId);
+      if (current?.status !== 'draft')
+        throw new ApiError('validation', 'Hanya draf versi yang dapat disimpan.');
       const problems: BandProblem[] = validateBands(patch.bands);
       if (patch.effectiveFrom < actor.today)
         throw new ApiError('validation', 'Tanggal berlaku tidak boleh sebelum hari ini.');
@@ -674,7 +677,8 @@ export const masterApi = {
         d.scoreBands = d.scoreBands.filter((b) => b.versionId !== versionId);
         for (const b of patch.bands) d.scoreBands.push({ ...b, versionId });
         d.scoreOptions = d.scoreOptions.filter((o) => o.versionId !== versionId);
-        d.scoreOptions.push(...withVersion(patch.options, versionId));
+        const saved = withVersion(patch.options, versionId);
+        d.scoreOptions.push(...saved);
         audit(
           d,
           actor,
@@ -686,7 +690,7 @@ export const masterApi = {
             status: 'scheduled',
             effectiveFrom: patch.effectiveFrom,
             bands: patch.bands,
-            options: patch.options,
+            options: saved.map(({ id, value, label, order }) => ({ id, value, label, order })),
           },
         );
       });

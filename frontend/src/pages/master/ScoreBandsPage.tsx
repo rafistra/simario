@@ -425,18 +425,23 @@ export default function ScoreBandsPage() {
         onLabelCommit={(id, label) => {
           optionsDirty.current = false;
           const storedLabel = storedOptions.find((o) => o.id === id)?.label;
-          if (label === storedLabel) return;
+          // Revert only this row; text being typed in other rows stays.
+          const revertRow = () =>
+            setOptions(
+              optionsRef.current.map((o) =>
+                o.id === id ? { ...o, label: storedLabel ?? o.label } : o,
+              ),
+            );
+          if (label.trim() === storedLabel) {
+            if (label !== storedLabel) revertRow();
+            return;
+          }
           masterApi
             .updateOptionLabel(id, label)
             .then(() => toast.success('Kalimat diperbarui'))
             .catch((e: Error) => {
               toast.error('Kalimat tidak dapat disimpan', labelCommitReason(e, id));
-              // Revert only this row; text being typed in other rows stays.
-              setOptions(
-                optionsRef.current.map((o) =>
-                  o.id === id ? { ...o, label: storedLabel ?? o.label } : o,
-                ),
-              );
+              revertRow();
             });
         }}
       />

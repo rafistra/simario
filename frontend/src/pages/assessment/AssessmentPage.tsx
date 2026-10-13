@@ -133,7 +133,7 @@ function Assessment({
     if (p.toFinalise === 0) {
       toast.error(
         'Belum ada yang dapat dituntaskan',
-        'Isi skor atau nyatakan "Belum relevan" beserta alasannya terlebih dahulu.',
+        'Pilih penilaian atau nyatakan "Belum relevan" beserta alasannya terlebih dahulu.',
       );
       return;
     }

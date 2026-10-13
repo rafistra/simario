@@ -38,21 +38,21 @@ describe('sheet payload (FR-LBR-001 … 004, VIS-7)', () => {
     expect(later.risks.find((r) => r.riskId === 'rr-a1-penyerapan')!.l1.score).toBe(3);
   });
 
-  it('stores the statement in the payload so a frozen copy keeps it (INV-22)', async () => {
-    const before = buildSheetPayload(getDb(), 'pos-ppk-a1', q1(), AT);
-    const v = before.risks.find((r) => r.riskId === 'rr-a1-penyerapan')!.l1;
-    expect(v.optionLabel).toBe(label(3));
+  it('a stored snapshot keeps the statement after its text is edited (INV-22)', async () => {
+    const statement = (p: SheetPayload) =>
+      p.risks.find((r) => r.riskId === 'rr-a1-penyerapan')!.l1.optionLabel;
+    const [id] = await sheetApi.print('pos-ppk-a1', 2027, 1, ['komunikasi']);
     act(() => useSession.getState().signIn('usr-nur'));
     const option = getDb().scoreOptions.find((o) => o.versionId === 'sbv-1' && o.value === 3)!;
     await masterApi.updateOptionLabel(option.id, 'Kalimat baru');
-    expect(before.risks.find((r) => r.riskId === 'rr-a1-penyerapan')!.l1.optionLabel).toBe(
-      label(3),
-    );
-    const after = buildSheetPayload(getDb(), 'pos-ppk-a1', q1(), AT);
-    expect(after.risks.find((r) => r.riskId === 'rr-a1-penyerapan')!.l1.optionLabel).toBe(
-      'Kalimat baru',
-    );
-    expect(mutuFromPayload(before).rows[0]!.cells[0]).not.toHaveProperty('average');
+    act(() => useSession.getState().signIn('usr-andi'));
+    // The live sheet shows the new text; the stored copy, read as the page reads it, does not.
+    const live = await sheetApi.view('pos-ppk-a1', 2027, 1, null);
+    expect(statement(live.payload)).toBe('Kalimat baru');
+    const stored = await sheetApi.view('pos-ppk-a1', 2027, 1, id!);
+    expect(stored.snapshot).toMatchObject({ id });
+    expect(statement(stored.payload)).toBe(label(3));
+    expect(mutuFromPayload(stored.payload).rows[0]!.cells[0]).not.toHaveProperty('average');
   });
 
   it('seeded frozen snapshots keep the statements', () => {

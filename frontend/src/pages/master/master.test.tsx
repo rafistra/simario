@@ -145,4 +145,18 @@ describe('Skala Penilaian', () => {
     expect(labels()[1]).toHaveValue(original);
     expect(labels()[2]).toHaveValue('Teks sedang diketik');
   });
+
+  it('treats a trailing space on the active version as no change', async () => {
+    renderPage(<ScoreBandsPage />);
+    fireEvent.change(screen.getByLabelText('Versi'), { target: { value: 'sbv-1' } });
+    const first = screen.getAllByRole('textbox', { name: /^Kalimat pilihan/ })[0]!;
+    const original = (first as HTMLInputElement).value;
+    const auditCount = useDb.getState().db.audit.length;
+    fireEvent.change(first, { target: { value: `${original} ` } });
+    fireEvent.blur(first);
+    await waitFor(() => expect(first).toHaveValue(original));
+    await new Promise((r) => setTimeout(r, 50));
+    expect(useDb.getState().db.audit).toHaveLength(auditCount);
+    expect(useToastStore.getState().toasts).toEqual([]);
+  });
 });
