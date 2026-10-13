@@ -609,7 +609,12 @@
     grid-template-columns: minmax(0, 1fr) 20px;
   }
 
-  .audit__head > :not(:first-child):not(:last-child):not(.audit__action) {
+  .audit__head > :not(:last-child) {
     grid-column: 1;
+  }
+
+  .audit__head > :last-child {
+    grid-column: 2;
+    grid-row: 1;
   }
 }

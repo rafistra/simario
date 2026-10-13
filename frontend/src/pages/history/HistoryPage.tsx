@@ -393,7 +393,7 @@ function MutuBlock({ mutu }: { mutu: LembarMutu[] }) {
         <div>
           <p className="t-eyebrow">Lembar Mutu · TA {mutu[0]?.quarter.fiscalYear}</p>
           <h2 id="mutu-title" className="matrix__title">
-            Rata-rata skor per jenis risiko
+            Predikat per jenis risiko
           </h2>
         </div>
         <p className="mutu__note">
