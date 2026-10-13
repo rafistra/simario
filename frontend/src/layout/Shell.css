@@ -83,10 +83,13 @@
   background-size: 160px 160px;
 }
 
-/* Collapse toggle: a small round button on the sidebar's right edge (desktop only). */
+/*
+ * Collapse toggle: a small round button on the sidebar's right edge, sitting on the logo row's
+ * bottom divider so it never crowds the logo mark in the collapsed rail (desktop only).
+ */
 .sidebar__collapse {
   position: absolute;
-  top: 22px;
+  top: 58px;
   right: -14px;
   z-index: 2;
   display: grid;
@@ -145,8 +148,11 @@
   display: none;
 }
 
+/* No reserved scrollbar gutter in the rail: it would push the icons off-centre. */
 .sidebar.is-collapsed .sidebar__nav {
   padding: 8px 10px;
+  scrollbar-gutter: auto;
+  scrollbar-width: none;
 }
 
 /* Section titles give way to a thin divider between sections. */
@@ -158,9 +164,11 @@
   background: var(--sidebar-border);
 }
 
+/* A matching transparent right border balances the active item's left accent border. */
 .sidebar.is-collapsed .nav-item {
   justify-content: center;
   padding: 8px 0;
+  border-right: 2px solid transparent;
 }
 
 /* Visually hidden, still announced: section titles, nav labels, switcher and user text. */
