@@ -155,10 +155,16 @@ describe('templates and proposals (FR-MST-003 … 005)', () => {
 });
 
 describe('score bands (FR-MST-007, INV-3)', () => {
+  const opts = (versionId: string) => getDb().scoreOptions.filter((o) => o.versionId === versionId);
+
   it('refuses to save the draft with a 1,9–2,0 gap', async () => {
     const bands = getDb().scoreBands.filter((b) => b.versionId === 'sbv-2');
     await expect(
-      masterApi.saveBandVersion('sbv-2', { effectiveFrom: '2028-01-01', bands }),
+      masterApi.saveBandVersion('sbv-2', {
+        effectiveFrom: '2028-01-01',
+        bands,
+        options: opts('sbv-2'),
+      }),
     ).rejects.toMatchObject({
       code: 'bands_invalid',
       details: [{ kind: 'gap', from: 1.9, to: 2.0 }],
@@ -169,7 +175,11 @@ describe('score bands (FR-MST-007, INV-3)', () => {
     const bands = getDb()
       .scoreBands.filter((b) => b.versionId === 'sbv-2')
       .map((b) => (b.predicate === 'cukup' ? { ...b, lowerExclusive: 1.9 } : b));
-    await masterApi.saveBandVersion('sbv-2', { effectiveFrom: '2028-01-01', bands });
+    await masterApi.saveBandVersion('sbv-2', {
+      effectiveFrom: '2028-01-01',
+      bands,
+      options: opts('sbv-2'),
+    });
     const saved = getDb();
     expect(saved.scoreBandVersions.find((v) => v.id === 'sbv-2')!.status).toBe('scheduled');
     const before = produce(saved, (d) => activateScoreBands(d, '2027-12-31T23:59'));
@@ -187,6 +197,68 @@ describe('score bands (FR-MST-007, INV-3)', () => {
     const tw3 = produce(db, (d) => activateScoreBands(d, '2027-07-01T00:00'));
     expect(tw3.quarters.find((q) => q.id === 'q-2027-3')!.scoreBandVersionId).toBe('sbv-1');
     expect(tw3.quarters.find((q) => q.id === 'q-2027-4')!.scoreBandVersionId).toBeNull();
+  });
+
+  it('refuses a version whose bands leave a predicate without a statement', async () => {
+    // Fix the gap so bands are valid, then remove the only Cukup statement (value 2 → (1,9; 2,9]).
+    const bands = getDb()
+      .scoreBands.filter((b) => b.versionId === 'sbv-2')
+      .map((b) => (b.predicate === 'cukup' ? { ...b, lowerExclusive: 1.9 } : b));
+    const options = opts('sbv-2').filter((o) => o.value !== 2);
+    await expect(
+      masterApi.saveBandVersion('sbv-2', { effectiveFrom: '2028-01-01', bands, options }),
+    ).rejects.toMatchObject({
+      code: 'options_invalid',
+      details: [{ kind: 'band-uncovered', predicate: 'cukup' }],
+    });
+  });
+
+  it('copies statements into a new draft and removes them with the draft', async () => {
+    await masterApi.discardBandDraft('sbv-2');
+    expect(opts('sbv-2')).toEqual([]);
+    const id = await masterApi.createBandDraft('2028-01-01');
+    expect(opts(id).map((o) => [o.value, o.label])).toEqual(
+      opts('sbv-1').map((o) => [o.value, o.label]),
+    );
+    expect(new Set(opts(id).map((o) => o.id)).size).toBe(5);
+    expect(opts(id).some((o) => opts('sbv-1').some((x) => x.id === o.id))).toBe(false);
+  });
+
+  it('edits statement text of the active version only, with audit', async () => {
+    const [first] = opts('sbv-1');
+    await masterApi.updateOptionLabel(first!.id, 'Mitigasi belum berjalan');
+    expect(opts('sbv-1')[0]!.label).toBe('Mitigasi belum berjalan');
+    expect(getDb().audit.at(-1)).toMatchObject({
+      action: 'ubah_kalimat_penilaian',
+      entityType: 'ScoreOption',
+      entityId: first!.id,
+      before: { label: first!.label },
+      after: { label: 'Mitigasi belum berjalan' },
+    });
+    await expect(masterApi.updateOptionLabel(first!.id, '  ')).rejects.toMatchObject({
+      code: 'options_invalid',
+    });
+    await expect(
+      masterApi.updateOptionLabel(first!.id, opts('sbv-1')[1]!.label.toUpperCase()),
+    ).rejects.toMatchObject({ code: 'options_invalid' });
+    await expect(
+      masterApi.updateOptionLabel(opts('sbv-2')[0]!.id, 'Apa saja'),
+    ).rejects.toMatchObject({ code: 'validation' });
+  });
+
+  it('stores the saved statements sorted with order = rank', async () => {
+    const bands = getDb()
+      .scoreBands.filter((b) => b.versionId === 'sbv-2')
+      .map((b) => (b.predicate === 'cukup' ? { ...b, lowerExclusive: 1.9 } : b));
+    const options = [...opts('sbv-2')].reverse();
+    await masterApi.saveBandVersion('sbv-2', { effectiveFrom: '2028-01-01', bands, options });
+    expect(opts('sbv-2').map((o) => [o.value, o.order])).toEqual([
+      [0, 1],
+      [1, 2],
+      [2, 3],
+      [3, 4],
+      [4, 5],
+    ]);
   });
 });
 

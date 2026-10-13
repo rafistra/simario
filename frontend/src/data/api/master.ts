@@ -1,7 +1,7 @@
 // Master data — PRD §10 (FR-MST-001 … 010). Every write checks its permission, validates per the
 // mockup notes, and appends to the audit trail.
 
-import { validateBands, type BandProblem } from '@/domain/scoreBands';
+import { sortOptions, validateBands, validateOptions, type BandProblem } from '@/domain/scoreBands';
 import type {
   DataUmumField,
   Position,
@@ -10,6 +10,7 @@ import type {
   RiskType,
   ScoreBand,
   ScoreBandVersion,
+  ScoreOption,
   Stage,
 } from '@/domain/types';
 import type { DB } from '../db';
@@ -38,6 +39,11 @@ const audit = (
     before,
     after,
   });
+
+export type OptionInput = Pick<ScoreOption, 'id' | 'value' | 'label'>;
+
+const withVersion = (options: OptionInput[], versionId: string): ScoreOption[] =>
+  sortOptions(options).map((o, i) => ({ ...o, label: o.label.trim(), versionId, order: i + 1 }));
 
 const norm = (s: string) => s.trim().replace(/\s+/g, ' ').toLowerCase();
 
@@ -618,6 +624,11 @@ export const masterApi = {
         d.scoreBandVersions.push({ id, number, effectiveFrom, status: 'draft' });
         for (const b of d.scoreBands.filter((x) => x.versionId === active.id))
           d.scoreBands.push({ ...b, versionId: id });
+        d.scoreOptions.push(
+          ...d.scoreOptions
+            .filter((o) => o.versionId === active.id)
+            .map((o) => ({ ...o, id: newId('so'), versionId: id })),
+        );
         audit(d, actor, 'buat_draf_skala', 'ScoreBandVersion', id, null, {
           number,
           effectiveFrom,
@@ -639,6 +650,7 @@ export const masterApi = {
         ScoreBand,
         'lowerExclusive' | 'upperInclusive' | 'predicate' | 'order' | 'guidance'
       >[];
+      options: OptionInput[];
     },
   ) =>
     call(() => {
@@ -648,12 +660,21 @@ export const masterApi = {
         throw new ApiError('validation', 'Tanggal berlaku tidak boleh sebelum hari ini.');
       if (problems.length)
         throw new ApiError('bands_invalid', 'Rentang tidak dapat disimpan', problems);
+      const optionProblems = validateOptions(patch.options, patch.bands);
+      if (optionProblems.length)
+        throw new ApiError(
+          'options_invalid',
+          'Pilihan penilaian tidak dapat disimpan',
+          optionProblems,
+        );
       mutateDb((d) => {
         const v = d.scoreBandVersions.find((x) => x.id === versionId)!;
         v.effectiveFrom = patch.effectiveFrom;
         v.status = 'scheduled';
         d.scoreBands = d.scoreBands.filter((b) => b.versionId !== versionId);
         for (const b of patch.bands) d.scoreBands.push({ ...b, versionId });
+        d.scoreOptions = d.scoreOptions.filter((o) => o.versionId !== versionId);
+        d.scoreOptions.push(...withVersion(patch.options, versionId));
         audit(
           d,
           actor,
@@ -661,13 +682,23 @@ export const masterApi = {
           'ScoreBandVersion',
           versionId,
           { status: 'draft' },
-          { status: 'scheduled', effectiveFrom: patch.effectiveFrom, bands: patch.bands },
+          {
+            status: 'scheduled',
+            effectiveFrom: patch.effectiveFrom,
+            bands: patch.bands,
+            options: patch.options,
+          },
         );
       });
     }),
 
   /** Keeps draft edits without validation (autosave of the table and guidance). */
-  updateBandDraft: (versionId: string, bands: ScoreBand[], effectiveFrom: string) =>
+  updateBandDraft: (
+    versionId: string,
+    bands: ScoreBand[],
+    effectiveFrom: string,
+    options: OptionInput[],
+  ) =>
     call(() => {
       requireActor([14]);
       mutateDb((d) => {
@@ -676,6 +707,8 @@ export const masterApi = {
         v.effectiveFrom = effectiveFrom;
         d.scoreBands = d.scoreBands.filter((b) => b.versionId !== versionId);
         for (const b of bands) d.scoreBands.push({ ...b, versionId });
+        d.scoreOptions = d.scoreOptions.filter((o) => o.versionId !== versionId);
+        d.scoreOptions.push(...withVersion(options, versionId));
       });
     }),
 
@@ -687,6 +720,7 @@ export const masterApi = {
         if (!v || (v.status !== 'draft' && v.status !== 'scheduled')) return;
         d.scoreBandVersions = d.scoreBandVersions.filter((x) => x.id !== versionId);
         d.scoreBands = d.scoreBands.filter((b) => b.versionId !== versionId);
+        d.scoreOptions = d.scoreOptions.filter((o) => o.versionId !== versionId);
         audit(
           d,
           actor,
@@ -716,6 +750,41 @@ export const masterApi = {
           { guidance },
         );
         b.guidance = guidance;
+      });
+    }),
+
+  /** Statement text of the active version (PRD v2.8); values change only through a new version. */
+  updateOptionLabel: (optionId: string, label: string) =>
+    call(() => {
+      const actor = requireActor([14]);
+      const db = getDb();
+      const option = db.scoreOptions.find((o) => o.id === optionId);
+      const version = db.scoreBandVersions.find((v) => v.id === option?.versionId);
+      if (!option || version?.status !== 'active')
+        throw new ApiError('validation', 'Kalimat hanya dapat diubah langsung pada versi aktif.');
+      // validateOptions flags the later of two duplicates, so the edited option goes last.
+      const siblings = [
+        ...db.scoreOptions.filter((o) => o.versionId === option.versionId && o.id !== optionId),
+        { ...option, label },
+      ];
+      const problems = validateOptions(
+        siblings,
+        db.scoreBands.filter((b) => b.versionId === option.versionId),
+      ).filter((p) => p.optionId === optionId);
+      if (problems.length)
+        throw new ApiError('options_invalid', 'Kalimat tidak dapat disimpan', problems);
+      mutateDb((d) => {
+        const o = d.scoreOptions.find((x) => x.id === optionId)!;
+        audit(
+          d,
+          actor,
+          'ubah_kalimat_penilaian',
+          'ScoreOption',
+          optionId,
+          { label: o.label },
+          { label: label.trim() },
+        );
+        o.label = label.trim();
       });
     }),
 };

@@ -152,18 +152,27 @@ export default function ScoreBandsPage() {
   };
 
   const persistDraft = (next: ScoreBand[], date = effectiveFrom) =>
-    masterApi.updateBandDraft(version.id, next, date);
+    masterApi.updateBandDraft(
+      version.id,
+      next,
+      date,
+      db.scoreOptions.filter((o) => o.versionId === version.id),
+    );
 
   const save = async () => {
     setSaving(true);
     try {
-      await masterApi.saveBandVersion(version.id, { effectiveFrom, bands });
+      await masterApi.saveBandVersion(version.id, {
+        effectiveFrom,
+        bands,
+        options: db.scoreOptions.filter((o) => o.versionId === version.id),
+      });
       toast.success(
         `Versi ${version.number} disimpan`,
         `Berlaku mulai ${formatDate(effectiveFrom)} untuk triwulan yang dibuka sejak tanggal itu.`,
       );
     } catch (e) {
-      if (!(e instanceof ApiError && e.code === 'bands_invalid'))
+      if (!(e instanceof ApiError && (e.code === 'bands_invalid' || e.code === 'options_invalid')))
         toast.error('Versi tidak dapat disimpan', (e as Error).message);
     } finally {
       setSaving(false);
