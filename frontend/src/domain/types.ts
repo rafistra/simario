@@ -270,6 +270,17 @@ export interface ScoreBand {
   guidance: string;
 }
 
+/** A statement assessors choose; stands for one score value within a band version (PRD v2.8). */
+export interface ScoreOption {
+  id: string;
+  versionId: string;
+  /** 0,0–4,0 with one decimal; unique per version. Never shown outside /master/skala-penilaian. */
+  value: number;
+  label: string;
+  /** Equals the ascending value order. */
+  order: number;
+}
+
 /* ---------- Register ---------- */
 
 export type RegisterStatus = 'draft' | 'ready' | 'published' | 'archived';
