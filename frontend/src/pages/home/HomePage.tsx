@@ -17,7 +17,7 @@ import { QUARTER_ROMAN } from '@/domain/calendar';
 import type { LembarMutu } from '@/domain/rules/sheets';
 import { PREDICATE_INITIAL as SHORT, RISK_TYPE_LABEL } from '@/domain/types';
 import { usePageMeta } from '@/layout/pageMeta';
-import { formatDate, formatDateLong, formatRelative, formatScore } from '@/lib/format';
+import { formatDate, formatDateLong, formatRelative } from '@/lib/format';
 import { useQuery } from '@/lib/useQuery';
 import { useNow } from '@/state/clock';
 import { useAuth } from '@/state/useAuth';
@@ -362,15 +362,8 @@ function LastQuarterCard({ mutu, href }: { mutu: LembarMutu; href: string }) {
             <span role="rowheader">{RISK_TYPE_LABEL[r.riskType]}</span>
             {r.cells.map((c, i) => (
               <span key={mutu.assessors[i]!.positionId} role="cell">
-                {c.average !== null ? (
-                  <>
-                    <span className="t-mono">{formatScore(c.average)}</span>{' '}
-                    {c.predicate && (
-                      <span className={`mchip__pred mchip--${c.predicate}`}>
-                        {SHORT[c.predicate]}
-                      </span>
-                    )}
-                  </>
+                {c.predicate ? (
+                  <span className={`mchip__pred mchip--${c.predicate}`}>{SHORT[c.predicate]}</span>
                 ) : (
                   <span className="home__tsub">{c.opened ? 'Tidak ada nilai' : 'Menunggu'}</span>
                 )}

@@ -9,7 +9,7 @@ import {
   type SheetSection,
 } from '@/domain/rules/sheetPayload';
 import { PREDICATE_LABEL, RISK_TYPE_LABEL } from '@/domain/types';
-import { formatDate, formatDateTime, formatRupiah, formatScore } from '@/lib/format';
+import { formatDate, formatDateTime, formatRupiah } from '@/lib/format';
 
 export interface DocMeta {
   snapshot: SnapshotInfo | null;
@@ -28,11 +28,10 @@ function value(v: SheetAssessorValue, waiting = 'Menunggu') {
   if (v.notAssessed) return <span className="doc__muted">Tidak dinilai</span>;
   if (v.notRelevant)
     return <span>Belum relevan{v.notRelevantReason ? ` — ${v.notRelevantReason}` : ''}</span>;
-  if (v.score === null) return <span className="doc__muted">—</span>;
+  if (v.optionLabel === null || !v.predicate) return <span className="doc__muted">—</span>;
   return (
     <span>
-      <span className="t-mono">{formatScore(v.score)}</span> ·{' '}
-      {v.predicate ? PREDICATE_LABEL[v.predicate] : ''}
+      {PREDICATE_LABEL[v.predicate]} — {v.optionLabel}
       {v.result === 'sesuai'
         ? ' · Sesuai'
         : v.result === 'tidak_sesuai'
@@ -351,7 +350,7 @@ export function MutuDocument({ payload, meta }: { payload: SheetPayload; meta: D
       <Header payload={payload} meta={meta} title="Lembar Mutu" />
       <table className="doc__table">
         <caption className="sr-only">
-          Rata-rata skor per jenis risiko, {tw(payload.quarterNumber)}
+          Predikat per jenis risiko, {tw(payload.quarterNumber)}
         </caption>
         <thead>
           <tr>
@@ -369,11 +368,8 @@ export function MutuDocument({ payload, meta }: { payload: SheetPayload; meta: D
               <th scope="row">{RISK_TYPE_LABEL[r.riskType]}</th>
               {r.cells.map((c, i) => (
                 <td key={payload.assessors[i]!.positionId}>
-                  {c.average !== null ? (
-                    <>
-                      <span className="t-mono">{formatScore(c.average)}</span> ·{' '}
-                      {c.predicate ? PREDICATE_LABEL[c.predicate] : ''}
-                    </>
+                  {c.predicate ? (
+                    <>{PREDICATE_LABEL[c.predicate]}</>
                   ) : (
                     <span className="doc__muted">{c.opened ? 'Tidak ada nilai' : 'Menunggu'}</span>
                   )}
@@ -400,7 +396,7 @@ export function MutuDocument({ payload, meta }: { payload: SheetPayload; meta: D
           <p className="doc__muted">Tidak ada.</p>
         )}
         <p className="doc__muted">
-          Rata-rata hanya atas risiko yang hasil penilainya sudah dibuka; Belum relevan dan Tidak
+          Predikat hanya atas risiko yang hasil penilainya sudah dibuka; Belum relevan dan Tidak
           dinilai dikecualikan.
         </p>
       </section>

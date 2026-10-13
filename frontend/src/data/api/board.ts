@@ -18,6 +18,7 @@ import {
   QUOTA_BYTES,
   type LatestOpened,
 } from '@/domain/rules/board';
+import { optionLabelOf } from '@/domain/rules/assessment';
 import { inactiveLabel, registerStages } from '@/domain/rules/register';
 import {
   canSeeAssessment,
@@ -227,7 +228,7 @@ export interface AssessmentCell {
   label: string;
   positionName: string;
   line: 1 | 3;
-  score: number | null;
+  optionLabel: string | null;
   predicate: Predicate | null;
   status: 'draft' | 'ready' | 'final' | 'not_assessed';
   notRelevant: boolean;
@@ -426,7 +427,7 @@ export function buildThread(db: DB, userId: string, riskId: string, at: ISODateT
           label,
           positionName: p?.name ?? '',
           line,
-          score: null,
+          optionLabel: null,
           predicate: null,
           status: 'draft',
           notRelevant: false,
@@ -444,7 +445,7 @@ export function buildThread(db: DB, userId: string, riskId: string, at: ISODateT
           label,
           positionName: p?.name ?? '',
           line,
-          score: a.score,
+          optionLabel: optionLabelOf(db, a.scoreBandVersionId, a.score),
           predicate: a.predicate,
           status: a.status,
           notRelevant: a.notRelevant,

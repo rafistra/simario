@@ -29,6 +29,7 @@ describe('Lembar Mutu (FR-LBR-004, VIS-7)', () => {
     const ka = m.rows.find((r) => r.riskType === 'kinerja_anggaran')!;
     // L1 = (3 + 4 + 4) / 3 → Terkendali dengan Baik — Deviasi RPD "Belum relevan" excluded.
     expect(ka.cells[0]).toMatchObject({ predicate: 'terkendali', count: 3 });
+    expect(ka.cells[0]).not.toHaveProperty('average');
     expect(m.tidakSesuai).toBeGreaterThan(0);
     expect(m.berulang).toBe(1);
   });

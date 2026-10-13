@@ -19,7 +19,7 @@ import type { LembarMutu } from '@/domain/rules/sheets';
 import { PREDICATE_INITIAL as SHORT, RISK_TYPE_LABEL, RISK_TYPES } from '@/domain/types';
 import type { WorkspaceOutletContext } from '@/layout/Workspace';
 import { usePageMeta } from '@/layout/pageMeta';
-import { formatDate, formatDateTime, formatScore } from '@/lib/format';
+import { formatDate, formatDateTime } from '@/lib/format';
 import { useQuery } from '@/lib/useQuery';
 import './History.css';
 
@@ -296,12 +296,7 @@ function MiniChip({ chip }: { chip: ChipView }) {
       {chip.kind === 'menunggu' && 'Menunggu'}
       {chip.kind === 'belum_relevan' && 'Belum relevan'}
       {chip.kind === 'tidak_dinilai' && 'Tidak dinilai'}
-      {chip.kind === 'score' && a?.score !== null && a?.score !== undefined && (
-        <>
-          <span className="t-mono">{formatScore(a.score)}</span>
-          {pred && <span className="mchip__pred">{SHORT[pred]}</span>}
-        </>
-      )}
+      {chip.kind === 'score' && pred && <span className="mchip__pred">{SHORT[pred]}</span>}
       {chip.result?.result === 'sesuai' && <Check aria-label="Sesuai" />}
       {chip.result?.result === 'tidak_sesuai' && <X aria-label="Tidak Sesuai" />}
     </span>
@@ -332,12 +327,14 @@ function CellDetail({ cell, year }: { cell: HistoryCell; year: number }) {
                 {a?.notRelevantReason && <p className="cdetail__note">{a.notRelevantReason}</p>}
               </>
             ) : (
-              <p className="cdetail__score">
-                <span className="t-mono">{formatScore(a?.score)}</span>
-                {a?.predicate && <PredicateBadge predicate={a.predicate} />}
-                {r?.result === 'sesuai' && <MarkerBadge kind="sesuai" />}
-                {r?.result === 'tidak_sesuai' && <MarkerBadge kind="tidak-sesuai" />}
-              </p>
+              <>
+                <p className="cdetail__score">
+                  {a?.predicate && <PredicateBadge predicate={a.predicate} />}
+                  {r?.result === 'sesuai' && <MarkerBadge kind="sesuai" />}
+                  {r?.result === 'tidak_sesuai' && <MarkerBadge kind="tidak-sesuai" />}
+                </p>
+                {a?.optionLabel && <p className="cdetail__note">{a.optionLabel}</p>}
+              </>
             )}
             {a?.note && <p className="cdetail__note">“{a.note}”</p>}
             {a?.finalisedAt && (
@@ -432,15 +429,10 @@ function MutuBlock({ mutu }: { mutu: LembarMutu[] }) {
                     : row.cells.map((c, i) => (
                         <span key={m.assessors[i]!.positionId} className="mutu__line">
                           <span className="mutu__who t-mono">{m.assessors[i]!.label}</span>
-                          {c.average !== null ? (
-                            <>
-                              <span className="t-mono">{formatScore(c.average)}</span>
-                              {c.predicate && (
-                                <span className={`mchip__pred mchip--${c.predicate}`}>
-                                  {SHORT[c.predicate]}
-                                </span>
-                              )}
-                            </>
+                          {c.predicate ? (
+                            <span className={`mchip__pred mchip--${c.predicate}`}>
+                              {SHORT[c.predicate]}
+                            </span>
                           ) : (
                             <span className="mutu__muted">
                               {c.opened ? 'Tidak ada nilai' : 'Menunggu'}

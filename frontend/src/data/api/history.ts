@@ -1,11 +1,11 @@
 // Risk history — PRD ch. 8 (FR-RWY-001 … 006). Read model with VIS-1/2/7/9 applied here.
 
+import { toDisplay, type AssessmentDisplay } from '@/domain/rules/assessment';
 import { expectedLini3, openedResults } from '@/domain/rules/board';
 import { inactiveLabel, assessedInQuarter, registerStages } from '@/domain/rules/register';
 import { lembarMutu, type LembarMutu } from '@/domain/rules/sheets';
 import { isLateDirectorate, viewerFor, type Viewer } from '@/domain/rules/visibility';
 import type {
-  Assessment,
   ComparisonResult,
   ISODateTime,
   Quarter,
@@ -24,7 +24,7 @@ export interface ChipView {
   label: string;
   line: 1 | 3;
   kind: 'score' | 'belum_relevan' | 'tidak_dinilai' | 'menunggu';
-  assessment: Assessment | null;
+  assessment: AssessmentDisplay | null;
   result: ComparisonResult | null;
   name: string;
 }
@@ -103,7 +103,7 @@ function cellFor(
           : l1.notRelevant
             ? 'belum_relevan'
             : 'score',
-      assessment: l1,
+      assessment: l1 ? toDisplay(db, l1) : null,
       result: null,
       name: pos(positionId)?.name ?? '',
     },
@@ -115,7 +115,7 @@ function cellFor(
         label: pos(p)?.shortName ?? pos(p)?.code ?? '',
         line: 3,
         kind: !r ? 'menunggu' : a?.status === 'not_assessed' ? 'tidak_dinilai' : 'score',
-        assessment: a,
+        assessment: a ? toDisplay(db, a) : null,
         result: r,
         name: pos(p)?.name ?? '',
       };

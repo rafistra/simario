@@ -9,8 +9,7 @@ import { expectedLini3, openedResults } from './board';
 import { isLateDirectorate, type Viewer } from './visibility';
 
 export interface MutuCell {
-  /** null + opened=false → "Menunggu"; null + opened=true → "Tidak ada nilai". */
-  average: number | null;
+  /** null + opened=false → "Menunggu"; null + opened=true → "Tidak ada nilai". The average is internal (PRD v2.8). */
   predicate: Predicate | null;
   count: number;
   opened: boolean;
@@ -85,7 +84,6 @@ export function lembarMutu(
         ? round1(scores.reduce((s, v) => s + v, 0) / scores.length)
         : null;
       return {
-        average,
         predicate: average === null ? null : predicateIn(db, quarter, average),
         count: scores.length,
         opened: relevant.length > 0,

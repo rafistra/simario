@@ -16,7 +16,7 @@ import type {
   ScoreBand,
 } from '../types';
 import { RISK_TYPES } from '../types';
-import { bandVersionFor, quarterRisks } from './assessment';
+import { bandVersionFor, optionLabelOf, quarterRisks } from './assessment';
 import { expectedLini3 } from './board';
 import { assessedInQuarter } from './register';
 
@@ -39,7 +39,10 @@ export interface SheetAssessorValue {
   label: string;
   name: string;
   opened: boolean;
+  /** Kept only to recompute Lembar Mutu after masking; never rendered (PRD v2.8). */
   score: number | null;
+  /** The chosen statement, frozen with the payload (INV-22). */
+  optionLabel: string | null;
   predicate: Predicate | null;
   notRelevant: boolean;
   notRelevantReason: string | null;
@@ -170,6 +173,7 @@ export function buildSheetPayload(
   const expected = expectedLini3(db, quarter.id);
   const bandVersion = bandVersionFor(db, quarter);
   const bands = db.scoreBands.filter((b) => b.versionId === bandVersion);
+  const label = (s: number | null) => optionLabelOf(db, bandVersion, s);
   const pos = (id: string) => db.positions.find((p) => p.id === id);
 
   const items = quarterRisks(db, positionId, quarter).filter(({ risk }) =>
@@ -197,6 +201,7 @@ export function buildSheetPayload(
       name: position.name,
       opened: anyOpen,
       score: anyOpen && l1a?.status === 'final' ? l1a.score : null,
+      optionLabel: anyOpen && l1a?.status === 'final' ? label(l1a.score) : null,
       predicate: anyOpen && l1a?.status === 'final' ? l1a.predicate : null,
       notRelevant: anyOpen && !!l1a?.notRelevant,
       notRelevantReason: anyOpen ? (l1a?.notRelevantReason ?? null) : null,
@@ -213,6 +218,7 @@ export function buildSheetPayload(
         name: pos(p)?.name ?? '',
         opened: !!r,
         score: x?.status === 'final' ? x.score : null,
+        optionLabel: x?.status === 'final' ? label(x.score) : null,
         predicate: x?.status === 'final' ? x.predicate : null,
         notRelevant: false,
         notRelevantReason: null,
@@ -343,6 +349,7 @@ const maskedValue = (v: SheetAssessorValue): SheetAssessorValue => ({
   ...v,
   opened: false,
   score: null,
+  optionLabel: null,
   predicate: null,
   notRelevant: false,
   notRelevantReason: null,
@@ -384,7 +391,7 @@ export function maskPayloadFor(
 export interface PayloadMutu {
   rows: {
     riskType: RiskType;
-    cells: { average: number | null; predicate: Predicate | null; opened: boolean }[];
+    cells: { predicate: Predicate | null; opened: boolean }[];
   }[];
   sesuai: number;
   tidakSesuai: number;
@@ -408,7 +415,6 @@ export function mutuFromPayload(p: SheetPayload): PayloadMutu {
         ? round1(scores.reduce((s, v) => s + v, 0) / scores.length)
         : null;
       return {
-        average,
         predicate: average === null ? null : predicateFor(average, p.bands),
         opened: values.length > 0,
       };

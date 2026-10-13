@@ -174,6 +174,14 @@ describe('visibility in the read models (VIS-1/3/9)', () => {
     expect(card.hiddenLabels.length).toBeGreaterThan(0);
   });
 
+  it('quarter cards carry statements, never numeric scores', () => {
+    const view = buildThread(getDb(), 'usr-andi', 'rr-a1-penyerapan', AT);
+    const cells = view.panel.flatMap((card) => card.visible);
+    expect(cells.some((cell) => cell.optionLabel)).toBe(true);
+    for (const card of view.panel)
+      for (const cell of card.visible) expect(cell).not.toHaveProperty('score');
+  });
+
   it('shows no predicate chips before results open on the clock', () => {
     const board = buildBoard(getDb(), 'usr-andi', 'pos-ppk-a1', 2027, '2027-03-20T09:00');
     const row = board.groups

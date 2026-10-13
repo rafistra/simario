@@ -1,5 +1,11 @@
+import pilihan from '@seed/pilihan_penilaian.json';
 import { act } from '@testing-library/react';
-import { buildSheetPayload, maskPayloadFor, mutuFromPayload } from '@/domain/rules/sheetPayload';
+import {
+  buildSheetPayload,
+  maskPayloadFor,
+  mutuFromPayload,
+  type SheetPayload,
+} from '@/domain/rules/sheetPayload';
 import { lembarMutu } from '@/domain/rules/sheets';
 import { viewerFor } from '@/domain/rules/visibility';
 import { useClock } from '@/state/clock';
@@ -8,10 +14,12 @@ import { useSession } from '@/state/session';
 import { runScheduledTasks } from '../local/scheduler';
 import { getDb, useDb } from '../local/store';
 import { assessmentApi } from './assessment';
+import { masterApi } from './master';
 import { buildSheetView, sheetApi } from './sheets';
 
 const AT = '2027-04-06T09:00';
 const q1 = () => getDb().quarters.find((q) => q.id === 'q-2027-1')!;
+const label = (v: number) => pilihan.options.find((o) => o.value === v)!.label;
 
 beforeEach(() => {
   act(() => {
@@ -28,6 +36,29 @@ describe('sheet payload (FR-LBR-001 … 004, VIS-7)', () => {
     expect(p.risks.every((r) => !r.l1.opened && r.l1.score === null)).toBe(true);
     const later = buildSheetPayload(getDb(), 'pos-ppk-a1', q1(), AT);
     expect(later.risks.find((r) => r.riskId === 'rr-a1-penyerapan')!.l1.score).toBe(3);
+  });
+
+  it('stores the statement in the payload so a frozen copy keeps it (INV-22)', async () => {
+    const before = buildSheetPayload(getDb(), 'pos-ppk-a1', q1(), AT);
+    const v = before.risks.find((r) => r.riskId === 'rr-a1-penyerapan')!.l1;
+    expect(v.optionLabel).toBe(label(3));
+    act(() => useSession.getState().signIn('usr-nur'));
+    const option = getDb().scoreOptions.find((o) => o.versionId === 'sbv-1' && o.value === 3)!;
+    await masterApi.updateOptionLabel(option.id, 'Kalimat baru');
+    expect(before.risks.find((r) => r.riskId === 'rr-a1-penyerapan')!.l1.optionLabel).toBe(
+      label(3),
+    );
+    const after = buildSheetPayload(getDb(), 'pos-ppk-a1', q1(), AT);
+    expect(after.risks.find((r) => r.riskId === 'rr-a1-penyerapan')!.l1.optionLabel).toBe(
+      'Kalimat baru',
+    );
+    expect(mutuFromPayload(before).rows[0]!.cells[0]).not.toHaveProperty('average');
+  });
+
+  it('seeded frozen snapshots keep the statements', () => {
+    const frozen = getDb().snapshots.find((s) => s.trigger === 'auto_freeze')!;
+    const payload = frozen.payload as SheetPayload;
+    expect(payload.risks.some((r) => typeof r.l1.optionLabel === 'string')).toBe(true);
   });
 
   it('Lembar Mutu from the payload matches the live summary', () => {

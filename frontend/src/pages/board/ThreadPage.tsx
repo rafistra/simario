@@ -31,7 +31,7 @@ import { threadParticipants } from '@/domain/rules/board';
 import { RISK_TYPE_LABEL } from '@/domain/types';
 import type { WorkspaceOutletContext } from '@/layout/Workspace';
 import { usePageMeta } from '@/layout/pageMeta';
-import { formatDate, formatDateTime, formatScore } from '@/lib/format';
+import { formatDate, formatDateTime } from '@/lib/format';
 import { useQuery } from '@/lib/useQuery';
 import { useNow } from '@/state/clock';
 import { useAuth } from '@/state/useAuth';
@@ -496,11 +496,11 @@ function QuarterPanel({ cards }: { cards: QuarterCard[] }) {
                   <span className="qcard__muted">Belum relevan</span>
                 ) : a.status === 'not_assessed' ? (
                   <span className="qcard__muted">Tidak dinilai</span>
-                ) : a.score !== null && a.predicate ? (
-                  <>
-                    <span className="t-mono qcard__score">{formatScore(a.score)}</span>
+                ) : a.optionLabel !== null && a.predicate ? (
+                  <span className="qcard__statement">
                     <PredicateBadge predicate={a.predicate} />
-                  </>
+                    <span>{a.optionLabel}</span>
+                  </span>
                 ) : (
                   <span className="qcard__muted">Belum diisi</span>
                 )}
