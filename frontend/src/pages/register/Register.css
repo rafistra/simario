@@ -280,16 +280,23 @@
 }
 
 /* Risk type group (.pen qXpVc) */
+/* Risk types read as sub-items of their stage: indented under a left rail. */
 .rtg {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 16px 0;
+  margin: 12px 0 0 9px;
+  padding: 4px 0 4px 20px;
+  border-left: 2px solid var(--border-subtle);
   scroll-margin-top: calc(var(--topbar-height) + 24px);
 }
 
-.rtg + .rtg {
-  border-top: 1px solid var(--border-subtle);
+.rtg:last-child {
+  margin-bottom: 12px;
+}
+
+.rtg.has-gap {
+  border-left-color: var(--danger-300);
 }
 
 .rtg__head {
@@ -305,6 +312,38 @@
   font-size: 15px;
   font-weight: 600;
   color: var(--text-strong);
+}
+
+.rtg__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rtg__toggle > svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: transform 150ms ease-out;
+}
+
+.rtg__toggle > svg.is-collapsed {
+  transform: rotate(-90deg);
+}
+
+.rtg__toggle:focus-visible {
+  outline: 2px solid var(--ring-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
 .rtg__count {
@@ -699,5 +738,10 @@
 
   .risk-card__mits {
     padding-left: 14px;
+  }
+
+  .rtg {
+    margin-left: 4px;
+    padding-left: 12px;
   }
 }

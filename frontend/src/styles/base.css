@@ -296,6 +296,7 @@ svg {
   html .mit-row__action,
   html .comment__file-action,
   html .acell__reopen,
+  html .rtg__toggle,
   html .adm__danger {
     display: inline-flex;
     align-items: center;

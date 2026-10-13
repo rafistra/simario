@@ -46,7 +46,8 @@ export function StageSection({
   const hasGap =
     gapAnchors.has(stageAnchor(stage.id)) ||
     model.subsections.some((s) => gapAnchors.has(subsectionAnchor(stage.id, s.riskType)));
-  const [open, setOpen] = useState(true);
+  // Stages start collapsed; a publish gap inside opens them so the gap list can scroll there.
+  const [open, setOpen] = useState(false);
   useEffect(() => {
     if (hasGap) setOpen(true);
   }, [hasGap]);
@@ -155,6 +156,10 @@ function RiskTypeGroup({
 }) {
   const [adding, setAdding] = useState(false);
   const [text, setText] = useState('');
+  const [open, setOpen] = useState(true);
+  useEffect(() => {
+    if (gap) setOpen(true);
+  }, [gap]);
   const n = counted(sub);
   const hasPublished = sub.risks.some((r) => r.status === 'active' || r.status === 'inactive');
   const label = RISK_TYPE_LABEL[sub.riskType];
@@ -174,10 +179,18 @@ function RiskTypeGroup({
     >
       <div className="rtg__head">
         <h3 className="rtg__title">
-          {label}{' '}
-          <span className="rtg__count t-mono">
-            {sub.declaration ? 'tidak ada risiko' : `${n} dipilih`}
-          </span>
+          <button
+            type="button"
+            className="rtg__toggle"
+            aria-expanded={open}
+            onClick={() => setOpen((v) => !v)}
+          >
+            <ChevronDown aria-hidden className={open ? undefined : 'is-collapsed'} />
+            {label}
+            <span className="rtg__count t-mono">
+              {sub.declaration ? 'tidak ada risiko' : `${n} dipilih`}
+            </span>
+          </button>
         </h3>
         {editing && !hasPublished && (
           <Checkbox
@@ -187,13 +200,13 @@ function RiskTypeGroup({
           />
         )}
       </div>
-      {gap && !sub.declaration && (
+      {open && gap && !sub.declaration && (
         <p className="rtg__gap" role="note">
           <CircleAlert aria-hidden /> Belum ada risiko atau pernyataan “Tidak ada risiko pada jenis
           ini”.
         </p>
       )}
-      {sub.declaration ? (
+      {!open ? null : sub.declaration ? (
         <ReasonBlock
           label="Alasan tidak ada risiko"
           reason={sub.declaration.reason}
