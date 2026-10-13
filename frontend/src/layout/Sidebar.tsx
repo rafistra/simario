@@ -8,6 +8,8 @@ import {
   Landmark,
   LogOut,
   Moon,
+  PanelLeftClose,
+  PanelLeftOpen,
   Sun,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
@@ -236,13 +238,40 @@ function UserBlock({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
-/** Sidebar (.pen zIDy5): Samudra, 240 px; drawer content below 900 px. */
-export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
+/**
+ * Sidebar (.pen zIDy5): Samudra, 240 px; drawer content below 900 px. On desktop it can collapse
+ * to an icon rail (not in the mockup); labels stay in the accessibility tree.
+ */
+export function Sidebar({
+  onNavigate,
+  collapsed = false,
+  onToggleCollapse,
+}: {
+  onNavigate?: () => void;
+  collapsed?: boolean;
+  /** Desktop only; the drawer passes nothing and shows no toggle. */
+  onToggleCollapse?: () => void;
+}) {
   const auth = useAuth();
   const { pathname } = useLocation();
   const sections = navFor(auth.roleView, auth);
   return (
-    <nav className="sidebar" aria-label="Navigasi utama">
+    <nav
+      className={['sidebar', collapsed && 'is-collapsed'].filter(Boolean).join(' ')}
+      aria-label="Navigasi utama"
+    >
+      {onToggleCollapse && (
+        <button
+          type="button"
+          className="sidebar__collapse"
+          aria-label={collapsed ? 'Luaskan menu' : 'Ciutkan menu'}
+          aria-expanded={!collapsed}
+          title={collapsed ? 'Luaskan menu' : 'Ciutkan menu'}
+          onClick={onToggleCollapse}
+        >
+          {collapsed ? <PanelLeftOpen aria-hidden /> : <PanelLeftClose aria-hidden />}
+        </button>
+      )}
       <div className="sidebar__logo">
         <span className="sidebar__logo-mark" aria-hidden>
           <Landmark />
@@ -270,10 +299,11 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                   to={item.to}
                   className={['nav-item', active && 'nav-item--active'].filter(Boolean).join(' ')}
                   aria-current={active ? 'page' : undefined}
+                  title={collapsed ? item.label : undefined}
                   onClick={onNavigate}
                 >
                   <Icon className="nav-item__icon" aria-hidden />
-                  {item.label}
+                  <span className="nav-item__label">{item.label}</span>
                 </Link>
               );
             })}

@@ -2,7 +2,7 @@ import { UserCog, X } from 'lucide-react';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { InlineAlert } from '@/components';
-import { authApi } from '@/data/repository';
+import { authApi, preferenceApi } from '@/data/repository';
 import { useFocusTrap } from '@/lib/useFocusTrap';
 import { useDevSettings } from '@/state/devSettings';
 import { ErrorBoundary } from '@/pages/faults/FaultPages';
@@ -10,6 +10,9 @@ import { useMaybeAuth } from '@/state/useAuth';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import './Shell.css';
+
+/** Per-user preference key: desktop sidebar collapsed to an icon rail. */
+const SIDEBAR_COLLAPSED = 'sidebarCollapsed';
 
 /** OperatorNotice (.pen nFbY2): persistent while acting as Operator (FR-AUT-009). */
 export function OperatorNotice() {
@@ -89,6 +92,15 @@ export function AppShell({ children }: { children?: ReactNode }) {
   const location = useLocation();
   const offline = useDevSettings((s) => s.offline);
   const [drawer, setDrawer] = useState(false);
+  const userId = auth?.user.id;
+  const [collapsed, setCollapsed] = useState(
+    () => (userId && preferenceApi.get<boolean>(userId, SIDEBAR_COLLAPSED)) || false,
+  );
+  const toggleCollapsed = () => {
+    const next = !collapsed;
+    setCollapsed(next);
+    if (userId) preferenceApi.set(userId, SIDEBAR_COLLAPSED, next);
+  };
   useIdleSignOut();
 
   useEffect(() => setDrawer(false), [location.pathname]);
@@ -100,12 +112,12 @@ export function AppShell({ children }: { children?: ReactNode }) {
   if (auth.user.mustChangePassword) return <Navigate to="/ganti-kata-sandi" replace />;
 
   return (
-    <div className="shell">
+    <div className={['shell', collapsed && 'shell--collapsed'].filter(Boolean).join(' ')}>
       <a className="skip-link" href="#konten">
         Lewati ke konten
       </a>
       <aside className="shell__sidebar">
-        <Sidebar />
+        <Sidebar collapsed={collapsed} onToggleCollapse={toggleCollapsed} />
       </aside>
       <Drawer open={drawer} onClose={() => setDrawer(false)}>
         <Sidebar onNavigate={() => setDrawer(false)} />

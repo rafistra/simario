@@ -100,6 +100,7 @@ Setiap frame di FrameIndex punya padanan halaman/keadaan:
 
 ### Perbedaan yang disengaja
 
+- Sidebar desktop bisa diciutkan menjadi rel ikon 72 px (tombol di tepi kanan sidebar, pilihan diingat per pengguna); latar sidebar memakai gradasi Samudra dengan tekstur grain halus. Keduanya tidak ada di mockup.
 - Data contoh statis per 6 Apr 2027; keadaan waktu lain lewat "Sesuaikan data ke tanggal ini".
 - Beranda Januari: TW IV 2026 sudah dituntaskan di data contoh, jadi tidak ada kartu kewajiban seperti di mockup.
 - Isi lampiran tidak disimpan; gambar tampil sebagai placeholder, unduhan berupa berkas contoh.

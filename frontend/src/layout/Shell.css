@@ -1,5 +1,7 @@
 /* ---------- Shell grid ---------- */
 .shell {
+  /* Collapsed icon rail (not a .pen token; the expanded width is --sidebar-width). */
+  --sidebar-collapsed-width: 72px;
   display: flex;
   min-height: 100vh;
 }
@@ -53,11 +55,156 @@
 
 /* ---------- Sidebar (.pen zIDy5) ---------- */
 .sidebar {
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: var(--bg-inverse);
+  /* Soft light from the top-left over a Samudra gradient that deepens toward the user block. */
+  background:
+    radial-gradient(
+      120% 45% at 0% 0%,
+      color-mix(in srgb, var(--sidebar-active) 80%, transparent),
+      transparent 70%
+    ),
+    linear-gradient(180deg, var(--bg-inverse) 0%, var(--bg-inverse) 35%, var(--sidebar-card) 100%);
   color: var(--text-inverse);
+}
+
+/* Minimal grain texture: monochrome noise at low opacity, behind the content. */
+.sidebar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.7 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+/* Collapse toggle: a small round button on the sidebar's right edge (desktop only). */
+.sidebar__collapse {
+  position: absolute;
+  top: 22px;
+  right: -14px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-full);
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+}
+
+.sidebar__collapse:hover {
+  color: var(--text-strong);
+  border-color: var(--border-strong);
+}
+
+.sidebar__collapse svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---------- Collapsed rail ---------- */
+.shell__sidebar {
+  /* Above the sticky topbar (30) so the edge toggle is not covered; below overlays (40+). */
+  z-index: 35;
+  transition: width 200ms ease-out;
+}
+
+.shell--collapsed .shell__sidebar {
+  width: var(--sidebar-collapsed-width);
+}
+
+.sidebar.is-collapsed .sidebar__logo {
+  justify-content: center;
+  padding: 0;
+}
+
+.sidebar.is-collapsed .sidebar__logo-text {
+  display: none;
+}
+
+.sidebar.is-collapsed .sidebar__switcher {
+  padding: 12px 10px 8px;
+}
+
+.sidebar.is-collapsed .switcher__card {
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.sidebar.is-collapsed .switcher__chevron {
+  display: none;
+}
+
+.sidebar.is-collapsed .sidebar__nav {
+  padding: 8px 10px;
+}
+
+/* Section titles give way to a thin divider between sections. */
+.sidebar.is-collapsed .sidebar__section + .sidebar__section::before {
+  content: '';
+  display: block;
+  height: 1px;
+  margin: 4px 6px 8px;
+  background: var(--sidebar-border);
+}
+
+.sidebar.is-collapsed .nav-item {
+  justify-content: center;
+  padding: 8px 0;
+}
+
+/* Visually hidden, still announced: section titles, nav labels, switcher and user text. */
+.sidebar.is-collapsed .sidebar__section-title,
+.sidebar.is-collapsed .nav-item__label,
+.sidebar.is-collapsed .switcher__text,
+.sidebar.is-collapsed .user-block__text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.sidebar.is-collapsed .user-block {
+  justify-content: center;
+  padding: 12px 0;
+}
+
+/* The menu button covers the avatar so the whole avatar opens the user menu. */
+.sidebar.is-collapsed .user-block__menu-btn {
+  position: absolute;
+  inset: 8px 12px;
+  width: auto;
+  height: auto;
+  background: transparent;
+}
+
+.sidebar.is-collapsed .user-block__menu-btn svg {
+  display: none;
+}
+
+.sidebar.is-collapsed .user-block:hover .user-block__avatar {
+  box-shadow: 0 0 0 2px var(--color-terakota);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shell__sidebar {
+    transition: none;
+  }
 }
 
 .sidebar__logo {
