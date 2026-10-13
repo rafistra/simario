@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Version** | 2.8 (revision of v2.7 dated 11 October 2026) — assessment by statement |
+| **Version** | 2.9 (revision of v2.8 dated 13 October 2026) — collapsible sidebar, full-width content |
 | **Date** | 13 October 2026 |
 | **Author** | Direktorat Data dan Kecerdasan Buatan, Otorita IKN |
 | **Status** | Ready for development — walkthrough with the process owner completed 11 October 2026 |
@@ -237,7 +237,7 @@ All Lini 1 work happens in a **position workspace** at `/jabatan/:jid/…`. Lini
 
 ### 1.8.1 Navigation
 
-**Sidebar** (Samudra navy, per the design system): logo block "SIMARIO · OIKN" · **position switcher card** "JABATAN AKTIF" (FR-AUT-009) · menu · user block at the bottom (avatar, name, email; its ⋯ menu holds the role view switcher, "Jabatan Saya", "Ganti Kata Sandi" for local accounts, "Keluar").
+**Sidebar** (Samudra navy, per the design system): logo block "SIMARIO · OIKN" · **position switcher card** "JABATAN AKTIF" (FR-AUT-009) · menu · user block at the bottom (avatar, name, email; its ⋯ menu holds the role view switcher, "Jabatan Saya", "Ganti Kata Sandi" for local accounts, "Keluar"). On desktop a round toggle on the sidebar edge ("Ciutkan menu" / "Luaskan menu") collapses it to an icon rail: menu names become tooltips and stay available to screen readers, section titles become dividers, the switcher card and user block shrink to their icon and avatar. The choice is remembered per user. Below 900 px the sidebar is a drawer and does not collapse.
 
 **Topbar** (sticky, cream): breadcrumb · global search ("Ctrl K") · notification bell · contextual outline button.
 
@@ -465,10 +465,10 @@ Taken from the OIKN house stack used by LANTARA and Aksara, so the application i
 | Aspect | Provision |
 |---|---|
 | Primary device | Laptop; responsive down to phone |
-| Content max-width | 1200 px |
+| Content max-width | 1200 px; **1368 px when the sidebar is collapsed** (the 168 px the rail frees goes to the content). Pages use the full content width; no page narrows itself further, except print-like documents (Lembar, A4) and the sign-in and error pages |
 | Breakpoint | **Single, at 900 px.** Above: multi-column with fixed sidebar. Below: single column, sidebar becomes a drawer |
 | Tables on narrow screens | Become stacked cards. **No** horizontal scrolling |
-| Sidebar | 240 px, fixed on desktop; Samudra navy; holds the position switcher card (Aksara "Portal Aktif" pattern) |
+| Sidebar | 240 px, fixed on desktop, collapsible to a 72 px icon rail; Samudra navy with a soft gradient and a faint grain texture; holds the position switcher card (Aksara "Portal Aktif" pattern) |
 | Topbar | Sticky; breadcrumb, global search, notification bell, contextual button |
 | Predicate colours | Kurang Terkendali (danger), Cukup Terkendali (accent/amber), Terkendali dengan Baik (success), exact tokens in the design system §2.4. Every badge carries text; colour is never the only signal |
 | Line labels on comments | Lini 1, Lini 2, Lini 3 as text chips, design system §2.4 |
@@ -874,7 +874,7 @@ One register per Lini 1 position per fiscal year. Built at the start of the year
 | Code | Feature | Description | Acceptance Criteria | Ref | Prio |
 |---|---|---|---|---|---|
 | **FR-REG-001** | **Data Umum** | Register header, filled once per year. | • Fixed fields: Tujuan (prefilled with the form's default objective, editable), Kegiatan (list, add/remove rows), Besar Anggaran (Rp), Target (textarea)<br>• Additional fields from the position type's `DataUmumForm`<br>• Identity block read-only from the position and current Pejabat holding: name, position, and the type's identity fields (e.g. Nama Satker, Nomor DIPA Petikan for KPA; Nomor dan Tanggal SK for PPK and Pokja)<br>• Editable by Lini 1 after publish; changes audit-logged | BR-001 | High |
-| **FR-REG-002** | **Stage sections** | One collapsible section per active stage of the risk owner type, in stage order. | • Each stage holds three risk type sub-sections: Kinerja Anggaran, Ketidakpatuhan, Kecurangan<br>• Section header shows counts of selected risks per type<br>• "Tahap ini tidak relevan tahun ini" toggle at stage level, with a mandatory reason; collapses the stage | BR-001 | High |
+| **FR-REG-002** | **Stage sections** | One collapsible section per active stage of the risk owner type, in stage order. | • Stage sections start **collapsed**; the header still shows counts and "Tidak relevan"<br>• Each stage holds three risk type sub-sections: Kinerja Anggaran, Ketidakpatuhan, Kecurangan, shown as indented sub-items; each is collapsible and starts **expanded**<br>• A publish gap opens its stage and sub-section so the gap list can scroll to it<br>• Section header shows counts of selected risks per type<br>• "Tahap ini tidak relevan tahun ini" toggle at stage level, with a mandatory reason; collapses the stage | BR-001 | High |
 | **FR-REG-003** | **Risk cards** | Template risks for that stage and type, as selectable cards. | • Card shows risk wording; selecting expands it to show its mitigation templates as checkboxes<br>• Mitigations are **not** pre-ticked<br>• "+ Mitigasi sendiri" adds a custom mitigation under the risk<br>• Search within the stage | BR-002 | High |
 | **FR-REG-004** | **Custom risk** | Lini 1 adds a risk not in the templates. | • "+ Risiko sendiri" in each risk type sub-section: wording (mandatory), at least one mitigation recommended<br>• Saved with `is_custom = true`; on publish also creates a `RiskProposal` | BR-002 | High |
 | **FR-REG-005** | **"Tidak ada risiko" declaration** | Per stage and risk type. | • Checkbox "Tidak ada risiko pada jenis ini" with a mandatory reason<br>• Mutually exclusive with selected risks in that sub-section | BR-001, BR-013 | High |
@@ -1258,7 +1258,7 @@ The Lembar Komunikasi Tiga Lini and the Lembar Mutu are **derived** from threads
 > **Wireframe: Stages (`/master/tahap`)**
 >
 > **Layout**
-> - Sidebar 240 px; single column max 1000 px; accordion per risk owner type
+> - Sidebar 240 px; single column at full content width; accordion per risk owner type
 >
 > **Components**
 > - Stage rows with drag handle, name, template count, active toggle; "Tambah Tahap"
@@ -1280,7 +1280,7 @@ The Lembar Komunikasi Tiga Lini and the Lembar Mutu are **derived** from threads
 > **Wireframe: Score bands (`/master/skala-penilaian`)**
 >
 > **Layout**
-> - Sidebar 240 px; single column max 800 px
+> - Sidebar 240 px; single column at full content width
 >
 > **Components**
 > - Version selector, effective date, "Buat Versi Baru"; band table; guidance text per predicate; a 0–4 bar previewing the bands in colour with text labels; "Pilihan penilaian" table (Kalimat, Nilai, Predikat)
@@ -1380,7 +1380,7 @@ Rules common to all: idempotent (the same event never notifies twice); reminders
 > **Wireframe: All notifications (`/notifikasi`)**
 >
 > **Layout**
-> - Sidebar 240 px; single column max 900 px
+> - Sidebar 240 px; single column at full content width
 >
 > **Components**
 > - Filter pills; rows with absolute timestamps; pagination
@@ -1481,7 +1481,7 @@ Four easily-confused things kept apart: **roles** hold permissions; **users** ho
 > **Wireframe: My positions (`/jabatan-saya`)**
 >
 > **Layout**
-> - Sidebar 240 px; single column max 900 px
+> - Sidebar 240 px; single column at full content width
 >
 > **Components**
 > - "Sebagai Pejabat" cards with Operator list and "Tunjuk Operator"; "Sebagai Operator" cards
@@ -1492,7 +1492,7 @@ Four easily-confused things kept apart: **roles** hold permissions; **users** ho
 > **Wireframe: Bulk import (`/pengaturan/impor`)**
 >
 > **Layout**
-> - Sidebar 240 px; single column max 1000 px
+> - Sidebar 240 px; single column at full content width
 >
 > **Components**
 > - Kind selector (Jabatan · Penetapan Pejabat · Penugasan Pemantauan); "Unduh Templat CSV"; upload area
@@ -1643,6 +1643,7 @@ The blind-assessment rule (INV-16) and the confidentiality rule (INV-17) are enf
 | 1.0 | 31-08-2026 | Initial version | Direktorat Data dan Kecerdasan Buatan |
 | 2.0 | 02-09-2026 | English rewrite; flags instead of hard gates; data model; SSO in v1.0; attachment security; metrics | Direktorat Data dan Kecerdasan Buatan |
 | 2.1 | 10-10-2026 | Accounts and roles: positions on three lines, Pejabat and Operator, roles following holdings, Lini 2 team assignment, Lini 3 unassigned | Direktorat Data dan Kecerdasan Buatan |
+| 2.9 | 13-10-2026 | Collapsible sidebar (72 px icon rail on desktop, remembered per user) whose freed width goes to the content; every page uses the full content width (no narrower single-column pages); register stages collapsed by default with collapsible risk type sub-sections | Direktorat Data dan Kecerdasan Buatan |
 | 2.8 | 13-10-2026 | Assessment by statement: scorers pick a configured statement per score value; numeric scores and averages hidden from all user views; ScoreOption added to score band versions | Direktorat Data dan Kecerdasan Buatan |
 | 2.7 | 11-10-2026 | Design system adopted (DesignSystem_SIMARIO.md, Aksara-based): §2.2 rewritten to reference it; position switcher moved from topbar to a sidebar card; full palette hex values | Direktorat Data dan Kecerdasan Buatan |
 | 2.6 | 11-10-2026 | Product Owner assigned; process-owner walkthrough completed; OQ-1, 2, 4, 6, 11 closed; seed data from the Rapim deck declared final | Direktorat Data dan Kecerdasan Buatan |

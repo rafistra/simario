@@ -12,7 +12,7 @@ Panduan kerja untuk Claude di repositori ini. Baca seluruhnya sebelum menulis ko
 
 ## 2. Sumber kebenaran (urutan prioritas)
 
-1. `docs/PRD_SIMARIO_v2.8.md` — perilaku, aturan, salinan teks (copy), FR/VIS/INV. **PRD menang** bila ada perbedaan.
+1. `docs/PRD_SIMARIO_v2.9.md` — perilaku, aturan, salinan teks (copy), FR/VIS/INV. **PRD menang** bila ada perbedaan.
 2. `docs/DesignSystem_SIMARIO.md` — warna, tipografi, radius, bayangan, komponen (berbasis Aksara).
 3. `Simario.pen` (Pencil) — mockup 99 frame. Bacanya **hanya lewat MCP Pencil** (`mcp__pencil__execute` dengan `Get`/`Print`/`TakeScreenshot`), jangan dengan Read/Grep. Catatan penting di dalamnya:
    - `DesignBrief` (THmWq): keputusan desain, persona, linimasa data contoh.
@@ -88,7 +88,7 @@ Tulis sebagai fungsi murni di `domain/rules/` dan beri unit test (Vitest). Yang 
 
 - **Token saja.** Tidak ada hex mentah di komponen; semua warna lewat `var(--…)`. Mode gelap lewat `[data-theme="dark"]` dengan nilai dari `.pen`. Teks tautan memakai `--text-link`, bukan `--action-primary`.
 - Nama komponen React = nama komponen di `.pen` (Button, TextInput, Select, ScoreInput, PredicateBadge, LineChip, CapacityChip, StatusChip, MarkerBadge, Comment, Composer, DataTable, TableCard_Mobile → `TableCardMobile`, SummaryStrip, FilterPills, Card, BottomBar, SlideOver, ConfirmDialog, InlineAlert, Toast, NotificationPanel, EmptyState, Sidebar, Topbar, PositionSwitcher, WorkspaceHeader, PageHeader, OperatorNotice, dst.). Sebelum membuat komponen baru, cek apakah sudah ada di `.pen`.
-- Tata letak (PRD §2.2): sidebar 240 tetap, topbar sticky 56–64, konten maks 1200, padding 32/16. **Satu breakpoint 900 px**: di bawahnya satu kolom, sidebar jadi drawer, tabel jadi kartu bertumpuk, tanpa gulir horizontal.
+- Tata letak (PRD §2.2): sidebar 240 tetap (bisa diciutkan jadi rel ikon 72 di desktop), topbar sticky 56–64, konten maks 1200 (1368 saat sidebar diciutkan; halaman tidak membuat batas lebar sendiri kecuali Lembar A4, login, dan halaman galat), padding 32/16. **Satu breakpoint 900 px**: di bawahnya satu kolom, sidebar jadi drawer, tabel jadi kartu bertumpuk, tanpa gulir horizontal.
 - Pola §2.4: skeleton saat memuat, InlineAlert merah + "Coba Lagi" saat galat, dialog merah untuk tindakan destruktif, toast kanan atas 4 detik, "Draf tersimpan" di BottomBar, paginasi 25 baris / 50 komentar.
 - Angka & tanggal: font mono, koma desimal ("3,2"), format tanggal Indonesia ("6 Apr 2027"). Gunakan helper `formatScore`, `formatDate`, `formatRelative`.
 - Aksesibilitas (WCAG 2.1 AA): cincin fokus 2 px `--ring-focus`; target sentuh ≥44 px di ponsel (tombol teks 40 di desktop); warna tidak pernah satu-satunya penanda; peran ARIA sesuai AccessibilityContract; hormati `prefers-reduced-motion`.
