@@ -1,4 +1,5 @@
 import { act } from '@testing-library/react';
+import pilihan from '@seed/pilihan_penilaian.json';
 import { holdingsOf } from '@/domain/rules/access';
 import { useClock } from '@/state/clock';
 import { useDevSettings } from '@/state/devSettings';
@@ -21,6 +22,8 @@ beforeEach(() => {
   });
   as('usr-admin');
 });
+
+const label = (v: number) => pilihan.options.find((o) => o.value === v)!.label;
 
 const occOf = (userId: string, pos: string) =>
   getDb().occupancies.find((o) => o.userId === userId && o.positionId === pos && !o.endDate);
@@ -250,5 +253,20 @@ describe('metrics and audit (FR-ADM-011, 008, VIS-8)', () => {
       true,
     );
     expect(original[0]!.after).toMatchObject({ score: 3 });
+  });
+
+  it('shows the statement instead of the number once the assessment is visible', () => {
+    // Seeded finalise entry for rr-a1-penyerapan TW I (score 3) is visible to the audit reader.
+    const id = 'as-rq-rr-a1-penyerapan-q-2027-1-pos-ppk-a1';
+    const rows = buildAudit(getDb(), 'usr-admin', { entityType: 'Assessment' }, AT, false);
+    const finalised = rows.find(
+      (r) => r.entityId === id && (r.after as { status?: string } | null)?.status === 'final',
+    )!;
+    expect((finalised.after as { score: unknown }).score).toBe(label(3));
+    expect((finalised.before as { score: unknown }).score).toBe(label(3));
+    const original = buildAudit(getDb(), 'usr-admin', { entityType: 'Assessment' }, AT, true);
+    expect((original.find((r) => r.id === finalised.id)!.after as { score: unknown }).score).toBe(
+      3,
+    );
   });
 });

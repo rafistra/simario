@@ -2,7 +2,7 @@
 
 import { QUARTER_ROMAN } from '@/domain/calendar';
 import { hasPermission, holdingsOf, permissionScopes } from '@/domain/rules/access';
-import { assessmentFrozen, quarterRisks } from '@/domain/rules/assessment';
+import { assessmentFrozen, optionLabelOf, quarterRisks } from '@/domain/rules/assessment';
 import { hasLangkah, openedResults } from '@/domain/rules/board';
 import { REDACTED, REDACTED_FILE } from '@/domain/rules/visibility';
 import type { AuditLog, ISODateTime } from '@/domain/types';
@@ -293,6 +293,19 @@ export function redact(
   return { ...entry, before: walk(entry.before), after: walk(entry.after) };
 }
 
+/** PRD v2.8: numbers in Assessment before/after read as the chosen statement. */
+function labelScores(db: DB, entry: AuditLog): AuditLog {
+  if (entry.entityType !== 'Assessment') return entry;
+  const version = db.assessments.find((a) => a.id === entry.entityId)?.scoreBandVersionId ?? null;
+  const swap = (v: unknown): unknown => {
+    if (!v || typeof v !== 'object' || Array.isArray(v)) return v;
+    const o = v as Record<string, unknown>;
+    if (typeof o.score !== 'number') return v;
+    return { ...o, score: optionLabelOf(db, version, o.score) ?? o.score };
+  };
+  return { ...entry, before: swap(entry.before), after: swap(entry.after) };
+}
+
 export function buildAudit(
   db: DB,
   viewerId: string,
@@ -334,7 +347,7 @@ export function buildAudit(
     )
     .sort((a, b) => b.at.localeCompare(a.at))
     .map((e) => ({
-      ...redact(db, viewerId, e, at, original),
+      ...(original ? e : labelScores(db, redact(db, viewerId, e, at, false))),
       actorName: e.actorUserId
         ? (db.users.find((u) => u.id === e.actorUserId)?.fullName ?? '')
         : 'Sistem',
