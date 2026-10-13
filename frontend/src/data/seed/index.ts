@@ -24,6 +24,7 @@ import {
   quarters,
   riskTemplates,
   scoreBands,
+  scoreOptions,
   scoreBandVersions,
   stages,
 } from './reference';
@@ -54,6 +55,7 @@ export function buildSeed(): DB {
     proposals,
     scoreBandVersions,
     scoreBands,
+    scoreOptions,
     registers,
     declarations,
     risks,

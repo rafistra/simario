@@ -31,6 +31,7 @@ import type {
   RolePermission,
   ScoreBand,
   ScoreBandVersion,
+  ScoreOption,
   Stage,
   ThreadSubscription,
   ThreadView,
@@ -60,6 +61,7 @@ export interface DB {
   proposals: RiskProposal[];
   scoreBandVersions: ScoreBandVersion[];
   scoreBands: ScoreBand[];
+  scoreOptions: ScoreOption[];
   registers: Register[];
   declarations: RegisterStageDeclaration[];
   risks: RegisterRisk[];
@@ -100,6 +102,7 @@ export const COLLECTIONS: Collection[] = [
   'proposals',
   'scoreBandVersions',
   'scoreBands',
+  'scoreOptions',
   'registers',
   'declarations',
   'risks',
@@ -118,7 +121,7 @@ export const COLLECTIONS: Collection[] = [
 ];
 
 /** Bump when the seed or entity shapes change: stored data is then re-seeded. */
-export const SCHEMA_VERSION = 8;
+export const SCHEMA_VERSION = 9;
 
 export const STORAGE_PREFIX = 'simario:v1:';
 

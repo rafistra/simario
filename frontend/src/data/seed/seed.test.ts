@@ -1,5 +1,6 @@
 import rapim from '@seed/template_risiko_rapim.json';
-import { predicateFor, validateBands } from '@/domain/scoreBands';
+import pilihan from '@seed/pilihan_penilaian.json';
+import { predicateFor, validateBands, validateOptions } from '@/domain/scoreBands';
 import { buildSeed } from '.';
 
 const db = buildSeed();
@@ -46,6 +47,31 @@ describe('score bands', () => {
     const bands = db.scoreBands.filter((b) => b.versionId === 'sbv-1');
     for (const a of db.assessments.filter((x) => x.score !== null))
       expect(a.predicate, a.id).toBe(predicateFor(a.score!, bands));
+  });
+});
+
+describe('score options (PRD v2.8)', () => {
+  it('seeds the illustrative statements for every version', () => {
+    for (const v of db.scoreBandVersions) {
+      const options = db.scoreOptions.filter((o) => o.versionId === v.id);
+      expect(options.map((o) => o.label)).toEqual(pilihan.options.map((o) => o.label));
+    }
+    const v1 = db.scoreBands.filter((b) => b.versionId === 'sbv-1');
+    expect(
+      validateOptions(
+        db.scoreOptions.filter((o) => o.versionId === 'sbv-1'),
+        v1,
+      ),
+    ).toEqual([]);
+  });
+
+  it('every seeded score is an option value of its version', () => {
+    for (const a of db.assessments.filter((x) => x.score !== null)) {
+      const values = db.scoreOptions
+        .filter((o) => o.versionId === a.scoreBandVersionId)
+        .map((o) => o.value);
+      expect(values, a.id).toContain(a.score);
+    }
   });
 });
 

@@ -1,6 +1,7 @@
 // Reference seed. Stages and risk/mitigation templates come only from the Rapim deck extraction
 // (docs/seed/template_risiko_rapim.json, FR-MST-010) — never retyped here.
 
+import pilihan from '@seed/pilihan_penilaian.json';
 import rapim from '@seed/template_risiko_rapim.json';
 import { defaultQuarters } from '@/domain/calendar';
 import type {
@@ -13,6 +14,7 @@ import type {
   RiskType,
   ScoreBand,
   ScoreBandVersion,
+  ScoreOption,
   Stage,
 } from '@/domain/types';
 
@@ -175,6 +177,19 @@ export const scoreBands: ScoreBand[] = [
     guidance: GUIDANCE.terkendali,
   },
 ];
+
+/** Illustrative statements (docs/seed/pilihan_penilaian.json), copied to every seeded version. */
+export const scoreOptions: ScoreOption[] = scoreBandVersions.flatMap((v) =>
+  [...pilihan.options]
+    .sort((a, b) => a.value - b.value)
+    .map((o, i) => ({
+      id: `so-${v.id}-${o.value}`,
+      versionId: v.id,
+      value: o.value,
+      label: o.label,
+      order: i + 1,
+    })),
+);
 
 /* ---------- Calendar ---------- */
 

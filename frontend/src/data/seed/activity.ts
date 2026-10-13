@@ -241,8 +241,8 @@ export const audit: AuditLog[] = [
     action: 'tuntaskan_penilaian',
     entityType: 'Assessment',
     entityId: 'as-rq-rr-a1-penyerapan-q-2027-1-pos-ppk-a1',
-    before: { status: 'ready', score: 2.4, predicate: 'cukup' },
-    after: { status: 'final', score: 2.4, predicate: 'cukup' },
+    before: { status: 'ready', score: 3, predicate: 'cukup' },
+    after: { status: 'final', score: 3, predicate: 'cukup' },
   }),
   a({
     at: '2027-04-01T15:00',
@@ -254,13 +254,13 @@ export const audit: AuditLog[] = [
     entityId: 'as-rq-rr-a1-pemecahan-q-2027-1-pos-kepatuhan',
     before: {
       status: 'draft',
-      score: 1.6,
+      score: 2,
       predicate: 'kurang',
       note: 'Dua kontrak lisensi sejenis…',
     },
     after: {
       status: 'final',
-      score: 1.6,
+      score: 2,
       predicate: 'kurang',
       note: 'Dua kontrak lisensi sejenis…',
     },
@@ -287,7 +287,7 @@ export const audit: AuditLog[] = [
     before: null,
     after: {
       status: 'draft',
-      score: 1.8,
+      score: 2,
       predicate: 'kurang',
       note: 'Belum ada bukti penggabungan paket.',
     },

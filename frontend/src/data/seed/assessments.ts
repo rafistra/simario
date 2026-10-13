@@ -4,11 +4,12 @@
 
 import { latenessAt } from '@/domain/calendar';
 import { compareAssessments, explanationDueOn } from '@/domain/rules/comparison';
-import { predicateFor } from '@/domain/scoreBands';
+import { predicateFor, snapToOption } from '@/domain/scoreBands';
 import type { Assessment, ComparisonResult, Lateness, RiskQuarter } from '@/domain/types';
-import { scoreBands } from './reference';
+import { scoreBands, scoreOptions } from './reference';
 
 const BANDS = scoreBands.filter((b) => b.versionId === 'sbv-1');
+const OPTIONS = scoreOptions.filter((o) => o.versionId === 'sbv-1');
 
 export const riskQuarters: RiskQuarter[] = [];
 export const assessments: Assessment[] = [];
@@ -65,7 +66,8 @@ function makeAssessment(
   extra: Partial<Assessment>,
 ): Assessment {
   const final = score !== null && fin;
-  const numeric = typeof score === 'number' ? score : null;
+  // PRD v2.8: scores are option values; DesignBrief scores snap within their predicate.
+  const numeric = typeof score === 'number' ? snapToOption(score, OPTIONS, BANDS) : null;
   return {
     id: assessmentId(rqId, positionId),
     riskQuarterId: rqId,

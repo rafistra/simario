@@ -27,8 +27,8 @@ describe('Lembar Mutu (FR-LBR-004, VIS-7)', () => {
     const q = db.quarters.find((x) => x.id === 'q-2027-1')!;
     const m = lembarMutu(db, viewerFor(db, 'usr-andi', '2027-04-06'), 'pos-ppk-a1', q, AT);
     const ka = m.rows.find((r) => r.riskType === 'kinerja_anggaran')!;
-    // L1 = (2,4 + 3,2 + 3,1) / 3 = 2,9 — Deviasi RPD "Belum relevan" excluded (DesignBrief example).
-    expect(ka.cells[0]).toMatchObject({ average: 2.9, predicate: 'cukup' });
+    // L1 = (3 + 4 + 4) / 3 → Terkendali dengan Baik — Deviasi RPD "Belum relevan" excluded.
+    expect(ka.cells[0]).toMatchObject({ predicate: 'terkendali', count: 3 });
     expect(m.tidakSesuai).toBeGreaterThan(0);
     expect(m.berulang).toBe(1);
   });

@@ -27,15 +27,15 @@ describe('sheet payload (FR-LBR-001 … 004, VIS-7)', () => {
     const p = buildSheetPayload(getDb(), 'pos-ppk-a1', q1(), '2027-04-01T12:00');
     expect(p.risks.every((r) => !r.l1.opened && r.l1.score === null)).toBe(true);
     const later = buildSheetPayload(getDb(), 'pos-ppk-a1', q1(), AT);
-    expect(later.risks.find((r) => r.riskId === 'rr-a1-penyerapan')!.l1.score).toBe(2.4);
+    expect(later.risks.find((r) => r.riskId === 'rr-a1-penyerapan')!.l1.score).toBe(3);
   });
 
   it('Lembar Mutu from the payload matches the live summary', () => {
     const db = getDb();
     const p = buildSheetPayload(db, 'pos-ppk-a1', q1(), AT);
     const live = lembarMutu(db, viewerFor(db, 'usr-andi', '2027-04-06'), 'pos-ppk-a1', q1(), AT);
-    expect(mutuFromPayload(p).rows.map((r) => r.cells.map((c) => c.average))).toEqual(
-      live.rows.map((r) => r.cells.map((c) => c.average)),
+    expect(mutuFromPayload(p).rows.map((r) => r.cells.map((c) => c.predicate))).toEqual(
+      live.rows.map((r) => r.cells.map((c) => c.predicate)),
     );
   });
 

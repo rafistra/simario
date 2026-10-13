@@ -1,0 +1,11 @@
+{
+  "illustrative": true,
+  "note": "Draf sementara, belum bersumber dari dek Rapim. Ganti lewat /master/skala-penilaian.",
+  "options": [
+    { "value": 0, "label": "Mitigasi belum dilaksanakan" },
+    { "value": 1, "label": "Mitigasi baru direncanakan, belum ada pelaksanaan" },
+    { "value": 2, "label": "Mitigasi dilaksanakan sebagian, bukti belum memadai" },
+    { "value": 3, "label": "Mitigasi dilaksanakan, bukti memadai, efektivitas belum terlihat" },
+    { "value": 4, "label": "Mitigasi dilaksanakan penuh dan terbukti efektif" }
+  ]
+}

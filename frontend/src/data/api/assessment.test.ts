@@ -212,6 +212,6 @@ describe('explanations and recurrence (default data, 6 Apr 2027)', () => {
     });
     const after = buildAssessment(getDb(), 'usr-admin', A1, 2027, 2, '2027-04-06T09:00', true);
     const row = after.rows.find((r) => r.risk.id === 'rr-a1-pemecahan')!;
-    expect(row.cells.find((c) => c.positionId === KEP)!.assessment?.score).toBe(1.8);
+    expect(row.cells.find((c) => c.positionId === KEP)!.assessment?.score).toBe(2);
   });
 });
