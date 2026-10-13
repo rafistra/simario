@@ -249,6 +249,6 @@ describe('metrics and audit (FR-ADM-011, 008, VIS-8)', () => {
       AT,
       true,
     );
-    expect(JSON.stringify(original[0]!.after)).toContain('"score":3');
+    expect(original[0]!.after).toMatchObject({ score: 3 });
   });
 });

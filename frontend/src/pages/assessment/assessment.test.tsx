@@ -39,7 +39,12 @@ describe('Penilaian Triwulan', () => {
       name: /^Penilaian Lini 1 · PPK A-1 untuk Pemecahan kontrak/,
     });
     expect(within(select).getByRole('option', { name: '— Pilih penilaian —' })).toBeInTheDocument();
-    expect(within(select).queryByText(/d,d/)).toBeNull();
+    expect(within(select).queryByText(/\d,\d/)).toBeNull();
+    expect(
+      within(select)
+        .queryAllByRole('option')
+        .filter((o) => /\d/.test(o.textContent ?? '')),
+    ).toEqual([]);
     fireEvent.change(select, { target: { value: '3' } });
     expect(
       await within(select.closest('.score-input') as HTMLElement).findByText('Cukup Terkendali'),
