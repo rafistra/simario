@@ -2,8 +2,8 @@
 
 | | |
 |---|---|
-| **Version** | 2.7 (revision of v2.6 dated 11 October 2026) — design system adopted |
-| **Date** | 11 October 2026 |
+| **Version** | 2.8 (revision of v2.7 dated 11 October 2026) — assessment by statement |
+| **Date** | 13 October 2026 |
 | **Author** | Direktorat Data dan Kecerdasan Buatan, Otorita IKN |
 | **Status** | Ready for development — walkthrough with the process owner completed 11 October 2026 |
 | **Product Owner** | Binsar H. Simanjuntak |
@@ -290,7 +290,8 @@ For Pemilik Risiko the sidebar items are shortcuts into the workspace of the pos
 | **Risk** | One item in the register; on the board it is a **thread** |
 | **Mitigation** | A planned action under a risk; on the board it is a **sub-thread**. Mitigations are not assessed |
 | **Langkah** | A Lini 1 comment marked as an action taken; feeds Section A of the Lembar Komunikasi |
-| **Score** (*Skor*) | A number 0.0–4.0 given to a risk in a quarter |
+| **Score** (*Skor*) | A number 0.0–4.0 given to a risk in a quarter, chosen through a *score option* (statement). Stored, never shown to users outside `/master/skala-penilaian` |
+| **Score option** (*Pilihan penilaian*) | A statement that stands for one score value within a score band version; assessors choose statements, not numbers |
 | **Predicate** (*Predikat*) | Kurang Terkendali / Cukup Terkendali / Terkendali dengan Baik, derived from the score by the active score bands |
 | **Blind assessment** | No assessor sees another assessor's score for the same risk and quarter until the comparison opens |
 | **Comparison** (*Perbandingan*) | Lini 1 predicate vs. each Lini 3 predicate: **Sesuai** or **Tidak Sesuai** |
@@ -298,7 +299,7 @@ For Pemilik Risiko the sidebar items are shortcuts into the workspace of the pos
 | **Print snapshot** | An immutable, numbered copy of a Lembar Komunikasi or Lembar Mutu as printed or as frozen automatically |
 | **Recurring** (*Berulang*) | A risk rated Kurang Terkendali by Lini 3 in two consecutive quarters |
 | **Lembar Komunikasi Tiga Lini** | Quarterly sheet per Lini 1 position: Section A (Lini 1), B (Lini 2), C (Lini 3). Derived |
-| **Lembar Mutu** | Quarterly summary of average score and predicate per risk type, per assessor. Derived |
+| **Lembar Mutu** | Quarterly summary of the predicate per risk type, per assessor (derived from the average score, which is not shown). Derived |
 | **Monitoring assignment** | Links a Lini 1 position to one Lini 2 lead position and its support positions for a quarter range |
 | **Confidential attachment** | A Lini 3 attachment visible only to Lini 3 and Superadmin |
 
@@ -594,6 +595,8 @@ These override data scope (§1.5). Each is enforced in the API serializer, not o
 | VIS-8 | **Audit redaction.** In audit before/after values, an assessment's score, predicate, and note are shown as "[disamarkan]" until its result opens, and a confidential attachment's filename is shown as "[konfidensial]" to anyone without permission 10 | Superadmin with permission 24 sees unredacted values, each view logged | Everyone else |
 | VIS-9 | **Late directorate.** For a given risk and quarter, a Lini 3 position whose own result has not opened (and is not excluded) sees, about that risk and quarter: no other assessment, no comparison result, no explanation, no Sesuai/Tidak Sesuai or Berulang marker, and no notification that would reveal them. This applies to every page, derived view (VIS-7), snapshot, export, notification, and audit value (VIS-8), and overrides VIS-2 for that position | All others per VIS-2 | That Lini 3 position's holders |
 
+> **Scores are not displayed (v2.8).** Users see the chosen statement and its predicate, never the numeric score or an average. Numbers appear only on `/master/skala-penilaian`, in the metrics CSV export, and in the import tool. Like VIS rules, this is applied in data selectors, not only hidden in markup.
+
 ## 2.8 Data Model
 
 ### 2.8.1 Entities
@@ -634,6 +637,7 @@ These override data scope (§1.5). Each is enforced in the API serializer, not o
 | `RiskProposal` | `id`, `source_register_risk_id`, `description`, `proposer_user_id`, `status`, `rejection_reason` | |
 | `ScoreBandVersion` | `id`, `effective_from`, `status` | Exactly one `active` |
 | `ScoreBand` | `version_id`, `lower_exclusive`, `upper_inclusive`, `predicate`, `order` | Seed: [0, 2.0] Kurang · (2.0, 3.0] Cukup · (3.0, 4.0] Terkendali dengan Baik |
+| `ScoreOption` | `id`, `version_id`, `value` (numeric 2,1), `label`, `order` | One list per `ScoreBandVersion`, used for every risk. Seed: illustrative statements for 0, 1, 2, 3, 4 from `docs/seed/pilihan_penilaian.json` |
 | `ScaleCriteriaVersion`, `ScaleCriteriaRow`, `RiskLevelMapping` | as v2.0 | **Provisioned, unused** |
 
 **Register**
@@ -695,6 +699,7 @@ A register copied from the previous fiscal year (FR-REG-009) creates new `Regist
 | INV-1 | `Register` is unique on (`position_id`, `fiscal_year`) |
 | INV-2 | `Position.code` is unique within `org_unit_id` |
 | INV-3 | Exactly one `ScoreBandVersion` has `status = 'active'`; its bands cover 0.0–4.0 without gap or overlap |
+| INV-26 | Within one `ScoreBandVersion`: every band's predicate has at least one `ScoreOption` whose value falls in it; option values and labels are unique; values are 0.0–4.0 with one decimal. Every non-null `Assessment.score` equals a `ScoreOption.value` of its version |
 | INV-4 | A single-Pejabat position has at most one active `PositionOccupancy`; every position with at least one active occupancy has exactly one with `is_filler = true` |
 | INV-5 | At least one active user holds a role with the manage-roles permission |
 | INV-6 | `AuditLog` has no UPDATE or DELETE path; enforced by a database trigger |
@@ -809,7 +814,7 @@ Home content follows the position selected in the switcher and the line of that 
 | **FR-BRD-001** | **Assessment obligation cards (Lini 1)** | One card per **open obligation**, from any fiscal year, not per calendar quarter. | • An obligation exists for a quarter from `lini1_opens_on` while any risk of that quarter has an unfinalised Lini 1 assessment and its comparison has not opened<br>• Card: "Penilaian TW [n] [TA]", the Lini 1 deadline and days remaining (amber ≤7 days, red after with the lateness marker), progress "[x] dari [y] risiko sudah dituntaskan", button "Buka Penilaian"<br>• Several cards may show at once, e.g. TW IV of the previous year and TW I of the current year; ordered by deadline<br>• Before `lini1_opens_on`: one muted line "Penilaian TW [n] dibuka mulai [tanggal]"<br>• No card when nothing is owed | BR-004, BR-012 | High |
 | **FR-BRD-002** | **Action card (Lini 1)** | Items needing action, most urgent first. | • Explanations due, from any fiscal year: "[n] hasil Tidak Sesuai menunggu penjelasan", with the earliest deadline<br>• Quiet risks: "[n] risiko belum ada langkah triwulan ini"<br>• Pejabat only: "[n] draf siap dari operator" (register or assessment)<br>• Each line links to the filtered page; the card hides when empty | BR-012, BR-016, BR-018 | High |
 | **FR-BRD-003** | **Register status card (Lini 1)** | Shown when the current fiscal year's register is not published. | • "Register TA [tahun] belum diterbitkan" with the register status<br>• Buttons "Buka Register" and, when a previous-year register exists and the current one is empty, "Salin dari TA [tahun-1]" | BR-001 | High |
-| **FR-BRD-004** | **Last quarter result (Lini 1)** | Mini Lembar Mutu for the most recent quarter in which at least one result has opened; figures follow VIS-7. | • One row per risk type: average score and predicate for Lini 1 and each Lini 3 position<br>• Count of Tidak Sesuai and Berulang<br>• Link to `/jabatan/:jid/lembar/:ta/:tw` | BR-011 | Medium |
+| **FR-BRD-004** | **Last quarter result (Lini 1)** | Mini Lembar Mutu for the most recent quarter in which at least one result has opened; figures follow VIS-7. | • One row per risk type: predicate for Lini 1 and each Lini 3 position (from the average score, not shown)<br>• Count of Tidak Sesuai and Berulang<br>• Link to `/jabatan/:jid/lembar/:ta/:tw` | BR-011 | Medium |
 | **FR-BRD-005** | **Coordinated positions (Lini 2)** | The Lini 1 positions assigned to the user for the current quarter or for any quarter that still has an open obligation. | • One row per position: name, work unit, count of risks assessed in the current quarter (RB-REG-006), quiet risk count this quarter, last activity time<br>• Sorted by quiet risk count, descending<br>• Click → that position's board<br>• No unanswered-comment indicator (decision of 10 October 2026) | BR-016 | High |
 | **FR-BRD-006** | **Assessment obligation cards (Lini 3)** | One card per quarter, from any fiscal year, in which the directorate still has unfinalised risks whose comparison has not fully opened. | • "TW [n] [TA]: [x] dari [y] risiko sudah dinilai oleh [Direktorat]" with the Lini 3 deadline<br>• Ordered by deadline; link to `/penilaian` filtered to that quarter | BR-005 | High |
 | **FR-BRD-007** | **Attention card (Lini 3)** | Risks needing quality-assurance attention; counts include only risks whose result for the user's own directorate has opened (VIS-9). | • Counts of Tidak Sesuai, Berulang, and "Tidak dinilai Lini 1" for the latest opened quarter<br>• Each links to `/penilaian` filtered | BR-005, BR-006 | High |
@@ -1042,7 +1047,7 @@ TW n  lini1_opens_on ── Lini 1 drafts → Pejabat finalises (per risk) ─�
 | Code | Feature | Description | Acceptance Criteria | Ref | Prio |
 |---|---|---|---|---|---|
 | **FR-NIL-001** | **Assessment page** | One page per position per quarter; content depends on the viewer. | • Header: "Penilaian TW [n] [TA]", Lini 1 deadline, Lini 3 deadline, comparison status (Menunggu / Terbuka sebagian / Terbuka)<br>• Risks listed by stage › risk type; only risks active in the quarter (RB-REG-006)<br>• The viewer's own column is editable when they may assess (FR-NIL-002, 005); other columns follow VIS-1/VIS-2<br>• Quarter selector to move between TW I–IV<br>• Outside the viewer's assessment window (§2.5) the page is read-only with "Penilaian TW [n] dibuka mulai [tanggal]" | BR-004, BR-005 | High |
-| **FR-NIL-002** | **Lini 1 score entry** | | • Per risk: score input 0.0–4.0, step 0.1; the predicate badge updates immediately from the quarter's `score_band_version_id`<br>• Attach files (up to 10, NFR-009); "Belum relevan triwulan ini" checkbox with mandatory reason, which disables the score<br>• Help text links to the scoring guidance (OQ-1)<br>• Autosave per row | BR-004 | High |
+| **FR-NIL-002** | **Lini 1 score entry** | | • Per risk: a dropdown of the quarter version's score options, a flat list from worst to best, statements only (no numbers), first entry "— Pilih penilaian —"; the predicate badge appears once a statement is chosen<br>• Attach files (up to 10, NFR-009); "Belum relevan triwulan ini" checkbox with mandatory reason, which disables the score<br>• Help text links to the scoring guidance (OQ-1)<br>• Autosave per row | BR-004 | High |
 | **FR-NIL-003** | **Lini 1 mark ready and finalise** | Finalising is **per risk** (§2.5). | • Operator: "Tandai Siap" marks every scored draft row `ready`; Pejabat notified<br>• Pejabat: "Tuntaskan Penilaian" (INV-12) finalises every row that has a score or a "Belum relevan" declaration; unscored rows are untouched and stay fillable<br>• The button can be pressed again later for rows scored afterwards, including risks published mid-quarter<br>• Dialog: "[x] risiko akan dituntaskan. [z] risiko belum dinilai dan tetap dapat diisi sampai perbandingannya dibuka."<br>• Rows without attachment are flagged `no_evidence` and named in the dialog<br>• Lateness fixed per row at this moment (§2.5) | BR-004, BR-013, BR-015 | High |
 | **FR-NIL-004** | **Lini 1 reopen** | Per risk. | • The Pejabat may reopen a finalised row with "Buka Kembali" while that risk's comparison has not opened<br>• Once the risk's comparison opens (fully or partially) the row is immutable (INV-18) and the action is gone for it | BR-004 | High |
 | **FR-NIL-005** | **Lini 3 score entry** | Each Lini 3 position assesses separately. | • Same score input and predicate as FR-NIL-002, plus an optional **note** at every score (no gate, §2.6)<br>• Attachments confidential by default (VIS-4); toggle per file<br>• No Lini 1 score, other Lini 3 score, or other Lini 3 note is visible (VIS-1). The Lini 1 thread and Lini 1 **comment** attachments are visible; Lini 1 **assessment** attachments are not, until this directorate's own result opens<br>• "Belum relevan" is not offered to Lini 3; a risk Lini 1 marked not relevant is still scored by Lini 3<br>• Keyboard entry for volume: Tab moves to the next risk's score; a position filter and a "Belum dinilai saja" toggle | BR-005, BR-017 | High |
@@ -1070,7 +1075,7 @@ TW n  lini1_opens_on ── Lini 1 drafts → Pejabat finalises (per risk) ─�
 > - Window banner when outside the viewer's assessment window
 >
 > **Behavior**
-> - Typing a score updates the predicate badge instantly; out-of-range input shows "Skor 0,0–4,0"
+> - Choosing a statement shows its predicate badge instantly; a score that is not an option of the quarter's version is refused with "Pilihan penilaian tidak dikenal."
 > - Pressing Tuntaskan opens the summary dialog per FR-NIL-003
 > - Rows with Tidak Sesuai and mandatory explanation are pinned to the top for Lini 1 after opening
 
@@ -1090,7 +1095,7 @@ TW n  lini1_opens_on ── Lini 1 drafts → Pejabat finalises (per risk) ─�
 | Code | Rule | Consequence |
 |---|---|---|
 | RB-NIL-001 | The object of assessment is the risk, per quarter; mitigations are not assessed | One score per assessor per risk per quarter |
-| RB-NIL-002 | The score is entered; the predicate is derived from the quarter's `score_band_version_id` and stored at finalise | Every predicate in one quarter uses one band version; changing bands never changes a past predicate |
+| RB-NIL-002 | A statement is selected and its value is stored as the score; the predicate is derived from the quarter's `score_band_version_id` and stored at finalise | Every predicate in one quarter uses one band version; changing bands never changes a past predicate |
 | RB-NIL-003 | Comparison uses predicates, not scores | 2.9 vs 3.1 differ; 2.1 vs 2.9 do not |
 | RB-NIL-004 | Assessments are blind until the comparison opens (VIS-1) | Enforced at the API (INV-16) |
 | RB-NIL-005 | A comparison opening freezes the assessments in it (INV-18) | Lini 1 cannot adjust a score after seeing Lini 3's |
@@ -1123,7 +1128,7 @@ The only page that returns value to the person doing the data entry: their own r
 
 | Code | Feature | Description | Acceptance Criteria | Ref | Prio |
 |---|---|---|---|---|---|
-| **FR-RWY-001** | **Lembar Mutu summary** | Top block per fiscal year. | • Rows: Kinerja Anggaran, Ketidakpatuhan, Kecurangan; columns TW I–IV<br>• Each cell: average score and predicate for Lini 1 and for each Lini 3 position, computed per FR-LBR-004<br>• Figures follow VIS-7: each average uses only risks whose result for that assessor has opened; a cell with none shows "Menunggu" | BR-011 | High |
+| **FR-RWY-001** | **Lembar Mutu summary** | Top block per fiscal year. | • Rows: Kinerja Anggaran, Ketidakpatuhan, Kecurangan; columns TW I–IV<br>• Each cell: predicate for Lini 1 and for each Lini 3 position, computed per FR-LBR-004<br>• Figures follow VIS-7: each average uses only risks whose result for that assessor has opened; a cell with none shows "Menunggu" | BR-011 | High |
 | **FR-RWY-002** | **Risk × quarter matrix** | | • Rows: risks grouped by stage › risk type, including inactive ones (dimmed, "Nonaktif sejak TW [n]")<br>• Columns: TW I–IV of the selected fiscal year<br>• Cell states: one predicate chip for L1 and one per expected Lini 3 position (the count follows the quarter's set) + ✓/✕; per Lini 3 chip "Menunggu" (result not open) or "Tidak dinilai [Direktorat]"; "Belum relevan"; "Tidak dinilai Lini 1"; "Menunggu" (comparison not open — Lini 3 hidden per VIS-1); "—" (risk not active that quarter)<br>• Recurring risks carry a red left border | BR-011 | High |
 | **FR-RWY-003** | **Cell detail** | Click a cell. | • 420 px right slide-over (expanding card below 900 px)<br>• Scores, predicates, Lini 3 notes, explanation and plan when present, lateness markers<br>• Link "Lihat utas TW [n]" → thread filtered to that quarter | BR-011 | High |
 | **FR-RWY-004** | **Across years** | | • Fiscal year selector; default current<br>• Risks with a `lineage_id` present in other years show "Ada riwayat di TA [tahun]" and a toggle "Tampilkan lintas tahun" that extends the columns across all years for that lineage | BR-011 | Medium |
@@ -1174,7 +1179,7 @@ The Lembar Komunikasi Tiga Lini and the Lembar Mutu are **derived** from threads
 | **FR-LBR-001** | **Section A — Lini 1** | | • Identity block from Data Umum (name, position, work unit, quarter)<br>• "Langkah" comments of the quarter, per risk, chronological, with author and date<br>• Lini 1 assessment per risk — score, predicate, or "Belum relevan" with reason — **only for risks whose comparison has opened**; otherwise "Menunggu perbandingan" (VIS-7)<br>• Explanations and follow-up plans sent for this quarter<br>• Risks with the quiet marker listed as "Tidak ada langkah tercatat" | BR-010, BR-016 | High |
 | **FR-LBR-002** | **Section B — Lini 2** | | • Lini 2 comments of the quarter, per risk, chronological, with author, position, and date<br>• "Tidak ada masukan Lini 2 pada triwulan ini" when empty | BR-010, BR-016 | High |
 | **FR-LBR-003** | **Section C — Lini 3** | | • Lini 3 comments of the quarter, per risk<br>• Per Lini 3 position: score, predicate, note per risk; comparison result<br>• Shown only for risks whose comparison has opened for that position; otherwise "Menunggu" | BR-010 | High |
-| **FR-LBR-004** | **Lembar Mutu** | | • For each risk type and each assessor (Lini 1, each Lini 3 position): **average score** of risks whose result for that assessor has opened (VIS-7), rounded to one decimal, and its predicate from the quarter's `score_band_version_id`<br>• Excluded from the average: "Belum relevan", "Tidak dinilai", risks not assessed in that quarter (RB-REG-006)<br>• Listed separately as findings: count and list of "Tidak dinilai Lini 1"<br>• Counts: Sesuai, Tidak Sesuai, Berulang | BR-010, BR-011 | High |
+| **FR-LBR-004** | **Lembar Mutu** | | • For each risk type and each assessor (Lini 1, each Lini 3 position): the **predicate** of the average score of risks whose result for that assessor has opened (VIS-7), rounded to one decimal before banding; the average itself is neither shown nor printed<br>• Excluded from the average: "Belum relevan", "Tidak dinilai", risks not assessed in that quarter (RB-REG-006)<br>• Listed separately as findings: count and list of "Tidak dinilai Lini 1"<br>• Counts: Sesuai, Tidak Sesuai, Berulang | BR-010, BR-011 | High |
 | **FR-LBR-005** | **Attachment selection for print** | | • Per section, a picker of image attachments from that section's comments of the quarter; maximum 5<br>• Default: the 5 most recent images<br>• Selection saved per position per quarter per section; any participant of that line may change it<br>• Confidential attachments are never offered; the printout states "[n] lampiran konfidensial tidak dicetak"<br>• Non-image, non-confidential attachments are listed by filename only; confidential ones only as a count | BR-010, BR-017 | Medium |
 | **FR-LBR-006** | **Print** | Browser print with a dedicated stylesheet; every print creates a snapshot. | • "Cetak" button; options: Lembar Komunikasi, Lembar Mutu, both<br>• Printing from the live view first creates a `PrintSnapshot` (`trigger = print`) from the viewer-neutral view (VIS-7) and prints **from the snapshot**<br>• Printing a frozen version prints that version as is; no new snapshot<br>• Header: work unit, position, quarter, fiscal year, print date, **snapshot number and version**<br>• Hidden: sidebar, topbar, buttons, filters<br>• A snapshot taken before the quarter's first automatic version is provisional: "SEMENTARA" watermark | BR-010 | Medium |
 | **FR-LBR-007** | **Signature block** | | • Four columns: Pejabat Lini 1 (name from the holding at print time), Penanggung Jawab Pemantauan (Lini 2), Direktorat Kepatuhan, Direktorat Pengawasan dan Audit Internal<br>• Each: title, blank space, name line | BR-010 | Medium |
@@ -1232,10 +1237,10 @@ The Lembar Komunikasi Tiga Lini and the Lembar Mutu are **derived** from threads
 | **FR-MST-004** | **Template deactivation** | | • Inactive templates disappear from new selection and from copy-forward suggestions; existing registers keep their snapshot<br>• Permanent delete only for never-used templates | BR-002, BR-007 | High |
 | **FR-MST-005** | **Proposal queue** | `/master/usulan` | • Rows: wording, risk owner type, stage, risk type, proposer, position, date<br>• "Jadikan Template" opens the template editor prefilled; "Tolak" requires a reason<br>• Accepting never alters existing registers | BR-002 | Medium |
 | **FR-MST-006** | **Data Umum forms** | `/master/data-umum` | • One form per Lini 1 position type, versioned<br>• Fixed fields (Tujuan, Kegiatan, Besar Anggaran, Target) always present; the default objective text is editable (seed: "Memastikan pelaksanaan anggaran dilaksanakan secara taat azas dan risiko signifikan teridentifikasi.")<br>• Additional fields: label, kind (text, number, currency, date, list), mandatory<br>• The identity block is not configured here; it comes from position and holding fields | BR-001, BR-008 | Medium |
-| **FR-MST-007** | **Score bands** | `/master/skala-penilaian` | • Versioned; exactly one active (INV-3)<br>• Table: predicate, lower bound (exclusive), upper bound (inclusive); seed per §2.8.1<br>• Saving is refused if bands leave a gap or overlap in 0.0–4.0<br>• "Buat Versi Baru" with an effective-from date; a new version applies from the first quarter whose first window opens on or after that date — a quarter already open keeps its version; banner "Perubahan rentang tidak mengubah predikat yang sudah tersimpan."<br>• A guidance text field per predicate, shown as help on the assessment page (OQ-1) | BR-008 | High |
+| **FR-MST-007** | **Score bands** | `/master/skala-penilaian` | • Versioned; exactly one active (INV-3)<br>• Table: predicate, lower bound (exclusive), upper bound (inclusive); seed per §2.8.1<br>• Saving is refused if bands leave a gap or overlap in 0.0–4.0<br>• "Buat Versi Baru" with an effective-from date; a new version applies from the first quarter whose first window opens on or after that date — a quarter already open keeps its version; banner "Perubahan rentang tidak mengubah predikat yang sudah tersimpan."<br>• A guidance text field per predicate, shown as help on the assessment page (OQ-1)<br>• "Pilihan penilaian" per version: statement + value; ≥1 statement per predicate, unique values and statements; saving refused otherwise<br>• Active version: statement text editable in place (audited); adding, removing or revaluing statements requires "Buat Versi Baru"<br>• The 0–4 preview marks each statement's value | BR-008 | High |
 | **FR-MST-008** | **Position types** | | • As v2.1: name, line, default role, multiple Pejabat, has templates, built-in, active; identity fields per type<br>• Built-ins: KPA/Kasatker, PPK, Pokja Pemilihan, Pejabat Pengadaan (Lini 1); Penanggung Jawab Pemantauan, Unit Pendukung Pemantauan (Lini 2); Penjamin Mutu (Lini 3) | BR-008 | High |
 | **FR-MST-009** | **Positions** | | • As v2.1: code, name, work unit, type, line, current Pejabat, active; identity fields per type<br>• Lini 3 seed: "Direktorat Kepatuhan", "Direktorat Pengawasan dan Audit Internal" | BR-009 | High |
-| **FR-MST-010** | **Seed data** | Stages, templates, and Data Umum forms from the Rapim deck | • Loaded at installation as final reference data (OQ-6 closed); no verification step<br>• Known deck defects are corrected during seeding and listed in a seed note (e.g. mitigations labelled "Risiko 6.a", overlapping risk type headings in the KPA Pertanggungjawaban slide, the Pejabat Pengadaan identity block reusing "Nomor DIPA Petikan")<br>• Score band guidance text seeded from the deck's scoring guidance (OQ-1 closed) | BR-002 | High |
+| **FR-MST-010** | **Seed data** | Stages, templates, and Data Umum forms from the Rapim deck | • Loaded at installation as final reference data (OQ-6 closed); no verification step<br>• Known deck defects are corrected during seeding and listed in a seed note (e.g. mitigations labelled "Risiko 6.a", overlapping risk type headings in the KPA Pertanggungjawaban slide, the Pejabat Pengadaan identity block reusing "Nomor DIPA Petikan")<br>• Score band guidance text seeded from the deck's scoring guidance (OQ-1 closed)<br>• Score options seeded from `docs/seed/pilihan_penilaian.json` (illustrative draft, to be replaced via `/master/skala-penilaian`) | BR-002 | High |
 
 ### 10.3 Wireframes
 
@@ -1278,7 +1283,7 @@ The Lembar Komunikasi Tiga Lini and the Lembar Mutu are **derived** from threads
 > - Sidebar 240 px; single column max 800 px
 >
 > **Components**
-> - Version selector, effective date, "Buat Versi Baru"; band table; guidance text per predicate; a 0–4 bar previewing the bands in colour with text labels
+> - Version selector, effective date, "Buat Versi Baru"; band table; guidance text per predicate; a 0–4 bar previewing the bands in colour with text labels; "Pilihan penilaian" table (Kalimat, Nilai, Predikat)
 >
 > **Behavior**
 > - Gaps or overlaps are highlighted red and block saving
@@ -1638,6 +1643,7 @@ The blind-assessment rule (INV-16) and the confidentiality rule (INV-17) are enf
 | 1.0 | 31-08-2026 | Initial version | Direktorat Data dan Kecerdasan Buatan |
 | 2.0 | 02-09-2026 | English rewrite; flags instead of hard gates; data model; SSO in v1.0; attachment security; metrics | Direktorat Data dan Kecerdasan Buatan |
 | 2.1 | 10-10-2026 | Accounts and roles: positions on three lines, Pejabat and Operator, roles following holdings, Lini 2 team assignment, Lini 3 unassigned | Direktorat Data dan Kecerdasan Buatan |
+| 2.8 | 13-10-2026 | Assessment by statement: scorers pick a configured statement per score value; numeric scores and averages hidden from all user views; ScoreOption added to score band versions | Direktorat Data dan Kecerdasan Buatan |
 | 2.7 | 11-10-2026 | Design system adopted (DesignSystem_SIMARIO.md, Aksara-based): §2.2 rewritten to reference it; position switcher moved from topbar to a sidebar card; full palette hex values | Direktorat Data dan Kecerdasan Buatan |
 | 2.6 | 11-10-2026 | Product Owner assigned; process-owner walkthrough completed; OQ-1, 2, 4, 6, 11 closed; seed data from the Rapim deck declared final | Direktorat Data dan Kecerdasan Buatan |
 | 2.5 | 11-10-2026 | Re-review: viewer-dependent blindness for late directorates (VIS-9), holding rule on the acting position, archiving at the extended hard limit only, exclusion rules, comment attribution to an open earlier quarter, band version per quarter everywhere, per-quarter filters, Operator promotion in all paths, permission 10 locked to Lini 3 | Direktorat Data dan Kecerdasan Buatan |

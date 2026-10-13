@@ -12,7 +12,7 @@ Panduan kerja untuk Claude di repositori ini. Baca seluruhnya sebelum menulis ko
 
 ## 2. Sumber kebenaran (urutan prioritas)
 
-1. `docs/PRD_SIMARIO_v2.7.md` — perilaku, aturan, salinan teks (copy), FR/VIS/INV. **PRD menang** bila ada perbedaan.
+1. `docs/PRD_SIMARIO_v2.8.md` — perilaku, aturan, salinan teks (copy), FR/VIS/INV. **PRD menang** bila ada perbedaan.
 2. `docs/DesignSystem_SIMARIO.md` — warna, tipografi, radius, bayangan, komponen (berbasis Aksara).
 3. `Simario.pen` (Pencil) — mockup 99 frame. Bacanya **hanya lewat MCP Pencil** (`mcp__pencil__execute` dengan `Get`/`Print`/`TakeScreenshot`), jangan dengan Read/Grep. Catatan penting di dalamnya:
    - `DesignBrief` (THmWq): keputusan desain, persona, linimasa data contoh.
