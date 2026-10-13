@@ -46,4 +46,78 @@ describe('Skala Penilaian', () => {
       ),
     );
   });
+
+  it('lists the draft statements and reports the uncovered predicate', async () => {
+    renderPage(<ScoreBandsPage />);
+    expect(screen.getByRole('table', { name: 'Pilihan penilaian' })).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Mitigasi belum dilaksanakan')).toBeInTheDocument();
+    expect(screen.getByText('Predikat Cukup Terkendali belum punya kalimat.')).toBeInTheDocument();
+  });
+
+  it('adds a statement in the draft and shows its predicate', async () => {
+    renderPage(<ScoreBandsPage />);
+    fireEvent.click(screen.getByRole('button', { name: 'Tambah Pilihan' }));
+    const values = screen.getAllByRole('textbox', { name: /^Nilai pilihan/ });
+    const last = values.at(-1)!;
+    fireEvent.change(last, { target: { value: '2,5' } });
+    fireEvent.blur(last);
+    await waitFor(() =>
+      expect(useDb.getState().db.scoreOptions.filter((o) => o.versionId === 'sbv-2')).toHaveLength(
+        6,
+      ),
+    );
+    expect(screen.queryByText('Predikat Cukup Terkendali belum punya kalimat.')).toBeNull();
+  });
+
+  it('allows only text edits on the active version', async () => {
+    renderPage(<ScoreBandsPage />);
+    fireEvent.change(screen.getByLabelText('Versi'), { target: { value: 'sbv-1' } });
+    expect(screen.getAllByRole('textbox', { name: /^Nilai pilihan/ })[0]).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Tambah Pilihan' })).toBeDisabled();
+    expect(
+      screen.getByText('Ubah nilai atau jumlah pilihan lewat Buat Versi Baru.'),
+    ).toBeInTheDocument();
+    const first = screen.getAllByRole('textbox', { name: /^Kalimat pilihan/ })[0]!;
+    fireEvent.change(first, { target: { value: 'Mitigasi belum berjalan' } });
+    fireEvent.blur(first);
+    await waitFor(() =>
+      expect(useDb.getState().db.scoreOptions.find((o) => o.id === 'so-sbv-1-0')!.label).toBe(
+        'Mitigasi belum berjalan',
+      ),
+    );
+  });
+
+  it('keeps text typed in another row while an earlier edit is still saving', async () => {
+    act(() => useDevSettings.getState().set({ latency: true }));
+    renderPage(<ScoreBandsPage />);
+    const labels = () => screen.getAllByRole('textbox', { name: /^Kalimat pilihan/ });
+    fireEvent.change(labels()[0]!, { target: { value: 'Belum dilaksanakan sama sekali' } });
+    fireEvent.blur(labels()[0]!);
+    fireEvent.change(labels()[1]!, { target: { value: 'Sebagian berjalan ' } });
+    await waitFor(
+      () =>
+        expect(useDb.getState().db.scoreOptions.find((o) => o.id === 'so-sbv-2-0')!.label).toBe(
+          'Belum dilaksanakan sama sekali',
+        ),
+      { timeout: 2000 },
+    );
+    expect(labels()[1]).toHaveValue('Sebagian berjalan ');
+  });
+
+  it('refuses to save invalid statements and explains why inline', async () => {
+    renderPage(<ScoreBandsPage />);
+    const lower = screen.getByLabelText('Batas bawah Cukup Terkendali');
+    fireEvent.change(lower, { target: { value: '1,9' } });
+    fireEvent.blur(lower);
+    fireEvent.click(screen.getByRole('button', { name: 'Tambah Pilihan' }));
+    expect(screen.queryByText('Rentang tidak dapat disimpan')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Simpan Versi 2' }));
+    await waitFor(() =>
+      expect(screen.getByText('Pilihan penilaian tidak dapat disimpan')).toBeInTheDocument(),
+    );
+    expect(screen.getByText(/Periksa kalimat dan nilai yang ditandai merah\./)).toBeInTheDocument();
+    expect(useDb.getState().db.scoreBandVersions.find((v) => v.id === 'sbv-2')!.status).toBe(
+      'draft',
+    );
+  });
 });

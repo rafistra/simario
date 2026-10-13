@@ -1,5 +1,5 @@
 import { Plus, Save, Trash2 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Button,
   Card,
@@ -16,16 +16,24 @@ import {
 } from '@/components';
 import { ApiError, masterApi } from '@/data/repository';
 import { useDb } from '@/data/local/store';
-import { validateBands, type BandProblem } from '@/domain/scoreBands';
+import {
+  sortOptions,
+  validateBands,
+  validateOptions,
+  type BandProblem,
+  type OptionProblem,
+} from '@/domain/scoreBands';
 import {
   PREDICATE_INITIAL,
   PREDICATE_LABEL,
   type ScoreBand,
   type ScoreBandVersion,
+  type ScoreOption,
 } from '@/domain/types';
 import { usePageMeta } from '@/layout/pageMeta';
 import { formatDate, formatScore, parseScore } from '@/lib/format';
 import { useAuth } from '@/state/useAuth';
+import { ScoreOptionsCard } from './ScoreOptionsCard';
 import './Master.css';
 
 const STATUS: Record<ScoreBandVersion['status'], { chip: StatusKind; label: string }> = {
@@ -64,8 +72,22 @@ function problemMessage(p: BandProblem, bands: ScoreBand[]): string {
   return 'Rentang harus berakhir tepat pada 4,0.';
 }
 
+function optionProblemSummary(problems: OptionProblem[]): string[] {
+  return problems
+    .filter((p) => p.kind === 'band-uncovered')
+    .map((p) => `Predikat ${PREDICATE_LABEL[p.predicate!]} belum punya kalimat.`);
+}
+
 /** 0–4 bar previewing the bands in colour with text labels; gaps in red (frame Sskiw). */
-function BandPreview({ bands, problems }: { bands: ScoreBand[]; problems: BandProblem[] }) {
+function BandPreview({
+  bands,
+  problems,
+  values,
+}: {
+  bands: ScoreBand[];
+  problems: BandProblem[];
+  values: number[];
+}) {
   const segments = [
     ...bands.map((b) => ({
       from: b.lowerExclusive ?? 0,
@@ -78,7 +100,10 @@ function BandPreview({ bands, problems }: { bands: ScoreBand[]; problems: BandPr
       .map((p) => ({ from: p.from, to: p.to, kind: 'gap', label: '!' })),
   ].sort((a, b) => a.from - b.from);
   return (
-    <div className="band-preview" aria-label="Pratinjau rentang 0,0 sampai 4,0">
+    <div
+      className="band-preview"
+      aria-label={`Pratinjau rentang 0,0 sampai 4,0 dengan ${values.length} pilihan penilaian`}
+    >
       <p className="t-eyebrow">Pratinjau 0,0 – 4,0</p>
       <div className="band-preview__bar">
         {segments.map((s, i) => (
@@ -92,6 +117,11 @@ function BandPreview({ bands, problems }: { bands: ScoreBand[]; problems: BandPr
               {s.to - s.from >= 0.6 ? s.label : s.kind === 'gap' ? '!' : ''}
             </span>
           </span>
+        ))}
+      </div>
+      <div className="band-preview__markers" aria-hidden>
+        {values.filter(Number.isFinite).map((v) => (
+          <span key={v} className="band-preview__marker" style={{ left: `${(v / 4) * 100}%` }} />
         ))}
       </div>
       <div className="band-preview__ticks t-mono">
@@ -129,6 +159,23 @@ export default function ScoreBandsPage() {
     [db.scoreBands, version.id],
   );
   const [bands, setBands] = useState(stored);
+  const storedOptions = useMemo(
+    () => sortOptions(db.scoreOptions.filter((o) => o.versionId === version.id)),
+    [db.scoreOptions, version.id],
+  );
+  const [options, setOptionsState] = useState(storedOptions);
+  const optionsRef = useRef(storedOptions);
+  const setOptions = (next: ScoreOption[]) => {
+    optionsRef.current = next;
+    setOptionsState(next);
+  };
+  /** Local option edits not yet sent to the API (they are sent on blur). */
+  const optionsDirty = useRef(false);
+  const optionsVersionId = useRef(version.id);
+  const editOptions = (next: ScoreOption[]) => {
+    optionsDirty.current = true;
+    setOptions(next);
+  };
   const [inputs, setInputs] = useState<Record<string, string>>({});
   const [effectiveFrom, setEffectiveFrom] = useState(version.effectiveFrom);
   const [saving, setSaving] = useState(false);
@@ -141,7 +188,18 @@ export default function ScoreBandsPage() {
     setEffectiveFrom(version.effectiveFrom);
   }, [stored, version.effectiveFrom]);
 
+  useEffect(() => {
+    // An autosave resolving while the user already types in another row must not wipe that text;
+    // those edits are sent on the next blur, and the store echo of that save resets the rows.
+    if (optionsDirty.current && optionsVersionId.current === version.id) return;
+    optionsVersionId.current = version.id;
+    optionsDirty.current = false;
+    optionsRef.current = storedOptions;
+    setOptionsState(storedOptions);
+  }, [storedOptions, version.id]);
+
   const problems = validateBands(bands);
+  const optionProblems = validateOptions(options, bands);
   const usedBy = db.quarters.filter((q) => q.scoreBandVersionId === version.id);
 
   const setBound = (order: number, field: 'lowerExclusive' | 'upperInclusive', raw: string) => {
@@ -151,13 +209,10 @@ export default function ScoreBandsPage() {
     setBands((bs) => bs.map((b) => (b.order === order ? { ...b, [field]: value } : b)));
   };
 
-  const persistDraft = (next: ScoreBand[], date = effectiveFrom) =>
-    masterApi.updateBandDraft(
-      version.id,
-      next,
-      date,
-      db.scoreOptions.filter((o) => o.versionId === version.id),
-    );
+  const persistDraft = (next = bands, date = effectiveFrom) => {
+    optionsDirty.current = false;
+    return masterApi.updateBandDraft(version.id, next, date, optionsRef.current);
+  };
 
   const save = async () => {
     setSaving(true);
@@ -165,7 +220,7 @@ export default function ScoreBandsPage() {
       await masterApi.saveBandVersion(version.id, {
         effectiveFrom,
         bands,
-        options: db.scoreOptions.filter((o) => o.versionId === version.id),
+        options: sortOptions(options),
       });
       toast.success(
         `Versi ${version.number} disimpan`,
@@ -194,7 +249,7 @@ export default function ScoreBandsPage() {
       <PageHeader
         eyebrow={`Master data · TA ${auth.currentFiscalYear}`}
         title="Skala Penilaian"
-        subtitle="Rentang skor 0,0–4,0 menjadi predikat. Berversi; tepat satu versi aktif."
+        subtitle="Pilihan penilaian dan rentang skor 0,0–4,0 menjadi predikat. Berversi; tepat satu versi aktif."
         actions={
           <Button
             icon={Plus}
@@ -235,7 +290,7 @@ export default function ScoreBandsPage() {
           }
           onChange={(e) => {
             setEffectiveFrom(e.target.value);
-            if (isDraft) void persistDraft(bands, e.target.value);
+            if (isDraft) void persistDraft(undefined, e.target.value);
           }}
         />
       </div>
@@ -247,7 +302,7 @@ export default function ScoreBandsPage() {
             status={STATUS[v.status].chip}
             label={`Versi ${v.number} · ${STATUS[v.status].label}${
               v.status === 'active'
-                ? ` sejak ${formatDate(v.effectiveFrom)} · ${bandSummary(db.scoreBands.filter((b) => b.versionId === v.id))}`
+                ? ` sejak ${formatDate(v.effectiveFrom)} · ${bandSummary(db.scoreBands.filter((b) => b.versionId === v.id))} · ${db.scoreOptions.filter((o) => o.versionId === v.id).length} pilihan`
                 : ''
             }`}
           />
@@ -266,6 +321,16 @@ export default function ScoreBandsPage() {
       {isDraft && problems.length > 0 && (
         <InlineAlert variant="error" title="Rentang tidak dapat disimpan">
           {problems.map((p) => problemMessage(p, bands)).join(' ')}
+        </InlineAlert>
+      )}
+      {isDraft && optionProblems.length > 0 && (
+        <InlineAlert variant="error" title="Pilihan penilaian tidak dapat disimpan">
+          {[
+            ...optionProblemSummary(optionProblems),
+            ...(optionProblems.some((p) => p.optionId)
+              ? ['Periksa kalimat dan nilai yang ditandai merah.']
+              : []),
+          ].join(' ')}
         </InlineAlert>
       )}
 
@@ -301,7 +366,7 @@ export default function ScoreBandsPage() {
                       disabled={!isDraft}
                       value={inputs[`${b.order}-lowerExclusive`] ?? formatScore(b.lowerExclusive)}
                       onChange={(e) => setBound(b.order, 'lowerExclusive', e.target.value)}
-                      onBlur={() => isDraft && void persistDraft(bands)}
+                      onBlur={() => isDraft && void persistDraft()}
                     />
                   )}
                   {lowerBad && isDraft && prev && (
@@ -318,15 +383,39 @@ export default function ScoreBandsPage() {
                     disabled={!isDraft || i === bands.length - 1}
                     value={inputs[`${b.order}-upperInclusive`] ?? formatScore(b.upperInclusive)}
                     onChange={(e) => setBound(b.order, 'upperInclusive', e.target.value)}
-                    onBlur={() => isDraft && void persistDraft(bands)}
+                    onBlur={() => isDraft && void persistDraft()}
                   />
                 </span>
               </div>
             );
           })}
         </div>
-        <BandPreview bands={bands} problems={isDraft ? problems : []} />
+        <BandPreview
+          bands={bands}
+          problems={isDraft ? problems : []}
+          values={options.map((o) => o.value)}
+        />
       </Card>
+
+      <ScoreOptionsCard
+        status={version.status}
+        options={options}
+        bands={bands}
+        problems={isDraft ? optionProblems : []}
+        onChange={editOptions}
+        onPersist={() => isDraft && void persistDraft()}
+        onLabelCommit={(id, label) => {
+          optionsDirty.current = false;
+          if (label === storedOptions.find((o) => o.id === id)?.label) return;
+          masterApi
+            .updateOptionLabel(id, label)
+            .then(() => toast.success('Kalimat diperbarui'))
+            .catch((e: Error) => {
+              toast.error('Kalimat tidak dapat disimpan', e.message);
+              setOptions(storedOptions);
+            });
+        }}
+      />
 
       <Card title="Panduan skoring per predikat (tampil sebagai bantuan di halaman penilaian)">
         <div className="band-guidance">
@@ -343,7 +432,7 @@ export default function ScoreBandsPage() {
                 )
               }
               onBlur={(e) => {
-                if (isDraft) void persistDraft(bands);
+                if (isDraft) void persistDraft();
                 else if (
                   version.status === 'active' &&
                   e.target.value !== stored.find((x) => x.order === b.order)?.guidance
@@ -388,7 +477,8 @@ export default function ScoreBandsPage() {
           toast.success(`Versi ${version.number} dibuang`);
         }}
       >
-        Rentang dan panduan pada versi ini akan dihapus. Versi aktif tidak berubah.
+        Rentang, pilihan penilaian, dan panduan pada versi ini akan dihapus. Versi aktif tidak
+        berubah.
       </ConfirmDialog>
       <ConfirmDialog
         open={newDate !== null}
@@ -397,7 +487,10 @@ export default function ScoreBandsPage() {
         onCancel={() => setNewDate(null)}
         onConfirm={createDraft}
       >
-        <p>Draf menyalin rentang dan panduan versi aktif. Atur tanggal berlaku, lalu simpan.</p>
+        <p>
+          Draf menyalin rentang, pilihan penilaian, dan panduan versi aktif. Atur tanggal berlaku,
+          lalu simpan.
+        </p>
         <DatePickerField
           label="Berlaku mulai"
           value={newDate ?? ''}

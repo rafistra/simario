@@ -833,3 +833,81 @@
   white-space: normal;
   text-align: left;
 }
+
+/* "Pilihan penilaian" card (mirrors .band-table). */
+.opt-help {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.opt-table {
+  display: flex;
+  flex-direction: column;
+}
+
+.opt-table__head,
+.opt-table__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 120px 200px 44px;
+  align-items: start;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.opt-table__head {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.opt-table__row [role='cell'] {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.opt-table__row.is-invalid {
+  background: var(--danger-bg);
+}
+
+.opt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.band-preview__markers {
+  position: relative;
+  height: 10px;
+}
+
+.band-preview__marker {
+  position: absolute;
+  top: 1px;
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  border-radius: 50%;
+  background: var(--text-strong);
+}
+
+@media (max-width: 899.98px) {
+  .opt-table__head {
+    display: none;
+  }
+
+  .opt-table__row {
+    grid-template-columns: 1fr 1fr 44px;
+  }
+
+  .opt-table__row [role='cell']:first-child {
+    grid-column: 1 / -1;
+  }
+}
