@@ -9,6 +9,7 @@ import {
   FinalizeOperatorButton,
   InlineAlert,
   LoadingRegion,
+  PredicateBadge,
   SlideOver,
   Skeleton,
   StatusChip,
@@ -19,11 +20,9 @@ import { finalisePreview, type AssessmentView, type FinalisePreview } from '@/da
 import { assessmentApi } from '@/data/repository';
 import { getDb } from '@/data/local/store';
 import { QUARTER_ROMAN } from '@/domain/calendar';
-import { predicateFor } from '@/domain/scoreBands';
-import { PREDICATE_LABEL } from '@/domain/types';
 import type { WorkspaceOutletContext } from '@/layout/Workspace';
 import { usePageMeta } from '@/layout/pageMeta';
-import { formatDate, formatScore } from '@/lib/format';
+import { formatDate } from '@/lib/format';
 import { useQuery } from '@/lib/useQuery';
 import { useSaving } from '@/lib/useSaving';
 import { now } from '@/state/clock';
@@ -82,7 +81,7 @@ function Assessment({
     return r;
   };
   const actions: RowActions = {
-    predicateOf: (score) => predicateFor(score, view.bands),
+    options: view.options,
     saveCell: (rqId, pos, patch) => void save(assessmentApi.saveCell(rqId, pos, patch)),
     addFiles: (rqId, pos, files) => void save(assessmentApi.addFiles(rqId, pos, files)),
     removeFile: (id) => void save(assessmentApi.removeFile(id)),
@@ -108,7 +107,7 @@ function Assessment({
         const c = r.cells.find((x) => x.own);
         return (
           c &&
-          !c.assessment?.score &&
+          c.selectedValue === null &&
           !c.assessment?.notRelevant &&
           c.assessment?.status !== 'final'
         );
@@ -196,12 +195,6 @@ function Assessment({
       );
   };
 
-  const bandsText = view.bands
-    .map(
-      (b) =>
-        `${b.lowerExclusive === null ? '0,0' : formatScore(b.lowerExclusive + 0.1)}–${formatScore(b.upperInclusive)} ${PREDICATE_LABEL[b.predicate].replace(' Terkendali', '')}`,
-    )
-    .join(' · ');
   const p = view.progress;
   const explCount = view.explanations.pending + view.explanations.ready;
 
@@ -262,9 +255,8 @@ function Assessment({
           <p className="assess__count">
             {view.rows.length} risiko dinilai pada {label}
           </p>
-          <p className="assess__bands t-mono">
-            Pita skor: {bandsText}
-            {view.bandVersionNumber ? ` (versi ${view.bandVersionNumber})` : ''}{' '}
+          <p className="assess__bands">
+            Skala versi {view.bandVersionNumber ?? '—'} · {view.options.length} pilihan penilaian{' '}
             <button
               type="button"
               className="text-link assess__guide"
@@ -425,20 +417,25 @@ function Assessment({
 
       <SlideOver
         open={guide}
-        eyebrow={`Pita skor versi ${view.bandVersionNumber ?? '—'}`}
+        eyebrow={`Skala versi ${view.bandVersionNumber ?? '—'}`}
         title="Panduan skoring"
         onClose={() => setGuide(false)}
       >
         <div className="guide">
-          {view.bands.map((b) => (
-            <section key={b.order} className="guide__band">
-              <p className="t-mono guide__range">
-                {b.lowerExclusive === null ? '0,0' : formatScore(b.lowerExclusive + 0.1)}–
-                {formatScore(b.upperInclusive)} · {PREDICATE_LABEL[b.predicate]}
-              </p>
-              <p>{b.guidance || 'Belum ada panduan untuk predikat ini.'}</p>
+          {view.guidance.map((g) => (
+            <section key={g.predicate} className="guide__band">
+              <PredicateBadge predicate={g.predicate} />
+              <p>{g.guidance || 'Belum ada panduan untuk predikat ini.'}</p>
             </section>
           ))}
+          <section className="guide__band">
+            <p className="t-eyebrow">Pilihan penilaian</p>
+            <ol className="guide__options">
+              {view.options.map((o) => (
+                <li key={o.value}>{o.label}</li>
+              ))}
+            </ol>
+          </section>
         </div>
       </SlideOver>
     </div>

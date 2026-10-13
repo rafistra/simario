@@ -41,13 +41,13 @@ it('runs TW I end to end without blocking anyone', async () => {
     mentionUserIds: [],
   });
   const scores: Record<string, number | 'nr'> = {
-    'rr-a1-penyerapan': 2.4,
-    'rr-a1-dipa': 3.2,
+    'rr-a1-penyerapan': 3,
+    'rr-a1-dipa': 4,
     'rr-a1-rpd': 'nr',
-    'rr-a1-pemecahan': 2.6,
-    'rr-a1-pembayaran': 3.1,
-    'rr-a1-material': 3.1,
-    'rr-a1-penyuapan': 1.9,
+    'rr-a1-pemecahan': 3,
+    'rr-a1-pembayaran': 4,
+    'rr-a1-material': 4,
+    'rr-a1-penyuapan': 2,
   };
   for (const [risk, s] of Object.entries(scores)) {
     if (s === 'nr') {
@@ -71,7 +71,7 @@ it('runs TW I end to end without blocking anyone', async () => {
     as(who);
     for (const id of risks())
       await assessmentApi.saveCell(id, pos, {
-        score: pos === 'pos-pai' && id.includes('penyerapan') ? 1.8 : 2.6,
+        score: pos === 'pos-pai' && id.includes('penyerapan') ? 2 : 3,
       });
     await assessmentApi.finalise(A1, TW1, pos);
   }

@@ -3,7 +3,7 @@
 
 import type { DB } from '@/data/db';
 import { addDays, latenessAt, QUARTER_ROMAN } from '../calendar';
-import { predicateFor } from '../scoreBands';
+import { optionFor, predicateFor, sortOptions } from '../scoreBands';
 import type {
   Assessment,
   ComparisonResult,
@@ -14,14 +14,12 @@ import type {
   Quarter,
   RegisterRisk,
   RiskQuarter,
+  ScoreOption,
 } from '../types';
 import { assignedLini2, holdingsOf } from './access';
 import { expectedLini3, openedResults } from './board';
 import { compareAssessments, explanationDueOn } from './comparison';
 import { assessedInQuarter } from './register';
-
-export const SCORE_MIN = 0;
-export const SCORE_MAX = 4;
 
 /** §2.5: the assessment window opens on `*_opens_on` and has no closing date of its own. */
 export function windowOpen(q: Quarter, line: 1 | 3, today: ISODate): boolean {
@@ -48,8 +46,27 @@ export function predicateIn(db: DB, q: Quarter, score: number | null): Predicate
   );
 }
 
-export const validScore = (s: number) =>
-  s >= SCORE_MIN && s <= SCORE_MAX && Math.round(s * 10) === s * 10;
+/** The statements of a band version in dropdown order (PRD v2.8). */
+export function optionsOf(db: DB, versionId: string | null): ScoreOption[] {
+  return sortOptions(db.scoreOptions.filter((o) => o.versionId === versionId));
+}
+
+export function optionLabelOf(
+  db: DB,
+  versionId: string | null,
+  score: number | null,
+): string | null {
+  if (score === null) return null;
+  return optionFor(score, optionsOf(db, versionId))?.label ?? null;
+}
+
+/** An assessment as users may see it: the statement replaces the number (PRD v2.8). */
+export type AssessmentDisplay = Omit<Assessment, 'score'> & { optionLabel: string | null };
+
+export function toDisplay(db: DB, a: Assessment): AssessmentDisplay {
+  const { score, ...rest } = a;
+  return { ...rest, optionLabel: optionLabelOf(db, a.scoreBandVersionId, score) };
+}
 
 /** The published risks of a position assessed in a quarter (RB-REG-006), with their RiskQuarter. */
 export function quarterRisks(

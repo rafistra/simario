@@ -1,4 +1,5 @@
 import { act } from '@testing-library/react';
+import pilihan from '@seed/pilihan_penilaian.json';
 import { comparisonStatusAt, isRecurring } from '@/domain/rules/assessment';
 import { useClock } from '@/state/clock';
 import { useDevSettings } from '@/state/devSettings';
@@ -16,6 +17,7 @@ const KEP = 'pos-kepatuhan';
 const PAI = 'pos-pai';
 const TW1 = 'q-2027-1';
 const rq = (risk: string, q = TW1) => `rq-${risk}-${q}`;
+const label = (v: number) => pilihan.options.find((o) => o.value === v)!.label;
 const assessment = (risk: string, pos: string) =>
   getDb().assessments.find((a) => a.riskQuarterId === rq(risk) && a.assessorPositionId === pos);
 
@@ -37,11 +39,11 @@ describe('TW I cycle from 18 Mar 2027', () => {
 
   it('Operator drafts, Pejabat finalises scored rows only, with no_evidence and lateness', async () => {
     as('usr-rafi');
-    await assessmentApi.saveCell(rq('rr-a1-penyerapan'), A1, { score: 2.4 });
-    await assessmentApi.saveCell(rq('rr-a1-dipa'), A1, { score: 3.2 });
+    await assessmentApi.saveCell(rq('rr-a1-penyerapan'), A1, { score: 3 });
+    await assessmentApi.saveCell(rq('rr-a1-dipa'), A1, { score: 4 });
     await expect(
       assessmentApi.saveCell(rq('rr-a1-pemecahan'), A1, { score: 4.3 }),
-    ).rejects.toMatchObject({ message: 'Skor 0,0–4,0' });
+    ).rejects.toMatchObject({ message: 'Pilihan penilaian tidak dikenal.' });
     await assessmentApi.markReady(A1, TW1, A1);
     expect(assessment('rr-a1-penyerapan', A1)!.status).toBe('ready');
     await expect(assessmentApi.finalise(A1, TW1, A1)).rejects.toMatchObject({ code: 'forbidden' });
@@ -65,9 +67,26 @@ describe('TW I cycle from 18 Mar 2027', () => {
       flags: ['no_evidence'],
     });
     // Unscored rows stay fillable.
-    await assessmentApi.saveCell(rq('rr-a1-pemecahan'), A1, { score: 2.6 });
+    await assessmentApi.saveCell(rq('rr-a1-pemecahan'), A1, { score: 3 });
     await assessmentApi.reopen(a.id);
     expect(assessment('rr-a1-penyerapan', A1)!.status).toBe('draft');
+  });
+
+  it('accepts only option values of the quarter version (PRD v2.8)', async () => {
+    as('usr-rafi');
+    await expect(
+      assessmentApi.saveCell(rq('rr-a1-penyerapan'), A1, { score: 2.5 }),
+    ).rejects.toMatchObject({ message: 'Pilihan penilaian tidak dikenal.' });
+    const before = buildAssessment(getDb(), 'usr-rafi', A1, 2027, 1, '2027-03-18T10:00');
+    await assessmentApi.saveCell(rq('rr-a1-penyerapan'), A1, { score: 0 });
+    const view = buildAssessment(getDb(), 'usr-rafi', A1, 2027, 1, '2027-03-18T10:00');
+    const own = view.rows.find((r) => r.risk.id === 'rr-a1-penyerapan')!.cells.find((c) => c.own)!;
+    expect(own.selectedValue).toBe(0);
+    expect(own.assessment?.optionLabel).toBe(label(0));
+    expect(own.assessment?.predicate).toBe('kurang');
+    expect('score' in own.assessment!).toBe(false);
+    expect(view.progress.unscored).toBe(before.progress.unscored - 1);
+    expect(view.options.map((o) => o.value)).toEqual([0, 1, 2, 3, 4]);
   });
 
   it('"Belum relevan" needs a reason before finalising', async () => {
@@ -83,14 +102,14 @@ describe('TW I cycle from 18 Mar 2027', () => {
 
   it('opens fully when all finalise, partially at the Lini 3 deadline, and VIS-1 keeps others blind', async () => {
     as('usr-andi');
-    await assessmentApi.saveCell(rq('rr-a1-penyerapan'), A1, { score: 2.4 });
-    await assessmentApi.saveCell(rq('rr-a1-pemecahan'), A1, { score: 2.6 });
+    await assessmentApi.saveCell(rq('rr-a1-penyerapan'), A1, { score: 3 });
+    await assessmentApi.saveCell(rq('rr-a1-pemecahan'), A1, { score: 3 });
     await assessmentApi.finalise(A1, TW1, A1);
 
     at('2027-04-01T10:00');
     as('usr-hendra');
-    await assessmentApi.saveCell(rq('rr-a1-penyerapan'), KEP, { score: 2.6, note: 'Sesuai RPD.' });
-    await assessmentApi.saveCell(rq('rr-a1-pemecahan'), KEP, { score: 1.6 });
+    await assessmentApi.saveCell(rq('rr-a1-penyerapan'), KEP, { score: 3, note: 'Sesuai RPD.' });
+    await assessmentApi.saveCell(rq('rr-a1-pemecahan'), KEP, { score: 2 });
     // Hendra cannot see Lini 1 before opening (VIS-1).
     const blind = buildAssessment(getDb(), 'usr-hendra', A1, 2027, 1, '2027-04-01T10:00');
     expect(blind.rows.every((r) => !r.cells[0]!.visible)).toBe(true);
@@ -100,7 +119,7 @@ describe('TW I cycle from 18 Mar 2027', () => {
     );
 
     as('usr-maya');
-    await assessmentApi.saveCell(rq('rr-a1-penyerapan'), PAI, { score: 1.8 });
+    await assessmentApi.saveCell(rq('rr-a1-penyerapan'), PAI, { score: 2 });
     await assessmentApi.finalise(A1, TW1, PAI);
     // Penyerapan: L1, KEP and PAI final → opens fully, PAI Tidak Sesuai with a mandatory explanation.
     const results = getDb().results.filter((r) => r.riskQuarterId === rq('rr-a1-penyerapan'));
@@ -138,7 +157,7 @@ describe('TW I cycle from 18 Mar 2027', () => {
   it('closes an unfinalised Lini 1 as "Tidak dinilai Lini 1" when the comparison opens', async () => {
     at('2027-04-01T10:00');
     as('usr-hendra');
-    await assessmentApi.saveCell(rq('rr-a1-dipa'), KEP, { score: 3.1 });
+    await assessmentApi.saveCell(rq('rr-a1-dipa'), KEP, { score: 4 });
     await assessmentApi.finalise(A1, TW1, KEP);
     at('2027-04-03T08:00');
     runScheduledTasks();
@@ -187,6 +206,15 @@ describe('explanations and recurrence (default data, 6 Apr 2027)', () => {
     ).toBe(true);
   });
 
+  it("never exposes another assessor's number", () => {
+    const view = buildAssessment(getDb(), 'usr-andi', A1, 2027, 1, '2027-04-06T09:00');
+    for (const row of view.rows)
+      for (const c of row.cells.filter((x) => !x.own)) {
+        expect(c.selectedValue).toBeNull();
+        if (c.assessment) expect('score' in c.assessment).toBe(false);
+      }
+  });
+
   it('marks Pemecahan kontrak as recurring across fiscal years (FR-NIL-011)', () => {
     const rqP = getDb().riskQuarters.find((x) => x.id === rq('rr-a1-pemecahan'))!;
     expect(isRecurring(getDb(), rqP)).toBe(true);
@@ -212,6 +240,6 @@ describe('explanations and recurrence (default data, 6 Apr 2027)', () => {
     });
     const after = buildAssessment(getDb(), 'usr-admin', A1, 2027, 2, '2027-04-06T09:00', true);
     const row = after.rows.find((r) => r.risk.id === 'rr-a1-pemecahan')!;
-    expect(row.cells.find((c) => c.positionId === KEP)!.assessment?.score).toBe(2);
+    expect(row.cells.find((c) => c.positionId === KEP)!.assessment?.optionLabel).toBe(label(2));
   });
 });

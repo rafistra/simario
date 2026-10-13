@@ -316,10 +316,11 @@
   color: var(--text-muted);
 }
 
-.acell__score {
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--text-strong);
+.acell__statement {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-default);
 }
 
 .acell__nr {
@@ -498,16 +499,23 @@
 }
 
 .guide__band {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
   padding: 12px 14px;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
 }
 
-.guide__range {
-  margin: 0 0 6px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-strong);
+.guide__options {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .guide__band p:last-child {

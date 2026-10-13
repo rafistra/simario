@@ -13,11 +13,13 @@ import {
   holdersOf,
   lini2For,
   lini3Overdue,
+  optionsOf,
   pendingExplanationLateness,
   predicateIn,
   quarterRisks,
   resultOpened,
-  validScore,
+  toDisplay,
+  type AssessmentDisplay,
   windowOpen,
   windowOpensOn,
 } from '@/domain/rules/assessment';
@@ -29,6 +31,7 @@ import {
   openedResults,
 } from '@/domain/rules/board';
 import { registerStages } from '@/domain/rules/register';
+import { optionFor, predicateFor } from '@/domain/scoreBands';
 import {
   canSeeAssessment,
   canSeeAttachment,
@@ -45,11 +48,11 @@ import type {
   ISODate,
   ISODateTime,
   Lateness,
+  Predicate,
   Quarter,
   RegisterRisk,
   RiskQuarter,
   RiskType,
-  ScoreBand,
   Stage,
 } from '@/domain/types';
 import { formatDate } from '@/lib/format';
@@ -64,6 +67,12 @@ import type { NewFile } from './thread';
 
 /* ---------- Read model ---------- */
 
+export interface ScoreOptionItem {
+  value: number;
+  label: string;
+  predicate: Predicate | null;
+}
+
 export interface CellView {
   positionId: string;
   line: 1 | 3;
@@ -72,7 +81,9 @@ export interface CellView {
   own: boolean;
   visible: boolean;
   editable: boolean;
-  assessment: Assessment | null;
+  assessment: AssessmentDisplay | null;
+  /** The viewer's own chosen value (dropdown key); null for every other column. */
+  selectedValue: number | null;
   attachments: { attachment: Attachment; scanning: boolean }[];
   confidentialHidden: number;
   /** Lini 3 cells: the opened result as the viewer may see it. */
@@ -129,7 +140,8 @@ export interface AssessmentView {
   opensOn: ISODate;
   status: ComparisonStatus;
   counts: Record<ComparisonStatus, number>;
-  bands: ScoreBand[];
+  options: ScoreOptionItem[];
+  guidance: { predicate: Predicate; guidance: string }[];
   bandVersionNumber: number | null;
   rows: RowView[];
   progress: { finalised: number; ready: number; draft: number; unscored: number; total: number };
@@ -285,7 +297,8 @@ export function buildAssessment(
           !archived &&
           status !== 'final' &&
           status !== 'not_assessed',
-        assessment: visible ? (a ?? null) : null,
+        assessment: visible && a ? toDisplay(db, a) : null,
+        selectedValue: own && a ? a.score : null,
         attachments: files.list,
         confidentialHidden: files.hidden,
         result,
@@ -339,7 +352,7 @@ export function buildAssessment(
       else if (s === 'ready') progress.ready++;
       else if (
         ownCell.assessment &&
-        (ownCell.assessment.score !== null || ownCell.assessment.notRelevant)
+        (ownCell.selectedValue !== null || ownCell.assessment.notRelevant)
       )
         progress.draft++;
       else progress.unscored++;
@@ -375,6 +388,9 @@ export function buildAssessment(
   );
 
   const bandVersion = bandVersionFor(db, quarter);
+  const bands = db.scoreBands
+    .filter((b) => b.versionId === bandVersion)
+    .sort((a, b) => a.order - b.order);
   const status: ComparisonStatus =
     items.length === 0
       ? 'waiting'
@@ -400,9 +416,12 @@ export function buildAssessment(
     opensOn: windowOpensOn(quarter, ownLine),
     status,
     counts,
-    bands: db.scoreBands
-      .filter((b) => b.versionId === bandVersion)
-      .sort((a, b) => a.order - b.order),
+    options: optionsOf(db, bandVersion).map((o) => ({
+      value: o.value,
+      label: o.label,
+      predicate: predicateFor(o.value, bands),
+    })),
+    guidance: bands.map((b) => ({ predicate: b.predicate, guidance: b.guidance })),
     bandVersionNumber: db.scoreBandVersions.find((v) => v.id === bandVersion)?.number ?? null,
     rows,
     progress,
@@ -790,8 +809,12 @@ export const assessmentApi = {
       const a = actorFor(line === 1 ? 4 : 8, assessorPositionId);
       const db = getDb();
       const { q } = assertWritable(db, rqId, assessorPositionId, a.at);
-      if (patch.score !== undefined && patch.score !== null && !validScore(patch.score))
-        throw new ApiError('validation', 'Skor 0,0–4,0');
+      if (
+        patch.score !== undefined &&
+        patch.score !== null &&
+        !optionFor(patch.score, optionsOf(db, bandVersionFor(db, q)))
+      )
+        throw new ApiError('validation', 'Pilihan penilaian tidak dikenal.');
       if (line === 3 && patch.notRelevant)
         throw new ApiError('validation', '"Belum relevan" tidak tersedia untuk Lini 3.');
       if (line === 1 && patch.note !== undefined)

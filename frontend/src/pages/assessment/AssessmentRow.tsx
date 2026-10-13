@@ -16,13 +16,14 @@ import type {
   ExplanationView,
   RowSummary,
   RowView,
+  ScoreOptionItem,
 } from '@/data/api/assessment';
 import type { NewFile } from '@/data/api/thread';
-import { RISK_TYPE_LABEL, type Predicate } from '@/domain/types';
-import { formatDate, formatDateTime, formatFileSize, formatScore } from '@/lib/format';
+import { RISK_TYPE_LABEL } from '@/domain/types';
+import { formatDate, formatDateTime, formatFileSize } from '@/lib/format';
 
 export interface RowActions {
-  predicateOf: (score: number) => Predicate | null;
+  options: ScoreOptionItem[];
   saveCell: (rqId: string, positionId: string, patch: CellPatch) => void;
   addFiles: (rqId: string, positionId: string, files: NewFile[]) => void;
   removeFile: (attachmentId: string) => void;
@@ -200,9 +201,9 @@ function AssessorCell({
         {head}
         <div className="acell__entry">
           <ScoreInput
-            label={`Skor ${c.label} untuk ${riskLabel}`}
-            value={a?.score ?? null}
-            predicateOf={actions.predicateOf}
+            label={`Penilaian ${c.label} untuk ${riskLabel}`}
+            options={actions.options}
+            value={c.selectedValue}
             disabled={!!a?.notRelevant}
             onCommit={(score) => actions.saveCell(rqId, c.positionId, { score })}
           />
@@ -299,14 +300,16 @@ function AssessorCell({
           </p>
           {a.notRelevantReason && <p className="acell__note">{a.notRelevantReason}</p>}
         </>
-      ) : a.score !== null ? (
-        <p className="acell__value">
-          {(a.status === 'final' || c.frozen) && (
-            <Lock className="acell__lock" aria-label="Dituntaskan" />
-          )}
-          <span className="acell__score t-mono">{formatScore(a.score)}</span>
-          {a.predicate && <PredicateBadge predicate={a.predicate} />}
-        </p>
+      ) : a.optionLabel !== null ? (
+        <>
+          <p className="acell__value">
+            {(a.status === 'final' || c.frozen) && (
+              <Lock className="acell__lock" aria-label="Dituntaskan" />
+            )}
+            {a.predicate && <PredicateBadge predicate={a.predicate} />}
+          </p>
+          <p className="acell__statement">{a.optionLabel}</p>
+        </>
       ) : (
         <p className="acell__muted">Belum dinilai</p>
       )}

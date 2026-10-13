@@ -1,81 +1,52 @@
-import { useEffect, useId, useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 import type { Predicate } from '@/domain/types';
-import { formatScore, parseScore } from '@/lib/format';
 import { PredicateBadge } from '../Chips/Chips';
+import '../Form/Form.css';
 import './ScoreInput.css';
 
-export interface ScoreInputProps {
-  /** Accessible name, e.g. "Skor Lini 1 untuk [risiko]". */
+export interface ScoreOptionItem {
+  value: number;
   label: string;
-  value: number | null;
-  /** Derives the predicate from the quarter's band version while typing (RB-NIL-002). */
-  predicateOf: (score: number) => Predicate | null;
-  disabled?: boolean;
-  /** Called with a valid score (or null when cleared) on blur / Enter. */
-  onCommit: (score: number | null) => void;
+  predicate: Predicate | null;
 }
 
-/** ScoreInput (.pen Q0zcSS): mono 0,0–4,0 step 0,1 with a live predicate badge. */
-export function ScoreInput({ label, value, predicateOf, disabled, onCommit }: ScoreInputProps) {
-  const [text, setText] = useState(value === null ? '' : formatScore(value));
-  const [error, setError] = useState(false);
-  const errorId = useId();
-  useEffect(() => {
-    setText(value === null ? '' : formatScore(value));
-    setError(false);
-  }, [value]);
-  const parsed = parseScore(text);
-  const predicate = parsed !== null ? predicateOf(parsed) : null;
+export interface ScoreInputProps {
+  /** Accessible name, e.g. "Penilaian Lini 1 · PPK A-1 untuk [risiko]". */
+  label: string;
+  /** The quarter version's statements, worst to best (no numbers shown). */
+  options: ScoreOptionItem[];
+  value: number | null;
+  disabled?: boolean;
+  /** Called with the chosen option value, or null when "— Pilih penilaian —" is chosen. */
+  onCommit: (value: number | null) => void;
+}
 
-  const commit = () => {
-    if (text.trim() === '') {
-      setError(false);
-      if (value !== null) onCommit(null);
-      return;
-    }
-    if (parsed === null) {
-      setError(true);
-      return;
-    }
-    setError(false);
-    setText(formatScore(parsed));
-    if (parsed !== value) onCommit(parsed);
-  };
-
+/** ScoreInput (.pen Q0zcSS) — PRD v2.8: a statement dropdown; the predicate shows once chosen. */
+export function ScoreInput({ label, options, value, disabled, onCommit }: ScoreInputProps) {
+  const selected = value === null ? null : (options.find((o) => o.value === value) ?? null);
   return (
-    <span className={['score-input', error && 'has-error'].filter(Boolean).join(' ')}>
-      <input
-        className="score-input__control"
-        inputMode="decimal"
-        aria-label={label}
-        aria-invalid={error || undefined}
-        aria-describedby={error ? errorId : undefined}
-        placeholder="—"
-        value={text}
-        disabled={disabled}
-        onChange={(e) => {
-          setText(e.target.value);
-          if (error && parseScore(e.target.value) !== null) setError(false);
-        }}
-        onBlur={commit}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            commit();
-          }
-          if (e.key === 'Escape') setText(value === null ? '' : formatScore(value));
-        }}
-      />
-      {predicate ? (
-        <PredicateBadge predicate={predicate} />
-      ) : (
-        <span className="score-input__range t-mono">0,0–4,0</span>
-      )}
-      {error && (
-        <span id={errorId} className="score-input__error" role="alert">
-          Skor 0,0–4,0
-        </span>
-      )}
+    <span className="score-input">
+      <span className="control-wrap score-input__wrap">
+        <select
+          className="control control--select score-input__control"
+          aria-label={label}
+          disabled={disabled}
+          value={selected ? String(selected.value) : ''}
+          onChange={(e) => {
+            const next = e.target.value === '' ? null : Number(e.target.value);
+            if (next !== value) onCommit(next);
+          }}
+        >
+          <option value="">— Pilih penilaian —</option>
+          {options.map((o) => (
+            <option key={o.value} value={String(o.value)}>
+              {o.label}
+            </option>
+          ))}
+        </select>
+        <ChevronDown className="control-wrap__icon" aria-hidden />
+      </span>
+      {selected?.predicate && <PredicateBadge predicate={selected.predicate} />}
     </span>
   );
 }

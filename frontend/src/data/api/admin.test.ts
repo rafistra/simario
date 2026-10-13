@@ -239,7 +239,7 @@ describe('metrics and audit (FR-ADM-011, 008, VIS-8)', () => {
   it('redacts blind scores in audit values', async () => {
     as('usr-hendra');
     const { assessmentApi } = await import('./assessment');
-    await assessmentApi.saveCell('rq-rr-a1-dipa-q-2027-2', 'pos-kepatuhan', { score: 2.2 });
+    await assessmentApi.saveCell('rq-rr-a1-dipa-q-2027-2', 'pos-kepatuhan', { score: 3 });
     const rows = buildAudit(getDb(), 'usr-admin', { action: 'simpan_draf_penilaian' }, AT, false);
     expect(JSON.stringify(rows[0]!.after)).toContain('[disamarkan]');
     const original = buildAudit(
@@ -249,6 +249,6 @@ describe('metrics and audit (FR-ADM-011, 008, VIS-8)', () => {
       AT,
       true,
     );
-    expect(JSON.stringify(original[0]!.after)).toContain('2.2');
+    expect(JSON.stringify(original[0]!.after)).toContain('"score":3');
   });
 });

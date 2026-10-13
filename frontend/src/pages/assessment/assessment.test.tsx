@@ -32,31 +32,47 @@ function renderPage(userId: string, quarter: number, positionId = 'pos-ppk-a1') 
 }
 
 describe('Penilaian Triwulan', () => {
-  it('updates the predicate while typing and rejects out-of-range scores', async () => {
+  it('shows the predicate after choosing a statement, with no numbers', async () => {
     setup('2027-03-18T09:00', true);
     renderPage('usr-rafi', 1);
-    const input = await screen.findByRole('textbox', {
-      name: /^Skor Lini 1 · PPK A-1 untuk Pemecahan kontrak/,
+    const select = await screen.findByRole('combobox', {
+      name: /^Penilaian Lini 1 · PPK A-1 untuk Pemecahan kontrak/,
     });
-    fireEvent.change(input, { target: { value: '2,6' } });
-    expect(within(input.parentElement!).getByText('Cukup Terkendali')).toBeInTheDocument();
-    fireEvent.change(input, { target: { value: '4,5' } });
-    fireEvent.blur(input);
-    expect(await screen.findByText('Skor 0,0–4,0')).toBeInTheDocument();
-    // Operators see the finalising action locked (§2.4).
+    expect(within(select).getByRole('option', { name: '— Pilih penilaian —' })).toBeInTheDocument();
+    expect(within(select).queryByText(/d,d/)).toBeNull();
+    fireEvent.change(select, { target: { value: '3' } });
+    expect(
+      await within(select.closest('.score-input') as HTMLElement).findByText('Cukup Terkendali'),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/Pita skor/)).toBeNull();
     expect(screen.getByText('Dilakukan oleh Andi Wirawan')).toBeInTheDocument();
+  });
+
+  it('treats the 0 statement as scored for "Belum dinilai saja"', async () => {
+    setup('2027-03-18T09:00', true);
+    renderPage('usr-rafi', 1);
+    const select = await screen.findByRole('combobox', { name: /untuk Pemecahan kontrak/ });
+    fireEvent.change(select, { target: { value: '0' } });
+    await waitFor(() =>
+      expect(
+        getDb().assessments.some(
+          (a) => a.riskQuarterId === 'rq-rr-a1-pemecahan-q-2027-1' && a.score === 0,
+        ),
+      ).toBe(true),
+    );
+    fireEvent.click(screen.getByRole('switch', { name: 'Belum dinilai saja' }));
+    expect(screen.queryByRole('combobox', { name: /untuk Pemecahan kontrak/ })).toBeNull();
   });
 
   it('shows the finalise summary verbatim and finalises scored rows only', async () => {
     setup('2027-03-18T09:00', true);
     renderPage('usr-andi', 1);
-    const input = await screen.findByRole('textbox', { name: /untuk Pemecahan kontrak/ });
-    fireEvent.change(input, { target: { value: '2,6' } });
-    fireEvent.blur(input);
+    const select = await screen.findByRole('combobox', { name: /untuk Pemecahan kontrak/ });
+    fireEvent.change(select, { target: { value: '3' } });
     await waitFor(() =>
       expect(
         getDb().assessments.some(
-          (a) => a.riskQuarterId === 'rq-rr-a1-pemecahan-q-2027-1' && a.score === 2.6,
+          (a) => a.riskQuarterId === 'rq-rr-a1-pemecahan-q-2027-1' && a.score === 3,
         ),
       ).toBe(true),
     );
@@ -80,7 +96,7 @@ describe('Penilaian Triwulan', () => {
   it('keeps other assessors hidden from a Lini 3 directorate before opening (VIS-1)', async () => {
     setup('2027-04-06T09:00');
     renderPage('usr-hendra', 2);
-    await screen.findAllByRole('textbox', { name: /^Skor Lini 3 · Kepatuhan/ });
+    await screen.findAllByRole('combobox', { name: /^Penilaian Lini 3 · Kepatuhan/ });
     expect(screen.getAllByText('Tersembunyi sampai perbandingan dibuka').length).toBeGreaterThan(0);
     expect(
       screen.queryByRole('checkbox', { name: 'Belum relevan triwulan ini' }),
