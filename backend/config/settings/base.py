@@ -105,6 +105,12 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "EXCEPTION_HANDLER": "simario.core.errors.api_exception_handler",
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
+    # Keys inside these values are data (identity fields, audit snapshots), not field names.
+    "JSON_UNDERSCOREIZE": {
+        "no_underscore_before_number": False,
+        "ignore_fields": ("identity", "identity_schema", "before", "after", "extra"),
+        "ignore_keys": None,
+    },
 }
 
 SPECTACULAR_SETTINGS = {

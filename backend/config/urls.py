@@ -9,6 +9,7 @@ urlpatterns = [
     path("api/v1/", include("simario.accounts.urls")),
     path("api/v1/", include("simario.notifications.urls")),
     path("api/v1/", include("simario.devtools.urls")),
+    path("api/v1/", include("simario.org.urls")),
 ]
 
 if settings.DEBUG:

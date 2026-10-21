@@ -234,6 +234,102 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/position-types/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["position_types_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/positions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["positions_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/positions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["positions_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/positions/{id}/deactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["positions_deactivate_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/positions/{id}/impact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["positions_impact_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/positions/{id}/reactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["positions_reactivate_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -277,6 +373,16 @@ export interface components {
             unitCode: string;
             officialName: string | null;
             roleView: string | null;
+        };
+        Id: {
+            /** Format: uuid */
+            id: string;
+        };
+        Impact: {
+            publishedRegisters: {
+                [key: string]: unknown;
+            }[];
+            activeOperators: number;
         };
         /**
          * @description * `occupancy` - occupancy
@@ -340,6 +446,9 @@ export interface components {
             oldPassword?: string;
             newPassword: string;
         };
+        PatchedActiveRequest: {
+            active?: boolean;
+        };
         PermissionScope: {
             code: number;
             scope: string | null;
@@ -379,6 +488,17 @@ export interface components {
             deactivationReason?: string | null;
             shortName?: string | null;
         };
+        PositionInputRequest: {
+            /** Format: uuid */
+            positionTypeId?: string | null;
+            code: string;
+            name: string;
+            /** Format: uuid */
+            orgUnitId?: string | null;
+            identity?: {
+                [key: string]: string;
+            };
+        };
         /** @description Shape of `Quarter` in frontend/src/domain/types.ts. */
         Quarter: {
             /** Format: uuid */
@@ -400,6 +520,9 @@ export interface components {
             explanationWorkdays?: number;
             /** Format: uuid */
             readonly scoreBandVersionId: string | null;
+        };
+        ReasonRequest: {
+            reason: string;
         };
         ResetRequest: {
             asOf?: string;
@@ -720,6 +843,151 @@ export interface operations {
             query?: never;
             header?: never;
             path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    position_types_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedActiveRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedActiveRequest"];
+                "multipart/form-data": components["schemas"]["PatchedActiveRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    positions_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PositionInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PositionInputRequest"];
+                "multipart/form-data": components["schemas"]["PositionInputRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Id"];
+                };
+            };
+        };
+    };
+    positions_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PositionInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PositionInputRequest"];
+                "multipart/form-data": components["schemas"]["PositionInputRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Id"];
+                };
+            };
+        };
+    };
+    positions_deactivate_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReasonRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ReasonRequest"];
+                "multipart/form-data": components["schemas"]["ReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    positions_impact_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Impact"];
+                };
+            };
+        };
+    };
+    positions_reactivate_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
             cookie?: never;
         };
         requestBody?: never;

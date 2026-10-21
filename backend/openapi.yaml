@@ -282,6 +282,160 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/position-types/{id}:
+    patch:
+      operationId: position_types_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - master
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedActiveRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedActiveRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedActiveRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/positions:
+    post:
+      operationId: positions_create
+      tags:
+      - master
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PositionInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PositionInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PositionInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Id'
+          description: ''
+  /api/v1/positions/{id}:
+    put:
+      operationId: positions_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - master
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PositionInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PositionInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PositionInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Id'
+          description: ''
+  /api/v1/positions/{id}/deactivate:
+    post:
+      operationId: positions_deactivate_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - master
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/positions/{id}/impact:
+    get:
+      operationId: positions_impact_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - master
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Impact'
+          description: ''
+  /api/v1/positions/{id}/reactivate:
+    post:
+      operationId: positions_reactivate_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - master
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
 components:
   schemas:
     ActivePositionRequest:
@@ -382,6 +536,27 @@ components:
       - positionId
       - roleView
       - unitCode
+    Id:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+      required:
+      - id
+    Impact:
+      type: object
+      properties:
+        publishedRegisters:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        activeOperators:
+          type: integer
+      required:
+      - activeOperators
+      - publishedRegisters
     KindEnum:
       enum:
       - occupancy
@@ -548,6 +723,11 @@ components:
           minLength: 1
       required:
       - newPassword
+    PatchedActiveRequest:
+      type: object
+      properties:
+        active:
+          type: boolean
     PermissionScope:
       type: object
       properties:
@@ -653,6 +833,28 @@ components:
       - name
       - orgUnitId
       - positionTypeId
+    PositionInputRequest:
+      type: object
+      properties:
+        positionTypeId:
+          type: string
+          format: uuid
+          nullable: true
+        code:
+          type: string
+        name:
+          type: string
+        orgUnitId:
+          type: string
+          format: uuid
+          nullable: true
+        identity:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+      - code
+      - name
     Quarter:
       type: object
       description: Shape of `Quarter` in frontend/src/domain/types.ts.
@@ -706,6 +908,13 @@ components:
       - number
       - scoreBandVersionId
       - startsOn
+    ReasonRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+      required:
+      - reason
     ResetRequest:
       type: object
       properties:
