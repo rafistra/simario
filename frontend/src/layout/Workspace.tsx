@@ -17,6 +17,7 @@ import { ForbiddenPage, NotFoundPage } from '@/pages/faults/FaultPages';
 import { chooseActivePosition } from '@/state/me';
 import { useAuth } from '@/state/useAuth';
 import { workspacePaths } from './nav';
+import { pathVisible } from '@/data/http/migrated';
 import './Shell.css';
 
 const TABS = [
@@ -121,7 +122,7 @@ export function WorkspaceLayout() {
           </label>
         </div>
         <div className="tabs" role="tablist" aria-label="Bagian workspace">
-          {TABS.map((t) => (
+          {TABS.filter((t) => pathVisible(paths[t.key])).map((t) => (
             <Link
               key={t.key}
               to={paths[t.key]}

@@ -1,6 +1,8 @@
 import { UserCog, X } from 'lucide-react';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { pathVisible } from '@/data/http/migrated';
+import { NotFoundPage } from '@/pages/faults/FaultPages';
 import { InlineAlert, Skeleton } from '@/components';
 import { setUnauthenticatedHandler } from '@/data/http/client';
 import { preferenceApi } from '@/data/repository';
@@ -165,7 +167,9 @@ export function AppShell({ children }: { children?: ReactNode }) {
             </InlineAlert>
           )}
           <OperatorNotice />
-          <ErrorBoundary>{children ?? <Outlet />}</ErrorBoundary>
+          <ErrorBoundary>
+            {children ?? (pathVisible(location.pathname) ? <Outlet /> : <NotFoundPage />)}
+          </ErrorBoundary>
         </main>
       </div>
     </div>

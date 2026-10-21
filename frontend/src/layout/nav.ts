@@ -25,6 +25,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import type { RoleViewCode } from '@/domain/permissions';
+import { pathVisible } from '@/data/http/migrated';
 import type { AuthContext } from '@/state/useAuth';
 
 export interface NavItem {
@@ -67,7 +68,14 @@ export function workspacePaths(positionId: string, year: number, quarter: number
   };
 }
 
+/** Menu of a role view; the trial build drops pages of modules not yet on the backend. */
 export function navFor(view: RoleViewCode | null, auth: AuthContext): NavSection[] {
+  return allNav(view, auth)
+    .map((s) => ({ ...s, items: s.items.filter((i) => pathVisible(i.to)) }))
+    .filter((s) => s.items.length > 0);
+}
+
+function allNav(view: RoleViewCode | null, auth: AuthContext): NavSection[] {
   switch (view) {
     case 'PMR': {
       const pos = auth.active?.line === 1 ? auth.active.positionId : null;
