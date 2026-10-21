@@ -1,10 +1,10 @@
 # 03 — Kontrak API
 
-> Status dokumen: 21 Okt 2026 · PRD v2.9 · kode `frontend/` per komit `7bebb66`.
+> Status dokumen: 21 Okt 2026 · PRD v2.9 · kode per checkpoint B2.
 
 ## 1. Status dan cakupan
 
-**Belum ada API HTTP.** Kontrak yang berlaku hari ini adalah antarmuka TypeScript di `frontend/src/data/repository.ts`: kumpulan namespace `*Api` yang asinkron (mengembalikan `Promise`) dan diimplementasikan di browser (`frontend/src/data/api/*.ts`, `frontend/src/data/local/*`). Halaman memanggil namespace ini, bukan `localStorage`.
+**API HTTP dibangun per tahap (spec integrasi backend).** Sejak B2, `authApi`, `notificationApi`, `masterApi` (kecuali usulan risiko, B3), `adminApi`, `calendarApi`, dan `importApi` memanggil Django lewat `frontend/src/data/http/`; namespace lain masih lokal. Kontrak yang berlaku adalah antarmuka TypeScript di `frontend/src/data/repository.ts`: kumpulan namespace `*Api` yang asinkron (mengembalikan `Promise`) dan diimplementasikan di browser (`frontend/src/data/api/*.ts`, `frontend/src/data/local/*`). Halaman memanggil namespace ini, bukan `localStorage`.
 
 Dokumen ini mencatat:
 
@@ -87,23 +87,23 @@ Kolom **Izin**: kode FR-ADM-002. "Konten(n)" = `checkAction(n)`: izin + holding 
 | `notificationApi.markAllRead` | `userId` | `void` | **HTTP (B1)** | FR-NTF-013 | `POST /api/v1/notifications/read-all` |
 | `preferenceApi.get/set` | `userId, key[, value]` | nilai | Sinkron; filter papan per jabatan, sidebar diciutkan, pilihan foto (`userId='*'`) | FR-PPN-001, FR-LBR-005 | `GET/PUT /api/preferences/{key}` |
 
-### 4.3 `masterApi` — Master Data (MST)
+### 4.3 `masterApi` — Master Data (MST) — diputuskan, B2
 
-| Metode | Masukan | Izin | PRD | Usulan REST |
+| Metode | Masukan | Izin | PRD | REST (`/api/v1`) |
 |---|---|---|---|---|
-| `setPositionTypeActive` | `typeId, active` | 17 | FR-MST-008 | `PATCH /api/position-types/{id}` |
-| `savePosition` | `PositionInput {positionTypeId, code, name, orgUnitId, identity}`, `id?` | 18 | FR-MST-009, INV-2 | `POST /api/positions`, `PUT /api/positions/{id}` |
-| `deactivatePosition` / `reactivatePosition` | `positionId[, reason]` | 18 | FR-MST-009 | `POST /api/positions/{id}/deactivate` · `/reactivate` |
-| `addStage`, `renameStage`, `setStageActive`, `deleteStage` | per tahap | 15 | FR-MST-001 | `POST/PATCH/DELETE /api/stages[/{id}]` |
-| `reorderStages` | `positionTypeId, orderedIds[]` | 15 | FR-MST-001 | `PUT /api/position-types/{id}/stage-order` |
-| `saveTemplate` | `{positionTypeId, stageId, riskType, description, mitigations[]}`, `id?`, `fromProposalId?` | 12 (+13 bila dari usulan) | FR-MST-003, 005 | `POST/PUT /api/risk-templates`; `POST /api/proposals/{id}/accept` |
-| `setTemplateActive`, `deleteTemplate` | `templateId` | 12 | FR-MST-004 | `PATCH/DELETE /api/risk-templates/{id}` |
-| `rejectProposal` | `proposalId, reason` | 13 | FR-MST-005 | `POST /api/proposals/{id}/reject` |
-| `saveDataUmumForm` | `positionTypeId, defaultObjective, fields[], objectiveEnabled` | 16 | FR-MST-006 (versi baru) | `POST /api/position-types/{id}/data-umum-forms` |
-| `createBandDraft`, `updateBandDraft`, `saveBandVersion`, `discardBandDraft` | versi, pita, pilihan, tanggal berlaku | 14 | FR-MST-007, INV-3, INV-26 | `POST/PUT/DELETE /api/score-band-versions[/{id}]`, `POST …/{id}/schedule` |
-| `updateActiveGuidance`, `updateOptionLabel` | teks panduan / kalimat versi aktif | 14 | FR-MST-007 | `PATCH /api/score-bands/{predicate}`, `PATCH /api/score-options/{id}` |
+| `setPositionTypeActive` | `typeId, active` | 17 | FR-MST-008 | `PATCH /position-types/{id}` |
+| `savePosition` | `PositionInput {positionTypeId, code, name, orgUnitId, identity}`, `id?` | 18 | FR-MST-009, INV-2 | `POST /positions`, `PUT /positions/{id}` |
+| `deactivatePosition` / `reactivatePosition` | `positionId[, reason]` | 18 | FR-MST-009 | `POST /positions/{id}/deactivate` · `/reactivate` |
+| `addStage`, `renameStage`, `setStageActive`, `deleteStage` | per tahap | 15 | FR-MST-001 | `POST/PATCH/DELETE /stages[/{id}]` |
+| `reorderStages` | `positionTypeId, orderedIds[]` | 15 | FR-MST-001 | `PUT /position-types/{id}/stage-order` |
+| `saveTemplate` | `{positionTypeId, stageId, riskType, description, mitigations[]}`, `id?`, `fromProposalId?` | 12 (+13 bila dari usulan) | FR-MST-003, 005 | `POST /risk-templates`, `PUT /risk-templates/{id}`; dari usulan: lokal sampai B3 |
+| `setTemplateActive`, `deleteTemplate` | `templateId` | 12 | FR-MST-004 | `PATCH/DELETE /risk-templates/{id}` |
+| `rejectProposal` | `proposalId, reason` | 13 | FR-MST-005 | lokal sampai B3 (`RiskProposal`) |
+| `saveDataUmumForm` | `positionTypeId, defaultObjective, fields[], objectiveEnabled` | 16 | FR-MST-006 (versi baru) | `POST /position-types/{id}/data-umum-forms` |
+| `createBandDraft`, `updateBandDraft`, `saveBandVersion`, `discardBandDraft` | versi, pita, pilihan, tanggal berlaku | 14 | FR-MST-007, INV-3, INV-26 | `POST/PUT/DELETE /score-band-versions[/{id}]`, `POST …/{id}/schedule` |
+| `updateActiveGuidance`, `updateOptionLabel` | teks panduan / kalimat versi aktif | 14 | FR-MST-007 | `PATCH /score-bands/{predicate}`, `PATCH /score-options/{id}` |
 
-Semua mutasi master menulis audit. Belum ada metode **tambah/ubah jenis jabatan** ("Tambah Jenis", FR-MST-008) — lihat [04_risk_and_debt.md](04_risk_and_debt.md).
+Baca: `GET /collections/<nama>` (baris berbentuk tipe `domain/types.ts`, untuk pengguna yang masuk; `core/collections.py`), `GET /risk-templates/usage?fiscalYear=` (`{templateId: jumlah}`), `GET /positions/{id}/impact`. Pemakaian oleh register dijawab stub nol sampai B3 (U-21). Semua mutasi master menulis audit dengan aksi yang sama seperti prototipe. Belum ada metode **tambah/ubah jenis jabatan** ("Tambah Jenis", FR-MST-008) — lihat [04_risk_and_debt.md](04_risk_and_debt.md).
 
 ### 4.4 `registerApi` — Register (REG)
 
@@ -168,27 +168,29 @@ Fungsi bantu di halaman: `finalisePreview(getDb(), …)` untuk dialog ringkasan 
 | `sheetApi.print` | `positionId, fiscalYear, tw, kinds[]` | Snapshot baru `trigger=print` (sementara bila belum ada versi otomatis) | FR-LBR-006 | `POST …/sheets/{ta}/{tw}/print` |
 | `sheetApi.findByNumber` | `number` | `{id, positionId, fiscalYear, tw, kind}` | FR-LBR-010 | `GET /api/snapshots?number=` |
 
-### 4.8 `adminApi`, `calendarApi`, `importApi`, `insightsApi` — Administrasi (ADM)
+### 4.8 `adminApi`, `calendarApi`, `importApi`, `insightsApi` — Administrasi (ADM) — diputuskan B2, kecuali `insightsApi` (B8)
 
-| Metode | Izin | PRD | Usulan REST |
+| Metode | Izin | PRD | REST (`/api/v1`) |
 |---|---|---|---|
-| `adminApi.addUser`, `reactivateUser`, `deactivateUser` | 21 | FR-ADM-004 | `POST /api/users`, `POST /api/users/{id}/(de)activate` |
-| `adminApi.setManualRoles` | 22 | US-ADM-002 | `PUT /api/users/{id}/roles` |
-| `adminApi.assignPosition` (`AssignInput`) | 21 | FR-ADM-004 | `POST /api/occupancies` |
-| `adminApi.replaceOfficial` (`ReplaceInput`) | 21 | FR-ADM-005 | `POST /api/positions/{id}/replace-official` |
-| `adminApi.moveFiller` | 21 | FR-ADM-005 | `POST /api/positions/{id}/filler` |
-| `adminApi.resetPassword` | 21 | FR-AUT-005 | `POST /api/users/{id}/reset-password` |
-| `adminApi.addRole`, `deleteRole`, `setPermission` | 22 | FR-ADM-001…003, 009 | `POST/DELETE /api/roles`, `PUT /api/roles/{id}/permissions/{code}` |
-| `adminApi.addAssignments`, `removeAssignment` | 20 | FR-ADM-006, INV-14 | `POST/DELETE /api/monitoring-assignments` |
-| `adminApi.searchStaff` | — | OQ-11 | `GET /api/staff?q=` (proxy Keycloak) |
-| `adminApi.appointOperator`, `revokeOperator` | Konten(11) — Pejabat | FR-ADM-010, FR-NTF-011 | `POST /api/positions/{id}/delegates`, `POST /api/delegates/{id}/revoke` |
-| `calendarApi.createFiscalYear`, `updateFiscalYear`, `updateQuarter(…, confirmPastDeadline)` | 19 | FR-ADM-007, INV-9 | `POST /api/fiscal-years`, `PATCH /api/fiscal-years/{y}`, `PATCH /api/quarters/{id}` |
-| `calendarApi.excludeAssessor` | 19 | §2.5 | `POST /api/quarters/{id}/assessors/{pos}/exclude` |
-| `calendarApi.archiveManually` | 26 | §2.5 | `POST /api/fiscal-years/{y}/archive` |
-| `importApi.template`, `dryRun`, `apply`, `history`, `kindsFor` | 18 / 21 / 20 per jenis | FR-ADM-013 | `GET /api/imports/templates/{kind}`, `POST /api/imports` (dry run → `ImportJob`), `POST /api/imports/{id}/commit`, `GET /api/imports` |
-| `insightsApi.metrics(year)` | 22 | FR-ADM-011 | `GET /api/metrics?ta=` (+ `?format=csv`) |
-| `insightsApi.audit(filter, original)` | 23 (+24 untuk nilai asli) | FR-ADM-008, VIS-8 | `GET /api/audit?…&original=1` |
+| `adminApi.addUser`, `reactivateUser`, `deactivateUser` | 21 | FR-ADM-004 | `POST /users` (→ `{id, temporaryPassword}` sekali), `POST /users/{id}/deactivate` · `/reactivate` |
+| `adminApi.setManualRoles` | 22 | US-ADM-002 | `PUT /users/{id}/roles` |
+| `adminApi.assignPosition` (`AssignInput`) | 21 | FR-ADM-004 | `POST /occupancies` |
+| `adminApi.replaceOfficial` (`ReplaceInput`) | 21 | FR-ADM-005 | `POST /positions/{id}/replace-official` |
+| `adminApi.moveFiller` | 21 | FR-ADM-005 | `POST /positions/{id}/filler` |
+| `adminApi.resetPassword` | 21 | FR-AUT-005 | `POST /users/{id}/reset-password` |
+| `adminApi.addRole`, `deleteRole`, `setPermission` | 22 | FR-ADM-001…003, 009 | `POST/DELETE /roles`, `PUT /roles/{id}/permissions/{code}` |
+| `adminApi.addAssignments`, `removeAssignment` | 20 | FR-ADM-006, INV-14 | `POST/DELETE /monitoring-assignments` |
+| `adminApi.searchStaff` | pengguna masuk | OQ-11 | `GET /staff?q=` (Keycloak Admin REST, service account `simario`; 503 "Pencarian pegawai belum tersedia.") |
+| `adminApi.appointOperator`, `revokeOperator` | Konten(11) — Pejabat | FR-ADM-010, FR-NTF-011 | `POST /positions/{id}/delegates`, `POST /delegates/{id}/revoke`; kartu: `GET /me/positions` |
+| `calendarApi.createFiscalYear`, `updateFiscalYear`, `updateQuarter(…, confirmPastDeadline)` | 19 | FR-ADM-007, INV-9 | `POST /fiscal-years`, `PATCH /fiscal-years/{y}`, `PATCH /quarters/{id}` |
+| `calendarApi.excludeAssessor` | 19 | §2.5 | `POST /quarters/{id}/assessors/{pos}/exclude` |
+| `calendarApi.archiveManually` | 26 | §2.5 | `POST /fiscal-years/{y}/archive`; `GET /fiscal-years/{y}/archive-status` (19/26) |
+| `importApi.template`, `dryRun`, `apply`, `history`, `kindsFor` | 18 / 21 / 20 per jenis | FR-ADM-013 | `GET /imports/templates/{kind}` (CSV), `GET /imports/kinds`, `POST /imports` (dry run → `ImportJob`), `POST /imports/{id}/commit` (cek ulang; galat → 422 `errors`), `GET /imports` |
+| `insightsApi.metrics(year)` | 22 | FR-ADM-011 | usulan `GET /metrics?ta=` (+ `?format=csv`) |
+| `insightsApi.audit(filter, original)` | 23 (+24 untuk nilai asli) | FR-ADM-008, VIS-8 | usulan `GET /audit?…&original=1` |
 | `insightsApi.logShowOriginal` | 24 | FR-ADM-008 | dicatat server |
+
+Mutasi yang mengubah holding, peran, atau delegasi menaikkan `auth_epoch` pengguna terkait (FR-AUT-008): sesi mereka berakhir pada permintaan berikutnya (`401 unauthenticated`). Frontend memuat ulang koleksi yang berubah dan `/me` setelah mutasi.
 
 ## 5. Celah kontrak: data yang dibaca langsung dari store
 
@@ -198,8 +200,8 @@ Prinsip CLAUDE.md §4 ("halaman tidak pernah menyentuh `localStorage` langsung")
 |---|---|---|
 | `layout/Sidebar.tsx`, `layout/Topbar.tsx`, `layout/Workspace.tsx` | Jabatan dalam cakupan dan pencarian global (konteks pengguna sudah dari `GET /api/v1/me`, B1) | `GET /api/positions/{id}`, `GET /api/search?q=` |
 | `pages/register/RegisterPage.tsx`, `RiskCard.tsx`, `DataUmumSection.tsx` | Read model terfilter dari `buildRegisterView` (sinkron, bukan `registerApi.view`); selain itu register TA sebelumnya (banner salin), kuartal, nama pengguna, template & formulir Data Umum, `wouldFlagNoMitigation` | `GET /api/registers/{pos}/{ta}` (= `registerApi.view`) ditambah info TA sebelumnya |
-| `pages/master/*` (Jabatan, Tahap, Template, TemplateEditor, Usulan, Data Umum, Skala) | Jenis jabatan, jabatan, tahap, template + hitungan pemakaian (`templateUsage`), usulan, formulir, versi pita & pilihan | `GET /api/position-types`, `/positions`, `/stages`, `/risk-templates?type=&stage=`, `/proposals`, `/data-umum-forms`, `/score-band-versions` |
-| `pages/admin/*` (Pengguna, Peran, Penugasan, Tahun Anggaran, Jabatan Saya, Audit, Metrik) | Pengguna + holding, peran + izin, penugasan, TA + kuartal + status arsip (`archiveStatus`, `quarterProblems`), filter audit | `GET /api/users`, `/roles`, `/monitoring-assignments`, `/fiscal-years`, `/me/positions` |
+| `pages/master/*` | **B2:** koleksi master dari `GET /api/v1/collections/<nama>` lewat `CollectionGate`; usulan (`/master/usulan`) dan hitungan pemakaian register tetap dari store lokal sampai B3 | `GET /api/v1/proposals` (B3) |
+| `pages/admin/*` | **B2:** Pengguna, Peran, Penugasan, Tahun Anggaran, Jabatan Saya, Impor dari koleksi backend lewat `CollectionGate`; status arsip masih dihitung dari penilaian lokal (B5); Audit dan Metrik lokal (B8) | `GET /api/v1/audit`, `/metrics` (B8) |
 | `pages/board/ThreadPage.tsx` | Peserta untuk @sebut (`threadParticipants`), izin 25 | `GET /api/register-risks/{id}/participants` |
 | `pages/assessment/AssessmentPage.tsx` | `finalisePreview` | `GET …/finalise-preview` |
 | `pages/sheets/SheetPage.tsx` | Snapshot yang baru dibuat `sheetApi.print`, lalu `maskPayloadFor` | `sheetApi.print` mengembalikan payload tersamar, bukan hanya ID |

@@ -106,6 +106,8 @@ Vektor uji bersama ada di `shared/test-vectors/` (format di README-nya); Vitest 
 - **Masuk lewat Keycloak lokal:** tombol "Masuk dengan Akun Otorita IKN" → nama pengguna = NIP persona, kata sandi `simario-demo` (khusus lokal). NIP Galih Pratama (`199812012024011001`) ada di Keycloak tetapi tidak di SIMARIO, untuk mencoba pesan "Akun Anda belum terdaftar".
 - **Masuk sebagai persona tanpa Keycloak:** tombol "Masuk sebagai persona (mode pengembangan)" di `/login`, menu DevPanel "Masuk sebagai", atau tautan demo `?sebagai=usr-andi&waktu=2027-03-18T09:00&data=sesuai` (semuanya lewat `/api/v1/dev/*`).
 - **Impor ulang realm** setelah `realm-export.json` berubah: `docker compose rm -sf keycloak && docker compose up -d keycloak`.
+- **Cari pegawai (B2):** `GET /api/v1/staff?q=` (dialog "Tunjuk Operator") memanggil Keycloak Admin REST dengan service account client `simario` (peran realm-management `view-users`, sudah ada di realm lokal). Untuk sso.ikn.go.id client yang sama perlu peran itu; tanpa `OIDC_*` atau bila Keycloak tidak terjangkau, jawabannya 503 "Pencarian pegawai belum tersedia."
+- **Impor CSV (B2):** `/pengaturan/impor` membuat `ImportJob` uji coba di backend; "Terapkan" memeriksa ulang lalu menerapkan. Pemisah `,` atau `;` (Excel), BOM, dan CRLF diterima. `POST /api/v1/dev/reset` menghapus job dan pengguna baru.
 - **Uji asap SSO** (butuh `npm run dev`): `uv run python scripts/oidc_smoke.py 198204172008011003` → berakhir dengan `GET /api/v1/me` 200; dengan NIP Galih → `refused: belum-terdaftar`.
 - Selama transisi, modul yang belum pindah masih memakai data `localStorage`; DevPanel menggeser jam dan mengatur ulang data di kedua sisi.
 

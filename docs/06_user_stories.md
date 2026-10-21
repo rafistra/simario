@@ -113,6 +113,8 @@ Kolom "Coba" memakai id persona dan parameter URL dari [05_local_dev_and_testing
 
 ## 9. Master Data (MST)
 
+B2: cerita MST berjalan di backend kecuali usulan risiko (US-MST-004, B3).
+
 | ID | Sebagai … saya ingin … | FR | Status | Coba |
 |---|---|---|---|---|
 | US-MST-001 | Sebagai Pengelola Master Data, saya ingin tahap per jenis pemilik risiko | FR-MST-001 | ✅ | `?sebagai=usr-nur` → `/master/tahap` |
@@ -137,6 +139,8 @@ Kolom "Coba" memakai id persona dan parameter URL dari [05_local_dev_and_testing
 
 ## 11. Administrasi (ADM)
 
+B2: pengguna, peran, penugasan, TA, holding, Operator, dan impor berjalan di backend; jejak audit dan metrik (US-ADM-007/008) di B8.
+
 | ID | Sebagai … saya ingin … | FR | Status | Coba |
 |---|---|---|---|---|
 | US-ADM-001 | Sebagai Superadmin, saya ingin membuat peran dan mencentang izinnya | FR-ADM-001, 002, 003, 009 | ✅ | `?sebagai=usr-admin` → `/pengaturan/peran` |
@@ -147,7 +151,7 @@ Kolom "Coba" memakai id persona dan parameter URL dari [05_local_dev_and_testing
 | US-ADM-006 | Sebagai Superadmin, saya ingin membuat TA dan mengatur tenggat setiap triwulan | FR-ADM-007 | ✅ | `/pengaturan/tahun-anggaran` |
 | US-ADM-007 | Sebagai audit internal, saya ingin menelusuri setiap perubahan, siapa yang membuatnya, dan untuk jabatan mana | FR-ADM-008 | ✅ | Hendra/Admin → `/jejak-audit` (redaksi VIS-8) |
 | US-ADM-008 | Sebagai Superadmin, saya ingin melihat apakah produk memenuhi tujuannya | FR-ADM-011 | 🟨 Tujuan 8 "Data belum cukup" (tanpa `PageTiming`, R-P5) | `/metrik` |
-| US-ADM-009 | Sebagai Pejabat, saya ingin menunjuk staf sebagai Operator dengan surat delegasi | FR-ADM-010, FR-NTF-011 | ✅ (cari pegawai dari direktori contoh, bukan Keycloak) | Andi → `/jabatan-saya` → "Tunjuk Operator" Galih Pratama |
+| US-ADM-009 | Sebagai Pejabat, saya ingin menunjuk staf sebagai Operator dengan surat delegasi | FR-ADM-010, FR-NTF-011 | ✅ (B2: cari pegawai dari Keycloak) | Andi → `/jabatan-saya` → "Tunjuk Operator" Galih Pratama |
 | US-ADM-010 | Sebagai Pejabat, saya ingin mencabut Operator kapan saja | FR-ADM-010 | ✅ | `/jabatan-saya` → "Cabut" |
 | US-ADM-011 | Sebagai pengguna, saya ingin satu halaman yang mendaftar setiap jabatan yang saya pegang dan dalam kapasitas apa | FR-ADM-012 | ✅ | `/jabatan-saya` |
 

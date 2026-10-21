@@ -84,7 +84,7 @@ if (q.error && !q.data) return <InlineAlert variant="error" onRetry={q.retry}>�
 ```
 
 - `useQuery` (`lib/useQuery.ts`) menjalankan ulang kueri setiap `useDb().version` naik (setiap mutasi), tanpa mengosongkan data lama — skeleton hanya pada muat pertama.
-- Halaman yang membaca store secara sinkron (master, admin, register) dibungkus `DataGate` agar tetap punya skeleton dan galat + "Coba Lagi". Register memakai read model `buildRegisterView` (`data/api/registerView.ts`) yang sudah memfilter butir per pembaca.
+- Halaman master dan admin (B2) dibungkus `CollectionGate` di router: `useCollections` (`lib/useCollections.ts`) memuat koleksi dari `GET /api/v1/collections/<nama>` ke cache bersama, menampilkan skeleton atau galat + "Coba Lagi", lalu memberi halaman satu `db` (`useGateDb()`): koleksi backend di atas store lokal, sehingga petunjuk yang bergantung pada register lokal tetap jalan sampai B3. Mutasi di `data/http/master.ts`, `admin.ts`, `calendar.ts`, `importer.ts` memuat ulang koleksi yang berubah (admin juga `/me`) sebelum selesai. Halaman lain yang membaca store sinkron (register, usulan, audit, metrik) masih dibungkus `DataGate`; Register memakai read model `buildRegisterView` (`data/api/registerView.ts`) yang sudah memfilter butir per pembaca.
 - Halaman menerima data **yang sudah difilter** (VIS-1…9, skor disembunyikan). Jangan menyaring data rahasia di JSX.
 
 ### 4.2 Menulis data
@@ -110,7 +110,7 @@ Pola wajib PRD §2.4 yang sudah ada sebagai komponen:
 
 ### 4.3 Konteks pengguna dan jabatan aktif
 
-**Transisi ke backend (B1–B9).** `data/http/` berisi `client.ts` (`apiFetch`: cookie sesi, CSRF, amplop galat → `ApiError`, latensi/luring/gagal dari DevPanel, waktu server → `YYYY-MM-DDTHH:mm` WITA) dan namespace yang sudah pindah (`authApi`, `notificationApi`, `meApi`, `devApi`). `legacyIds.ts` menerjemahkan UUID backend ↔ ID prototipe di batas HTTP agar modul lokal tetap bekerja (dihapus di B9). Setelah `/me` dimuat, pengguna yang sama juga "masuk" di sesi lokal. Notifikasi: satu store (`state/notifications.ts`) untuk lonceng, panel, dan `/notifikasi`. Uji Vitest memakai backend palsu (`src/test/fakeBackend.ts` + `meFromLocal.ts`) di atas store lokal.
+**Transisi ke backend (B1–B9).** `data/http/` berisi `client.ts` (`apiFetch`: cookie sesi, CSRF, amplop galat → `ApiError`, latensi/luring/gagal dari DevPanel, waktu server → `YYYY-MM-DDTHH:mm` WITA) dan namespace yang sudah pindah (`authApi`, `notificationApi`, `meApi`, `devApi`; B2: `masterApi`, `adminApi`, `calendarApi`, `importApi`, `collectionsApi`). `legacyIds.ts` menerjemahkan UUID backend ↔ ID prototipe di batas HTTP agar modul lokal tetap bekerja (dihapus di B9). Setelah `/me` dimuat, pengguna yang sama juga "masuk" di sesi lokal. Notifikasi: satu store (`state/notifications.ts`) untuk lonceng, panel, dan `/notifikasi`. Uji Vitest memakai backend palsu (`src/test/fakeBackend.ts` + `meFromLocal.ts`) di atas store lokal.
 
 `useAuth()` (`state/useAuth.ts`) dibangun dari `GET /api/v1/me` (`state/me.ts`, `useMe`; B1) dan memberi `user`, `holdings`, `active` (holding yang dipilih di kartu "JABATAN AKTIF"), `permissions`/`can(kode)`, `roleViews`/`roleView`, `currentQuarter`. Tampilan peran hanya mengubah menu (`layout/nav.ts`), **tidak pernah** dipakai untuk izin (FR-AUT-007). Halaman ruang kerja mendapat `WorkspaceOutletContext` dari `layout/Workspace.tsx` (jabatan, TA, tab Papan · Register · Penilaian · Riwayat · Lembar).
 
@@ -133,6 +133,7 @@ Nama komponen React = nama komponen di `Simario.pen` (CLAUDE.md §7). Ekspor ter
 | `ScoreInput` | Dropdown kalimat penilaian (PRD v2.8), daftar datar terburuk → terbaik, tanpa angka |
 | `NotificationPanel` | `NotificationPanel`, `NotificationItem` |
 | `DataGate` | Gerbang muat pertama untuk halaman yang membaca store langsung |
+| `CollectionGate` | Gerbang muat koleksi backend (B2) + `useGateDb()` (`components/DataGate/gateDb.ts`) |
 
 Komponen khusus halaman ada di folder halamannya (mis. `pages/board/Composer.tsx`, `pages/register/RiskCard.tsx`, `pages/assessment/AssessmentRow.tsx`, `pages/sheets/SheetDocument.tsx`). Semua komponen dipamerkan di `/_komponen` (mode dev; `?tema=gelap` untuk mode gelap).
 

@@ -2,9 +2,9 @@
 
 > Status dokumen: 21 Okt 2026 · PRD v2.9 · kode `frontend/` per komit `7bebb66`.
 
-## 1. Status: backend belum ada
+## 1. Status: backend sebagian (B2)
 
-**Fondasi backend sudah ada (tahap B1): identitas, organisasi, kalender, data referensi, audit, notifikasi, sesi, SSO, jam simulasi, dan data demo; modul REG/PPN/NIL/RWY/LBR/ADM/MST belum (B2–B8; `RiskProposal` di B3).** Rencana dan keputusan yang dikunci: [spec integrasi backend](superpowers/specs/2026-10-21-backend-integration-design.md). Sampai modulnya dipindah, semua yang biasanya dikerjakan server saat ini disimulasikan di browser oleh lapisan data frontend:
+**Fondasi backend (B1) serta Master Data dan Administrasi (B2) sudah di backend: identitas, organisasi, kalender (TA, triwulan, pengecualian, arsip), data referensi (tahap, template, Data Umum, skala + pilihan), pengguna, holding, Operator, peran, penugasan, impor CSV (`ImportJob`), audit, notifikasi, sesi, SSO, jam simulasi, dan data demo; modul REG/PPN/NIL/RWY/LBR belum (B3–B7; `RiskProposal` di B3, metrik dan jejak audit di B8).** Pemeriksaan yang bergantung pada register/penilaian memakai stub `simario/registers/usage.py` dan `simario/assessments/usage.py` sampai B3/B5 (U-21); efek samping arsip modul lain mendaftar lewat `calendar.services.on_archive`. Rencana dan keputusan yang dikunci: [spec integrasi backend](superpowers/specs/2026-10-21-backend-integration-design.md). Sampai modulnya dipindah, semua yang biasanya dikerjakan server saat ini disimulasikan di browser oleh lapisan data frontend:
 
 | Tanggung jawab server | Di mana sekarang (prototipe) |
 |---|---|
@@ -173,12 +173,12 @@ Prototipe mendaftarkan tugas di `data/local/scheduler.ts` (`registerTask`) dan m
 |---|---|---|---|---|
 | `attachment-scan` | `finishAttachmentScans` | `pending` → `clean` (prototipe: juga `setTimeout` 2 detik) | Unggah | NFR-010 |
 | `risk-quarters` | `ensureRiskQuarters` | Buat `RiskQuarter` untuk risiko yang dinilai di triwulan yang sudah mulai | Terbit | RB-REG-006 |
-| `score-bands` | `activateScoreBands` | Versi `scheduled` menjadi `active` pada tanggal berlaku; triwulan mengunci versinya saat jendela pertama dibuka | — | FR-MST-007 |
+| `score-bands` (backend B2: `score_bands`, `reference/tasks.py`) | `activateScoreBands` | Versi `scheduled` menjadi `active` pada tanggal berlaku; triwulan mengunci versinya saat jendela pertama dibuka | — | FR-MST-007 |
 | `comparisons` | `runComparisons` (`local/comparisons.ts`) | Pembukaan perbandingan penuh/sebagian, "Tidak dinilai Lini 1", Berulang, notifikasi FR-NTF-007/008/009 | Tuntaskan, kecualikan penilai | §2.5, FR-NIL-007/009/011 |
 | `reminders` | `runReminders` (`local/reminders.ts`) | Buka jendela, H-7, H-1; penjelasan H-1; 14 hari sebelum arsip; tidak memunculkan peristiwa > 3 hari yang lalu | — | FR-NTF-005/006/009/012 |
 | `sheet-freeze` | `runSheetFreeze` (`api/sheets.ts`) | Versi lembar otomatis (`auto_freeze`) dan `superseded_by` | — (prototipe: hanya saat aplikasi mulai / jam digeser; backend sebaiknya juga setelah kirim penjelasan dan hasil terlambat dibuka) | FR-LBR-009 |
-| `calendar` | `runCalendar` (`api/calendar.ts`) | Status TA `open`→`closing`, set penilai Lini 3 saat `lini3_opens_on`, arsip pada batas keras | — | §2.5, FR-ADM-007 |
-| `delegations` | `expireDelegations` (`api/admin.ts`) | Delegasi lewat tanggal akhir → `expired` | — | FR-ADM-010 |
+| `calendar` (backend B2: `calendar/tasks.py`) | `runCalendar` (`api/calendar.ts`) | Status TA `open`→`closing`, set penilai Lini 3 saat `lini3_opens_on`, arsip pada batas keras | — | §2.5, FR-ADM-007 |
+| `delegations` (backend B2: `org/tasks.py`) | `expireDelegations` (`api/admin.ts`) | Delegasi lewat tanggal akhir → `expired`; backend juga menaikkan `auth_epoch` Operator | — | FR-ADM-010 |
 
 Catatan: semua tugas harus idempoten dan aman bila jam "melompat" (pengujian prototipe sering menggeser tanggal jauh ke depan).
 

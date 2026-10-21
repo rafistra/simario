@@ -376,11 +376,13 @@ Hasil:
 - [x] Jam simulasi (`DevClock`) + `devtools`; `seed_reference`, `seed_demo`
 - [x] Frontend: `data/http/client.ts`, `authApi`, `useAuth` → `/me`, Sidebar/Topbar/Workspace, lonceng, DevPanel
 
-### Tahap B2 — Master & Administrasi ⬜
+### Tahap B2 — Master & Administrasi ✅
 
 Hasil:
-- [ ] MST: jabatan, tahap, template, usulan, Data Umum, skala + pilihan
-- [ ] ADM: pengguna, peran, penugasan, TA/kuartal/arsip, jabatan saya, impor CSV + `ImportJob`
+- [x] MST: jabatan, tahap, template, Data Umum, skala + pilihan (usulan risiko pindah ke B3 bersama `RiskProposal`)
+- [x] ADM: pengguna, peran, penugasan, TA/kuartal/arsip, jabatan saya, impor CSV + `ImportJob`
+
+Catatan Tahap B2: halaman master/admin membaca `GET /api/v1/collections/<nama>` lewat `CollectionGate` (digabung di atas store lokal sampai modul register/penilaian pindah). Pemakaian oleh register dan penilaian dijawab stub (`simario/registers/usage.py`, `simario/assessments/usage.py`; U-21) sampai B3/B5; efek samping arsip mendaftar lewat `calendar.services.on_archive`. Cari pegawai lewat Keycloak Admin REST (service account `simario`, `view-users`). Perubahan holding/peran/izin/penugasan menaikkan `auth_epoch` (U-04, U-19 selesai). Uji manual lewat HTTP terhadap backend lokal; belum diklik di browser.
 
 ### Tahap B3 — Register ⬜
 
