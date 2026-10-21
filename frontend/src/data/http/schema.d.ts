@@ -522,6 +522,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/positions/{id}/board/{year}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET: the risk board of a position and fiscal year (`BoardView`, FR-PPN-001). */
+        get: operations["positions_board_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/positions/{id}/deactivate": {
         parameters: {
             query?: never;
@@ -778,6 +795,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/register-risks/{id}/participants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["register_risks_participants_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/register-risks/{id}/template-mitigations/{template_id}": {
         parameters: {
             query?: never;
@@ -787,6 +820,26 @@ export interface paths {
         };
         get?: never;
         put: operations["register_risks_template_mitigations_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/register-risks/{id}/thread": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description GET: a risk thread (`ThreadView`, FR-PPN-002). With `?since=`: the count of newer comments
+         *     by others, for the 30-second poll (NFR-015).
+         */
+        get: operations["register_risks_thread_retrieve"];
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -2603,6 +2656,30 @@ export interface operations {
             };
         };
     };
+    positions_board_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
     positions_deactivate_create: {
         parameters: {
             query?: never;
@@ -2994,6 +3071,31 @@ export interface operations {
             };
         };
     };
+    register_risks_participants_retrieve: {
+        parameters: {
+            query?: {
+                quarterId?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
     register_risks_template_mitigations_update: {
         parameters: {
             query?: never;
@@ -3018,6 +3120,31 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    register_risks_thread_retrieve: {
+        parameters: {
+            query?: {
+                since?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
             };
         };
     };

@@ -718,6 +718,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/Id'
           description: ''
+  /api/v1/positions/{id}/board/{year}:
+    get:
+      operationId: positions_board_retrieve
+      description: 'GET: the risk board of a position and fiscal year (`BoardView`,
+        FR-PPN-001).'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - board
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
   /api/v1/positions/{id}/deactivate:
     post:
       operationId: positions_deactivate_create
@@ -1146,6 +1175,32 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/register-risks/{id}/participants:
+    get:
+      operationId: register_risks_participants_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: query
+        name: quarterId
+        schema:
+          type: string
+      tags:
+      - board
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
   /api/v1/register-risks/{id}/template-mitigations/{template_id}:
     put:
       operationId: register_risks_template_mitigations_update
@@ -1181,6 +1236,35 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/register-risks/{id}/thread:
+    get:
+      operationId: register_risks_thread_retrieve
+      description: |-
+        GET: a risk thread (`ThreadView`, FR-PPN-002). With `?since=`: the count of newer comments
+        by others, for the 30-second poll (NFR-015).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: query
+        name: since
+        schema:
+          type: string
+      tags:
+      - board
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
   /api/v1/registers/{id}/{year}:
     get:
       operationId: registers_retrieve
