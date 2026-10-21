@@ -11,6 +11,7 @@ import { masterApi as localMasterApi, type PositionInput } from '@/data/api/mast
 import { localAuthApi, localNotificationApi } from '@/data/local/authApi';
 import { ASSESSMENT_ROUTES } from './fakeAssessmentRoutes';
 import { BOARD_ROUTES } from './fakeBoardRoutes';
+import { HOME_ROUTES } from './fakeHomeRoutes';
 import { REGISTER_ROUTES } from './fakeRegisterRoutes';
 import { getDb, useDb } from '@/data/local/store';
 import { staffDirectory } from '@/data/seed';
@@ -466,6 +467,7 @@ export function installFakeBackend() {
       ...REGISTER_ROUTES,
       ...BOARD_ROUTES,
       ...ASSESSMENT_ROUTES,
+      ...HOME_ROUTES,
     ]) {
       const match = method === m ? path.match(re) : null;
       if (!match) continue;

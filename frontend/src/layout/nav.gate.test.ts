@@ -20,6 +20,12 @@ describe('trial build menu', () => {
 
   it('hides pages of modules still on local data', () => {
     vi.stubEnv('VITE_HIDE_UNMIGRATED', 'true');
-    expect(labels()).toEqual(['Beranda', 'Papan Risiko', 'Register', 'Penilaian Triwulan']);
+    expect(labels()).toEqual([
+      'Beranda',
+      'Papan Risiko',
+      'Register',
+      'Penilaian Triwulan',
+      'Riwayat Risiko',
+    ]);
   });
 });

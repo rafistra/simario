@@ -26,8 +26,8 @@ export { registerApi, registerViewKey, useRegisterViews } from './http/register'
 export { threadApi, attachmentUrl, useBoardRevision } from './http/board';
 export { boardApi } from './http/board';
 export { assessmentApi, useAssessmentRevision } from './http/assessment';
-export { historyApi } from './api/history';
-export { homeApi } from './api/home';
+export { historyApi } from './http/history';
+export { homeApi } from './http/home';
 export { sheetApi } from './api/sheets';
 export { adminApi } from './http/admin';
 export { calendarApi } from './http/calendar';

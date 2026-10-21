@@ -21,8 +21,6 @@ import { formatDate, formatDateLong, formatRelative } from '@/lib/format';
 import { useQuery } from '@/lib/useQuery';
 import { useNow } from '@/state/clock';
 import { useAuth } from '@/state/useAuth';
-import { hideUnmigrated } from '@/data/http/migrated';
-import TrialHome from './TrialHome';
 import './Home.css';
 
 const tw = (q: { number: number; fiscalYear: number }) =>
@@ -30,10 +28,6 @@ const tw = (q: { number: number; fiscalYear: number }) =>
 
 /** Home (/) — FR-BRD-001 … 010; cards follow the active holding's line. */
 export default function HomePage() {
-  return hideUnmigrated() ? <TrialHome /> : <FullHome />;
-}
-
-function FullHome() {
   const auth = useAuth();
   usePageMeta(['Beranda']);
   const active = auth.active;
