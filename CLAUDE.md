@@ -357,16 +357,16 @@ Skenario uji: alur penuh TW I dari pengisian sampai cetak Lembar dengan menggant
 
 Spec: `docs/superpowers/specs/2026-10-21-backend-integration-design.md` (§6). Aturan checkpoint §9 berlaku; pesan komit checkpoint `feat: <ringkasan> (checkpoint Bn)`. Rencana kerja per tahap di `docs/superpowers/plans/`.
 
-### Tahap B0 — Kerangka 🟨
+### Tahap B0 — Kerangka ✅
 
 Hasil:
-- [ ] Aturan kerja backend di CLAUDE.md dan dokumen
-- [ ] Proyek Django, settings, health check, gerbang kualitas
-- [ ] Konvensi API — amplop galat, camelCase, paginasi
-- [ ] Pipeline OpenAPI → tipe TypeScript
-- [ ] Semua layanan di Docker Compose, Celery, bucket, proxy Vite
-- [ ] Realm Keycloak lokal
-- [ ] Vektor uji bersama — pita skor sebagai contoh pertama
+- [x] Aturan kerja backend di CLAUDE.md dan dokumen
+- [x] Proyek Django, settings, health check, gerbang kualitas
+- [x] Konvensi API — amplop galat, camelCase, paginasi
+- [x] Pipeline OpenAPI → tipe TypeScript
+- [x] Semua layanan di Docker Compose, Celery, bucket, proxy Vite
+- [x] Realm Keycloak lokal
+- [x] Vektor uji bersama — pita skor sebagai contoh pertama
 
 ### Tahap B1 — Fondasi ⬜
 

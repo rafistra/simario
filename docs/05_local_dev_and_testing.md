@@ -1,7 +1,7 @@
 # 05 — Pengembangan Lokal dan Pengujian
 
 > Status dokumen: 21 Okt 2026 · kode `frontend/` per komit `7bebb66`.
-> Hasil pemeriksaan terakhir (21 Okt 2026): `npm run test` **26 berkas / 206 uji lulus**, `npm run lint` lulus, `npm run build` lulus (dengan peringatan ukuran bundel, U-10).
+> Hasil pemeriksaan terakhir (21 Okt 2026, checkpoint B0): `npm run test` **27 berkas / 219 uji lulus**, `npm run lint` lulus (termasuk `api:check`), `npm run build` lulus (dengan peringatan ukuran bundel, U-10); backend `uv run pytest` **31 uji lulus**, `ruff` dan `mypy` bersih.
 
 ## 1. Prasyarat
 
@@ -10,7 +10,7 @@
 | Node.js | 22 (sama dengan `netlify.toml`) | npm ikut terpasang |
 | Browser | Chrome/Edge 115+, Firefox 120+ (NFR-005) | Edge dipakai untuk screenshot headless |
 | Git | — | `.gitattributes` memaksa LF |
-| Backend | **tidak diperlukan** | Belum ada; data di `localStorage` |
+| Backend | Docker Desktop (Compose v2), `uv` | Hanya untuk kerangka backend (§2a); prototipe masih memakai `localStorage` sampai modulnya dipindah |
 | Pencil + MCP Pencil | — | Hanya untuk membaca `Simario.pen` (token, ukuran, screenshot frame) |
 
 Di Windows, perintah di bawah berjalan di Git Bash maupun PowerShell.
@@ -39,6 +39,70 @@ Buka http://localhost:5173. Saat pertama dibuka, data contoh dimuat dari seed da
 | `npm run lint` | ESLint + `prettier --check` |
 | `npm run format` | Prettier menulis ulang berkas |
 | `npm run tokens` | Membuat ulang `src/styles/tokens.css` dari `scripts/pencil-variables.json` |
+| `npm run api:types` | Membuat ulang `src/data/http/schema.d.ts` dari `backend/openapi.yaml` |
+| `npm run api:check` | Gagal bila `schema.d.ts` basi (bagian dari `npm run lint`) |
+
+## 2a. Backend lokal
+
+Spec: `docs/superpowers/specs/2026-10-21-backend-integration-design.md` (§4.11). Pertama kali, dari root repositori:
+
+```bash
+cp .env.example .env
+```
+
+```bash
+docker compose up -d --build
+```
+
+Start pertama butuh waktu: image diunduh dan ClamAV mengunduh basis data virus (± 5 menit; `clamav` berstatus `starting` sampai selesai). Service `migrate` berjalan sekali (migrasi + `init_storage` membuat bucket), lalu `api`, `worker`, dan `beat` mulai.
+
+| Layanan | Alamat di host | Catatan |
+|---|---|---|
+| Frontend (Vite) | http://localhost:5173 | `npm run dev` di host; proxy `/api` dan `/oidc` → API, `/storage` → RustFS |
+| API (Django) | http://localhost:8100/api/v1/health/ | Port host 8100 (8000 sering terpakai); skema `/api/v1/schema/`, Swagger `/api/v1/docs/` |
+| Keycloak | http://localhost:8080 | Konsol admin `admin`/`admin`; realm `otorita-ikn` diimpor dari `infra/keycloak/realm-export.json` |
+| RustFS | http://localhost:9100 (S3), http://localhost:9101 (konsol) | Port host 9100/9101 (9000/9001 sering terpakai) |
+| PostgreSQL | localhost:5432 | `simario`/`simario` |
+| Redis | localhost:6379 | — |
+| ClamAV | hanya di jaringan compose (`clamav:3310`) | — |
+
+`GET /api/v1/health/` menjawab `200 {"status":"ok"}` bila basis data, Redis, storage, dan ClamAV siap; `503 "degraded"` menyebut pemeriksaan yang gagal.
+
+Uji dan lint backend berjalan di host (`uv` memasang Python 3.12 sendiri), dari `backend/`, dengan service `db` menyala:
+
+```bash
+uv run pytest
+```
+
+```bash
+uv run ruff check .
+```
+
+```bash
+uv run ruff format --check .
+```
+
+```bash
+uv run mypy .
+```
+
+Setelah endpoint berubah, buat ulang skema lalu tipe TS (`uji test_committed_schema_is_current` dan `npm run api:check` gagal bila lupa):
+
+```bash
+uv run python manage.py spectacular --file openapi.yaml --validate
+```
+
+```bash
+npm run api:types
+```
+
+Vektor uji bersama ada di `shared/test-vectors/` (format di README-nya); Vitest dan pytest membaca berkas yang sama.
+
+Mengatur ulang semua data backend (basis data, bucket, basis data ClamAV, Keycloak):
+
+```bash
+docker compose down -v
+```
 
 ## 3. Masuk dan persona
 
@@ -182,7 +246,7 @@ Skenario per user story ada di [06_user_stories.md](06_user_stories.md).
 
 ## 9. Sebelum komit dan checkpoint
 
-1. `npm run build`, `npm run test`, `npm run lint` lulus (dari `frontend/`).
+1. `npm run build`, `npm run test`, `npm run lint` lulus (dari `frontend/`); untuk tahap backend juga `uv run pytest`, `ruff check`, `ruff format --check`, `mypy` (dari `backend/`).
 2. Halaman yang diubah dibandingkan dengan frame `.pen` pada 1440 px dan 390 px.
 3. Keadaan kosong, memuat, galat + "Coba Lagi", Operator, read-only/arsip tersedia sesuai note frame.
 4. Dicoba manual dengan persona yang relevan.
@@ -205,4 +269,7 @@ Setiap pengunjung memegang salinan data sendiri di browsernya dan dapat masuk se
 | Galat impor `@seed/...` saat dev | `server.fs.allow` tidak mencakup `docs/` | Pastikan `vite.config.ts` tetap `fs: { allow: ['..'] }` |
 | Token CSS berubah tidak sesuai `.pen` | `tokens.css` diedit tangan | Ambil ulang `GetVariables()` → `scripts/pencil-variables.json` → `npm run tokens` |
 | Uji lambat (± 1 menit) | jsdom dibuat per berkas | Jalankan berkas tertentu saja; lihat U-15 |
+| `docker compose up` gagal "port is already allocated" | Proyek lain memakai port host yang sama | Hentikan proyek itu atau ubah pemetaan port di `docker-compose.yml` (lalu `.env` dan `vite.config.ts`) |
+| `/api/v1/health/` 503 dengan `clamav: error` | ClamAV masih mengunduh basis data virus | Tunggu `docker compose ps` menunjukkan `clamav` `healthy` |
+| `test_committed_schema_is_current` gagal | `openapi.yaml` basi | Jalankan `spectacular --file openapi.yaml`, lalu `npm run api:types` |
 | Halaman langsung ke `/login?alasan=sesi-berakhir` | Batas sesi tidak aktif tercapai (bawaan 60 menit, bisa dipercepat di DevPanel) | Masuk lagi; periksa setelan batas sesi di DevPanel |

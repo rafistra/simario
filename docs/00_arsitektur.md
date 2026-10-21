@@ -12,7 +12,7 @@ Repositori ini saat ini berisi **prototipe frontend saja**:
 | Bagian | Keadaan sekarang | Target produksi (PRD §2.1) |
 |---|---|---|
 | Frontend | ✅ React 18 + Vite + TypeScript, semua modul PRD | Sama (kode dapat dipakai ulang) |
-| Backend / API | ⬜ **Belum ada.** Perannya disimulasikan di browser (`frontend/src/data/`) | Django 5 + Django REST Framework |
+| Backend / API | 🟨 **Kerangka (B0):** proyek Django, konvensi API, layanan Docker Compose; belum ada model domain. Perannya masih disimulasikan di browser (`frontend/src/data/`) | Django 5.2 + Django REST Framework |
 | Basis data | `localStorage` browser, satu kunci per koleksi (`simario:v1:*`) | PostgreSQL 16 |
 | Tugas terjadwal | Evaluator di browser (`data/local/scheduler.ts`) | Celery + Redis, Celery Beat |
 | Penyimpanan berkas | Hanya metadata; isi berkas tidak disimpan | RustFS (S3; PRD: MinIO) + pemindaian ClamAV |

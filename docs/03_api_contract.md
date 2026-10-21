@@ -30,7 +30,11 @@ Dokumen ini mencatat:
 
 Semua galat dilempar sebagai `ApiError(code, message, details?)`. `message` adalah salinan teks Bahasa Indonesia yang siap ditampilkan (banyak dikutip dari PRD); `details` opsional (mis. daftar celah atau baris impor bermasalah).
 
-| `code` | Arti | Usulan HTTP |
+**Backend (diputuskan, B0):** setiap jawaban galat di bawah `/api/` berbadan `{"code", "message", "details"}` dengan status HTTP dari kolom "HTTP" di bawah (`simario/core/errors.py`: `ApiError`, `STATUS_BY_CODE`, `api_exception_handler`; `ApiErrorMiddleware` untuk path tak dikenal dan galat tak tertangani). Komponen skema OpenAPI: `ApiError`. Pesan bawaan bila service tidak memberi pesan sendiri: `unauthenticated` "Sesi Anda berakhir. Silakan masuk kembali.", `forbidden` "Anda tidak memiliki akses untuk tindakan ini." (keduanya dari prototipe), `not_found` "Data tidak ditemukan.", `validation` "Isian belum valid." (`details` = galat per isian, camelCase), `server` "Terjadi kesalahan pada server. Silakan coba lagi." (500; detail galat hanya di log).
+
+**Paginasi (diputuskan, B0):** `?page=n`; badan `{"results": [...], "page", "pageSize", "total"}`; 25 baris, komentar 50 (`simario/core/pagination.py`). Prefix `/api/v1/`, JSON camelCase dua arah.
+
+| `code` | Arti | HTTP |
 |---|---|---|
 | `unauthenticated` | Tidak ada sesi ("Sesi Anda berakhir. Silakan masuk kembali.") | 401 |
 | `forbidden` | Izin, holding, Pejabat/Pengisi, atau partisipasi tidak terpenuhi | 403 |
@@ -43,7 +47,8 @@ Semua galat dilempar sebagai `ApiError(code, message, details?)`. `message` adal
 | `bands_invalid`, `options_invalid` | Pita skor bercelah/bertumpuk; pilihan penilaian tidak lengkap (INV-3, INV-26) | 422 |
 | `errors` | Impor masih punya baris bermasalah; `details` = daftar baris | 422 |
 | `old_password`, `too_short`, `same`, `not_local` | Ganti kata sandi | 422 |
-| `offline`, `server` | Simulasi jaringan (DevPanel) | — (galat jaringan) |
+| `server` | Galat tak tertangani di server; prototipe: simulasi DevPanel | 500 |
+| `offline` | Simulasi jaringan (DevPanel) | — (galat jaringan, dibuat klien) |
 
 Tampilan: galat baca → `InlineAlert` merah + "Coba Lagi"; galat tulis → toast atau daftar celah (PRD §2.4).
 

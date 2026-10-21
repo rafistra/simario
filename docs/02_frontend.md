@@ -17,14 +17,14 @@
 | Uji | Vitest + Testing Library + jsdom | 5.0.3 |
 | Mutu kode | ESLint 9 (typescript-eslint, react-hooks, react-refresh) + Prettier 3 | — |
 
-Tidak memakai Tailwind atau pustaka UI; CSS biasa berbasis variabel token. Alias impor: `@/` → `frontend/src/`, `@seed/` → `docs/seed/` (`vite.config.ts`, `tsconfig.app.json`).
+Tidak memakai Tailwind atau pustaka UI; CSS biasa berbasis variabel token. Alias impor: `@/` → `frontend/src/`, `@seed/` → `docs/seed/`, `@vectors/` → `shared/test-vectors/` (`vite.config.ts`, `tsconfig.app.json`). Tipe API dihasilkan dari `backend/openapi.yaml` ke `src/data/http/schema.d.ts` (`npm run api:types`; `npm run lint` memeriksa kemutakhirannya). Server dev mem-proxy `/api` dan `/oidc` ke `http://localhost:8100` serta `/storage` ke RustFS `http://localhost:9100`, sehingga backend berada di origin yang sama (cookie sesi, CSRF).
 
 ## 2. Struktur folder
 
 ```
 frontend/
   index.html
-  vite.config.ts            alias, server.fs.allow '..' (agar @seed terbaca), konfigurasi Vitest
+  vite.config.ts            alias, server.fs.allow '..' (agar @seed/@vectors terbaca), proxy backend, konfigurasi Vitest
   scripts/
     build-tokens.mjs        pencil-variables.json → src/styles/tokens.css
     pencil-variables.json   snapshot GetVariables() dari Simario.pen
