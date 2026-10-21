@@ -16,6 +16,7 @@ import type {
 import { now } from '@/state/clock';
 import { useSession } from '@/state/session';
 import type { DB } from '../db';
+import { assertCanRead } from '../local/actor';
 import { ApiError, call } from '../local/call';
 import { getDb } from '../local/store';
 
@@ -140,6 +141,7 @@ export function buildHistory(
   fiscalYear: number,
   at: ISODateTime,
 ): HistoryView {
+  assertCanRead(db, userId, positionId, at.slice(0, 10), fiscalYear);
   const viewer = viewerFor(db, userId, at.slice(0, 10));
   const quarters = db.quarters
     .filter((q) => q.fiscalYear === fiscalYear)

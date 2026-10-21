@@ -1,7 +1,7 @@
 // Sheets and print — PRD ch. 9 (FR-LBR-001 … 010). Live view and snapshots share one payload
 // shape; snapshots are immutable (INV-22) except `supersededById`.
 
-import { holdingsOf, participationHolding } from '@/domain/rules/access';
+import { canReadPosition, holdingsOf, participationHolding } from '@/domain/rules/access';
 import {
   buildSheetPayload,
   freezeReady,
@@ -14,6 +14,7 @@ import type { ISODateTime, PrintSnapshot, Quarter } from '@/domain/types';
 import { now } from '@/state/clock';
 import { useSession } from '@/state/session';
 import type { DB } from '../db';
+import { assertCanRead } from '../local/actor';
 import { ApiError, call } from '../local/call';
 import { getDb, mutateDb } from '../local/store';
 import { newId, writeAudit } from '../local/writers';
@@ -110,6 +111,7 @@ export function buildSheetView(
   const quarter = db.quarters.find((q) => q.fiscalYear === fiscalYear && q.number === tw);
   if (!quarter)
     throw new ApiError('not_found', `Triwulan TW ${tw} TA ${fiscalYear} tidak ditemukan.`);
+  assertCanRead(db, userId, positionId, today, fiscalYear);
   const register = db.registers.find(
     (r) => r.positionId === positionId && r.fiscalYear === fiscalYear,
   );
@@ -267,6 +269,8 @@ export const sheetApi = {
       const userId = sessionUser();
       const at = now();
       const db = getDb();
+      // Printing follows permission 1 (FR-ADM-002), so it needs the same read access.
+      assertCanRead(db, userId, positionId, at.slice(0, 10), fiscalYear);
       const q = db.quarters.find((x) => x.fiscalYear === fiscalYear && x.number === tw)!;
       const payload = buildSheetPayload(
         db,
@@ -286,10 +290,13 @@ export const sheetApi = {
   /** FR-LBR-010: look a snapshot up by its printed number. */
   findByNumber: (number: string) =>
     call(() => {
+      const userId = sessionUser();
       const db = getDb();
       const s = db.snapshots.find((x) => x.number.toLowerCase() === number.trim().toLowerCase());
-      if (!s) throw new ApiError('not_found', `Nomor cetak "${number.trim()}" tidak ditemukan.`);
-      const q = db.quarters.find((x) => x.id === s.quarterId)!;
+      const q = s && db.quarters.find((x) => x.id === s.quarterId);
+      // A number outside the viewer's scope reads as unknown, so lookups reveal nothing.
+      if (!s || !q || !canReadPosition(db, userId, s.positionId, now().slice(0, 10), q.fiscalYear))
+        throw new ApiError('not_found', `Nomor cetak "${number.trim()}" tidak ditemukan.`);
       return {
         id: s.id,
         positionId: s.positionId,

@@ -5,13 +5,14 @@
 import { quarterContaining } from '@/domain/calendar';
 import { assignedLini2, checkAction, holdingsOf, type DenyReason } from '@/domain/rules/access';
 import { deactivationQuarter, registerGaps, type RegisterGap } from '@/domain/rules/register';
-import type { DataUmumValues, Register, RegisterRisk, RiskType } from '@/domain/types';
+import type { DataUmumValues, Register, RiskType } from '@/domain/types';
 import { now } from '@/state/clock';
 import { useSession } from '@/state/session';
 import type { DB } from '../db';
 import { ApiError, call } from '../local/call';
 import { getDb, mutateDb } from '../local/store';
 import { newId, writeAudit, writeNotification } from '../local/writers';
+import { buildRegisterView, pendingItems, wouldFlagNoMitigation } from './registerView';
 
 const DENY: Record<DenyReason, string> = {
   permission: 'Anda tidak memiliki izin untuk tindakan ini.',
@@ -179,27 +180,16 @@ export interface PublishSummary {
   proposals: number;
 }
 
-/** Items a publish would cover: everything still draft or ready. */
-export function pendingItems(db: DB, registerId: string) {
-  const risks = db.risks.filter(
-    (r) => r.registerId === registerId && (r.status === 'draft' || r.status === 'ready'),
-  );
-  const riskIds = new Set(db.risks.filter((r) => r.registerId === registerId).map((r) => r.id));
-  const mitigations = db.mitigations.filter(
-    (m) => riskIds.has(m.registerRiskId) && (m.status === 'draft' || m.status === 'ready'),
-  );
-  return { risks, mitigations };
-}
-
-/** Risks that would publish without an active mitigation (flag, not a block). */
-export function wouldFlagNoMitigation(db: DB, registerId: string): RegisterRisk[] {
-  const { risks } = pendingItems(db, registerId);
-  return risks.filter(
-    (r) => !db.mitigations.some((m) => m.registerRiskId === r.id && m.status !== 'inactive'),
-  );
-}
-
 export const registerApi = {
+  /** FR-REG-012: the register as the signed-in viewer may see it (read access per §1.5). */
+  view: (key: RegisterKey) =>
+    call(() => {
+      const userId = useSession.getState().userId;
+      if (!userId)
+        throw new ApiError('unauthenticated', 'Sesi Anda berakhir. Silakan masuk kembali.');
+      return buildRegisterView(getDb(), userId, key.positionId, key.fiscalYear, now().slice(0, 10));
+    }),
+
   toggleTemplateRisk: (key: RegisterKey, templateId: string, selected: boolean) =>
     call(() => {
       const a = requireContent(2, key.positionId);

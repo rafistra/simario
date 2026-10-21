@@ -4,7 +4,7 @@ import { Button, Checkbox, MarkerBadge, Toggle } from '@/components';
 import type { DB } from '@/data/db';
 import { stageAnchor, subsectionAnchor } from '@/domain/rules/register';
 import { RISK_TYPE_LABEL, type RegisterRisk, type RiskType } from '@/domain/types';
-import type { RegisterAccess, StageModel, SubsectionModel } from './model';
+import type { RegisterAccess, StageModel, SubsectionModel } from '@/data/api/registerView';
 import { RiskCard, type RiskCardActions } from './RiskCard';
 
 const SHORT: Record<RiskType, string> = {
@@ -224,6 +224,7 @@ function RiskTypeGroup({
                 access={access}
                 editing={editing}
                 risk={r}
+                mitigations={sub.mitigations[r.id] ?? []}
                 threadUrl={threadUrl(r)}
                 actions={actions}
               />

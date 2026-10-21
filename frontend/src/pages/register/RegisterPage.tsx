@@ -14,15 +14,10 @@ import {
 } from '@/components';
 import { ApiError, registerApi } from '@/data/repository';
 import type { CopySummary, RegisterKey } from '@/data/api/register';
-import { pendingItems, wouldFlagNoMitigation } from '@/data/api/register';
+import { buildRegisterView, wouldFlagNoMitigation } from '@/data/api/registerView';
 import { useDb } from '@/data/local/store';
 import { QUARTER_ROMAN } from '@/domain/calendar';
-import {
-  completeStages,
-  deactivationQuarter,
-  registerGaps,
-  type RegisterGap,
-} from '@/domain/rules/register';
+import { completeStages, deactivationQuarter, type RegisterGap } from '@/domain/rules/register';
 import {
   RISK_TYPE_LABEL,
   type RegisterMitigation,
@@ -35,7 +30,6 @@ import { formatDate, formatDateTime } from '@/lib/format';
 import { useSaving } from '@/lib/useSaving';
 import { useAuth } from '@/state/useAuth';
 import { DataUmumSection } from './DataUmumSection';
-import { buildStages, registerAccess } from './model';
 import { StageSection, type StageActions } from './StageSection';
 import './Register.css';
 
@@ -53,16 +47,15 @@ export default function RegisterPage() {
     () => ({ positionId: position.id, fiscalYear }),
     [position.id, fiscalYear],
   );
-  const register = db.registers.find(
-    (r) => r.positionId === position.id && r.fiscalYear === fiscalYear,
-  );
-  const access = registerAccess(db, auth.user.id, position, fiscalYear, auth.today);
+  // Items are filtered per viewer in the data layer (FR-REG-012): readers get published ones only.
+  const view = buildRegisterView(db, auth.user.id, position.id, fiscalYear, auth.today);
+  const { access, stages, risks, pending, unpublishedForReader } = view;
+  const register = view.register ?? undefined;
   const editing = access.canDraft;
   const fy = db.fiscalYears.find((f) => f.year === fiscalYear);
   const previous = db.registers.find(
     (r) => r.positionId === position.id && r.fiscalYear === fiscalYear - 1,
   );
-  const stages = buildStages(db, register, position, access, editing);
 
   const { saving, failed, run } = useSaving();
   const [showGaps, setShowGaps] = useState(false);
@@ -83,12 +76,10 @@ export default function RegisterPage() {
   } | null>(null);
   const gapAlertRef = useRef<HTMLDivElement>(null);
 
-  const liveGaps: RegisterGap[] = register ? registerGaps(db, register.id) : [];
+  const liveGaps: RegisterGap[] = view.gaps;
   const gaps = showGaps ? liveGaps : [];
   const gapAnchors = new Set(gaps.map((g) => g.anchor));
   const gapFields = new Set(gaps.filter((g) => g.field).map((g) => g.field!));
-  const risks = register ? db.risks.filter((r) => r.registerId === register.id) : [];
-  const pending = register ? pendingItems(db, register.id) : { risks: [], mitigations: [] };
   const archived = access.archived || register?.status === 'archived';
   const published = register?.status === 'published';
 
@@ -286,8 +277,7 @@ export default function RegisterPage() {
 
   /* ---------- Render ---------- */
 
-  const unpublishedForReader = register && !access.isHolder && !published && !archived;
-  if (!register && !editing) {
+  if (!register && !editing && !unpublishedForReader) {
     return (
       <div className="register">
         <EmptyState

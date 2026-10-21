@@ -1,9 +1,10 @@
 // The signed-in actor for repository calls: who acts, and checks that they may.
 
-import { hasPermission } from '@/domain/rules/access';
-import type { AuditLog } from '@/domain/types';
+import { canReadPosition, hasPermission } from '@/domain/rules/access';
+import type { AuditLog, ISODate } from '@/domain/types';
 import { now } from '@/state/clock';
 import { useSession } from '@/state/session';
+import type { DB } from '../db';
 import { ApiError } from './call';
 import { getDb } from './store';
 
@@ -26,4 +27,16 @@ export function requireActor(anyOf: number[]): Actor {
   // Audit label only: configuration actors are recorded as superadmin when they can manage roles.
   const configAdmin = hasPermission(db, userId, 22, today);
   return { userId, at, today, actingAs: configAdmin ? 'superadmin' : 'pengelola' };
+}
+
+/** Read models (permission 1, §1.5): refuses viewers without a holding or scope over the position. */
+export function assertCanRead(
+  db: DB,
+  userId: string,
+  lini1PositionId: string,
+  today: ISODate,
+  fiscalYear?: number,
+) {
+  if (!canReadPosition(db, userId, lini1PositionId, today, fiscalYear))
+    throw new ApiError('forbidden', 'Anda tidak memiliki akses ke jabatan ini.');
 }

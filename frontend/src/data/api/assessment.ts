@@ -59,6 +59,7 @@ import { formatDate } from '@/lib/format';
 import { now } from '@/state/clock';
 import { useSession } from '@/state/session';
 import type { DB } from '../db';
+import { assertCanRead } from '../local/actor';
 import { ApiError, call } from '../local/call';
 import { runComparisons } from '../local/comparisons';
 import { getDb, mutateDb } from '../local/store';
@@ -193,6 +194,7 @@ export function buildAssessment(
   const quarter = db.quarters.find((q) => q.fiscalYear === fiscalYear && q.number === tw);
   if (!quarter)
     throw new ApiError('not_found', `Triwulan TW ${tw} TA ${fiscalYear} tidak ditemukan.`);
+  assertCanRead(db, userId, positionId, today, fiscalYear);
   const quarters = db.quarters
     .filter((q) => q.fiscalYear === fiscalYear)
     .sort((a, b) => a.number - b.number);

@@ -44,6 +44,7 @@ import { formatDateTime } from '@/lib/format';
 import { now } from '@/state/clock';
 import { useSession } from '@/state/session';
 import type { DB } from '../db';
+import { assertCanRead } from '../local/actor';
 import { ApiError, call } from '../local/call';
 import { getDb } from '../local/store';
 
@@ -93,6 +94,7 @@ export function buildBoard(
   at: ISODateTime,
 ): BoardView {
   const today = at.slice(0, 10);
+  assertCanRead(db, userId, positionId, today, fiscalYear);
   const viewer = viewerFor(db, userId, today);
   const register = db.registers.find(
     (r) => r.positionId === positionId && r.fiscalYear === fiscalYear,
@@ -307,6 +309,7 @@ export function buildThread(db: DB, userId: string, riskId: string, at: ISODateT
   const risk = db.risks.find((r) => r.id === riskId);
   if (!risk || !isPublished(risk)) throw new ApiError('not_found', 'Risiko tidak ditemukan.');
   const register = db.registers.find((r) => r.id === risk.registerId)!;
+  assertCanRead(db, userId, register.positionId, today, register.fiscalYear);
   const stages = registerStages(db, register).filter((s) => s.active);
   const stage = db.stages.find((s) => s.id === risk.stageId)!;
   const fy = db.fiscalYears.find((f) => f.year === register.fiscalYear);

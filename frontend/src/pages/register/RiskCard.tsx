@@ -10,7 +10,7 @@ import type {
   RegisterRisk,
   RiskTemplate,
 } from '@/domain/types';
-import { visibleMitigation, type RegisterAccess } from './model';
+import type { RegisterAccess } from '@/data/api/registerView';
 
 const isPublished = (x: { status: string }) => x.status === 'active' || x.status === 'inactive';
 
@@ -31,12 +31,23 @@ interface Props {
   /** Either an unchosen template or a register risk. */
   template?: RiskTemplate;
   risk?: RegisterRisk;
+  /** The risk's mitigations as this viewer may see them (filtered in the data layer). */
+  mitigations?: RegisterMitigation[];
   threadUrl?: string;
   actions: RiskCardActions;
 }
 
 /** RiskCard (.pen tlgSD): select box, source tag, mitigation list, markers. */
-export function RiskCard({ db, access, editing, template, risk, threadUrl, actions }: Props) {
+export function RiskCard({
+  db,
+  access,
+  editing,
+  template,
+  risk,
+  mitigations = [],
+  threadUrl,
+  actions,
+}: Props) {
   const tpl =
     template ??
     (risk?.riskTemplateId ? db.riskTemplates.find((t) => t.id === risk.riskTemplateId) : undefined);
@@ -45,11 +56,7 @@ export function RiskCard({ db, access, editing, template, risk, threadUrl, actio
         .filter((m) => m.riskTemplateId === tpl.id && m.active)
         .sort((a, b) => a.order - b.order)
     : [];
-  const mits = risk
-    ? db.mitigations
-        .filter((m) => m.registerRiskId === risk.id && visibleMitigation(m, access))
-        .sort((a, b) => a.order - b.order)
-    : [];
+  const mits = risk ? mitigations : [];
   const published = risk ? isPublished(risk) : false;
   const inactive = risk?.status === 'inactive';
   const selected = !!risk;

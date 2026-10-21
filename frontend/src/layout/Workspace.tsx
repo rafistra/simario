@@ -11,7 +11,7 @@ import {
 } from 'react-router-dom';
 import { LineChip } from '@/components';
 import { useDb } from '@/data/local/store';
-import { canViewPosition, officialsOf, positionLine } from '@/domain/rules/access';
+import { canReadPosition, officialsOf, positionLine } from '@/domain/rules/access';
 import type { Position } from '@/domain/types';
 import { ForbiddenPage, NotFoundPage } from '@/pages/faults/FaultPages';
 import { useSession } from '@/state/session';
@@ -52,13 +52,15 @@ export function WorkspaceLayout() {
     if (held && auth.active?.positionId !== jid) setActive(jid);
   }, [held, jid, auth.active?.positionId, setActive]);
 
-  // Same copy for unknown ids and ids outside scope would leak nothing; PRD uses 404 for unknown.
-  if (!position || positionLine(db, position.id) !== 1) return <NotFoundPage />;
-  if (!held && !canViewPosition(db, auth.user.id, jid, auth.today)) return <ForbiddenPage />;
-
-  const unit = db.orgUnits.find((o) => o.id === position.orgUnitId)!;
   // Riwayat has no year segment; its fiscal year travels as ?ta= (FR-RWY-004).
   const fiscalYear = Number(ta ?? search.get('ta') ?? auth.currentFiscalYear);
+
+  // Same copy for unknown ids and ids outside scope would leak nothing; PRD uses 404 for unknown.
+  // The read models apply the same check; this only turns it into the 403 page.
+  if (!position || positionLine(db, position.id) !== 1) return <NotFoundPage />;
+  if (!canReadPosition(db, auth.user.id, jid, auth.today, fiscalYear)) return <ForbiddenPage />;
+
+  const unit = db.orgUnits.find((o) => o.id === position.orgUnitId)!;
   const currentQ = auth.currentQuarter;
   const quarter = Number(tw ?? (currentQ?.fiscalYear === fiscalYear ? currentQ.number : 4));
   const years = [

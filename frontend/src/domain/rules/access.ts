@@ -171,6 +171,24 @@ export function canViewPosition(
 }
 
 /**
+ * Read access to a Lini 1 position's workspace data (§1.5): any holding on the position, or a
+ * permission-1 scope that covers it for the viewed fiscal year. Checked by every read model, not
+ * only by the route.
+ */
+export function canReadPosition(
+  db: DB,
+  userId: string,
+  lini1PositionId: string,
+  today: ISODate,
+  fiscalYear?: number,
+) {
+  return (
+    holdingsOf(db, userId, today).some((h) => h.positionId === lini1PositionId) ||
+    canViewPosition(db, userId, lini1PositionId, today, fiscalYear)
+  );
+}
+
+/**
  * The holding through which a user participates in a Lini 1 position's threads for a quarter
  * (§1.5, permission 6): its own holders, the Lini 2 positions assigned for that quarter, any Lini 3
  * holder. Returns null for readers.
