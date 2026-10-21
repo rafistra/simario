@@ -31,8 +31,12 @@
       "implicitFlowEnabled": false,
       "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": false,
-      "redirectUris": ["http://localhost:5173/oidc/callback/"],
-      "webOrigins": ["http://localhost:5173"],
+      "redirectUris": [
+        "http://localhost:5173/oidc/callback/"
+      ],
+      "webOrigins": [
+        "http://localhost:5173"
+      ],
       "attributes": {
         "post.logout.redirect.uris": "http://localhost:5173/*"
       },
@@ -51,6 +55,468 @@
             "userinfo.token.claim": "true",
             "introspection.token.claim": "true"
           }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "198204172008011003",
+      "enabled": true,
+      "firstName": "Andi",
+      "lastName": "Wirawan",
+      "email": "andi.wirawan@ikn.go.id",
+      "emailVerified": true,
+      "attributes": {
+        "nip": [
+          "198204172008011003"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "simario-demo",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "199507232020121004",
+      "enabled": true,
+      "firstName": "Rafi",
+      "lastName": "Ananda",
+      "email": "rafi.ananda@ikn.go.id",
+      "emailVerified": true,
+      "attributes": {
+        "nip": [
+          "199507232020121004"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "simario-demo",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "197911052006041002",
+      "enabled": true,
+      "firstName": "Bambang",
+      "lastName": "Hartono",
+      "email": "bambang.hartono@ikn.go.id",
+      "emailVerified": true,
+      "attributes": {
+        "nip": [
+          "197911052006041002"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "simario-demo",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "199102142015031001",
+      "enabled": true,
+      "firstName": "Dimas",
+      "lastName": "Prasetyo",
+      "email": "dimas.prasetyo@ikn.go.id",
+      "emailVerified": true,
+      "attributes": {
+        "nip": [
+          "199102142015031001"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "simario-demo",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "199306102018012002",
+      "enabled": true,
+      "firstName": "Ratna",
+      "lastName": "Sari",
+      "email": "ratna.sari@ikn.go.id",
+      "emailVerified": true,
+      "attributes": {
+        "nip": [
+          "199306102018012002"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "simario-demo",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "198812302014021001",
+      "enabled": true,
+      "firstName": "Yohanes",
+      "lastName": "Lubis",
+      "email": "yohanes.lubis@ikn.go.id",
+      "emailVerified": true,
+      "attributes": {
+        "nip": [
+          "198812302014021001"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "simario-demo",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "199709182022032001",
+      "enabled": true,
+      "firstName": "Rina",
+      "lastName": "Kartika",
+      "email": "rina.kartika@ikn.go.id",
+      "emailVerified": true,
+      "attributes": {
+        "nip": [
+          "199709182022032001"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "simario-demo",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "198505202010012003",
+      "enabled": true,
+      "firstName": "Wulan",
+      "lastName": "Sari",
+      "email": "wulan.sari@ikn.go.id",
+      "emailVerified": true,
+      "attributes": {
+        "nip": [
+          "198505202010012003"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "simario-demo",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "197603112003121001",
+      "enabled": true,
+      "firstName": "Hadi",
+      "lastName": "Susanto",
+      "email": "hadi.susanto@ikn.go.id",
+      "emailVerified": true,
+      "attributes": {
+        "nip": [
+          "197603112003121001"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "simario-demo",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "197808252005012002",
+      "enabled": true,
+      "firstName": "Siti",
+      "lastName": "Rahmawati",
+      "email": "siti.rahmawati@ikn.go.id",
+      "emailVerified": true,
+      "attributes": {
+        "nip": [
+          "197808252005012002"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "simario-demo",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "198107142007011004",
+      "enabled": true,
+      "firstName": "Yudi",
+      "lastName": "Saputra",
+      "email": "yudi.saputra@ikn.go.id",
+      "emailVerified": true,
+      "attributes": {
+        "nip": [
+          "198107142007011004"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "simario-demo",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "198309302009011002",
+      "enabled": true,
+      "firstName": "Wahyu",
+      "lastName": "Hidayat",
+      "email": "wahyu.hidayat@ikn.go.id",
+      "emailVerified": true,
+      "attributes": {
+        "nip": [
+          "198309302009011002"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "simario-demo",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "199404052019032003",
+      "enabled": true,
+      "firstName": "Lestari",
+      "lastName": "Wulandari",
+      "email": "lestari.wulandari@ikn.go.id",
+      "emailVerified": true,
+      "attributes": {
+        "nip": [
+          "199404052019032003"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "simario-demo",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "197702092002121001",
+      "enabled": true,
+      "firstName": "Hendra",
+      "lastName": "Gunawan",
+      "email": "hendra.gunawan@ikn.go.id",
+      "emailVerified": true,
+      "attributes": {
+        "nip": [
+          "197702092002121001"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "simario-demo",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "199603262021011003",
+      "enabled": true,
+      "firstName": "Rizky",
+      "lastName": "Maulana",
+      "email": "rizky.maulana@ikn.go.id",
+      "emailVerified": true,
+      "attributes": {
+        "nip": [
+          "199603262021011003"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "simario-demo",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "198011192004122001",
+      "enabled": true,
+      "firstName": "Maya",
+      "lastName": "Kusuma",
+      "email": "maya.kusuma@ikn.go.id",
+      "emailVerified": true,
+      "attributes": {
+        "nip": [
+          "198011192004122001"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "simario-demo",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "198906152013022004",
+      "enabled": true,
+      "firstName": "Nur",
+      "lastName": "Aini",
+      "email": "nur.aini@ikn.go.id",
+      "emailVerified": true,
+      "attributes": {
+        "nip": [
+          "198906152013022004"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "simario-demo",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "198703122010011002",
+      "enabled": true,
+      "firstName": "Admin",
+      "lastName": "DKB",
+      "email": "admin.dkb@ikn.go.id",
+      "emailVerified": true,
+      "attributes": {
+        "nip": [
+          "198703122010011002"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "simario-demo",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "199805082023011002",
+      "enabled": true,
+      "firstName": "Fajar",
+      "lastName": "Nugroho",
+      "email": "fajar.nugroho@ikn.go.id",
+      "emailVerified": true,
+      "attributes": {
+        "nip": [
+          "199805082023011002"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "simario-demo",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "198412032009022001",
+      "enabled": true,
+      "firstName": "Dewi",
+      "lastName": "Anggraini",
+      "email": "dewi.anggraini@ikn.go.id",
+      "emailVerified": true,
+      "attributes": {
+        "nip": [
+          "198412032009022001"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "simario-demo",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "199812012024011001",
+      "enabled": true,
+      "firstName": "Galih",
+      "lastName": "Pratama",
+      "email": "galih.pratama@ikn.go.id",
+      "emailVerified": true,
+      "attributes": {
+        "nip": [
+          "199812012024011001"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "simario-demo",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "199910172024012002",
+      "enabled": true,
+      "firstName": "Intan",
+      "lastName": "Permatasari",
+      "email": "intan.permatasari@ikn.go.id",
+      "emailVerified": true,
+      "attributes": {
+        "nip": [
+          "199910172024012002"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "simario-demo",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "199607302021031002",
+      "enabled": true,
+      "firstName": "Arif",
+      "lastName": "Setiawan",
+      "email": "arif.setiawan@ikn.go.id",
+      "emailVerified": true,
+      "attributes": {
+        "nip": [
+          "199607302021031002"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "simario-demo",
+          "temporary": false
         }
       ]
     }

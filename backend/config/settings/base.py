@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "simario.devtools",
     "simario.audit",
     "simario.notifications",
+    "mozilla_django_oidc",
 ]
 
 MIDDLEWARE = [
@@ -165,3 +166,23 @@ SESSION_SAVE_EVERY_REQUEST = True
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_SAMESITE = "Lax"
+
+# SSO (spec §4.4). OIDC_BACKCHANNEL_URL is how the server reaches the issuer when the browser
+# address differs (docker compose: http://keycloak:8080/...); empty = same as OIDC_ISSUER.
+OIDC_BACKCHANNEL_URL = env("OIDC_BACKCHANNEL_URL", default="")
+OIDC_RP_CLIENT_ID = OIDC_CLIENT_ID
+OIDC_RP_CLIENT_SECRET = OIDC_CLIENT_SECRET
+OIDC_RP_SIGN_ALGO = "RS256"
+OIDC_RP_SCOPES = "openid"
+OIDC_CREATE_USER = True  # routed to SimarioOIDCBackend.create_user, which refuses and audits
+OIDC_CALLBACK_CLASS = "simario.accounts.oidc.SimarioCallbackView"
+LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL_FAILURE = "/login?alasan=sso-gagal"
+AUTHENTICATION_BACKENDS = [
+    "simario.accounts.oidc.SimarioOIDCBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+if OIDC_ISSUER:
+    from simario.accounts.oidc_config import oidc_endpoints
+
+    globals().update(oidc_endpoints(OIDC_ISSUER, OIDC_BACKCHANNEL_URL))

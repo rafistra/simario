@@ -16,8 +16,10 @@ export default defineConfig({
     fs: { allow: ['..'] },
     // Backend services from docker-compose.yml, served on the same origin (session cookie, CSRF).
     proxy: {
-      '/api': 'http://127.0.0.1:8100',
-      '/oidc': 'http://127.0.0.1:8100',
+      // Keep the browser's Host (localhost:5173): Django builds the OIDC redirect URI from it and
+      // checks it against the Origin header for CSRF.
+      '/api': { target: 'http://127.0.0.1:8100', changeOrigin: false },
+      '/oidc': { target: 'http://127.0.0.1:8100', changeOrigin: false },
       '/storage': {
         target: 'http://127.0.0.1:9100',
         rewrite: (path) => path.replace(/^\/storage/, ''),
