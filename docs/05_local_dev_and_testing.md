@@ -118,6 +118,20 @@ Mengatur ulang semua data backend (basis data, bucket, basis data ClamAV, Keyclo
 docker compose down -v
 ```
 
+## 2b. Staging dan produksi
+
+Satu berkas `docker-compose.prod.yml` untuk staging dan produksi (gunicorn, Celery worker/beat, PostgreSQL, Redis, RustFS, ClamAV, nginx dengan HTTPS). Perbedaannya hanya `.env.prod` (lihat `.env.prod.example`): `DJANGO_SETTINGS_MODULE=config.settings.staging|production`, domain, rahasia, `OIDC_*`. Hanya nginx yang membuka port dan ia menambahkan header keamanan (HSTS sesuai `SECURE_HSTS_SECONDS`, `X-Frame-Options DENY`, `frame-ancestors 'none'`, nosniff) pada setiap respons (`infra/nginx/security-headers.conf`); `/storage` diteruskan ke RustFS dengan Host yang dipakai tanda tangan URL unduhan. Kebutuhan server: [07_staging_requirements.md](07_staging_requirements.md).
+
+**Menyebarkan ke staging**
+
+1. Salin repositori ke server, buat `.env.prod` dari `.env.prod.example`, pasang sertifikat di `TLS_CERT_DIR` (`fullchain.pem`, `privkey.pem`).
+2. `docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build` — layanan `migrate` menjalankan `migrate`, `init_storage`, `seed_reference`, `collectstatic` sebelum `api` mulai.
+3. `docker compose -f docker-compose.prod.yml --env-file .env.prod exec api python manage.py create_superadmin --nip <NIP> --name "<Nama>"`.
+4. Uji asap: dari `backend/`, `uv run python ../infra/smoke.py https://<domain> <NIP> <kata-sandi-sementara> .env.prod`.
+5. Build uji coba menyembunyikan modul yang belum pindah ke backend (`VITE_HIDE_UNMIGRATED=true`, `frontend/src/data/http/migrated.ts`); Beranda tampil dalam versi sementara.
+
+**Mencoba di mesin ini**: `sh infra/nginx/dev-cert.sh localhost`, isi `.env.prod.local` (contoh: `HTTPS_PORT=8443`, `CSRF_TRUSTED_ORIGINS=https://localhost:8443`, `SECURE_HSTS_SECONDS=0`), lalu `SIMARIO_ENV_FILE=.env.prod.local docker compose -f docker-compose.prod.yml --env-file .env.prod.local up -d --build` dan uji asap ke `https://localhost:8443`. Matikan dengan `SIMARIO_ENV_FILE=.env.prod.local docker compose -f docker-compose.prod.yml --env-file .env.prod.local down` (volume tetap). Setiap perintah compose stack ini memerlukan `--env-file` (dan `SIMARIO_ENV_FILE` bila bukan `.env.prod`): tanpa itu compose berhenti karena `POSTGRES_PASSWORD` dan `S3_ACCESS_KEY` wajib diisi.
+
 ## 3. Masuk dan persona
 
 Di `/login`, tombol **"Masuk dengan Akun Otorita IKN"** membuka pemilih persona (pengganti SSO). Akun lokal ("Masuk dengan akun lokal"):

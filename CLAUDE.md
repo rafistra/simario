@@ -38,6 +38,7 @@ Ringkasan keadaan kode dan rancangan, diturunkan dari PRD dan kode. Baca dokumen
 | [`docs/04_risk_and_debt.md`](docs/04_risk_and_debt.md) | Risiko produk/teknis dan utang teknis (R-P, R, U) | Menemukan atau menyelesaikan risiko/utang |
 | [`docs/05_local_dev_and_testing.md`](docs/05_local_dev_and_testing.md) | Menjalankan lokal, persona, DevPanel, pengujian, verifikasi visual, rilis Netlify | Skrip, persona, seed, atau uji berubah |
 | [`docs/06_user_stories.md`](docs/06_user_stories.md) | 71 user story PRD (Bahasa Indonesia) dengan status implementasi dan cara mencobanya | Status sebuah cerita berubah |
+| [`docs/07_staging_requirements.md`](docs/07_staging_requirements.md) | Kebutuhan server staging untuk tim infrastruktur OIKN (server, jaringan, TLS, client Keycloak) | Konfigurasi staging/produksi berubah |
 
 ## 3. Stack & struktur
 
@@ -399,11 +400,13 @@ Hasil:
 
 Catatan Tahap B4: app `board` memporting `data/api/{board,thread}.ts`; aturan murni `simario/domain/{board,visibility}.py` dengan vektor bersama (VIS-1/2/3/9). `Assessment` dan `ComparisonResult` sudah berupa model dengan data demo agar panel triwulan dan chip predikat tampil; perilakunya di B5. Unggahan multipart, MIME dari isi (`puremagic`), pemindaian ClamAV lewat Celery + sapuan terjadwal, karantina, unduhan 302 ke URL pre-signed `/storage` (proxy Vite kini `changeOrigin`). Diuji manual: PDF bersih terunduh, DOCX berisi EICAR dikarantina. Utas mem-poll `?since=` tiap 30 detik.
 
-### Tahap B4s — Staging ⬜
+### Tahap B4s — Staging ✅
 
 Hasil:
-- [ ] `config/settings/staging.py`, `docker-compose.prod.yml` + nginx + HTTPS diuji di lokal
-- [ ] Panduan penyebaran staging, build uji coba dengan gerbang modul, daftar kebutuhan server staging
+- [x] `config/settings/staging.py`, `docker-compose.prod.yml` + nginx + HTTPS diuji di lokal
+- [x] Panduan penyebaran staging, build uji coba dengan gerbang modul, daftar kebutuhan server staging
+
+Catatan Tahap B4s: `config/settings/deployed.py` (HTTPS di belakang nginx, cookie Secure, HSTS, CSRF trusted origins) lulus `check --deploy`. Stack produksi diuji di `https://localhost:8443` dengan `infra/smoke.py` (SPA + deep link, health, akun lokal + ganti kata sandi wajib, `/me`, unduhan pre-signed lewat `/storage`). Uji asap ini menemukan bug B1: penerima `user_logged_in` dipegang lemah sehingga sesi berakhir di gunicorn — diperbaiki. Perintah baru `create_superadmin`. Gerbang modul `migrated.ts` + Beranda sementara untuk build uji coba. Keluar kini juga mengakhiri sesi Keycloak (R-10). Panduan di `docs/05` §2b, kebutuhan server di `docs/07_staging_requirements.md`. U-20 tetap terbuka (`docs/seed` dipasang sebagai volume).
 
 ### Tahap B5 — Penilaian ⬜
 
