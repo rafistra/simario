@@ -96,7 +96,7 @@ def test_used_template_cannot_be_deleted(demo: None, monkeypatch: pytest.MonkeyP
 def test_template_usage_endpoint(demo: None) -> None:
     res = client_for("usr-nur").get("/api/v1/risk-templates/usage?fiscalYear=2027")
     assert res.status_code == 200
-    assert res.json() == {}
+    assert res.json()[uid("tpl-PPK-T3-KP-02")] >= 1
 
 
 def test_lini1_cannot_rename_stage(demo: None) -> None:

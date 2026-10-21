@@ -20,7 +20,7 @@ def test_type_in_use_refuses_deactivation(demo: None) -> None:
     body = res.json()
     assert body["code"] == "type_in_use"
     assert body["details"]["positions"] == [uid("pos-pokja-03")]
-    assert body["details"]["runningRegisters"] == 0
+    assert body["details"]["runningRegisters"] == 1  # Pokja 03 TA 2027 (draft)
 
 
 def test_duplicate_code_within_unit(demo: None) -> None:
@@ -92,7 +92,8 @@ def test_reactivate_and_impact(demo: None) -> None:
     assert admin.post(f"/api/v1/positions/{uid('pos-ppk-a1')}/reactivate").status_code == 204
     assert Position.objects.get(pk=uid("pos-ppk-a1")).deactivation_reason is None
     impact = admin.get(f"/api/v1/positions/{uid('pos-ppk-a2')}/impact").json()
-    assert impact == {"publishedRegisters": [], "activeOperators": 1}
+    assert impact["activeOperators"] == 1
+    assert [r["fiscalYear"] for r in impact["publishedRegisters"]] == [2027]
 
 
 def test_identity_keys_are_data_not_camelized(demo: None) -> None:
