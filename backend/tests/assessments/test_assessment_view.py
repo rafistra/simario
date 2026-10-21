@@ -5,6 +5,7 @@ from simario.assessments.models import Assessment, ComparisonResult
 from simario.audit.models import AuditLog
 from simario.board.models import Attachment
 from simario.core import clock
+from simario.devtools.seed import legacy_uuid
 from tests.demo import client_for, uid, user
 
 A1 = uid("pos-ppk-a1")
@@ -40,7 +41,9 @@ def test_modes_and_window(demo: None) -> None:
 def test_inv16_blind_drafts_never_served(demo: None) -> None:
     """INV-16 / VIS-1: Hendra's TW II drafts reach nobody else — not even option labels."""
     drafts = Assessment.objects.filter(
-        assessor_position_id=KEP, risk_quarter__quarter__number=2, status="draft"
+        assessor_position_id=legacy_uuid("pos-kepatuhan"),
+        risk_quarter__quarter__number=2,
+        status="draft",
     )
     assert drafts.exists()
     labels = {d.score for d in drafts if d.score is not None}
@@ -75,12 +78,14 @@ def test_blind_view_needs_permission_24_and_is_logged(demo: None) -> None:
 
 def test_inv17_confidential_evidence_hidden(demo: None) -> None:
     result = ComparisonResult.objects.filter(
-        lini3_position_id=KEP,
+        lini3_position_id=legacy_uuid("pos-kepatuhan"),
         risk_quarter__quarter__number=1,
         risk_quarter__quarter__fiscal_year=2027,
     ).first()
     assert result is not None
-    a = Assessment.objects.get(risk_quarter=result.risk_quarter, assessor_position_id=KEP)
+    a = Assessment.objects.get(
+        risk_quarter=result.risk_quarter, assessor_position_id=legacy_uuid("pos-kepatuhan")
+    )
     Attachment.objects.create(
         owner_kind="assessment",
         owner_id=a.id,

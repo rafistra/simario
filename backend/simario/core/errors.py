@@ -46,6 +46,7 @@ STATUS_BY_CODE: dict[str, int] = {
     "in_use": 409,
     "inv9": 422,
     "window": 409,
+    "frozen": 409,
     "confirm": 409,
     "blocked": 409,
     "applied": 409,
