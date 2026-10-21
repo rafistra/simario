@@ -49,6 +49,12 @@ COLLECTIONS = [
     "mitigations",
     "proposals",
     "riskQuarters",
+    "assessments",
+    "results",
+    "comments",
+    "attachments",
+    "subscriptions",
+    "threadViews",
     "notifications",
     "audit",
 ]
@@ -80,6 +86,12 @@ MODELS = {
     "mitigations": "registers.RegisterMitigation",
     "proposals": "reference.RiskProposal",
     "riskQuarters": "assessments.RiskQuarter",
+    "assessments": "assessments.Assessment",
+    "results": "assessments.ComparisonResult",
+    "comments": "board.Comment",
+    "attachments": "board.Attachment",
+    "subscriptions": "board.ThreadSubscription",
+    "threadViews": "board.ThreadView",
     "notifications": "notifications.Notification",
     "audit": "audit.AuditLog",
 }
@@ -107,6 +119,10 @@ RENAMES: dict[str, dict[str, str]] = {
     "risks": {"created_by_user_id": "created_by_id"},
     "mitigations": {"created_by_user_id": "created_by_id"},
     "proposals": {"proposer_user_id": "proposer_id"},
+    "assessments": {"finalised_by_user_id": "finalised_by_id"},
+    "results": {"explanation_sent_by_user_id": "explanation_sent_by_id"},
+    "comments": {"author_user_id": "author_id", "withdrawn_by_user_id": "withdrawn_by_id"},
+    "attachments": {"size_bytes": "size"},
 }
 
 DATETIME_FIELDS = {
@@ -119,6 +135,13 @@ DATETIME_FIELDS = {
     "updated_at",
     "ready_at",
     "first_opened_at",
+    "opened_at",
+    "explanation_sent_at",
+    "finalised_at",
+    "edited_at",
+    "withdrawn_at",
+    "uploaded_at",
+    "last_seen_at",
 }
 DATE_ONLY = {"dataUmumForms": {"created_at"}}
 
@@ -198,6 +221,7 @@ def _truncate() -> None:
         "imports",
         "registers",
         "assessments",
+        "board",
     }
     tables = [m._meta.db_table for m in apps.get_models() if m._meta.app_label in labels]
     tables.append("django_session")
@@ -213,8 +237,13 @@ def _create(collection: str, rows: list[dict[str, Any]], known: set[str]) -> int
     objects = []
     supports: list[Any] = []
     support_model = apps.get_model("org.MonitoringSupport")
+    mention_model = apps.get_model("board.Mention")
+    mentions: list[Any] = []
     for raw in rows:
         row = convert_row(collection, raw, known)
+        for uid in row.pop("mention_user_ids", None) or []:
+            mentions.append(mention_model(comment_id=row["id"], user_id=legacy_uuid(uid)))
+        row.pop("blob_key", None)
         if collection == "users":
             row["password"] = make_password(row.pop("password", None))
         if collection == "registers":
@@ -233,6 +262,7 @@ def _create(collection: str, rows: list[dict[str, Any]], known: set[str]) -> int
         objects.append(model(**row))
     model.objects.bulk_create(objects)
     support_model.objects.bulk_create(supports)
+    mention_model.objects.bulk_create(mentions)
     return len(objects)
 
 
