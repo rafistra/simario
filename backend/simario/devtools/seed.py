@@ -161,23 +161,27 @@ def _truncate() -> None:
 
 def _create(collection: str, rows: list[dict[str, Any]], known: set[str]) -> int:
     model = apps.get_model(MODELS[collection])
-    count = 0
+    objects = []
+    supports: list[Any] = []
+    support_model = apps.get_model("org.MonitoringSupport")
     for raw in rows:
         row = convert_row(collection, raw, known)
         if collection == "users":
             row["password"] = make_password(row.pop("password", None))
         if collection == "stages":
             row["code"] = raw["id"].removeprefix("stg-")
-        supports = row.pop("supports", None)
-        obj = model.objects.create(**row)
-        if supports is not None:
-            support_model = apps.get_model("org.MonitoringSupport")
-            for s in supports:
-                support_model.objects.create(
-                    assignment=obj, position_id=legacy_uuid(s["positionId"]), domain=s["domain"]
+        for s in row.pop("supports", None) or []:
+            supports.append(
+                support_model(
+                    assignment_id=row["id"],
+                    position_id=legacy_uuid(s["positionId"]),
+                    domain=s["domain"],
                 )
-        count += 1
-    return count
+            )
+        objects.append(model(**row))
+    model.objects.bulk_create(objects)
+    support_model.objects.bulk_create(supports)
+    return len(objects)
 
 
 def _cut(rows: list[dict[str, Any]], key: str, as_of: dt.datetime | None) -> list[dict[str, Any]]:

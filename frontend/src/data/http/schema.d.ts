@@ -69,10 +69,96 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["me_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/active-position": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** @description FR-AUT-009: the position the user last acted through. */
+        put: operations["me_active_position_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The signed-in user's notifications, newest first (FR-NTF-013/014). */
+        get: operations["notifications_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/{id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["notifications_read_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/read-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["notifications_read_all_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        ActivePositionRequest: {
+            /** Format: uuid */
+            positionId: string;
+        };
         ApiError: {
             code: string;
             message: string;
@@ -82,13 +168,127 @@ export interface components {
             devTools: boolean;
             oidcEnabled: boolean;
         };
+        /**
+         * @description * `pejabat` - pejabat
+         *     * `operator` - operator
+         * @enum {string}
+         */
+        CapacityEnum: "pejabat" | "operator";
+        Holding: {
+            kind: components["schemas"]["KindEnum"];
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            positionId: string;
+            capacity: components["schemas"]["CapacityEnum"];
+            line: number;
+            isFiller: boolean;
+            position: components["schemas"]["Position"];
+            unitCode: string;
+            officialName: string | null;
+            roleView: string | null;
+        };
+        /**
+         * @description * `occupancy` - occupancy
+         *     * `delegate` - delegate
+         * @enum {string}
+         */
+        KindEnum: "occupancy" | "delegate";
         LoginRequest: {
             nip: string;
             password: string;
         };
+        /** @description Response of GET /api/v1/me (`MeResponse` in the generated TypeScript types). */
+        Me: {
+            user: components["schemas"]["MeUser"];
+            serverNow: string;
+            today: string;
+            devTools: boolean;
+            holdings: components["schemas"]["Holding"][];
+            /** Format: uuid */
+            activePositionId: string | null;
+            permissions: components["schemas"]["PermissionScope"][];
+            roleViews: string[];
+            currentQuarter: components["schemas"]["Quarter"] | null;
+        };
+        MeUser: {
+            /** Format: uuid */
+            id: string;
+            nip: string;
+            email: string;
+            fullName: string;
+            isLocalAccount: boolean;
+            mustChangePassword: boolean;
+            /** Format: uuid */
+            orgUnitId: string | null;
+        };
+        /** @description Shape of `Notification` in frontend/src/domain/types.ts. */
+        Notification: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            readonly userId: string;
+            kind: string;
+            text: string;
+            targetUrl: string;
+            /** Format: date-time */
+            readAt?: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            eventKey: string;
+        };
+        PaginatedNotificationList: {
+            results: components["schemas"]["Notification"][];
+            page: number;
+            pageSize: number;
+            total: number;
+        };
         PasswordRequest: {
             oldPassword?: string;
             newPassword: string;
+        };
+        PermissionScope: {
+            code: number;
+            scope: string | null;
+        };
+        /** @description Shape of `Position` in frontend/src/domain/types.ts. */
+        Position: {
+            /** Format: uuid */
+            readonly id: string;
+            code: string;
+            name: string;
+            /** Format: uuid */
+            readonly orgUnitId: string;
+            /** Format: uuid */
+            readonly positionTypeId: string;
+            identity?: unknown;
+            active?: boolean;
+            /** Format: date-time */
+            deactivatedAt?: string | null;
+            deactivationReason?: string | null;
+            shortName?: string | null;
+        };
+        /** @description Shape of `Quarter` in frontend/src/domain/types.ts. */
+        Quarter: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly fiscalYear: number;
+            number: number;
+            /** Format: date */
+            startsOn: string;
+            /** Format: date */
+            endsOn: string;
+            /** Format: date */
+            lini1OpensOn: string;
+            /** Format: date */
+            lini1Deadline: string;
+            /** Format: date */
+            lini3OpensOn: string;
+            /** Format: date */
+            lini3Deadline: string;
+            explanationWorkdays?: number;
+            /** Format: uuid */
+            readonly scoreBandVersionId: string | null;
         };
         SignInResult: {
             ok: boolean;
@@ -180,6 +380,109 @@ export interface operations {
                 "multipart/form-data": components["schemas"]["PasswordRequest"];
             };
         };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    me_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+        };
+    };
+    me_active_position_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ActivePositionRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ActivePositionRequest"];
+                "multipart/form-data": components["schemas"]["ActivePositionRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    notifications_list: {
+        parameters: {
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedNotificationList"];
+                };
+            };
+        };
+    };
+    notifications_read_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    notifications_read_all_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description No response body */
             204: {

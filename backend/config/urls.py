@@ -7,6 +7,7 @@ urlpatterns = [
     path("api/v1/schema", SpectacularAPIView.as_view(), name="schema"),
     path("api/v1/", include("simario.core.urls")),
     path("api/v1/", include("simario.accounts.urls")),
+    path("api/v1/", include("simario.notifications.urls")),
 ]
 
 if settings.DEBUG:

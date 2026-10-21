@@ -10,11 +10,16 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from simario.core.errors import ApiError
+
 from . import services
 from .models import User
+from .selectors import build_me, holds_position
 from .serializers import (
+    ActivePositionSerializer,
     AuthConfigSerializer,
     LoginSerializer,
+    MeSerializer,
     PasswordSerializer,
     SignInResultSerializer,
 )
@@ -71,4 +76,30 @@ class LogoutView(APIView):
     @extend_schema(request=None, responses={204: None}, tags=["auth"])
     def post(self, request: Request) -> Response:
         logout(request._request)
+        return Response(status=204)
+
+
+class MeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(responses=MeSerializer, tags=["me"], operation_id="me_retrieve")
+    def get(self, request: Request) -> Response:
+        return Response(MeSerializer(build_me(cast(User, request.user))).data)
+
+
+class ActivePositionView(APIView):
+    """FR-AUT-009: the position the user last acted through."""
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(request=ActivePositionSerializer, responses={204: None}, tags=["me"])
+    def put(self, request: Request) -> Response:
+        body = ActivePositionSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        user = cast(User, request.user)
+        position_id = str(body.validated_data["position_id"])
+        if not holds_position(user, position_id):
+            raise ApiError("forbidden", "Anda tidak memegang jabatan ini.")
+        user.last_position_id = body.validated_data["position_id"]
+        user.save(update_fields=["last_position"])
         return Response(status=204)

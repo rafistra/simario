@@ -78,8 +78,102 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/me:
+    get:
+      operationId: me_retrieve
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: ''
+  /api/v1/me/active-position:
+    put:
+      operationId: me_active_position_update
+      description: 'FR-AUT-009: the position the user last acted through.'
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivePositionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ActivePositionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ActivePositionRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/notifications:
+    get:
+      operationId: notifications_list
+      description: The signed-in user's notifications, newest first (FR-NTF-013/014).
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - notifications
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNotificationList'
+          description: ''
+  /api/v1/notifications/{id}/read:
+    post:
+      operationId: notifications_read_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/notifications/read-all:
+    post:
+      operationId: notifications_read_all_create
+      tags:
+      - notifications
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
 components:
   schemas:
+    ActivePositionRequest:
+      type: object
+      properties:
+        positionId:
+          type: string
+          format: uuid
+      required:
+      - positionId
     ApiError:
       type: object
       required:
@@ -103,6 +197,60 @@ components:
       required:
       - devTools
       - oidcEnabled
+    CapacityEnum:
+      enum:
+      - pejabat
+      - operator
+      type: string
+      description: |-
+        * `pejabat` - pejabat
+        * `operator` - operator
+    Holding:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/KindEnum'
+        id:
+          type: string
+          format: uuid
+        positionId:
+          type: string
+          format: uuid
+        capacity:
+          $ref: '#/components/schemas/CapacityEnum'
+        line:
+          type: integer
+        isFiller:
+          type: boolean
+        position:
+          $ref: '#/components/schemas/Position'
+        unitCode:
+          type: string
+        officialName:
+          type: string
+          nullable: true
+        roleView:
+          type: string
+          nullable: true
+      required:
+      - capacity
+      - id
+      - isFiller
+      - kind
+      - line
+      - officialName
+      - position
+      - positionId
+      - roleView
+      - unitCode
+    KindEnum:
+      enum:
+      - occupancy
+      - delegate
+      type: string
+      description: |-
+        * `occupancy` - occupancy
+        * `delegate` - delegate
     LoginRequest:
       type: object
       properties:
@@ -115,6 +263,133 @@ components:
       required:
       - nip
       - password
+    Me:
+      type: object
+      description: Response of GET /api/v1/me (`MeResponse` in the generated TypeScript
+        types).
+      properties:
+        user:
+          $ref: '#/components/schemas/MeUser'
+        serverNow:
+          type: string
+        today:
+          type: string
+        devTools:
+          type: boolean
+        holdings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Holding'
+        activePositionId:
+          type: string
+          format: uuid
+          nullable: true
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PermissionScope'
+        roleViews:
+          type: array
+          items:
+            type: string
+        currentQuarter:
+          allOf:
+          - $ref: '#/components/schemas/Quarter'
+          nullable: true
+      required:
+      - activePositionId
+      - currentQuarter
+      - devTools
+      - holdings
+      - permissions
+      - roleViews
+      - serverNow
+      - today
+      - user
+    MeUser:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        nip:
+          type: string
+        email:
+          type: string
+        fullName:
+          type: string
+        isLocalAccount:
+          type: boolean
+        mustChangePassword:
+          type: boolean
+        orgUnitId:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - email
+      - fullName
+      - id
+      - isLocalAccount
+      - mustChangePassword
+      - nip
+      - orgUnitId
+    Notification:
+      type: object
+      description: Shape of `Notification` in frontend/src/domain/types.ts.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        userId:
+          type: string
+          format: uuid
+          readOnly: true
+        kind:
+          type: string
+          maxLength: 40
+        text:
+          type: string
+        targetUrl:
+          type: string
+          maxLength: 500
+        readAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        eventKey:
+          type: string
+          maxLength: 200
+      required:
+      - createdAt
+      - eventKey
+      - id
+      - kind
+      - targetUrl
+      - text
+      - userId
+    PaginatedNotificationList:
+      type: object
+      required:
+      - results
+      - page
+      - pageSize
+      - total
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        total:
+          type: integer
     PasswordRequest:
       type: object
       properties:
@@ -126,6 +401,112 @@ components:
           minLength: 1
       required:
       - newPassword
+    PermissionScope:
+      type: object
+      properties:
+        code:
+          type: integer
+        scope:
+          type: string
+          nullable: true
+      required:
+      - code
+      - scope
+    Position:
+      type: object
+      description: Shape of `Position` in frontend/src/domain/types.ts.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        code:
+          type: string
+          maxLength: 32
+        name:
+          type: string
+          maxLength: 200
+        orgUnitId:
+          type: string
+          format: uuid
+          readOnly: true
+        positionTypeId:
+          type: string
+          format: uuid
+          readOnly: true
+        identity: {}
+        active:
+          type: boolean
+        deactivatedAt:
+          type: string
+          format: date-time
+          nullable: true
+        deactivationReason:
+          type: string
+          nullable: true
+        shortName:
+          type: string
+          nullable: true
+          maxLength: 16
+      required:
+      - code
+      - id
+      - name
+      - orgUnitId
+      - positionTypeId
+    Quarter:
+      type: object
+      description: Shape of `Quarter` in frontend/src/domain/types.ts.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        fiscalYear:
+          type: integer
+          readOnly: true
+        number:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        startsOn:
+          type: string
+          format: date
+        endsOn:
+          type: string
+          format: date
+        lini1OpensOn:
+          type: string
+          format: date
+        lini1Deadline:
+          type: string
+          format: date
+        lini3OpensOn:
+          type: string
+          format: date
+        lini3Deadline:
+          type: string
+          format: date
+        explanationWorkdays:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        scoreBandVersionId:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+      required:
+      - endsOn
+      - fiscalYear
+      - id
+      - lini1Deadline
+      - lini1OpensOn
+      - lini3Deadline
+      - lini3OpensOn
+      - number
+      - scoreBandVersionId
+      - startsOn
     SignInResult:
       type: object
       properties:
