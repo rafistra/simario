@@ -33,6 +33,14 @@ const ROUTES: [string, RegExp, Handler][] = [
   ['GET', /^\/api\/v1\/auth\/config$/, () => json({ devTools: true, oidcEnabled: true })],
   [
     'GET',
+    /^\/api\/v1\/collections\/([A-Za-z]+)$/,
+    (m) => {
+      const rows = (getDb() as unknown as Record<string, unknown>)[m[1]!];
+      return rows ? json(rows) : fail('not_found', 'Data tidak ditemukan.', 404);
+    },
+  ],
+  [
+    'GET',
     /^\/api\/v1\/me$/,
     () => {
       const me = userId() && meFromLocal(getDb(), userId()!, today());

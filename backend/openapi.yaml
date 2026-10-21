@@ -78,6 +78,29 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/collections/{name}:
+    get:
+      operationId: collections_retrieve
+      description: 'GET /api/v1/collections/<name>: one prototype-shaped collection
+        (signed-in users).'
+      parameters:
+      - in: path
+        name: name
+        schema:
+          type: string
+        required: true
+      tags:
+      - collections
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
   /api/v1/dev/clock:
     post:
       operationId: dev_clock_create
