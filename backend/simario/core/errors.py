@@ -49,6 +49,13 @@ STATUS_BY_CODE: dict[str, int] = {
     "confirm": 409,
     "blocked": 409,
     "applied": 409,
+    "published": 409,
+    "has_published": 409,
+    "has_drafts": 409,
+    "stage_not_relevant": 409,
+    "gaps": 422,
+    "no_previous": 409,
+    "not_empty": 409,
     "nothing": 409,
     "server": 500,
 }

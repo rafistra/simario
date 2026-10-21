@@ -947,11 +947,168 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/register-mitigations/{id}:
+    delete:
+      operationId: register_mitigations_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - registers
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/register-mitigations/{id}/deactivate:
+    post:
+      operationId: register_mitigations_deactivate_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - registers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/register-risks/{id}:
+    delete:
+      operationId: register_risks_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - registers
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/register-risks/{id}/deactivate:
+    post:
+      operationId: register_risks_deactivate_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - registers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/register-risks/{id}/mitigations:
+    post:
+      operationId: register_risks_mitigations_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - registers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TextRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TextRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TextRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/register-risks/{id}/template-mitigations/{template_id}:
+    put:
+      operationId: register_risks_template_mitigations_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: template_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - registers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SelectedRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SelectedRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SelectedRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/registers/{id}/{year}:
     get:
       operationId: registers_retrieve
-      description: 'GET: the register as the signed-in viewer may see it (`RegisterView`,
-        FR-REG-012).'
+      description: |-
+        GET: the register as the signed-in viewer may see it (`RegisterView`, FR-REG-012).
+        PATCH: Data Umum.
       parameters:
       - in: path
         name: id
@@ -976,6 +1133,259 @@ paths:
                 type: object
                 additionalProperties: {}
           description: ''
+    patch:
+      operationId: registers_partial_update
+      description: |-
+        GET: the register as the signed-in viewer may see it (`RegisterView`, FR-REG-012).
+        PATCH: Data Umum.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - registers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedDataUmumPatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedDataUmumPatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedDataUmumPatchRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/registers/{id}/{year}/copy-from-previous:
+    post:
+      operationId: registers_copy_from_previous_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - registers
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CopySummary'
+          description: ''
+  /api/v1/registers/{id}/{year}/declarations:
+    put:
+      operationId: registers_declarations_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - registers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeclarationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DeclarationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DeclarationRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+    patch:
+      operationId: registers_declarations_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - registers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedDeclarationReasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedDeclarationReasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedDeclarationReasonRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/registers/{id}/{year}/mark-ready:
+    post:
+      operationId: registers_mark_ready_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - registers
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/registers/{id}/{year}/publish:
+    post:
+      operationId: registers_publish_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - registers
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublishSummary'
+          description: ''
+  /api/v1/registers/{id}/{year}/risks:
+    post:
+      operationId: registers_risks_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - registers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomRiskRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CustomRiskRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CustomRiskRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Id'
+          description: ''
+  /api/v1/registers/{id}/{year}/template-risks/{template_id}:
+    put:
+      operationId: registers_template_risks_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: template_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - registers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SelectedRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SelectedRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SelectedRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/risk-templates:
     post:
       operationId: risk_templates_create
@@ -1767,6 +2177,28 @@ components:
       required:
       - ran
       - serverNow
+    CopySummary:
+      type: object
+      properties:
+        risks:
+          type: integer
+        mitigations:
+          type: integer
+        inactiveTemplates:
+          type: integer
+        skippedStages:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        fromYear:
+          type: integer
+      required:
+      - fromYear
+      - inactiveTemplates
+      - mitigations
+      - risks
+      - skippedStages
     CreatedUser:
       type: object
       properties:
@@ -1779,6 +2211,20 @@ components:
       required:
       - id
       - temporaryPassword
+    CustomRiskRequest:
+      type: object
+      properties:
+        stageId:
+          type: string
+          format: uuid
+        riskType:
+          $ref: '#/components/schemas/RiskTypeEnum'
+        description:
+          type: string
+      required:
+      - description
+      - riskType
+      - stageId
     DataUmumFieldKindEnum:
       enum:
       - text
@@ -1844,6 +2290,26 @@ components:
       - delegations
       - fillerBlock
       - occupancies
+    DeclarationRequest:
+      type: object
+      properties:
+        stageId:
+          type: string
+          format: uuid
+        riskType:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/RiskTypeEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        'on':
+          type: boolean
+        force:
+          type: boolean
+          default: false
+      required:
+      - 'on'
+      - riskType
+      - stageId
     DomainEnum:
       enum:
       - budget_performance
@@ -2342,6 +2808,38 @@ components:
       properties:
         active:
           type: boolean
+    PatchedDataUmumPatchRequest:
+      type: object
+      properties:
+        tujuan:
+          type: string
+        kegiatan:
+          type: array
+          items:
+            type: string
+        besarAnggaran:
+          type: number
+          format: double
+          nullable: true
+        target:
+          type: string
+        extra:
+          type: object
+          additionalProperties:
+            type: string
+    PatchedDeclarationReasonRequest:
+      type: object
+      properties:
+        stageId:
+          type: string
+          format: uuid
+        riskType:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/RiskTypeEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        reason:
+          type: string
     PatchedFiscalYearPatchRequest:
       type: object
       properties:
@@ -2541,6 +3039,25 @@ components:
         * `kurang` - kurang
         * `cukup` - cukup
         * `terkendali` - terkendali
+    PublishSummary:
+      type: object
+      properties:
+        risks:
+          type: integer
+        mitigations:
+          type: integer
+        flagged:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        proposals:
+          type: integer
+      required:
+      - flagged
+      - mitigations
+      - proposals
+      - risks
     Quarter:
       type: object
       description: Shape of `Quarter` in frontend/src/domain/types.ts.
@@ -2692,6 +3209,13 @@ components:
         * `sendiri` - sendiri
         * `unit` - unit
         * `semua` - semua
+    SelectedRequest:
+      type: object
+      properties:
+        selected:
+          type: boolean
+      required:
+      - selected
     SignInResult:
       type: object
       properties:
@@ -2788,6 +3312,13 @@ components:
           type: string
       required:
       - temporaryPassword
+    TextRequest:
+      type: object
+      properties:
+        text:
+          type: string
+      required:
+      - text
     Unregistered:
       type: object
       properties:

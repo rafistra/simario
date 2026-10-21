@@ -650,6 +650,102 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/register-mitigations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["register_mitigations_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/register-mitigations/{id}/deactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["register_mitigations_deactivate_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/register-risks/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["register_risks_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/register-risks/{id}/deactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["register_risks_deactivate_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/register-risks/{id}/mitigations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["register_risks_mitigations_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/register-risks/{id}/template-mitigations/{template_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["register_risks_template_mitigations_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/registers/{id}/{year}": {
         parameters: {
             query?: never;
@@ -657,9 +753,112 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description GET: the register as the signed-in viewer may see it (`RegisterView`, FR-REG-012). */
+        /**
+         * @description GET: the register as the signed-in viewer may see it (`RegisterView`, FR-REG-012).
+         *     PATCH: Data Umum.
+         */
         get: operations["registers_retrieve"];
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * @description GET: the register as the signed-in viewer may see it (`RegisterView`, FR-REG-012).
+         *     PATCH: Data Umum.
+         */
+        patch: operations["registers_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/registers/{id}/{year}/copy-from-previous": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["registers_copy_from_previous_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/registers/{id}/{year}/declarations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["registers_declarations_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["registers_declarations_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/registers/{id}/{year}/mark-ready": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["registers_mark_ready_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/registers/{id}/{year}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["registers_publish_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/registers/{id}/{year}/risks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["registers_risks_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/registers/{id}/{year}/template-risks/{template_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["registers_template_risks_update"];
         post?: never;
         delete?: never;
         options?: never;
@@ -1072,10 +1271,25 @@ export interface components {
             serverNow: string;
             ran: string[];
         };
+        CopySummary: {
+            risks: number;
+            mitigations: number;
+            inactiveTemplates: number;
+            skippedStages: {
+                [key: string]: unknown;
+            }[];
+            fromYear: number;
+        };
         CreatedUser: {
             /** Format: uuid */
             id: string;
             temporaryPassword: string | null;
+        };
+        CustomRiskRequest: {
+            /** Format: uuid */
+            stageId: string;
+            riskType: components["schemas"]["RiskTypeEnum"];
+            description: string;
         };
         /**
          * @description * `text` - text
@@ -1104,6 +1318,14 @@ export interface components {
             delegations: number;
             appointedOperators: number;
             fillerBlock: string | null;
+        };
+        DeclarationRequest: {
+            /** Format: uuid */
+            stageId: string;
+            riskType: (components["schemas"]["RiskTypeEnum"] | components["schemas"]["NullEnum"]) | null;
+            on: boolean;
+            /** @default false */
+            force: boolean;
         };
         /**
          * @description * `budget_performance` - budget_performance
@@ -1307,6 +1529,22 @@ export interface components {
         PatchedActiveRequest: {
             active?: boolean;
         };
+        PatchedDataUmumPatchRequest: {
+            tujuan?: string;
+            kegiatan?: string[];
+            /** Format: double */
+            besarAnggaran?: number | null;
+            target?: string;
+            extra?: {
+                [key: string]: string;
+            };
+        };
+        PatchedDeclarationReasonRequest: {
+            /** Format: uuid */
+            stageId?: string;
+            riskType?: (components["schemas"]["RiskTypeEnum"] | components["schemas"]["NullEnum"]) | null;
+            reason?: string;
+        };
         PatchedFiscalYearPatchRequest: {
             toleranceDays?: number;
             archiveGraceDays?: number;
@@ -1399,6 +1637,14 @@ export interface components {
          * @enum {string}
          */
         PredicateEnum: "kurang" | "cukup" | "terkendali";
+        PublishSummary: {
+            risks: number;
+            mitigations: number;
+            flagged: {
+                [key: string]: unknown;
+            }[];
+            proposals: number;
+        };
         /** @description Shape of `Quarter` in frontend/src/domain/types.ts. */
         Quarter: {
             /** Format: uuid */
@@ -1468,6 +1714,9 @@ export interface components {
          * @enum {string}
          */
         ScopeEnum: "sendiri" | "unit" | "semua";
+        SelectedRequest: {
+            selected: boolean;
+        };
         SignInResult: {
             ok: boolean;
             /** Format: uuid */
@@ -1509,6 +1758,9 @@ export interface components {
         };
         TemporaryPassword: {
             temporaryPassword: string;
+        };
+        TextRequest: {
+            text: string;
         };
         Unregistered: {
             nip: string;
@@ -2479,6 +2731,151 @@ export interface operations {
             };
         };
     };
+    register_mitigations_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    register_mitigations_deactivate_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReasonRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ReasonRequest"];
+                "multipart/form-data": components["schemas"]["ReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    register_risks_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    register_risks_deactivate_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReasonRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ReasonRequest"];
+                "multipart/form-data": components["schemas"]["ReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    register_risks_mitigations_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TextRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["TextRequest"];
+                "multipart/form-data": components["schemas"]["TextRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    register_risks_template_mitigations_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                template_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SelectedRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["SelectedRequest"];
+                "multipart/form-data": components["schemas"]["SelectedRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     registers_retrieve: {
         parameters: {
             query?: never;
@@ -2500,6 +2897,208 @@ export interface operations {
                         [key: string]: unknown;
                     };
                 };
+            };
+        };
+    };
+    registers_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedDataUmumPatchRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedDataUmumPatchRequest"];
+                "multipart/form-data": components["schemas"]["PatchedDataUmumPatchRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    registers_copy_from_previous_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CopySummary"];
+                };
+            };
+        };
+    };
+    registers_declarations_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeclarationRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["DeclarationRequest"];
+                "multipart/form-data": components["schemas"]["DeclarationRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    registers_declarations_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedDeclarationReasonRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedDeclarationReasonRequest"];
+                "multipart/form-data": components["schemas"]["PatchedDeclarationReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    registers_mark_ready_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    registers_publish_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublishSummary"];
+                };
+            };
+        };
+    };
+    registers_risks_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CustomRiskRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CustomRiskRequest"];
+                "multipart/form-data": components["schemas"]["CustomRiskRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Id"];
+                };
+            };
+        };
+    };
+    registers_template_risks_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                template_id: string;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SelectedRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["SelectedRequest"];
+                "multipart/form-data": components["schemas"]["SelectedRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
