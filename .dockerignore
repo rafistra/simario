@@ -1,0 +1,8 @@
+# Build context of infra/nginx/Dockerfile is the repository root: send only what the SPA needs.
+*
+!docs/seed
+!shared
+!frontend
+!infra/nginx
+frontend/node_modules
+frontend/dist

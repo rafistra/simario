@@ -1,0 +1,64 @@
+# SIMARIO behind nginx (spec §4.7, §4.11): the SPA, /api and /oidc to Django, /storage to RustFS.
+# RustFS is never exposed directly; download URLs are signed for http://storage:9000.
+
+server {
+    listen 80;
+    server_name ${PUBLIC_HOSTNAME};
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name ${PUBLIC_HOSTNAME};
+
+    ssl_certificate     /etc/nginx/certs/fullchain.pem;
+    ssl_certificate_key /etc/nginx/certs/privkey.pem;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+
+    # 10 files of 20 MB per comment (NFR-009) plus the form.
+    client_max_body_size 210m;
+
+    add_header X-Content-Type-Options nosniff always;
+    add_header Referrer-Policy same-origin always;
+
+    root /usr/share/nginx/html;
+
+    location /api/ {
+        proxy_pass http://api:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_read_timeout 120s;
+    }
+
+    location /oidc/ {
+        proxy_pass http://api:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+    location /static/ {
+        proxy_pass http://api:8000;
+        proxy_set_header Host $host;
+    }
+
+    # Pre-signed downloads: the signature covers Host storage:9000 and the path without /storage.
+    location /storage/ {
+        proxy_pass http://storage:9000/;
+        proxy_set_header Host storage:9000;
+        proxy_buffering off;
+    }
+
+    location /assets/ {
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+        try_files $uri =404;
+    }
+
+    location / {
+        try_files $uri /index.html;
+        add_header Cache-Control "no-cache";
+    }
+}

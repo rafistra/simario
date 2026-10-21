@@ -27,3 +27,4 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 backend/staticfiles/
+infra/nginx/certs/
