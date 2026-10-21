@@ -25,9 +25,12 @@ package = false
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+extend-exclude = ["**/migrations/*.py"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "DJ"]
+# DJ001: nullable strings mirror the API contract (null differs from ""). DJ008: __str__ optional.
+ignore = ["DJ001", "DJ008"]
 
 [tool.mypy]
 python_version = "3.12"

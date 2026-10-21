@@ -26,6 +26,8 @@ INSTALLED_APPS = [
     "drf_spectacular_sidecar",
     "django_celery_beat",
     "simario.core",
+    "simario.accounts",
+    "simario.org",
 ]
 
 MIDDLEWARE = [
@@ -36,6 +38,8 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
 ]
+
+AUTH_USER_MODEL = "accounts.User"
 
 ROOT_URLCONF = "config.urls"
 # API paths have no trailing slash (docs/03_api_contract.md); a slashed variant is a 404.
