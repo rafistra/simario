@@ -266,15 +266,123 @@ def _create(collection: str, rows: list[dict[str, Any]], known: set[str]) -> int
     return len(objects)
 
 
-def _cut(rows: list[dict[str, Any]], key: str, as_of: dt.datetime | None) -> list[dict[str, Any]]:
-    if as_of is None:
-        return rows
-    cutoff = as_of.strftime("%Y-%m-%dT%H:%M")
-    return [r for r in rows if r[key] <= cutoff]
+def as_of(db: dict[str, list[dict[str, Any]]], cutoff: str) -> dict[str, list[dict[str, Any]]]:
+    """The demo data as it stood at `cutoff` (local "YYYY-MM-DDTHH:MM"); ports
+    frontend/src/data/seed/asOf.ts. Everything timestamped later is removed or rolled back."""
+
+    def after(t: Any) -> bool:
+        return isinstance(t, str) and t > cutoff
+
+    day = cutoff[:10]
+    comments = [
+        {
+            **c,
+            "editedAt": None if after(c.get("editedAt")) else c.get("editedAt"),
+            "withdrawnAt": None if after(c.get("withdrawnAt")) else c.get("withdrawnAt"),
+            "withdrawnByUserId": None
+            if after(c.get("withdrawnAt"))
+            else c.get("withdrawnByUserId"),
+        }
+        for c in db["comments"]
+        if not after(c["createdAt"])
+    ]
+    comment_ids = {c["id"] for c in comments}
+    # An assessment finalised after the cutoff had not been started yet (no draft history).
+    assessments = [
+        a
+        for a in db["assessments"]
+        if not after(a.get("finalisedAt")) and not after(a["updatedAt"])
+    ]
+    assessment_ids = {a["id"] for a in assessments}
+    results = []
+    for r in db["results"]:
+        if after(r["openedAt"]):
+            continue
+        if after(r.get("explanationSentAt")):
+            r = {
+                **r,
+                "explanationStatus": "pending" if r["explanationRequired"] else "optional",
+                "explanationReason": None,
+                "explanationPlan": None,
+                "explanationSentAt": None,
+                "explanationSentByUserId": None,
+                "explanationLateness": None,
+            }
+        results.append(r)
+    quarters = [
+        {**q, "scoreBandVersionId": None} if min(q["lini3OpensOn"], q["lini1OpensOn"]) > day else q
+        for q in db["quarters"]
+    ]
+    started = {q["id"] for q in quarters if q["startsOn"] <= day}
+    risk_quarters = []
+    for rq in db["riskQuarters"]:
+        if rq["quarterId"] not in started:
+            continue
+        opened = [r for r in results if r["riskQuarterId"] == rq["id"]]
+        expected = len(
+            [
+                a
+                for a in db["quarterAssessors"]
+                if a["quarterId"] == rq["quarterId"] and not a["excluded"]
+            ]
+        )
+        risk_quarters.append(
+            {
+                **rq,
+                "comparisonStatus": "waiting"
+                if not opened
+                else ("open" if len(opened) >= expected else "partial"),
+                "firstOpenedAt": min(r["openedAt"] for r in opened) if opened else None,
+                "recurring": rq["recurring"] if opened else False,
+            }
+        )
+    risks = [
+        {
+            **r,
+            "status": "active",
+            "deactivatedAt": None,
+            "deactivatedFromQuarterId": None,
+            "deactivationReason": None,
+        }
+        if after(r.get("deactivatedAt"))
+        else r
+        for r in db["risks"]
+    ]
+    attachments = [
+        a
+        for a in db["attachments"]
+        if not after(a["uploadedAt"])
+        and (
+            a["ownerId"] in comment_ids
+            if a["ownerKind"] == "comment"
+            else a["ownerId"] in assessment_ids
+        )
+    ]
+    fiscal_years = [
+        {**f, "status": "open", "archivedAt": None, "archivedBy": None}
+        if after(f.get("archivedAt"))
+        else f
+        for f in db["fiscalYears"]
+    ]
+    return {
+        **db,
+        "quarters": quarters,
+        "comments": comments,
+        "attachments": attachments,
+        "assessments": assessments,
+        "results": results,
+        "riskQuarters": risk_quarters,
+        "risks": risks,
+        "notifications": [n for n in db["notifications"] if not after(n["createdAt"])],
+        "audit": [a for a in db["audit"] if not after(a["at"])],
+        "threadViews": [v for v in db["threadViews"] if not after(v["lastSeenAt"])],
+        "proposals": [x for x in db["proposals"] if not after(x["createdAt"])],
+        "fiscalYears": fiscal_years,
+    }
 
 
 @transaction.atomic
-def load_demo(as_of: dt.datetime | None = None) -> dict[str, int]:
+def load_demo(at: dt.datetime | None = None) -> dict[str, int]:
     """Replaces all app data with the demo export; returns rows per collection."""
     data = load_raw()
     db = data["db"]
@@ -285,12 +393,9 @@ def load_demo(as_of: dt.datetime | None = None) -> dict[str, int]:
     for p in data["permissions"]:
         permission.objects.create(**{snake(k): v for k, v in p.items()})
     counts["permissions"] = len(data["permissions"])
+    if at is not None:
+        db = as_of(db, at.strftime("%Y-%m-%dT%H:%M"))
     for collection in COLLECTIONS:
-        rows = db[collection]
-        if collection == "notifications":
-            rows = _cut(rows, "createdAt", as_of)
-        elif collection == "audit":
-            rows = _cut(rows, "at", as_of)
-        counts[collection] = _create(collection, rows, known)
-    clock.set_now(as_of or clock.parse_local(DEFAULT_NOW))
+        counts[collection] = _create(collection, db[collection], known)
+    clock.set_now(at or clock.parse_local(DEFAULT_NOW))
     return counts
