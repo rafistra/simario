@@ -53,6 +53,16 @@ def main(base: str, nip: str, password: str, env_file: str = ".env.prod.local") 
     index = c.call("GET", "/")
     check("SPA index", index.status_code == 200 and 'id="root"' in index.text)
     check("SPA deep link", c.call("GET", "/jabatan/x/register/2027").status_code == 200)
+    for path in ("/", "/assets/missing.js", "/api/v1/health"):
+        h = c.call("GET", path).headers
+        check(
+            f"security headers {path}",
+            h.get("X-Frame-Options") == "DENY"
+            and "frame-ancestors 'none'" in h.get("Content-Security-Policy", "")
+            and h.get("X-Content-Type-Options") == "nosniff"
+            and "max-age" in h.get("Strict-Transport-Security", ""),
+            str(dict(h))[:200],
+        )
     health = c.call("GET", "/api/v1/health")
     check("health", health.status_code == 200, health.text[:160])
     c.call("GET", "/api/v1/auth/config")

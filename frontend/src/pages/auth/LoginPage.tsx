@@ -7,7 +7,7 @@ import { authApi, type SsoOutcome } from '@/data/repository';
 import { devApi } from '@/data/http/dev';
 import { ROLE_VIEW_LABEL, type RoleViewCode } from '@/domain/permissions';
 import { useFocusTrap } from '@/lib/useFocusTrap';
-import { useMe } from '@/state/me';
+import { LOGIN_AFTER_KEY, useMe } from '@/state/me';
 import { useMaybeAuth } from '@/state/useAuth';
 import { AuthLayout } from './AuthLayout';
 
@@ -128,6 +128,24 @@ const REASONS: Record<string, { title: string; message: string }> = {
   },
 };
 
+/** The /login URL saved before a Keycloak sign-out (idle timeout). */
+function readLoginAfter(): string | null {
+  try {
+    const v = sessionStorage.getItem(LOGIN_AFTER_KEY);
+    return v && v.startsWith('/login?') ? v : null;
+  } catch {
+    return null;
+  }
+}
+
+function clearLoginAfter() {
+  try {
+    sessionStorage.removeItem(LOGIN_AFTER_KEY);
+  } catch {
+    // Storage blocked: nothing was saved.
+  }
+}
+
 export default function LoginPage() {
   const auth = useMaybeAuth();
   const navigate = useNavigate();
@@ -150,6 +168,12 @@ export default function LoginPage() {
   const nipRef = useRef<HTMLInputElement>(null);
   const expired = params.get('alasan') === 'sesi-berakhir';
 
+  // Read in render, cleared in an effect, so a double render (StrictMode) still redirects.
+  const after = params.size === 0 ? readLoginAfter() : null;
+  useEffect(() => {
+    if (after) clearLoginAfter();
+  }, [after]);
+  if (after) return <Navigate to={after} replace />;
   if (auth && !busy)
     return <Navigate to={auth.user.mustChangePassword ? '/ganti-kata-sandi' : '/'} replace />;
 

@@ -12,5 +12,6 @@ COPY frontend frontend
 RUN cd frontend && npx vite build
 
 FROM nginx:1.27-alpine
+COPY infra/nginx/security-headers.conf /etc/nginx/snippets/security-headers.conf
 COPY infra/nginx/default.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=build /src/frontend/dist /usr/share/nginx/html

@@ -54,12 +54,25 @@ export const useMe = create<MeState>((set) => ({
   },
 }));
 
-/** Ends the session on the server and locally (sign-out menu, idle timeout). */
-export async function signOutEverywhere() {
+/** Where /login continues after Keycloak's sign-out, which always returns to a bare /login. */
+export const LOGIN_AFTER_KEY = 'simario:login-after';
+
+/**
+ * Ends the session on the server and locally (sign-out menu, idle timeout). `after` is the
+ * /login URL to show once back from Keycloak (e.g. the idle-timeout reason).
+ */
+export async function signOutEverywhere(after?: string) {
   const res = await authApi.signOut().catch(() => undefined);
   useSession.getState().signOut();
   useMe.getState().clear();
-  if (res?.redirectUrl) window.location.assign(res.redirectUrl);
+  if (!res?.redirectUrl) return;
+  if (after)
+    try {
+      sessionStorage.setItem(LOGIN_AFTER_KEY, after);
+    } catch {
+      // Storage blocked: the reason is lost, the sign-out still happens.
+    }
+  window.location.assign(res.redirectUrl);
 }
 
 /** Position switcher (FR-AUT-009): local choice now, remembered by the server for next time. */

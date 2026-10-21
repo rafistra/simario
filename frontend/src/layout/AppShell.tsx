@@ -48,8 +48,9 @@ function useIdleSignOut() {
     const id = window.setInterval(() => {
       if (Date.now() - last.current > idleMinutes * 60_000) {
         // Drafts autosave as they are typed, so nothing is lost when the session ends.
-        void signOutEverywhere();
-        navigate(`/login?alasan=sesi-berakhir&kembali=${encodeURIComponent(path.current)}`);
+        const to = `/login?alasan=sesi-berakhir&kembali=${encodeURIComponent(path.current)}`;
+        void signOutEverywhere(to);
+        navigate(to);
       }
     }, 15_000);
     return () => {

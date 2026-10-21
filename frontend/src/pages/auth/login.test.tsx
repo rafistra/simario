@@ -30,6 +30,13 @@ describe('Login against the backend', () => {
     expect(screen.getByText(/Akun Anda belum terdaftar di SIMARIO/)).toBeInTheDocument();
   });
 
+  it('keeps the idle-timeout reason across the Keycloak sign-out round trip', () => {
+    sessionStorage.setItem('simario:login-after', '/login?alasan=sesi-berakhir&kembali=%2Fjabatan');
+    renderAt('/login');
+    expect(screen.getByText('Sesi Anda berakhir. Silakan masuk kembali.')).toBeInTheDocument();
+    expect(sessionStorage.getItem('simario:login-after')).toBeNull();
+  });
+
   it('sends the SSO button to Keycloak', () => {
     const assign = vi.fn();
     vi.stubGlobal('location', { ...window.location, assign });
