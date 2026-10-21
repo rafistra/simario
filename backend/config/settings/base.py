@@ -29,6 +29,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "simario.core.middleware.ApiErrorMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -75,3 +76,18 @@ OIDC_NIP_CLAIM = env("OIDC_NIP_CLAIM", default="nip")
 OIDC_REDIRECT_URI = env("OIDC_REDIRECT_URI", default="")
 
 SIMARIO_DEV_TOOLS = env.bool("SIMARIO_DEV_TOOLS", default=False)
+
+REST_FRAMEWORK = {
+    "DEFAULT_RENDERER_CLASSES": ["djangorestframework_camel_case.render.CamelCaseJSONRenderer"],
+    "DEFAULT_PARSER_CLASSES": [
+        "djangorestframework_camel_case.parser.CamelCaseJSONParser",
+        "djangorestframework_camel_case.parser.CamelCaseFormParser",
+        "djangorestframework_camel_case.parser.CamelCaseMultiPartParser",
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework.authentication.SessionAuthentication"],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+    "DEFAULT_PAGINATION_CLASS": "simario.core.pagination.PagePagination",
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "EXCEPTION_HANDLER": "simario.core.errors.api_exception_handler",
+    "TEST_REQUEST_DEFAULT_FORMAT": "json",
+}
