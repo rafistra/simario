@@ -1,5 +1,5 @@
 from simario.notifications.models import Notification
-from tests.demo import client_for, demo, user  # noqa: F401
+from tests.demo import client_for, user
 
 LIST = "/api/v1/notifications"
 

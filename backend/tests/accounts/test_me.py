@@ -8,7 +8,7 @@ from simario.core import clock
 from simario.devtools.seed import legacy_uuid
 from simario.domain.access import holdings_of
 from simario.org.models import PositionDelegate, PositionOccupancy
-from tests.demo import client_for, demo, uid, user  # noqa: F401
+from tests.demo import client_for, uid, user
 from tests.vectors import _demo
 
 ME = "/api/v1/me"

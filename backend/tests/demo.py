@@ -1,15 +1,9 @@
 """Shared helpers for API tests that run on the demo seed."""
 
-import pytest
 from rest_framework.test import APIClient
 
 from simario.accounts.models import User
-from simario.devtools.seed import legacy_uuid, load_demo
-
-
-@pytest.fixture
-def demo(db: None) -> None:
-    load_demo()
+from simario.devtools.seed import legacy_uuid
 
 
 def user(prototype_id: str) -> User:
