@@ -147,7 +147,7 @@ Sebuah tahap boleh dilaporkan selesai hanya bila:
 3. Setiap halaman di tahap itu sudah dibandingkan dengan frame `.pen`-nya (screenshot frame lewat MCP Pencil vs. tampilan di browser) pada 1440 px dan 390 px.
 4. Semua keadaan di note frame tersedia: kosong, memuat (skeleton), galat (+ "Coba Lagi"), Operator, read-only/arsip — sesuai yang berlaku.
 5. Sudah dicoba manual dengan persona yang relevan (lihat "Skenario uji" tiap tahap).
-6. Ada komit git dengan pesan `Checkpoint N: <ringkasan>`.
+6. Ada komit git dengan pesan `feat: <ringkasan> (checkpoint N)`.
 
 **Laporan checkpoint** (Bahasa Indonesia, singkat): apa yang selesai, cara mencobanya (persona + tanggal simulasi + URL), aturan yang diuji, perbedaan dari mockup/PRD beserta alasannya, dan apa yang tertunda. Lalu tanya: "Lanjut ke Tahap N+1?"
 
@@ -359,7 +359,7 @@ npm run lint
 ## 11. Git
 
 - Repositori di root `simario2/`; `.gitignore` mencakup `node_modules`, `dist`, `.env*`.
-- Komit kecil per tahap/fitur, pesan dalam bahasa Inggris berbentuk imperatif (`Add assessment comparison rules`).
+- Komit kecil per tahap/fitur. Pesan berformat `tipe: deskripsi` **tanpa scope**, deskripsi bahasa Inggris berbentuk imperatif huruf kecil (`feat: add assessment comparison rules`). Tipe: `feat` (fitur), `fix` (perbaikan), `docs` (dokumen, PRD, spesifikasi), `style` (tampilan tanpa ubah perilaku), `refactor`, `test`, `chore` (konfigurasi, build, alat).
 - **Tanpa baris `Co-Authored-By` atau atribusi Claude apa pun** di pesan komit (permintaan pengguna).
 - Jangan push atau membuat remote tanpa permintaan pengguna.
 

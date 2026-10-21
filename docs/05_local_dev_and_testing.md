@@ -187,7 +187,7 @@ Skenario per user story ada di [06_user_stories.md](06_user_stories.md).
 3. Keadaan kosong, memuat, galat + "Coba Lagi", Operator, read-only/arsip tersedia sesuai note frame.
 4. Dicoba manual dengan persona yang relevan.
 5. Bila bentuk data/seed berubah: `SCHEMA_VERSION` naik.
-6. Pesan komit bahasa Inggris, imperatif, **tanpa** baris `Co-Authored-By` atau atribusi Claude (CLAUDE.md §11). Checkpoint tahap: `Checkpoint N: <ringkasan>`.
+6. Pesan komit `tipe: deskripsi` tanpa scope (`feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`), bahasa Inggris imperatif, **tanpa** baris `Co-Authored-By` atau atribusi Claude (CLAUDE.md §11). Checkpoint tahap: `feat: <ringkasan> (checkpoint N)`.
 
 ## 10. Rilis demo (Netlify)
 
