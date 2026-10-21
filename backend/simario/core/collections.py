@@ -292,7 +292,8 @@ class ScoreOptionRow(serializers.ModelSerializer[ScoreOption]):
 
 
 def _qs(model: Any, *order: str) -> QuerySet[Any]:
-    return model.objects.order_by(*order) if order else model.objects.all()
+    queryset: QuerySet[Any] = model.objects.all()
+    return queryset.order_by(*order) if order else queryset
 
 
 # name (prototype DB key) → (queryset factory, row serializer)
