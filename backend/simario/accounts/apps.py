@@ -17,4 +17,5 @@ class AccountsConfig(AppConfig):
             if request is not None and hasattr(request, "session"):
                 request.session[SESSION_EPOCH_KEY] = user.auth_epoch
 
-        user_logged_in.connect(remember_epoch, dispatch_uid="simario_remember_epoch")
+        # weak=False: a nested function has no other reference and would be collected.
+        user_logged_in.connect(remember_epoch, weak=False, dispatch_uid="simario_remember_epoch")
