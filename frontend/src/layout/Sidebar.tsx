@@ -15,7 +15,6 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { CapacityChip, LineChip } from '@/components';
-import { authApi } from '@/data/repository';
 import { useDb } from '@/data/local/store';
 import { ROLE_VIEW_LABEL } from '@/domain/permissions';
 import { positionLine } from '@/domain/rules/access';
@@ -23,6 +22,7 @@ import type { Line } from '@/domain/types';
 import { initials } from '@/lib/format';
 import { applyTheme, getTheme } from '@/lib/theme';
 import { useSession } from '@/state/session';
+import { chooseActivePosition, signOutEverywhere } from '@/state/me';
 import { useAuth } from '@/state/useAuth';
 import { isActive, navFor } from './nav';
 import './Shell.css';
@@ -50,7 +50,7 @@ function useDismiss(open: boolean, close: () => void) {
 function PositionSwitcher({ onNavigate }: { onNavigate?: () => void }) {
   const auth = useAuth();
   const db = useDb((s) => s.db);
-  const setActive = useSession((s) => s.setActivePosition);
+  const setActive = chooseActivePosition;
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const ref = useDismiss(open, () => setOpen(false));
@@ -226,8 +226,7 @@ function UserBlock({ onNavigate }: { onNavigate?: () => void }) {
             role="menuitem"
             className="user-menu__item user-menu__item--danger"
             onClick={() => {
-              authApi.signOut();
-              navigate('/login');
+              void signOutEverywhere().then(() => navigate('/login'));
             }}
           >
             <LogOut aria-hidden /> Keluar

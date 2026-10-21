@@ -1,11 +1,18 @@
 import { BellOff, CheckCheck } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { EmptyState, FilterPills, NotificationItem, PageHeader, Pagination } from '@/components';
-import { notificationApi } from '@/data/repository';
-import { useDb } from '@/data/local/store';
+import {
+  EmptyState,
+  FilterPills,
+  InlineAlert,
+  NotificationItem,
+  PageHeader,
+  Pagination,
+  Skeleton,
+} from '@/components';
 import type { Notification } from '@/domain/types';
 import { usePageMeta } from '@/layout/pageMeta';
 import { kindLabel } from '@/lib/notificationKinds';
+import { useNotifications } from '@/state/notifications';
 import { useAuth } from '@/state/useAuth';
 import '@/components/NotificationPanel/NotificationPanel.css';
 import './Notifications.css';
@@ -21,9 +28,8 @@ export default function NotificationsPage() {
   const kinds = params.get('jenis')?.split(',').filter(Boolean) ?? [];
   const status = params.get('status') ?? '';
   const page = Math.max(1, Number(params.get('halaman') ?? 1));
-  const all = useDb((s) => s.db.notifications)
-    .filter((n) => n.userId === auth.user.id)
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const ntf = useNotifications(auth.user.id);
+  const all = ntf.items;
 
   const set = (patch: Record<string, string | null>) => {
     const next = new URLSearchParams(params);
@@ -43,6 +49,23 @@ export default function NotificationsPage() {
   const shown = filtered.slice((page - 1) * PAGE, page * PAGE);
   const unread = all.filter((n) => !n.readAt).length;
 
+  if (ntf.error)
+    return (
+      <div className="ntf-page">
+        <InlineAlert variant="error" title="Notifikasi tidak dapat dimuat" onRetry={ntf.retry}>
+          {ntf.error}
+        </InlineAlert>
+      </div>
+    );
+  if (!ntf.loaded)
+    return (
+      <div className="ntf-page" role="status" aria-live="polite">
+        <Skeleton height={28} width="40%" />
+        <Skeleton height={64} />
+        <Skeleton height={64} />
+      </div>
+    );
+
   return (
     <div className="ntf-page">
       <PageHeader
@@ -53,7 +76,7 @@ export default function NotificationsPage() {
             <button
               type="button"
               className="btn btn--secondary"
-              onClick={() => void notificationApi.markAllRead(auth.user.id)}
+              onClick={() => void ntf.markAllRead()}
             >
               <CheckCheck className="btn__icon" aria-hidden />
               <span>Tandai semua sudah dibaca</span>
@@ -118,7 +141,7 @@ export default function NotificationsPage() {
                 n={n}
                 relative={false}
                 onOpen={(x) => {
-                  void notificationApi.markRead(x.id);
+                  void ntf.markRead(x.id);
                   navigate(x.targetUrl);
                 }}
               />

@@ -1,0 +1,162 @@
+// Test fake of the B1 backend endpoints over the local store, so page tests keep running on
+// the prototype seed: /me comes from meFromLocal, sign-in/notifications from the local
+// implementations. Requests arrive through the real client (UUIDs from the id bridge).
+
+import { ApiError } from '@/data/errors';
+import { toLocalIds } from '@/data/http/legacyIds';
+import { localAuthApi, localNotificationApi } from '@/data/local/authApi';
+import { getDb, useDb } from '@/data/local/store';
+import { staffDirectory } from '@/data/seed';
+import { holdingsOf } from '@/domain/rules/access';
+import { today, useClock } from '@/state/clock';
+import { useSession } from '@/state/session';
+import { meFromLocal } from './meFromLocal';
+
+type Reply = { status: number; body?: unknown };
+type Handler = (match: RegExpMatchArray, body: Record<string, unknown>) => Promise<Reply> | Reply;
+
+const json = (body: unknown, status = 200): Reply => ({ status, body });
+const fail = (code: string, message: string, status: number): Reply =>
+  json({ code, message, details: null }, status);
+const noContent: Reply = { status: 204 };
+
+const signInReply = (o: { ok: true; userId: string } | { ok: false; message: string }) =>
+  o.ok
+    ? json(o)
+    : o.message.startsWith('Akun dikunci')
+      ? fail('locked_out', o.message, 423)
+      : fail('login_failed', o.message, 401);
+
+const userId = () => useSession.getState().userId;
+
+const ROUTES: [string, RegExp, Handler][] = [
+  ['GET', /^\/api\/v1\/auth\/config$/, () => json({ devTools: true, oidcEnabled: true })],
+  [
+    'GET',
+    /^\/api\/v1\/me$/,
+    () => {
+      const me = userId() && meFromLocal(getDb(), userId()!, today());
+      return me ? json(me) : fail('unauthenticated', 'Sesi Anda berakhir.', 401);
+    },
+  ],
+  ['PUT', /^\/api\/v1\/me\/active-position$/, () => noContent],
+  [
+    'POST',
+    /^\/api\/v1\/dev\/impersonate$/,
+    async (_, b) => signInReply(await localAuthApi.signInSso(String(b.nip))),
+  ],
+  [
+    'POST',
+    /^\/api\/v1\/auth\/login$/,
+    async (_, b) => signInReply(await localAuthApi.signInLocal(String(b.nip), String(b.password))),
+  ],
+  [
+    'POST',
+    /^\/api\/v1\/auth\/logout$/,
+    () => {
+      useSession.getState().signOut();
+      return noContent;
+    },
+  ],
+  [
+    'POST',
+    /^\/api\/v1\/auth\/password$/,
+    async (_, b) => {
+      await localAuthApi.changePassword(userId()!, b as { newPassword: string });
+      return noContent;
+    },
+  ],
+  [
+    'GET',
+    /^\/api\/v1\/notifications$/,
+    async () => {
+      const results = await localNotificationApi.list(userId()!);
+      return json({ results, page: 1, pageSize: results.length, total: results.length });
+    },
+  ],
+  [
+    'POST',
+    /^\/api\/v1\/notifications\/read-all$/,
+    async () => {
+      await localNotificationApi.markAllRead(userId()!);
+      return noContent;
+    },
+  ],
+  [
+    'POST',
+    /^\/api\/v1\/notifications\/([^/]+)\/read$/,
+    async (m) => {
+      await localNotificationApi.markRead(m[1]!);
+      return noContent;
+    },
+  ],
+  [
+    'GET',
+    /^\/api\/v1\/dev\/personas$/,
+    () => {
+      const db = getDb();
+      const day = today();
+      return json({
+        personas: db.users.map((u) => ({
+          userId: u.id,
+          nip: u.nip,
+          fullName: u.fullName,
+          active: u.active,
+          holdings: holdingsOf(db, u.id, day).map((h) => ({
+            positionName: db.positions.find((p) => p.id === h.positionId)!.name,
+            line: h.line,
+            capacity: h.capacity,
+          })),
+          roleViews: meFromLocal(db, u.id, day)?.roleViews ?? [],
+        })),
+        unregistered: { nip: staffDirectory[0]!.nip, fullName: staffDirectory[0]!.fullName },
+      });
+    },
+  ],
+  [
+    'POST',
+    /^\/api\/v1\/dev\/clock$/,
+    (_, b) => {
+      useClock.getState().setNow(String(b.at));
+      return json({ serverNow: String(b.at), ran: [] });
+    },
+  ],
+  [
+    'POST',
+    /^\/api\/v1\/dev\/reset$/,
+    (_, b) => {
+      useDb.getState().reset(b.asOf ? String(b.asOf) : undefined);
+      return json({ counts: {} });
+    },
+  ],
+];
+
+/** Installs the fake as global fetch (src/test/setup.ts). */
+export function installFakeBackend() {
+  vi.stubGlobal('fetch', async (input: string, init: RequestInit = {}) => {
+    const url = new URL(input, 'http://localhost');
+    const path = toLocalIds(url.pathname);
+    const method = (init.method ?? 'GET').toUpperCase();
+    const body = toLocalIds(
+      typeof init.body === 'string' ? (JSON.parse(init.body) as Record<string, unknown>) : {},
+    );
+    let reply: Reply = fail('not_found', 'Data tidak ditemukan.', 404);
+    for (const [m, re, handler] of ROUTES) {
+      const match = method === m ? path.match(re) : null;
+      if (!match) continue;
+      try {
+        reply = await handler(match, body);
+      } catch (e) {
+        reply =
+          e instanceof ApiError
+            ? fail(e.code, e.message, e.code === 'forbidden' ? 403 : 422)
+            : fail('server', String(e), 500);
+      }
+      break;
+    }
+    return new Response(reply.status === 204 ? null : JSON.stringify(reply.body ?? null), {
+      status: reply.status,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  });
+}

@@ -60,7 +60,13 @@ export async function apiFetch<T>(path: string, init: FetchInit = {}): Promise<T
     if (value !== undefined) url.searchParams.set(key, String(toBackendIds(value)));
   const headers: Record<string, string> = { Accept: 'application/json' };
   if (init.body !== undefined) headers['Content-Type'] = 'application/json';
-  if (method !== 'GET') headers['X-CSRFToken'] = csrfToken();
+  if (method !== 'GET') {
+    // A fresh browser (or a session restored from its cookie) has no CSRF cookie yet;
+    // GET /auth/config sets it.
+    if (!csrfToken())
+      await fetch(`${BASE}/auth/config`, { credentials: 'same-origin' }).catch(() => undefined);
+    headers['X-CSRFToken'] = csrfToken();
+  }
 
   let res: Response;
   try {

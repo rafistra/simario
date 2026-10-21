@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDb } from '@/data/local/store';
 import { lini1PositionsInScope } from '@/domain/rules/access';
 import { useFocusTrap } from '@/lib/useFocusTrap';
+import { useNotifications } from '@/state/notifications';
 import { useAuth } from '@/state/useAuth';
 import { navFor } from './nav';
 import { NotificationPanel } from '@/components/NotificationPanel/NotificationPanel';
@@ -84,9 +85,7 @@ function SearchDialog({ onClose }: { onClose: () => void }) {
 export function Topbar({ onMenu }: { onMenu: () => void }) {
   const auth = useAuth();
   const { crumbs, context } = usePageMetaStore();
-  const unread = useDb(
-    (s) => s.db.notifications.filter((n) => n.userId === auth.user.id && !n.readAt).length,
-  );
+  const { unread } = useNotifications(auth.user.id);
   const [searching, setSearching] = useState(false);
   const [panel, setPanel] = useState(false);
 

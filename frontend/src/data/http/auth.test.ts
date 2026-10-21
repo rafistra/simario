@@ -24,7 +24,7 @@ describe('authApi over HTTP', () => {
       ok: true,
       userId: 'usr-andi',
     });
-    expect(calls[0]!.body).toEqual({ nip: '198204172008011003' });
+    expect(calls.find((c) => c.method === 'POST')!.body).toEqual({ nip: '198204172008011003' });
   });
 
   it('still throws errors that are not sign-in refusals', async () => {

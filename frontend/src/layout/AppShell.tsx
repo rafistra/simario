@@ -1,11 +1,13 @@
 import { UserCog, X } from 'lucide-react';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { InlineAlert } from '@/components';
-import { authApi, preferenceApi } from '@/data/repository';
+import { InlineAlert, Skeleton } from '@/components';
+import { setUnauthenticatedHandler } from '@/data/http/client';
+import { preferenceApi } from '@/data/repository';
 import { useFocusTrap } from '@/lib/useFocusTrap';
 import { useDevSettings } from '@/state/devSettings';
 import { ErrorBoundary } from '@/pages/faults/FaultPages';
+import { signOutEverywhere, useMe } from '@/state/me';
 import { useMaybeAuth } from '@/state/useAuth';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
@@ -44,7 +46,7 @@ function useIdleSignOut() {
     const id = window.setInterval(() => {
       if (Date.now() - last.current > idleMinutes * 60_000) {
         // Drafts autosave as they are typed, so nothing is lost when the session ends.
-        authApi.signOut();
+        void signOutEverywhere();
         navigate(`/login?alasan=sesi-berakhir&kembali=${encodeURIComponent(path.current)}`);
       }
     }, 15_000);
@@ -53,6 +55,12 @@ function useIdleSignOut() {
       window.clearInterval(id);
     };
   }, [idleMinutes, navigate]);
+
+  // A 401 from the API (expired or invalidated session, FR-AUT-008) ends the session here too.
+  useEffect(() => {
+    setUnauthenticatedHandler(() => useMe.getState().expire());
+    return () => setUnauthenticatedHandler(null);
+  }, []);
 }
 
 function Drawer({
@@ -89,6 +97,8 @@ function Drawer({
 /** Authenticated shell: sidebar 240 (drawer < 900 px), sticky topbar, content max 1200. */
 export function AppShell({ children }: { children?: ReactNode }) {
   const auth = useMaybeAuth();
+  const meStatus = useMe((s) => s.status);
+  const meError = useMe((s) => s.error);
   const location = useLocation();
   const offline = useDevSettings((s) => s.offline);
   const [drawer, setDrawer] = useState(false);
@@ -107,9 +117,30 @@ export function AppShell({ children }: { children?: ReactNode }) {
 
   useEffect(() => setDrawer(false), [location.pathname]);
 
+  if (!auth && (meStatus === 'idle' || meStatus === 'loading'))
+    return (
+      <div className="shell__boot" role="status" aria-live="polite">
+        <Skeleton height={24} width="40%" />
+        <Skeleton height={16} />
+        <Skeleton height={16} width="70%" />
+      </div>
+    );
+  if (!auth && meStatus === 'error')
+    return (
+      <div className="shell__boot">
+        <InlineAlert
+          variant="error"
+          title="Tidak dapat terhubung ke server"
+          onRetry={() => void useMe.getState().refresh()}
+        >
+          {meError}
+        </InlineAlert>
+      </div>
+    );
   if (!auth) {
     const kembali = encodeURIComponent(location.pathname + location.search);
-    return <Navigate to={`/login?kembali=${kembali}`} replace />;
+    const reason = meStatus === 'expired' ? 'alasan=sesi-berakhir&' : '';
+    return <Navigate to={`/login?${reason}kembali=${kembali}`} replace />;
   }
   if (auth.user.mustChangePassword) return <Navigate to="/ganti-kata-sandi" replace />;
 

@@ -1185,3 +1185,13 @@ button.bell {
   scrollbar-width: thin;
   scrollbar-color: var(--border-strong) transparent;
 }
+
+/* Signed-in context loading from the backend (GET /api/v1/me) or unreachable. */
+.shell__boot {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 480px;
+  margin: 96px auto;
+  padding: 0 16px;
+}

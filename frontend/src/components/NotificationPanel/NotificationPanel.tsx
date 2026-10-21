@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { notificationApi } from '@/data/repository';
-import { useDb } from '@/data/local/store';
+import { useNotifications } from '@/state/notifications';
 import type { Notification } from '@/domain/types';
 import { formatDateTime, formatRelative } from '@/lib/format';
 import { kindLabel, NOTIFICATION_KINDS } from '@/lib/notificationKinds';
@@ -44,10 +43,8 @@ export function NotificationItem({
 export function NotificationPanel({ userId, onClose }: { userId: string; onClose: () => void }) {
   const ref = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const items = useDb((s) => s.db.notifications)
-    .filter((n) => n.userId === userId)
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-    .slice(0, 20);
+  const ntf = useNotifications(userId);
+  const items = ntf.items.slice(0, 20);
   const unread = items.some((n) => !n.readAt);
 
   useEffect(() => {
@@ -66,7 +63,7 @@ export function NotificationPanel({ userId, onClose }: { userId: string; onClose
   }, [onClose]);
 
   const open = (n: Notification) => {
-    void notificationApi.markRead(n.id);
+    void ntf.markRead(n.id);
     onClose();
     navigate(n.targetUrl);
   };
@@ -79,7 +76,7 @@ export function NotificationPanel({ userId, onClose }: { userId: string; onClose
           <button
             type="button"
             className="text-link ntf-panel__all"
-            onClick={() => void notificationApi.markAllRead(userId)}
+            onClick={() => void ntf.markAllRead()}
           >
             Tandai semua sudah dibaca
           </button>

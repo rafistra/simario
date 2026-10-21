@@ -14,7 +14,7 @@ import { useDb } from '@/data/local/store';
 import { canReadPosition, officialsOf, positionLine } from '@/domain/rules/access';
 import type { Position } from '@/domain/types';
 import { ForbiddenPage, NotFoundPage } from '@/pages/faults/FaultPages';
-import { useSession } from '@/state/session';
+import { chooseActivePosition } from '@/state/me';
 import { useAuth } from '@/state/useAuth';
 import { workspacePaths } from './nav';
 import './Shell.css';
@@ -40,7 +40,7 @@ export function WorkspaceLayout() {
   const [search] = useSearchParams();
   const auth = useAuth();
   const db = useDb((s) => s.db);
-  const setActive = useSession((s) => s.setActivePosition);
+  const setActive = chooseActivePosition;
   const { pathname } = useLocation();
   const navigate = useNavigate();
 

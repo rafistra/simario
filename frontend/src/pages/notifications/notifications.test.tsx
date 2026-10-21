@@ -18,29 +18,33 @@ beforeEach(() => {
 
 describe('Notifikasi', () => {
   it('opens the panel from the bell and marks everything read', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch');
     render(
       <MemoryRouter>
         <Topbar onMenu={() => {}} />
       </MemoryRouter>,
     );
-    fireEvent.click(screen.getByRole('button', { name: /^Notifikasi, \d+ belum dibaca$/ }));
+    fireEvent.click(await screen.findByRole('button', { name: /^Notifikasi, \d+ belum dibaca$/ }));
     const panel = screen.getByRole('dialog', { name: 'Notifikasi' });
-    expect(within(panel).getByText(/Perbandingan TW I PPK A-1 dibuka/)).toBeInTheDocument();
+    expect(await within(panel).findByText(/Perbandingan TW I PPK A-1 dibuka/)).toBeInTheDocument();
     fireEvent.click(within(panel).getByRole('button', { name: 'Tandai semua sudah dibaca' }));
     await act(async () => {});
     expect(getDb().notifications.filter((n) => n.userId === 'usr-andi' && !n.readAt)).toHaveLength(
       0,
     );
+    expect(fetchSpy.mock.calls.map((c) => String(c[0]))).toContain(
+      '/api/v1/notifications/read-all',
+    );
   });
 
-  it('filters by kind on the full page', () => {
+  it('filters by kind on the full page', async () => {
     render(
       <MemoryRouter initialEntries={['/notifikasi']}>
         <NotificationsPage />
       </MemoryRouter>,
     );
     fireEvent.click(
-      within(screen.getByRole('group', { name: 'Jenis' })).getByRole('button', {
+      within(await screen.findByRole('group', { name: 'Jenis' })).getByRole('button', {
         name: /^Berulang/,
       }),
     );

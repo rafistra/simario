@@ -1,23 +1,27 @@
-// Derived signed-in context: user, holdings, acting holding, permissions, role views.
+// Signed-in context for pages: user, holdings, acting holding, permissions, role views — built
+// from GET /api/v1/me (state/me.ts). The acting position and role view are chosen locally.
 
 import { useMemo } from 'react';
-import { useDb } from '@/data/local/store';
-import type { DB } from '@/data/db';
-import { quarterContaining } from '@/domain/calendar';
+import type { MeResponse } from '@/data/http/me';
 import type { RoleViewCode } from '@/domain/permissions';
-import {
-  effectiveRoleIds,
-  finalisingOfficial,
-  holdingsOf,
-  permissionScopes,
-  type Holding,
-} from '@/domain/rules/access';
-import type { Position, Quarter, Scope, User } from '@/domain/types';
-import { today as todayFn, useNow } from './clock';
+import type { Holding } from '@/domain/rules/access';
+import type { Position, Quarter, Scope } from '@/domain/types';
+import { today as todayFn } from './clock';
+import { useMe } from './me';
 import { useSession } from './session';
 
+export interface AuthUser {
+  id: string;
+  nip: string;
+  email: string;
+  fullName: string;
+  isLocalAccount: boolean;
+  mustChangePassword: boolean;
+  orgUnitId: string | null;
+}
+
 export interface AuthContext {
-  user: User;
+  user: AuthUser;
   today: string;
   holdings: Holding[];
   /** The holding the user acts through (switcher card); null when holding no position. */
@@ -30,60 +34,53 @@ export interface AuthContext {
   currentFiscalYear: number;
 }
 
-const VIEW_ORDER: RoleViewCode[] = ['PMR', 'PMT', 'PJM', 'PMD', 'SAD'];
-
-export function buildAuthContext(
-  db: DB,
-  userId: string,
-  day: string,
+export function authFromMe(
+  me: MeResponse,
   activePositionId: string | null,
   chosenView: RoleViewCode | null,
-): AuthContext | null {
-  const user = db.users.find((u) => u.id === userId);
-  if (!user || !user.active) return null;
-  const holdings = holdingsOf(db, userId, day);
-  const holding = holdings.find((h) => h.positionId === activePositionId) ?? holdings[0] ?? null;
-  const permissions = permissionScopes(db, userId, day);
-  const roleCodes = effectiveRoleIds(db, userId, day)
-    .map((id) => db.roles.find((r) => r.id === id)?.code as RoleViewCode)
-    .filter(Boolean);
-  const roleViews = VIEW_ORDER.filter((v) => roleCodes.includes(v));
-
-  let active: AuthContext['active'] = null;
-  if (holding) {
-    const position = db.positions.find((p) => p.id === holding.positionId)!;
-    active = {
-      ...holding,
-      position,
-      unitCode: db.orgUnits.find((o) => o.id === position.orgUnitId)?.code ?? '',
-      officialName: finalisingOfficial(db, position.id, day)?.fullName ?? null,
-    };
-  }
-
-  // Default view: the acting holding's line role, else the first manual role.
-  const holdingView = active
-    ? (db.roles.find(
-        (r) =>
-          r.id ===
-          db.positionTypes.find((t) => t.id === active!.position.positionTypeId)?.defaultRoleId,
-      )?.code as RoleViewCode | undefined)
-    : undefined;
+): AuthContext {
+  const holdings = me.holdings as unknown as (Holding & {
+    position: Position;
+    unitCode: string;
+    officialName: string | null;
+    roleView: RoleViewCode | null;
+  })[];
+  const picked =
+    holdings.find((h) => h.positionId === activePositionId) ??
+    holdings.find((h) => h.positionId === me.activePositionId) ??
+    holdings[0] ??
+    null;
+  const roleViews = me.roleViews as RoleViewCode[];
+  const permissions = new Map(me.permissions.map((p) => [p.code, p.scope as Scope | null]));
+  const active = picked
+    ? (({ roleView: _view, ...h }) => {
+        void _view;
+        return h;
+      })(picked)
+    : null;
+  // Default view: the acting holding's line role, else the last role view.
   const roleView =
     chosenView && roleViews.includes(chosenView)
       ? chosenView
-      : (holdingView ?? roleViews[roleViews.length - 1] ?? null);
-
+      : (picked?.roleView ?? roleViews[roleViews.length - 1] ?? null);
   return {
-    user,
-    today: day,
-    holdings,
+    user: me.user as AuthUser,
+    today: me.today,
+    holdings: holdings.map(({ kind, id, positionId, capacity, line, isFiller }) => ({
+      kind,
+      id,
+      positionId,
+      capacity,
+      line,
+      isFiller,
+    })),
     active,
     permissions,
     can: (code) => permissions.has(code),
     roleViews,
     roleView,
-    currentQuarter: quarterContaining(db.quarters, day),
-    currentFiscalYear: Number(day.slice(0, 4)),
+    currentQuarter: (me.currentQuarter ?? undefined) as Quarter | undefined,
+    currentFiscalYear: Number(me.today.slice(0, 4)),
   };
 }
 
@@ -95,12 +92,11 @@ export function useAuth(): AuthContext {
 }
 
 export function useMaybeAuth(): AuthContext | null {
-  const db = useDb((s) => s.db);
-  const { userId, activePositionId, roleView } = useSession();
-  const day = useNow(60_000).slice(0, 10);
+  const me = useMe((s) => s.me);
+  const { activePositionId, roleView } = useSession();
   return useMemo(
-    () => (userId ? buildAuthContext(db, userId, day, activePositionId, roleView) : null),
-    [db, userId, day, activePositionId, roleView],
+    () => (me ? authFromMe(me, activePositionId, roleView) : null),
+    [me, activePositionId, roleView],
   );
 }
 

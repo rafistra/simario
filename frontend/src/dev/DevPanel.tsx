@@ -2,7 +2,7 @@ import { FlaskConical, MessageSquarePlus, Moon, RotateCcw, Sun, X } from 'lucide
 import { useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, ConfirmDialog, Select, Toggle, toast } from '@/components';
-import { authApi } from '@/data/repository';
+import { devApi } from '@/data/http/dev';
 import { runScheduledTasks } from '@/data/local/scheduler';
 import { useDb } from '@/data/local/store';
 import { useFocusTrap } from '@/lib/useFocusTrap';
@@ -10,6 +10,7 @@ import { formatDateTime } from '@/lib/format';
 import { applyTheme, getTheme, type Theme } from '@/lib/theme';
 import { DEFAULT_NOW, useClock, useNow } from '@/state/clock';
 import { useDevSettings } from '@/state/devSettings';
+import { useMe } from '@/state/me';
 import { useSession } from '@/state/session';
 import { simulateIncomingComment } from './simulate';
 import './DevPanel.css';
@@ -36,16 +37,33 @@ export function DevPanel() {
   const users = useDb((s) => s.db.users);
   const reset = useDb((s) => s.reset);
   const userId = useSession((s) => s.userId);
-  const setNow = useClock((s) => s.setNow);
+  // The backend keeps its own simulated clock and data (spec §4.5); move both together.
+  const setNow = (at: string) => {
+    useClock.getState().setNow(at);
+    devApi
+      .setClock(at)
+      .then(() => useMe.getState().refresh())
+      .catch((e: Error) => toast.error('Jam server tidak dapat digeser', e.message));
+  };
+  const resetBackend = async (asOf?: string) => {
+    const nip = users.find((u) => u.id === userId)?.nip;
+    try {
+      await devApi.reset(asOf);
+      if (nip) await devApi.impersonate(nip);
+      await useMe.getState().refresh();
+    } catch (e) {
+      toast.error('Data server tidak dapat diatur ulang', (e as Error).message);
+    }
+  };
   const now = useNow(10_000);
   const dev = useDevSettings();
 
   const signInAs = async (id: string) => {
     const user = users.find((u) => u.id === id);
     if (!user) return;
-    authApi.signOut();
-    const outcome = await authApi.signInSso(user.nip);
+    const outcome = await devApi.impersonate(user.nip);
     if (!outcome.ok) toast.error('Tidak dapat masuk', outcome.message);
+    else await useMe.getState().refresh();
     navigate('/');
   };
 
@@ -216,6 +234,7 @@ export function DevPanel() {
         onCancel={() => setConfirmReset(false)}
         onConfirm={() => {
           reset();
+          void resetBackend();
           setConfirmReset(false);
           toast.success('Data contoh dipulihkan', 'Semua perubahan di browser ini dihapus.');
         }}
@@ -231,6 +250,7 @@ export function DevPanel() {
         onConfirm={() => {
           reset(now);
           runScheduledTasks();
+          void resetBackend(now);
           setConfirmAsOf(false);
           toast.success(
             'Data contoh disesuaikan',

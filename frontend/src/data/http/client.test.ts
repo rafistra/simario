@@ -34,6 +34,23 @@ describe('apiFetch', () => {
     expect(calls[0]!.headers['X-CSRFToken']).toBe('abc123');
   });
 
+  it('fetches the CSRF cookie first when a write has none', async () => {
+    document.cookie = 'csrftoken=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    const calls = mockFetch({
+      'GET /api/v1/auth/config': () => {
+        document.cookie = 'csrftoken=fresh1';
+        return { body: { devTools: true, oidcEnabled: true } };
+      },
+      'POST /api/v1/x': () => ({ status: 204 }),
+    });
+    await apiFetch('/x', { method: 'POST' });
+    expect(calls.map((c) => `${c.method} ${c.path}`)).toEqual([
+      'GET /api/v1/auth/config',
+      'POST /api/v1/x',
+    ]);
+    expect(calls[1]!.headers['X-CSRFToken']).toBe('fresh1');
+  });
+
   it('calls the handler on 401 unauthenticated only', async () => {
     const handler = vi.fn();
     setUnauthenticatedHandler(handler);

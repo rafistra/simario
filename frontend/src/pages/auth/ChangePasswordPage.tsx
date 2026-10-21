@@ -5,6 +5,7 @@ import { Button, Card, InlineAlert, PageHeader, TextInput, toast } from '@/compo
 import { authApi } from '@/data/repository';
 import { AppShell } from '@/layout/AppShell';
 import { usePageMeta } from '@/layout/pageMeta';
+import { useMe } from '@/state/me';
 import { useMaybeAuth } from '@/state/useAuth';
 import { AuthLayout } from './AuthLayout';
 
@@ -21,7 +22,8 @@ function PasswordForm({ forced, onDone }: { forced: boolean; onDone: () => void 
     { label: 'Minimal 12 karakter', ok: newPw.length >= 12 },
     {
       label: forced ? 'Berbeda dari kata sandi awal' : 'Berbeda dari kata sandi lama',
-      ok: newPw.length > 0 && newPw !== (forced ? auth.user.password : oldPw),
+      // The initial password stays on the server, which rejects it with "same" (shown below).
+      ok: newPw.length > 0 && (forced || newPw !== oldPw),
     },
     { label: 'Kedua kata sandi sama', ok: repeat.length > 0 && repeat === newPw },
   ];
@@ -38,6 +40,7 @@ function PasswordForm({ forced, onDone }: { forced: boolean; onDone: () => void 
         oldPassword: forced ? undefined : oldPw,
         newPassword: newPw,
       });
+      await useMe.getState().refresh();
       toast.success('Kata sandi berhasil diubah');
       onDone();
     } catch (err) {
