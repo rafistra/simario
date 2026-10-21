@@ -15,6 +15,7 @@ urlpatterns = [
     path("api/v1/", include("simario.imports.urls")),
     path("api/v1/", include("simario.registers.urls")),
     path("api/v1/", include("simario.board.urls")),
+    path("api/v1/", include("simario.assessments.urls")),
 ]
 
 if settings.DEBUG:

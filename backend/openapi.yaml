@@ -3,6 +3,27 @@ info:
   title: SIMARIO API
   version: '1'
 paths:
+  /api/v1/assessment-queue:
+    get:
+      operationId: assessment_queue_retrieve
+      description: 'GET: the Lini 3 queue (`QueueView`, FR-NIL-010).'
+      parameters:
+      - in: query
+        name: quarterId
+        schema:
+          type: string
+      tags:
+      - assessments
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
   /api/v1/attachments/{id}:
     patch:
       operationId: attachments_partial_update
@@ -817,6 +838,82 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Id'
+          description: ''
+  /api/v1/positions/{id}/assessments/{year}/{tw}:
+    get:
+      operationId: positions_assessments_retrieve
+      description: |-
+        GET: the assessment page of a position and quarter (`AssessmentView`, FR-NIL-001). With
+        `?blind=1` and permission 24 the Superadmin sees unopened assessments; every such view is
+        audit-logged (FR-NIL-012).
+      parameters:
+      - in: query
+        name: blind
+        schema:
+          type: boolean
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: tw
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - assessments
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/positions/{id}/assessments/{year}/{tw}/finalise-preview:
+    get:
+      operationId: positions_assessments_finalise_preview_retrieve
+      parameters:
+      - in: query
+        name: assessorPositionId
+        schema:
+          type: string
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: tw
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - assessments
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
           description: ''
   /api/v1/positions/{id}/board/{year}:
     get:
