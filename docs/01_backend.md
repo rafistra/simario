@@ -27,7 +27,7 @@ Dokumen ini menjelaskan **target backend** menurut PRD dan **apa yang perlu dipi
 | Kerangka | Django 5 + Django REST Framework |
 | Asinkron & terjadwal | Celery + Redis; Celery Beat untuk pengingat tenggat, pembukaan perbandingan, deteksi Berulang, arsip |
 | Basis data | PostgreSQL 16 |
-| Penyimpanan objek | MinIO, terpisah dari basis data, untuk lampiran dan berkas SK/surat — **diganti RustFS** (§2.1) |
+| Penyimpanan objek | RustFS (kompatibel S3), terpisah dari basis data, untuk lampiran dan berkas SK/surat — PRD v2.9.1 (sebelumnya MinIO) |
 | Autentikasi | Keycloak (OIDC), realm "Otorita IKN" di sso.ikn.go.id; NIP sebagai pengenal tetap; akun lokal sebagai cadangan |
 | Pemindaian berkas | ClamAV sebelum berkas dapat diunduh (NFR-010) |
 | Penyebaran | Docker Compose di belakang nginx; staging dan produksi terpisah; lingkungan internal OIKN |
@@ -36,7 +36,7 @@ Kebutuhan non-fungsional yang menjadi tanggung jawab backend (PRD §2.3): HTTPS,
 
 ### 2.1 Keputusan stack (21 Okt 2026)
 
-Diputuskan pengguna. Melengkapi PRD §2.1 dengan versi, pustaka, dan pola integrasi. Satu butir **berbeda dari PRD**: penyimpanan objek memakai RustFS, bukan MinIO (PRD §2.1 perlu diperbarui).
+Diputuskan pengguna. Melengkapi PRD §2.1 dengan versi, pustaka, dan pola integrasi. Penyimpanan objek memakai RustFS, bukan MinIO — PRD §2.1 diperbarui di v2.9.1 (22 Okt 2026) dengan alasan dan rencana pengganti.
 
 | Lapisan | Pilihan | Versi | Catatan |
 |---|---|---|---|

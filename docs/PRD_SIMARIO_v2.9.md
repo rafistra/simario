@@ -2,8 +2,8 @@
 
 | | |
 |---|---|
-| **Version** | 2.9 (revision of v2.8 dated 13 October 2026) — collapsible sidebar, full-width content |
-| **Date** | 13 October 2026 |
+| **Version** | 2.9.1 (revision of v2.9 dated 22 October 2026) — object storage RustFS instead of MinIO (§2.1) |
+| **Date** | 22 October 2026 |
 | **Author** | Direktorat Data dan Kecerdasan Buatan, Otorita IKN |
 | **Status** | Ready for development — walkthrough with the process owner completed 11 October 2026 |
 | **Product Owner** | Binsar H. Simanjuntak |
@@ -453,10 +453,12 @@ Taken from the OIKN house stack used by LANTARA and Aksara, so the application i
 | Async / scheduled work | Celery + Redis; Celery Beat for deadline reminders, comparison opening, recurrence detection, archiving |
 | Database | PostgreSQL 16 |
 | Frontend | React 18 + Vite + TypeScript |
-| Object storage | MinIO, separate from the database, for attachments and decree/letter files |
+| Object storage | RustFS (S3-compatible, Apache 2.0), separate from the database, for attachments and decree/letter files. The application uses only the standard S3 API, so another S3-compatible store can replace it without code changes |
 | Authentication | Keycloak (OIDC) against the "Otorita IKN" realm at sso.ikn.go.id, from v1.0. NIP is the stable identifier. Local password accounts are a fallback |
 | Deployment | Docker Compose behind nginx; separate staging and production |
 | Hosting | OIKN internal environment |
+
+**Object storage decision (v2.9.1, 22 October 2026).** RustFS replaces MinIO, the one departure from the house stack. MinIO's community edition has been reduced since 2025 (features moved to the commercial product, community images no longer published as before) and is licensed AGPL-3.0; RustFS is S3-compatible under Apache 2.0 and runs as a single container like MinIO did. Because RustFS is young (stable 1.x only since 2026), the application talks to it only through the standard S3 API (uploads, pre-signed downloads, quarantine by copy and delete), the storage path is covered by integration tests, and backups include every bucket object with a tested restore (NFR-014). If RustFS proves unsuitable before go-live, any S3-compatible store (OIKN internal S3, SeaweedFS, Garage, Ceph RGW) replaces it by configuration only.
 
 ## 2.2 Global Design Provisions
 
@@ -1643,6 +1645,7 @@ The blind-assessment rule (INV-16) and the confidentiality rule (INV-17) are enf
 | 1.0 | 31-08-2026 | Initial version | Direktorat Data dan Kecerdasan Buatan |
 | 2.0 | 02-09-2026 | English rewrite; flags instead of hard gates; data model; SSO in v1.0; attachment security; metrics | Direktorat Data dan Kecerdasan Buatan |
 | 2.1 | 10-10-2026 | Accounts and roles: positions on three lines, Pejabat and Operator, roles following holdings, Lini 2 team assignment, Lini 3 unassigned | Direktorat Data dan Kecerdasan Buatan |
+| 2.9.1 | 22-10-2026 | Object storage RustFS (S3-compatible, Apache 2.0) replaces MinIO in §2.1, with the reason and the fallback | Direktorat Data dan Kecerdasan Buatan |
 | 2.9 | 13-10-2026 | Collapsible sidebar (72 px icon rail on desktop, remembered per user) whose freed width goes to the content; every page uses the full content width (no narrower single-column pages); register stages collapsed by default with collapsible risk type sub-sections | Direktorat Data dan Kecerdasan Buatan |
 | 2.8 | 13-10-2026 | Assessment by statement: scorers pick a configured statement per score value; numeric scores and averages hidden from all user views; ScoreOption added to score band versions | Direktorat Data dan Kecerdasan Buatan |
 | 2.7 | 11-10-2026 | Design system adopted (DesignSystem_SIMARIO.md, Aksara-based): §2.2 rewritten to reference it; position switcher moved from topbar to a sidebar card; full palette hex values | Direktorat Data dan Kecerdasan Buatan |

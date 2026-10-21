@@ -441,9 +441,9 @@ Catatan Tahap B8: app `simario.insights` mem-port `insights.ts` (vektor `metrics
 Hasil:
 - [x] Hapus mode lokal dan gerbang modul; migrasi digabung lalu dibekukan
 - [x] Cadangan & pemulihan diuji; daftar kebutuhan ke tim infrastruktur OIKN
-- [x] `docs/00–07`, `frontend/README.md` diperbarui (PRD §2.1 RustFS menunggu persetujuan pengguna)
+- [x] `docs/00–07`, PRD §2.1 (RustFS, v2.9.1 — disetujui pengguna 22 Okt 2026), `frontend/README.md` diperbarui
 
-Catatan Tahap B9: kode aplikasi tidak lagi membaca store lokal atau `localStorage` untuk data — `data/api`, `data/local`, `data/seed`, `db.ts` pindah ke `src/test/fake/` (backend tiruan Vitest; lint hanya mengizinkan impor tipe, `npm run build` gagal bila store/seed terbundel); fungsi bantu murni ke `src/data/derive/`. Backend menambah `GET /positions/{pos}/workspace` dan preferensi server. Jembatan id dihapus (`legacy-ids.json` hanya untuk tautan demo). `useQuery` kini membedakan kueri baru dari muat ulang (`refresh`), sehingga muat ulang setelah mutasi/polling tidak mengosongkan halaman — banner "komentar baru" sebelumnya tidak pernah muncul di backend. Migrasi dibuat ulang per app (trigger audit dipertahankan) dan sejak ini hanya maju; DB dev lama perlu di-reset sekali. Cadangan/pemulihan `infra/backup/` diuji pada stack dev. Netlify dan gerbang modul dihapus. PRD §2.1 (RustFS) belum diubah karena menunggu persetujuan.
+Catatan Tahap B9: kode aplikasi tidak lagi membaca store lokal atau `localStorage` untuk data — `data/api`, `data/local`, `data/seed`, `db.ts` pindah ke `src/test/fake/` (backend tiruan Vitest; lint hanya mengizinkan impor tipe, `npm run build` gagal bila store/seed terbundel); fungsi bantu murni ke `src/data/derive/`. Backend menambah `GET /positions/{pos}/workspace` dan preferensi server. Jembatan id dihapus (`legacy-ids.json` hanya untuk tautan demo). `useQuery` kini membedakan kueri baru dari muat ulang (`refresh`), sehingga muat ulang setelah mutasi/polling tidak mengosongkan halaman — banner "komentar baru" sebelumnya tidak pernah muncul di backend. Migrasi dibuat ulang per app (trigger audit dipertahankan) dan sejak ini hanya maju; DB dev lama perlu di-reset sekali. Cadangan/pemulihan `infra/backup/` diuji pada stack dev. Netlify dan gerbang modul dihapus. PRD §2.1 diperbarui ke RustFS di v2.9.1 setelah disetujui pengguna.
 
 ## 10. Perintah
 
