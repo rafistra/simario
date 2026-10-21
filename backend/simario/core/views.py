@@ -17,3 +17,12 @@ def health(request: Request) -> Response:
         {"status": "ok" if healthy else "degraded", "checks": checks},
         status=200 if healthy else 503,
     )
+
+
+@extend_schema(exclude=True)
+@api_view(["GET"])
+@authentication_classes([])
+@permission_classes([])
+def health_live(request: Request) -> Response:
+    """Liveness only (compose healthcheck): no dependency checks."""
+    return Response({"status": "ok"})

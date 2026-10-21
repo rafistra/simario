@@ -14,5 +14,9 @@ def s3_client() -> Any:
         aws_access_key_id=settings.S3_ACCESS_KEY,
         aws_secret_access_key=settings.S3_SECRET_KEY,
         region_name="us-east-1",
-        config=Config(connect_timeout=2, read_timeout=2, retries={"max_attempts": 1}),
+        config=Config(
+            connect_timeout=2,
+            read_timeout=2,
+            retries={"total_max_attempts": 1, "mode": "standard"},
+        ),
     )

@@ -55,3 +55,42 @@ def test_unknown_api_path_returns_envelope_in_debug(client: APIClient, settings:
     res = client.get("/api/v1/tidak-ada")
     assert res.status_code == 404
     assert res["Content-Type"].startswith("application/json")
+
+
+def test_parse_error_is_validation(client: APIClient) -> None:
+    res = client.post("/api/v1/echo", "{not json", content_type="application/json")
+    assert res.status_code == 422
+    body = res.json()
+    assert body["code"] == "validation"
+    assert body["message"] == "Isian belum valid."
+    assert "Expecting" not in res.content.decode()
+
+
+def test_method_not_allowed_envelope(client: APIClient) -> None:
+    res = client.delete("/api/v1/echo")
+    assert res.status_code == 405
+    assert res.json()["code"] == "method_not_allowed"
+    assert res.json()["message"] == "Metode tidak didukung."
+
+
+def test_unknown_api_error_code_raises() -> None:
+    from simario.core.errors import ApiError
+
+    with pytest.raises(ValueError):
+        ApiError("archieved", "x")
+
+
+def test_handler_calls_set_rollback(monkeypatch: pytest.MonkeyPatch) -> None:
+    from simario.core import errors
+    from simario.core.errors import ApiError, api_exception_handler
+
+    calls: list[bool] = []
+    monkeypatch.setattr(errors, "set_rollback", lambda: calls.append(True))
+    api_exception_handler(ApiError("archived", "x"), {})
+    assert calls == [True]
+
+
+def test_bare_api_path_returns_envelope(client: APIClient) -> None:
+    res = client.get("/api")
+    assert res.status_code == 404
+    assert res["Content-Type"].startswith("application/json")

@@ -74,6 +74,8 @@ services:
 
   clamav:
     image: clamav/clamav:1.4
+    ports:
+      - "127.0.0.1:3310:3310"
     volumes:
       - clamav-db:/var/lib/clamav
     healthcheck:
@@ -113,6 +115,13 @@ services:
   api:
     <<: *backend
     command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    healthcheck:
+      test:
+        ["CMD", "python", "-c",
+         "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/live', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -126,6 +135,12 @@ services:
       migrate:
         condition: service_completed_successfully
     command: ["celery", "-A", "config", "worker", "-l", "info"]
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A config inspect ping -d celery@$$HOSTNAME"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+    # beat has no healthcheck: it exposes no endpoint and runs no inspectable worker.
 
   beat:
     <<: *backend

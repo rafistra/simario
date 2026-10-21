@@ -11,6 +11,10 @@ logger = logging.getLogger(__name__)
 API_PREFIX = "/api/"
 
 
+def _is_api(path: str) -> bool:
+    return path == "/api" or path.startswith(API_PREFIX)
+
+
 class ApiErrorMiddleware:
     """Keeps /api/ answers in the error envelope even outside DRF views: unknown paths, HTML
     error pages from Django or other middleware, and unhandled exceptions (Django would
@@ -21,7 +25,7 @@ class ApiErrorMiddleware:
 
     def __call__(self, request: HttpRequest) -> HttpResponse:
         response = self.get_response(request)
-        if not request.path.startswith(API_PREFIX) or _is_json(response):
+        if not _is_api(request.path) or _is_json(response):
             return response
         if response.status_code == 404:
             return JsonResponse(envelope("not_found"), status=404)
@@ -31,7 +35,7 @@ class ApiErrorMiddleware:
         return response
 
     def process_exception(self, request: HttpRequest, exc: Exception) -> HttpResponse | None:
-        if not request.path.startswith(API_PREFIX):
+        if not _is_api(request.path):
             return None
         if isinstance(exc, Http404):
             return JsonResponse(envelope("not_found"), status=404)

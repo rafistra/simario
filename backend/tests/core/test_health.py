@@ -34,3 +34,13 @@ def test_trailing_slash_variant_is_not_found_envelope(client: APIClient) -> None
     assert res.status_code == 404
     assert res["Content-Type"].startswith("application/json")
     assert res.json()["code"] == "not_found"
+
+
+def test_health_live_skips_dependency_checks(
+    client: APIClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    for name in list(CHECKS):
+        monkeypatch.setitem(CHECKS, name, lambda: (_ for _ in ()).throw(AssertionError()))
+    res = client.get("/api/v1/health/live")
+    assert res.status_code == 200
+    assert res.json() == {"status": "ok"}
