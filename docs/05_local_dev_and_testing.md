@@ -7,10 +7,10 @@
 
 | Kebutuhan | Versi | Catatan |
 |---|---|---|
-| Node.js | 22 (sama dengan `netlify.toml`) | npm ikut terpasang |
+| Node.js | 22 | npm ikut terpasang |
 | Browser | Chrome/Edge 115+, Firefox 120+ (NFR-005) | Edge dipakai untuk screenshot headless |
 | Git | — | `.gitattributes` memaksa LF |
-| Backend | Docker Desktop (Compose v2), `uv` | Hanya untuk kerangka backend (§2a); prototipe masih memakai `localStorage` sampai modulnya dipindah |
+| Backend | Docker Desktop (Compose v2), `uv` | Wajib: sejak B9 aplikasi hanya berjalan di backend (§2a) |
 | Pencil + MCP Pencil | — | Hanya untuk membaca `Simario.pen` (token, ukuran, screenshot frame) |
 
 Di Windows, perintah di bawah berjalan di Git Bash maupun PowerShell.
@@ -27,7 +27,7 @@ npm install
 npm run dev
 ```
 
-Buka http://localhost:5173. Saat pertama dibuka, data contoh dimuat dari seed dan disimpan di `localStorage`.
+Buka http://localhost:5173 (stack backend §2a harus berjalan; Vite meneruskan `/api`, `/oidc`, `/storage`). Data contoh ada di PostgreSQL (`seed_demo`).
 
 | Perintah | Kegunaan |
 |---|---|
@@ -110,7 +110,8 @@ Vektor uji bersama ada di `shared/test-vectors/` (format di README-nya); Vitest 
 - **Lampiran (B4):** unggahan disimpan di RustFS dan dipindai ClamAV oleh worker Celery (`docker compose logs worker` menampilkan `clamd: stream: OK|… FOUND`). Unduhan diarahkan ke `/storage/…` (proxy Vite → RustFS, URL bertanda tangan untuk `S3_PUBLIC_ENDPOINT`). Uji karantina: unggah DOCX (zip) berisi string EICAR. Setelah dependensi backend berubah: `docker compose up -d --build api worker beat`.
 - **Impor CSV (B2):** `/pengaturan/impor` membuat `ImportJob` uji coba di backend; "Terapkan" memeriksa ulang lalu menerapkan. Pemisah `,` atau `;` (Excel), BOM, dan CRLF diterima. `POST /api/v1/dev/reset` menghapus job dan pengguna baru.
 - **Uji asap SSO** (butuh `npm run dev`): `uv run python scripts/oidc_smoke.py 198204172008011003` → berakhir dengan `GET /api/v1/me` 200; dengan NIP Galih → `refused: belum-terdaftar`.
-- Selama transisi, modul yang belum pindah masih memakai data `localStorage`; DevPanel menggeser jam dan mengatur ulang data di kedua sisi.
+- DevPanel menggeser jam server dan mengatur ulang data server (B9: tidak ada lagi data `localStorage`).
+- **Migrasi digabung di B9 dan sejak itu hanya maju.** Basis data dev yang dibuat sebelum B9 harus di-reset sekali: `docker compose exec db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"'`, lalu `migrate`, `seed_reference`, `seed_demo`.
 
 Mengatur ulang semua data backend (basis data, bucket, basis data ClamAV, Keycloak):
 
@@ -128,7 +129,7 @@ Satu berkas `docker-compose.prod.yml` untuk staging dan produksi (gunicorn, Cele
 2. `docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build` — layanan `migrate` menjalankan `migrate`, `init_storage`, `seed_reference`, `collectstatic` sebelum `api` mulai.
 3. `docker compose -f docker-compose.prod.yml --env-file .env.prod exec api python manage.py create_superadmin --nip <NIP> --name "<Nama>"`.
 4. Uji asap: dari `backend/`, `uv run python ../infra/smoke.py https://<domain> <NIP> <kata-sandi-sementara> .env.prod`.
-5. Build uji coba menyembunyikan modul yang belum pindah ke backend (`VITE_HIDE_UNMIGRATED=true`, `frontend/src/data/http/migrated.ts`); Beranda tampil dalam versi sementara.
+5. Semua modul berjalan di backend (B9); gerbang modul uji coba sudah dihapus.
 
 **Mencoba di mesin ini**: `sh infra/nginx/dev-cert.sh localhost`, isi `.env.prod.local` (contoh: `HTTPS_PORT=8443`, `CSRF_TRUSTED_ORIGINS=https://localhost:8443`, `SECURE_HSTS_SECONDS=0`), lalu `SIMARIO_ENV_FILE=.env.prod.local docker compose -f docker-compose.prod.yml --env-file .env.prod.local up -d --build` dan uji asap ke `https://localhost:8443`. Matikan dengan `SIMARIO_ENV_FILE=.env.prod.local docker compose -f docker-compose.prod.yml --env-file .env.prod.local down` (volume tetap). Setiap perintah compose stack ini memerlukan `--env-file` (dan `SIMARIO_ENV_FILE` bila bukan `.env.prod`): tanpa itu compose berhenti karena `POSTGRES_PASSWORD` dan `S3_ACCESS_KEY` wajib diisi.
 
@@ -185,18 +186,17 @@ Parameter URL (dibaca `src/main.tsx` dan `src/lib/theme.ts`):
 | `tema` | `?tema=gelap` / `?tema=terang` | Memaksa tema |
 | `salinan` + `cetak=pratinjau` | di halaman Lembar | Menahan tata letak cetak salinan beku untuk pratinjau PDF |
 
-## 5. Data lokal dan cara mengatur ulang
+## 5. Data dan cara mengatur ulang
 
-| Kunci `localStorage` | Isi |
-|---|---|
-| `simario:v1:<koleksi>` (36 koleksi) | Basis data prototipe (`src/data/db.ts`) |
-| `simario:v1:schemaVersion` | Saat ini `9`; bila berbeda dari `SCHEMA_VERSION`, data di-seed ulang |
-| `simario:session` | Pengguna, jabatan aktif, tampilan peran, lockout, jabatan terakhir |
-| `simario:clock` | Tanggal simulasi |
-| `simario:dev` | Latensi, gagal berikutnya, luring, batas sesi |
-| `simario:theme` | Tema |
+Semua data ada di PostgreSQL dan RustFS. Browser hanya menyimpan kemudahan per penampil: `simario:session` (pengguna dan jabatan aktif), `simario:dev` (setelan DevPanel), `simario:theme` (tema); preferensi seperti filter papan dan sidebar diciutkan ada di server (`/api/v1/preferences`).
 
-Mengatur ulang: DevPanel → **Atur ulang data**, atau hapus semua kunci `simario:*` lewat DevTools → Application → Local Storage. Saat mengubah bentuk entitas atau seed, **naikkan `SCHEMA_VERSION`** di `src/data/db.ts` dan catat di CLAUDE.md.
+Mengatur ulang data contoh: DevPanel → **Atur ulang data** (`/dev/reset`), atau `docker compose exec api python manage.py seed_demo [--as-of …]`.
+
+### Cadangan dan pemulihan (NFR-014)
+
+- Cadangan: `sh infra/backup/backup.sh <dir>` → `db.dump` (pg_dump), `manifest.json` (jumlah baris per tabel + objek, diambil segera setelah dump), `bucket.tar` (semua objek RustFS). Worker dan beat Celery dihentikan selama cadangan agar ketiganya konsisten; produksi juga menghentikan nginx (jendela pemeliharaan singkat): `COMPOSE="docker compose -f docker-compose.prod.yml --env-file .env.prod" STOP_EXTRA=nginx sh infra/backup/backup.sh <dir>`.
+- Pemulihan: `PYTHON=python3 [STOP_EXTRA=nginx] sh infra/backup/restore.sh <dir>` — worker/beat dihentikan, `pg_restore --clean --single-transaction`, `migrate`, objek dikembalikan, manifest dibandingkan (`infra/backup/verify.py`; "Pemulihan cocok dengan cadangan."), lalu layanan dinyalakan lagi.
+- Diuji 22 Okt 2026 pada stack dev: skema dihapus dan bucket dikosongkan, lalu dipulihkan — manifest cocok dan trigger audit (INV-6) kembali.
 
 ## 6. Pengujian otomatis
 
@@ -217,7 +217,7 @@ Vitest dengan jsdom dan Testing Library (`vite.config.ts` → `test`, `src/test/
 | | `data/api/admin.test.ts` | 14 | Pengguna & holding (FR-ADM-004/005), delegasi |
 | | `data/api/readAccess.test.ts` | 12 | Cakupan baca (izin 1) di semua read model ruang kerja, cetak, cari nomor; visibilitas register per pembaca (FR-REG-012) |
 | | `data/api/flow.test.ts` | 1 | Alur penuh TW I dari pengisian sampai cetak |
-| | `data/local/scheduler.test.ts` | 1 | Tugas terjadwal idempoten |
+| | `test/fake/local/scheduler.test.ts` | 1 | Tugas terjadwal prototipe idempoten (backend tiruan) |
 | | `data/seed/seed.test.ts` | 12 | Template dari dek Rapim: 4 / 14 / 146 / 302; uraian register = template |
 | UI | `App.test.tsx` | 9 | Rute dan penjaga akses (403/404) |
 | | `components/components.test.tsx` | 10 | Pustaka komponen |
@@ -250,7 +250,7 @@ Diwajibkan untuk setiap halaman di checkpoint (CLAUDE.md §9 butir 3) pada 1440 
 3. Screenshot desktop dengan Edge headless:
 
 ```bash
-msedge --headless=new --screenshot=register-1440.png --window-size=1440,5200 "http://localhost:5173/jabatan/pos-ppk-a1/register/2027?sebagai=usr-andi"
+msedge --headless=new --screenshot=register-1440.png --window-size=1440,5200 "http://localhost:5173/jabatan/63af3d9c-facf-5af1-b1e4-1adfeb4ef9a3/register/2027?sebagai=usr-andi"
 ```
 
 4. Ponsel: Edge headless punya lebar minimum di atas 390 px. Buat berkas sementara di `frontend/public/` berisi `<iframe>` selebar 390 px yang memuat halaman tujuan, screenshot berkas itu, lalu **hapus berkasnya**.
@@ -281,18 +281,15 @@ Skenario per user story ada di [06_user_stories.md](06_user_stories.md).
 5. Bila bentuk data/seed berubah: `SCHEMA_VERSION` naik.
 6. Pesan komit `tipe: deskripsi` tanpa scope (`feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`), bahasa Inggris imperatif, **tanpa** baris `Co-Authored-By` atau atribusi Claude (CLAUDE.md §11). Checkpoint tahap: `feat: <ringkasan> (checkpoint N)`.
 
-## 10. Rilis demo (Netlify)
+## 10. Rilis
 
-- **Lewat Git:** hubungkan repositori di Netlify; `netlify.toml` sudah mengatur base `frontend`, `npm run build`, publish `dist`, Node 22, pengalihan SPA, dan header `noindex`.
-- **Seret-lepas:** `npm run build`, lalu seret `frontend/dist` ke app.netlify.com/drop (`public/_redirects` ikut tersalin).
-
-Setiap pengunjung memegang salinan data sendiri di browsernya dan dapat masuk sebagai persona mana pun — **hanya untuk data fiktif** (R-02 di [04_risk_and_debt.md](04_risk_and_debt.md)).
+Tidak ada lagi rilis demo statis (Netlify dihapus di B9). Uji coba dan UAT berjalan di staging (§2b); `npm run build` juga memeriksa bahwa bundel tidak memuat store/seed prototipe (`scripts/check-bundle.mjs`).
 
 ## 11. Masalah umum
 
 | Gejala | Penyebab | Solusi |
 |---|---|---|
-| Data contoh tidak sesuai skenario | Data lama di `localStorage` atau tanggal simulasi bergeser | DevPanel → "Sesuaikan data ke tanggal ini" atau "Atur ulang data" |
+| Data contoh tidak sesuai skenario | Jam server bergeser atau data sudah diubah | DevPanel → "Sesuaikan data ke tanggal ini" atau "Atur ulang data" |
 | Perubahan seed tidak terlihat | `SCHEMA_VERSION` belum dinaikkan | Naikkan di `src/data/db.ts`, atau atur ulang data |
 | Galat impor `@seed/...` saat dev | `server.fs.allow` tidak mencakup `docs/` | Pastikan `vite.config.ts` tetap `fs: { allow: ['..'] }` |
 | Token CSS berubah tidak sesuai `.pen` | `tokens.css` diedit tangan | Ambil ulang `GetVariables()` → `scripts/pencil-variables.json` → `npm run tokens` |

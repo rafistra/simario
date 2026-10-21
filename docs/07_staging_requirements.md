@@ -13,7 +13,7 @@ Staging dipakai untuk uji coba PPK (data sungguhan, jam nyata, tanpa data contoh
 | RAM | 8 GB | 16 GB | ClamAV ±1,5 GB; PostgreSQL, gunicorn (3 worker), Celery |
 | Disk sistem | 40 GB | 80 GB | Image kontainer, log |
 | Disk data | 200 GB | 500 GB | PostgreSQL + RustFS (lampiran: kuota 1 GB per jabatan Lini 1 per TA, NFR-012) |
-| Cadangan | Volume terpisah atau penyimpanan cadangan OIKN | — | Skrip cadangan & pemulihan diuji di B9 (NFR-014) |
+| Cadangan | Volume terpisah atau penyimpanan cadangan OIKN | Harian, simpan 30 hari | `infra/backup/backup.sh` (pg_dump + objek bucket + manifest) dan `restore.sh` diuji di B9 (NFR-014); besar ≈ ukuran basis data + lampiran |
 
 ## 2. Jaringan
 

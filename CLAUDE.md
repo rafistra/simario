@@ -7,8 +7,8 @@ Panduan kerja untuk Claude di repositori ini. Baca seluruhnya sebelum menulis ko
 **SIMARIO** (Sistem Informasi Mitigasi Risiko Otorita IKN) — **prototipe frontend** yang terasa seperti aplikasi asli, untuk demo dan uji pengguna.
 
 - Semua modul PRD masuk cakupan (AUT, BRD, REG, PPN, NIL, RWY, LBR, MST, NTF, ADM), dikerjakan bertahap dengan checkpoint (§9).
-- Prototipe frontend selesai (Tahap 0–10): data disimpan di `localStorage` lewat satu lapisan repository.
-- **Integrasi backend sedang berjalan** di branch `feat/backend-integration`, menurut spec `docs/superpowers/specs/2026-10-21-backend-integration-design.md` (Django + DRF, PostgreSQL, Celery, RustFS, Keycloak, ClamAV; tahap B0–B9, §9b). Mode `localStorage` tetap jalan selama transisi dan dihapus di B9.
+- Prototipe frontend selesai (Tahap 0–10); sejak B9 datanya di backend (PostgreSQL + RustFS) lewat satu lapisan repository.
+- **Integrasi backend selesai (B0–B9)** di branch `feat/backend-integration`, menurut spec `docs/superpowers/specs/2026-10-21-backend-integration-design.md` (Django + DRF, PostgreSQL, Celery, RustFS, Keycloak, ClamAV; §9b). Sejak B9 aplikasi hanya berjalan di backend; implementasi prototipe tinggal sebagai backend tiruan Vitest (`frontend/src/test/fake/`).
 
 ## 2. Sumber kebenaran (urutan prioritas)
 
@@ -54,7 +54,8 @@ frontend/src/
   layout/        AppShell, Sidebar, Topbar, WorkspaceHeader, MobileDrawer
   pages/         per modul: auth, home, register, board, assessment, history, sheets, master, notifications, admin, faults
   domain/        types.ts (entitas PRD §2.8.1), rules/ (fungsi murni aturan bisnis), visibility.ts (VIS-1…9)
-  data/          db.ts (koleksi), repository.ts (antarmuka async), local/ (store, call, writers, scheduler), seed/ (data contoh)
+  data/          repository.ts (antarmuka async), http/ (klien per namespace), derive/ (turunan murni untuk halaman)
+  test/fake/     implementasi prototipe (api, local, seed, db.ts) — hanya backend tiruan Vitest
   lib/           format, useQuery, useFocusTrap, theme
   state/         session (persona, jabatan aktif, tampilan peran), clock (tanggal simulasi), toast
   dev/           DevPanel (ganti persona, geser tanggal, reset data)
@@ -80,12 +81,11 @@ docker-compose.yml     layanan lokal
 ## 4. Lapisan data
 
 - `data/repository.ts` mendefinisikan antarmuka per agregat (`registers`, `comments`, `assessments`, …). Halaman **tidak pernah** menyentuh `localStorage` langsung.
-- Implementasi lokal: satu kunci per koleksi, berawalan `simario:v1:`; ada `schemaVersion` — bila berubah, data di-seed ulang.
-- Seed dimuat saat pertama kali dibuka dan bisa di-reset dari DevPanel.
+- Sejak B9 tidak ada implementasi lokal di aplikasi: semua namespace di `data/http/`. Implementasi prototipe (`src/test/fake/`) hanya menjawab `fetch` di Vitest; kode aplikasi hanya boleh mengimpor tipenya (lint), dan `npm run build` gagal bila store/seed terbundel.
+- Data contoh dimuat `seed_demo` di backend dan bisa di-reset dari DevPanel (`/dev/reset`).
 - Setiap mutasi menulis `AuditLog` (append-only; tidak ada fungsi update/delete untuk audit) dan, bila relevan, `Notification` sesuai FR-NTF.
-- Lampiran: simpan metadata (nama, ukuran, MIME, `scan_status`). Isi berkas gambar kecil (≤500 KB) boleh di IndexedDB; selebihnya placeholder. Status "Memindai…" disimulasikan ±2 detik lalu `clean`.
-- Simulasi asinkron ringan (latensi 150–400 ms) agar skeleton dan "Menyimpan…" terlihat; bisa dimatikan di DevPanel.
-- **Transisi ke backend:** namespace dipindah dari implementasi lokal ke `data/http/` per tahap B (tanda tangan metode sama); `repository.ts` mengganti impornya. Tidak ada flag sumber data.
+- Lampiran disimpan di RustFS, dipindai ClamAV, diunduh lewat URL pre-signed `/storage` (B4).
+- DevPanel dapat menambah latensi, menggagalkan panggilan berikutnya, atau menyimulasikan luring pada `apiFetch`.
 
 ## 5. Waktu, sesi, persona
 
@@ -436,12 +436,14 @@ Hasil:
 
 Catatan Tahap B8: app `simario.insights` mem-port `insights.ts` (vektor `metrics.json` untuk keenam kartu; CSV menggandakan tanda kutip dan meniru `toFixed(1)`). Jejak audit memfilter di SQL sesuai cakupan izin 23 (sendiri/unit/semua), lalu meredaksi per baris (VIS-8: nilai penilaian buta, nama berkas konfidensial tanpa izin 10, skor sebagai kalimat). `original=1` (izin 24) dicatat server pada setiap pemuatan. Pilihan filter dari `GET /audit/facets`; daftar pengguna/jabatan dari `CollectionGate`. Gerbang build uji coba kini menampilkan semua modul.
 
-### Tahap B9 — Pemutusan mode lokal & kesiapan ⬜
+### Tahap B9 — Pemutusan mode lokal & kesiapan ✅
 
 Hasil:
-- [ ] Hapus mode lokal dan gerbang modul; migrasi digabung lalu dibekukan
-- [ ] Cadangan & pemulihan diuji; daftar kebutuhan ke tim infrastruktur OIKN
-- [ ] `docs/00–06`, PRD §2.1 (RustFS, bila disetujui), `frontend/README.md` diperbarui
+- [x] Hapus mode lokal dan gerbang modul; migrasi digabung lalu dibekukan
+- [x] Cadangan & pemulihan diuji; daftar kebutuhan ke tim infrastruktur OIKN
+- [x] `docs/00–07`, `frontend/README.md` diperbarui (PRD §2.1 RustFS menunggu persetujuan pengguna)
+
+Catatan Tahap B9: kode aplikasi tidak lagi membaca store lokal atau `localStorage` untuk data — `data/api`, `data/local`, `data/seed`, `db.ts` pindah ke `src/test/fake/` (backend tiruan Vitest; lint hanya mengizinkan impor tipe, `npm run build` gagal bila store/seed terbundel); fungsi bantu murni ke `src/data/derive/`. Backend menambah `GET /positions/{pos}/workspace` dan preferensi server. Jembatan id dihapus (`legacy-ids.json` hanya untuk tautan demo). `useQuery` kini membedakan kueri baru dari muat ulang (`refresh`), sehingga muat ulang setelah mutasi/polling tidak mengosongkan halaman — banner "komentar baru" sebelumnya tidak pernah muncul di backend. Migrasi dibuat ulang per app (trigger audit dipertahankan) dan sejak ini hanya maju; DB dev lama perlu di-reset sekali. Cadangan/pemulihan `infra/backup/` diuji pada stack dev. Netlify dan gerbang modul dihapus. PRD §2.1 (RustFS) belum diubah karena menunggu persetujuan.
 
 ## 10. Perintah
 

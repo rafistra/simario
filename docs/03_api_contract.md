@@ -196,22 +196,13 @@ Baris penilaian dan perbandingan dikunci per `RiskQuarter` (`select_for_update`)
 
 Mutasi yang mengubah holding, peran, atau delegasi menaikkan `auth_epoch` pengguna terkait (FR-AUT-008): sesi mereka berakhir pada permintaan berikutnya (`401 unauthenticated`). Frontend memuat ulang koleksi yang berubah dan `/me` setelah mutasi.
 
-## 5. Celah kontrak: data yang dibaca langsung dari store
+## 5. Data yang dulu dibaca langsung dari store (selesai di B9)
 
-Prinsip CLAUDE.md §4 ("halaman tidak pernah menyentuh `localStorage` langsung") terpenuhi, tetapi 24 berkas di `pages/`, `layout/`, dan `components/` (ditambah `state/useAuth.ts`) **membaca** store (`useDb`/`getDb` dari `@/data/local/store`) secara sinkron untuk daftar dan pilihan. Di backend, setiap baris di bawah perlu endpoint baca. `DataGate` (`components/DataGate`) hanya menyimulasikan satu panggilan agar skeleton/galat tetap tampil.
+Sejak B9 tidak ada kode aplikasi yang membaca store lokal: setiap daftar dan pilihan datang dari backend — koleksi lewat `CollectionGate` (`GET /api/v1/collections/<nama>`), read model per modul, `GET /api/v1/positions/{pos}/workspace` untuk kepala ruang kerja (404/403 diputuskan server), `GET /api/v1/my-positions` untuk pencarian Ctrl K, dan `GET/PUT /api/v1/preferences` untuk preferensi per pengguna. Implementasi prototipe (`src/test/fake/`) hanya dipakai backend tiruan Vitest; aturan lint melarang kode aplikasi mengimpor kodenya (tipe boleh), dan `npm run build` gagal bila store/seed ikut terbundel.
 
-| Berkas | Data yang dibaca | Usulan endpoint |
-|---|---|---|
-| `layout/Sidebar.tsx`, `layout/Topbar.tsx`, `layout/Workspace.tsx` | Jabatan dalam cakupan dan pencarian global (konteks pengguna sudah dari `GET /api/v1/me`, B1) | `GET /api/positions/{id}`, `GET /api/search?q=` |
-| `pages/register/*` | **B3:** view dari `GET /api/v1/registers/{pos}/{ta}`; data master lewat `CollectionGate` | — |
-| `pages/master/*` | **B2/B3:** koleksi master dari backend lewat `CollectionGate`; usulan dari `GET /api/v1/proposals`. Petunjuk pemakaian register ("Dipakai N jabatan", "dapat dihapus", dampak nonaktif) masih dihitung dari store lokal (U-22) | `GET /api/v1/risk-templates/usage`, `/positions/{id}/impact` |
-| `pages/admin/*` | **B2:** Pengguna, Peran, Penugasan, Tahun Anggaran, Jabatan Saya, Impor dari koleksi backend lewat `CollectionGate`; status arsip masih dihitung dari penilaian lokal (B5); Audit dan Metrik lokal (B8) | `GET /api/v1/audit`, `/metrics` (B8) |
-| `pages/board/*` | **B4:** papan dan utas dari backend; peserta @sebut dari `GET …/participants` | — |
-| `pages/assessment/AssessmentPage.tsx` | `finalisePreview` | `GET …/finalise-preview` |
-| `pages/sheets/SheetPage.tsx` | Snapshot yang baru dibuat `sheetApi.print`, lalu `maskPayloadFor` | `sheetApi.print` mengembalikan payload tersamar, bukan hanya ID |
-| `pages/auth/LoginPage.tsx` | Daftar persona, `staffDirectory` | Dihapus di produksi (Keycloak) |
+Sisa yang tercatat: petunjuk pemakaian template/tahap di halaman Master ("Dipakai N jabatan", "dapat dihapus") dihitung dari koleksi register yang tidak dimuat sehingga tampil 0 — server tetap menolak penghapusan yang tidak sah (U-22).
 
-**Cakupan baca (izin 1).** Setiap read model ruang kerja jabatan memeriksa cakupan sendiri lewat `assertCanRead` (`data/local/actor.ts`) → `canReadPosition` (`domain/rules/access.ts`): pemegang jabatan apa pun, atau cakupan izin 1 yang mencakup jabatan itu **untuk TA yang dilihat** (Lini 2: TA penugasannya). Berlaku untuk `boardApi.board`, `boardApi.thread`, `assessmentApi.page`, `historyApi.history`, `sheetApi.view`, `sheetApi.print`, dan `registerApi.view`; di luar cakupan → `forbidden`. `sheetApi.findByNumber` menjawab `not_found` untuk nomor di luar cakupan agar tidak membocorkan keberadaannya. `layout/Workspace.tsx` memakai aturan yang sama hanya untuk menampilkan halaman 403. Di backend, setiap endpoint baca **wajib** memeriksa cakupan dengan aturan yang sama (acuan uji: `data/api/readAccess.test.ts`).
+**Cakupan baca (izin 1).** Setiap read model ruang kerja jabatan memeriksa cakupan di server (`assert_can_read` → `access.can_read_position`, padanan `canReadPosition` di `domain/rules/access.ts`): pemegang jabatan apa pun, atau cakupan izin 1 yang mencakup jabatan itu **untuk TA yang dilihat** (Lini 2: TA penugasannya). Berlaku untuk `boardApi.board`, `boardApi.thread`, `assessmentApi.page`, `historyApi.history`, `sheetApi.view`, `sheetApi.print`, dan `registerApi.view`; di luar cakupan → `forbidden`. `sheetApi.findByNumber` menjawab `not_found` untuk nomor di luar cakupan agar tidak membocorkan keberadaannya. `layout/Workspace.tsx` menampilkan 403/404 dari jawaban `GET /positions/{pos}/workspace`. Di backend, setiap endpoint baca **wajib** memeriksa cakupan dengan aturan yang sama (acuan uji: `data/api/readAccess.test.ts`).
 
 ## 6. Aturan visibilitas yang menjadi bagian kontrak
 

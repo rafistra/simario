@@ -1,61 +1,39 @@
-# SIMARIO — prototipe frontend
+# SIMARIO — frontend
 
-Prototipe Sistem Informasi Mitigasi Risiko Otorita IKN yang terasa seperti aplikasi asli: semua modul PRD v2.9, tanpa backend. Data disimpan di `localStorage` browser dan dapat diatur ulang kapan saja.
+Frontend Sistem Informasi Mitigasi Risiko Otorita IKN (React 18 + Vite): semua modul PRD v2.9, dilayani backend Django (`../backend`). Sejak B9 tidak ada mode data lokal; implementasi prototipe hanya dipakai sebagai backend tiruan Vitest (`src/test/fake/`).
 
 Dokumentasi teknis lengkap ada di `docs/`: [arsitektur](../docs/00_arsitektur.md), [backend](../docs/01_backend.md), [frontend](../docs/02_frontend.md), [kontrak API](../docs/03_api_contract.md), [risiko & utang teknis](../docs/04_risk_and_debt.md), [pengembangan lokal & pengujian](../docs/05_local_dev_and_testing.md), [user story](../docs/06_user_stories.md).
 
 ## Menjalankan
 
 ```bash
+docker compose up -d        # dari root repositori: PostgreSQL, Redis, RustFS, ClamAV, Keycloak, api
 npm install
 npm run dev
 ```
 
-Buka http://localhost:5173. Perintah lain:
+Buka http://localhost:5173 (Vite meneruskan `/api`, `/oidc`, `/storage` ke backend). Perintah lain:
 
 | Perintah         | Kegunaan                                                            |
 | ---------------- | ------------------------------------------------------------------- |
-| `npm run build`  | Pemeriksaan tipe + build produksi                                   |
-| `npm run test`   | Vitest (aturan bisnis, API lokal, UI)                               |
+| `npm run build`  | Pemeriksaan tipe + build produksi + cek bundel tanpa kode prototipe |
+| `npm run test`   | Vitest (aturan bisnis, vektor bersama, UI atas backend tiruan)      |
 | `npm run lint`   | ESLint + Prettier                                                   |
 | `npm run tokens` | Membuat ulang `src/styles/tokens.css` dari snapshot variabel Pencil |
 
-## Publikasi (Netlify)
+## Penyebaran
 
-Konfigurasi ada di `netlify.toml` (root repositori): base `frontend`, perintah `npm run build`, publish `dist`, Node 22, pengalihan semua rute ke `index.html`, header `noindex` dan keamanan dasar.
-
-- **Lewat Git:** hubungkan repositori di Netlify (Add new site → Import an existing project); tidak perlu pengaturan tambahan di dasbor. Setiap push terbit ulang.
-- **Seret-lepas:** jalankan `npm run build`, lalu seret folder `frontend/dist` ke app.netlify.com/drop. Berkas `public/_redirects` ikut tersalin sehingga muat ulang di rute dalam tidak 404.
-
-Catatan: setiap pengunjung memegang salinan data contoh sendiri di browsernya; siapa pun yang memiliki tautan dapat masuk sebagai persona mana pun, jadi hanya gunakan data fiktif.
-
-## Masuk dan persona
-
-Di `/login`, tombol SSO membuka pemilih persona. Akun lokal (Lestari Wulandari, Admin DKB) masuk dengan NIP dan kata sandi dari data contoh. Persona utama:
-
-| Persona                      | Peran                                                         |
-| ---------------------------- | ------------------------------------------------------------- |
-| Andi Wirawan                 | Pejabat PPK A-1 · DDKB (Lini 1)                               |
-| Rafi Ananda                  | Operator PPK A-1                                              |
-| Bambang Hartono              | Pejabat PPK A-2                                               |
-| Dimas Prasetyo               | Operator PPK A-2, Pengisi Pokja Pemilihan 03                  |
-| Ratna Sari                   | Anggota Pokja 03 (bukan Pengisi)                              |
-| Hadi Susanto                 | KPA Satker A (register TA 2027 belum ada — alur salin)        |
-| Siti Rahmawati               | Penanggung Jawab Pemantauan (Lini 2)                          |
-| Hendra Gunawan / Maya Kusuma | Direktorat Kepatuhan / Pengawasan dan Audit Internal (Lini 3) |
-| Dewi Anggraini               | Pembaca cakupan Unit DDKB (bukan peserta utas)                |
-| Nur Aini                     | Pengelola Master Data                                         |
-| Admin DKB                    | Superadmin                                                    |
+Lewat stack Docker di belakang nginx (`docker-compose.prod.yml`); panduan di [docs/05 §2b](../docs/05_local_dev_and_testing.md#2b-staging-dan-produksi). Netlify dihapus di B9.
 
 ## Panel Prototipe (DevPanel)
 
 Tombol **Prototipe** di kanan bawah:
 
-- ganti persona tanpa keluar;
-- geser **tanggal simulasi** (bawaan 6 Apr 2027 09.00) dan preset tanggal mockup; tugas terjadwal (pembukaan perbandingan, Berulang, pengingat, versi lembar, arsip TA) dievaluasi ulang setiap tanggal berubah;
+- ganti persona tanpa keluar (hanya bila backend berjalan dengan `SIMARIO_DEV_TOOLS=true`);
+- geser **jam server** (bawaan 6 Apr 2027 09.00) dan preset tanggal mockup; tugas terjadwal backend (pembukaan perbandingan, Berulang, pengingat, versi lembar, arsip TA) dijalankan setiap jam digeser;
 - **Sesuaikan data ke tanggal ini** — memuat ulang data contoh seperti keadaannya pada tanggal simulasi (untuk skenario 18 Mar 2027 dan sejenisnya);
 - latensi simulasi, gagalkan panggilan berikutnya, mode luring, batas sesi tidak aktif;
-- mode gelap/terang, **Simulasikan komentar masuk** (di halaman utas), atur ulang data.
+- mode gelap/terang, atur ulang data server.
 
 Tautan demo: `?sebagai=usr-andi&waktu=2027-03-18T09:00&data=sesuai` (persona + tanggal + data sesuai tanggal). `?tema=gelap` memaksa mode gelap.
 

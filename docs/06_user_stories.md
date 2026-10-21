@@ -5,6 +5,8 @@
 
 ## 1. Cara membaca
 
+`63af3d9c-facf-5af1-b1e4-1adfeb4ef9a3` di tautan adalah id PPK A-1 pada data demo backend (uuid5 dari id prototipe `pos-ppk-a1`); tautan demo `?sebagai=usr-andi` tetap memakai id persona prototipe.
+
 | Simbol | Arti |
 |---|---|
 | ✅ | Berjalan di prototipe (data lokal, aturan bisnis lengkap) |
@@ -73,7 +75,7 @@ B4: semua cerita PPN berjalan di backend, termasuk unggahan sungguhan, pemindaia
 
 | ID | Sebagai … saya ingin … | FR | Status | Coba |
 |---|---|---|---|---|
-| US-PPN-001 | Sebagai peserta, saya ingin semua risiko satu jabatan ada di satu papan, dapat difilter, dengan apa yang berubah baru-baru ini | FR-PPN-001 | ✅ | `/jabatan/pos-ppk-a1/papan/2027` |
+| US-PPN-001 | Sebagai peserta, saya ingin semua risiko satu jabatan ada di satu papan, dapat difilter, dengan apa yang berubah baru-baru ini | FR-PPN-001 | ✅ | `/jabatan/63af3d9c-facf-5af1-b1e4-1adfeb4ef9a3/papan/2027` |
 | US-PPN-002 | Sebagai Lini 1, saya ingin mencatat apa yang sudah saya lakukan pada risiko atau mitigasi, dengan foto dan dokumen | FR-PPN-003, 004, 005 | 🟨 Langkah lengkap; isi berkas tidak disimpan (placeholder, U-08) | Andi → "Tandai sebagai Langkah" + lampiran |
 | US-PPN-003 | Sebagai Lini 2, saya ingin memberi solusi dan saran pada risiko atau mitigasi tertentu | FR-PPN-003, RB-PPN-002 | ✅ | `?sebagai=usr-siti` → utas PPK A-1 |
 | US-PPN-004 | Sebagai Lini 3, saya ingin berkomentar dan melampirkan bahan yang hanya boleh dilihat Lini 3 | FR-PPN-006, VIS-3 | ✅ | Hendra → "Konfidensial" per berkas; Andi melihat "1 lampiran konfidensial" |
@@ -100,7 +102,7 @@ B4: semua cerita PPN berjalan di backend, termasuk unggahan sungguhan, pemindaia
 
 | ID | Sebagai … saya ingin … | FR | Status | Coba |
 |---|---|---|---|---|
-| US-RWY-001 | Sebagai Lini 1, saya ingin melihat bagaimana setiap risiko saya dinilai oleh saya dan oleh Lini 3, triwulan demi triwulan | FR-RWY-002, 003 | ✅ | Andi → `/jabatan/pos-ppk-a1/riwayat` → klik sel |
+| US-RWY-001 | Sebagai Lini 1, saya ingin melihat bagaimana setiap risiko saya dinilai oleh saya dan oleh Lini 3, triwulan demi triwulan | FR-RWY-002, 003 | ✅ | Andi → `/jabatan/63af3d9c-facf-5af1-b1e4-1adfeb4ef9a3/riwayat` → klik sel |
 | US-RWY-002 | Sebagai Lini 1, saya ingin risiko yang terbawa dari tahun lalu menampilkan seluruh riwayatnya | FR-RWY-004 | ✅ | "Tampilkan lintas tahun" pada baris "Ada riwayat di TA 2026" |
 | US-RWY-003 | Sebagai Lini 2 atau Lini 3, saya ingin riwayat yang sama untuk jabatan yang saya cakup | FR-RWY-005 | ✅ | Siti atau Hendra → Riwayat PPK A-1 |
 | US-RWY-004 | Sebagai pembaca, saya ingin ringkasan triwulan per jenis risiko | FR-RWY-001 | ✅ | Blok Lembar Mutu di atas matriks |
@@ -109,7 +111,7 @@ B4: semua cerita PPN berjalan di backend, termasuk unggahan sungguhan, pemindaia
 
 | ID | Sebagai … saya ingin … | FR | Status | Coba |
 |---|---|---|---|---|
-| US-LBR-001 | Sebagai pembaca, saya ingin Lembar Komunikasi triwulan suatu jabatan yang disusun dari apa yang benar-benar ditulis | FR-LBR-001, 002, 003 | ✅ | `/jabatan/pos-ppk-a1/lembar/2027/1` |
+| US-LBR-001 | Sebagai pembaca, saya ingin Lembar Komunikasi triwulan suatu jabatan yang disusun dari apa yang benar-benar ditulis | FR-LBR-001, 002, 003 | ✅ | `/jabatan/63af3d9c-facf-5af1-b1e4-1adfeb4ef9a3/lembar/2027/1` |
 | US-LBR-002 | Sebagai Lini 1, saya ingin memilih foto yang masuk ke cetakan (maksimal 5 per bagian) | FR-LBR-005 | 🟨 Pilihan tersimpan; gambar tampil sebagai placeholder | "Pilih foto untuk dicetak"; foto keenam ditolak |
 | US-LBR-003 | Sebagai pembaca, saya ingin mencetak Lembar Mutu untuk ditandatangani dan dilampirkan | FR-LBR-004, 006, 007 | ✅ | "Cetak" → Lembar Mutu |
 | US-LBR-004 | Sebagai auditor, saya ingin cetakan menyatakan kedudukannya sendiri | FR-LBR-008 | ✅ (format resmi Kepka 47 menyusul, OQ-5) | Catatan kaki "Nomor cetak … Format keluaran resmi menyusul…" |

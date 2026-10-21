@@ -21,7 +21,9 @@ Repositori ini saat ini berisi **prototipe frontend saja**:
 
 Detail tiap sisi: [01_backend.md](01_backend.md), [02_frontend.md](02_frontend.md), kontrak antarmuka: [03_api_contract.md](03_api_contract.md).
 
-## 2. Arsitektur saat ini (prototipe)
+## 2. Arsitektur prototipe (sebelum B9; kini hanya backend tiruan untuk uji)
+
+> Sejak B9 aplikasi hanya berjalan di backend. Lapisan di bawah ini dipindah ke `frontend/src/test/fake/` dan dipakai sebagai backend tiruan Vitest; aplikasi tidak lagi memakai `localStorage` untuk data.
 
 ```mermaid
 flowchart LR
@@ -192,7 +194,8 @@ Perbedaan bentuk data prototipe terhadap PRD dicatat di [01_backend.md §4](01_b
 | A-7 | Penilaian dengan pilihan kalimat; skor numerik disimpan, tidak ditampilkan | Keputusan pengguna 13 Okt 2026 | PRD v2.8 |
 | A-8 | Isian Data Umum "Tujuan" opsional dan nonaktif secara bawaan (`objectiveEnabled`) | Keputusan pengguna; **berbeda dari PRD** | CLAUDE.md Tahap 10 |
 | A-9 | Sidebar dapat diciutkan menjadi rel 72 px; konten melebar hingga 1368 px | PRD v2.9 | PRD §1.8.1, §2.2 |
-| A-10 | Penyebaran demo di Netlify sebagai SPA statis dengan `noindex` | Berbagi prototipe; data fiktif saja | `netlify.toml` |
+| A-10 | ~~Penyebaran demo di Netlify sebagai SPA statis~~ — dihapus di B9 | Aplikasi kini memerlukan backend | — |
+| A-11 | Implementasi prototipe dipertahankan sebagai backend tiruan Vitest (`src/test/fake/`), bukan dihapus | 500+ uji halaman tetap berjalan tanpa server; kode aplikasi hanya boleh mengimpor tipenya (lint) dan bundel diperiksa | Rencana B9 |
 | A-11 | Stack backend: Python 3.12, Django 5.2 LTS + DRF, PostgreSQL 16, Celery + Redis, Keycloak, ClamAV; sesi cookie di server (BFF), kontrak OpenAPI → tipe TS | Melengkapi PRD §2.1 dengan versi dan pola integrasi | [01_backend.md §2.1](01_backend.md#21-keputusan-stack-21-okt-2026) |
 | A-12 | Penyimpanan objek RustFS lewat API S3 standar, bukan MinIO | Keputusan pengguna 21 Okt 2026; lisensi Apache 2.0, edisi komunitas MinIO dikurangi; **berbeda dari PRD** (risiko R-09) | [01_backend.md §2.1](01_backend.md#21-keputusan-stack-21-okt-2026) |
 | A-13 | Data demo backend = ekspor otomatis `buildSeed()` prototipe (`npm run seed:export` → `demo.json`) dengan UUID `uuid5` dari ID prototipe; data referensi produksi dari `docs/seed` + `catalog.json` | Satu sumber data contoh, tautan demo dan vektor uji stabil | [rencana B1](superpowers/plans/2026-10-21-backend-b1-fondasi.md) |

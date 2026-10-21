@@ -28,7 +28,6 @@ frontend/
   scripts/
     build-tokens.mjs        pencil-variables.json → src/styles/tokens.css
     pencil-variables.json   snapshot GetVariables() dari Simario.pen
-  public/_redirects         SPA fallback untuk Netlify seret-lepas
   src/
     main.tsx                tema, ?sebagai=/?waktu=/?data=sesuai, penjadwal, render
     App.tsx                 seluruh rute + penjaga izin
@@ -100,7 +99,7 @@ Pola wajib PRD §2.4 yang sudah ada sebagai komponen:
 | Pola | Komponen / tempat |
 |---|---|
 | Keadaan kosong (ikon, judul, satu kalimat, aksi) | `EmptyState` |
-| Memuat | `Skeleton`, `LoadingRegion`, `DataGate` |
+| Memuat | `Skeleton`, `LoadingRegion`, `CollectionGate` |
 | Galat + "Coba Lagi" | `InlineAlert variant="error" onRetry` |
 | Konfirmasi destruktif (tombol merah) | `ConfirmDialog` |
 | Sukses | `toast` (`components/Feedback/toastStore.ts`) |
@@ -132,7 +131,6 @@ Nama komponen React = nama komponen di `Simario.pen` (CLAUDE.md §7). Ekspor ter
 | `BottomBar` | `BottomBar` |
 | `ScoreInput` | Dropdown kalimat penilaian (PRD v2.8), daftar datar terburuk → terbaik, tanpa angka |
 | `NotificationPanel` | `NotificationPanel`, `NotificationItem` |
-| `DataGate` | Gerbang muat pertama untuk halaman yang membaca store langsung |
 | `CollectionGate` | Gerbang muat koleksi backend (B2) + `useGateDb()` (`components/DataGate/gateDb.ts`) |
 
 Komponen khusus halaman ada di folder halamannya (mis. `pages/board/Composer.tsx`, `pages/register/RiskCard.tsx`, `pages/assessment/AssessmentRow.tsx`, `pages/sheets/SheetDocument.tsx`). Semua komponen dipamerkan di `/_komponen` (mode dev; `?tema=gelap` untuk mode gelap).
@@ -167,20 +165,17 @@ Helper di `src/lib/format.ts` (font mono di tampilan):
 - `prefers-reduced-motion` dihormati.
 - Nama menu sidebar tetap terbaca pembaca layar saat diciutkan (tooltip + label).
 
-## 9. Fitur khusus prototipe
+## 9. Fitur pengembangan
 
 | Fitur | Tempat | Catatan |
 |---|---|---|
-| Tanggal simulasi | `state/clock.ts` (`now()`, `useNow`, kunci `simario:clock`) | Bawaan 6 Apr 2027 09.00, berjalan mengikuti waktu nyata sejak digeser |
-| DevPanel | `dev/DevPanel.tsx` (tombol "Prototipe" kanan bawah) | Persona, tanggal + preset, "Sesuaikan data ke tanggal ini", latensi, gagalkan panggilan, luring, batas sesi, tema, simulasi komentar masuk, atur ulang data |
-| Tautan demo | `main.tsx` | `?sebagai=usr-andi&waktu=2027-03-18T09:00&data=sesuai` |
-| Data sesuai tanggal | `data/seed/asOf.ts` (`seedAsOf`) | Menghapus/menggulung balik semua yang bertanggal setelah titik potong |
-| Sinkron antar-tab | event `storage` di `data/local/store.ts` | Pengganti polling 30 detik NFR-015 |
-
-Semua fitur ini harus dikeluarkan atau dimatikan di build produksi saat backend tersedia.
+| Jam yang ditampilkan | `state/clock.ts` (`now()`, `useNow`) | Mengikuti `serverNow` dari `/me` (disimulasikan di pengembangan); hanya di memori |
+| DevPanel | `dev/DevPanel.tsx` | Persona (`/dev/personas`), jam server + preset, "Sesuaikan data ke tanggal ini", latensi/gagal/luring untuk `apiFetch`, batas sesi, tema, atur ulang data server |
+| Tautan demo | `main.tsx` | `?sebagai=usr-andi&waktu=2027-03-18T09:00&data=sesuai` (id persona prototipe dipetakan lewat `data/http/legacy-ids.json`) |
+| Backend tiruan uji | `src/test/fakeBackend.ts` + `src/test/fake/` | Implementasi prototipe menjawab `fetch` di Vitest |
 
 ## 10. Penyebaran
 
-`netlify.toml` di root: base `frontend`, `npm run build`, publish `dist`, Node 22, semua rute → `index.html` (SPA), header `X-Robots-Tag: noindex, nofollow`, `X-Frame-Options: DENY`, aset `/assets/*` di-cache 1 tahun. Seret-lepas `frontend/dist` juga didukung lewat `public/_redirects`. Setiap pengunjung memegang salinan data contoh sendiri di browsernya — gunakan data fiktif saja.
+Hanya lewat stack Docker (nginx + backend), lihat [05 §2b](05_local_dev_and_testing.md#2b-staging-dan-produksi). Netlify dihapus di B9.
 
 Cara menjalankan dan menguji: [05_local_dev_and_testing.md](05_local_dev_and_testing.md).
