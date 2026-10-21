@@ -101,7 +101,7 @@ def test_edit_window_and_withdraw(demo: None, storage: dict[str, Any]) -> None:
     assert late.status_code == 409 and late.json()["code"] == "edit_window"
     assert andi.post(f"/api/v1/comments/{cid}/withdraw").status_code == 204
     entry = AuditLog.objects.get(action="tarik_komentar", entity_id=cid)
-    assert entry.before["body"] == "Diperbaiki"
+    assert entry.before is not None and entry.before["body"] == "Diperbaiki"
     thread = andi.get(f"/api/v1/register-risks/{RISK}/thread").json()
     mine = next(c for g in thread["timeline"] for c in g["comments"] if c["id"] == cid)
     assert mine["body"] is None and mine["withdrawnText"].startswith("Komentar ditarik oleh Andi")
@@ -137,7 +137,7 @@ def test_infected_file_is_quarantined(
     with django_capture_on_commit_callbacks(execute=True):
         res = _post("usr-andi", "Lampiran", files_=[("eicar.pdf", PDF)])
     att = Attachment.objects.get(owner_id=res.json()["id"])
-    assert att.scan_status == "quarantined" and att.object_key.startswith("quarantine/")
+    assert att.scan_status == "quarantined" and str(att.object_key).startswith("quarantine/")
     assert Notification.objects.filter(
         user=user("usr-andi"), kind="attachment_quarantined"
     ).exists()
