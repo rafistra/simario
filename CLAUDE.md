@@ -31,7 +31,7 @@ Ringkasan keadaan kode dan rancangan, diturunkan dari PRD dan kode. Baca dokumen
 | Berkas | Isi | Perbarui bila |
 |---|---|---|
 | [`docs/00_arsitektur.md`](docs/00_arsitektur.md) | Arsitektur prototipe vs target, lapisan, modul, prinsip, keputusan arsitektur | Lapisan, alur data, atau keputusan arsitektur berubah |
-| [`docs/01_backend.md`](docs/01_backend.md) | Status backend (**belum ada**), rancangan Django/Celery/MinIO/Keycloak, model data PRD vs prototipe, tugas terjadwal | Entitas, tugas terjadwal, atau rencana backend berubah |
+| [`docs/01_backend.md`](docs/01_backend.md) | Status backend (**belum ada**), keputusan stack (Django/Celery/RustFS/Keycloak), model data PRD vs prototipe, tugas terjadwal | Entitas, tugas terjadwal, atau rencana backend berubah |
 | [`docs/02_frontend.md`](docs/02_frontend.md) | Stack, struktur folder, rute, pola halaman, komponen, gaya, aksesibilitas | Rute, komponen, atau pola halaman baru |
 | [`docs/03_api_contract.md`](docs/03_api_contract.md) | Kontrak `data/repository.ts` per namespace, galat, usulan endpoint REST, data yang masih dibaca langsung dari store | Metode repository ditambah atau diubah |
 | [`docs/04_risk_and_debt.md`](docs/04_risk_and_debt.md) | Risiko produk/teknis dan utang teknis (R-P, R, U) | Menemukan atau menyelesaikan risiko/utang |

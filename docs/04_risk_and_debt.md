@@ -9,7 +9,7 @@
 | Kategori | Tinggi | Sedang | Rendah |
 |---|---|---|---|
 | Risiko produk & proses (R-P) | 2 | 4 | 1 |
-| Risiko teknis (R) | 3 | 4 | 1 |
+| Risiko teknis (R) | 3 | 5 | 1 |
 | Utang teknis (U) | 0 | 8 | 7 |
 
 Yang paling penting: **backend belum ada** (R-01), sehingga seluruh aturan izin dan kerahasiaan saat ini hanya berjalan di browser (R-02), dan sebagian data dibaca halaman langsung dari store sehingga kontrak API belum lengkap (U-01). Utang tingkat Tinggi U-02 dan U-03 sudah diselesaikan (§5).
@@ -40,6 +40,7 @@ Sebagian besar bersumber dari PRD (§1.2, §1.3, §1.11, Lampiran E).
 | R-06 | **Zona waktu tidak didefinisikan.** `ISODateTime` = `YYYY-MM-DDTHH:mm` tanpa zona; jam simulasi memakai field UTC sebagai waktu lokal. PRD tidak menyebut zona (IKN berada di WITA, UTC+8) | Tenggat, keterlambatan, dan "H-1" dapat bergeser satu hari di server | Sedang | Putuskan zona acuan (usul: Asia/Makassar) dan simpan `timestamptz` |
 | R-07 | Hari kerja dihitung Senin–Jumat tanpa kalender libur nasional (PRD §1.10) | Tenggat penjelasan dapat jatuh di hari libur | Sedang | Sudah di luar cakupan v1.0; dijadwalkan v1.1 (PRD Lampiran D) |
 | R-08 | Mockup `Simario.pen` hanya dapat dibaca lewat MCP Pencil; browser Pencil sering macet saat screenshot | Verifikasi visual bergantung pada satu alat | Rendah | Pakai Edge headless (lihat [05_local_dev_and_testing.md](05_local_dev_and_testing.md)) |
+| R-09 | **Kematangan RustFS** sebagai penyimpanan objek (keputusan 21 Okt 2026, [01_backend.md §2.1](01_backend.md#21-keputusan-stack-21-okt-2026)). Proyeknya masih muda (sepanjang 2025 masih `1.0.0-alpha`), riwayat produksinya pendek, dan pilihan ini berbeda dari PRD §2.1 (MinIO) | Kehilangan atau kerusakan berkas bukti audit; perilaku S3 yang tidak lengkap (pre-signed URL, multipart) baru ketahuan di produksi | Sedang | Pastikan ada rilis stabil sebelum go-live; hanya pakai API S3 standar lewat `django-storages`; uji integrasi penyimpanan di CI (unggah, pre-signed 5 menit, multipart 20 MB, karantina, hapus); cadangan harian + uji pemulihan (NFR-014); siapkan pengganti (SeaweedFS, Garage, Ceph RGW, S3 internal OIKN); konfirmasi ke tim infrastruktur OIKN; perbarui PRD §2.1 |
 
 ## 4. Utang teknis
 
@@ -50,7 +51,7 @@ Sebagian besar bersumber dari PRD (§1.2, §1.3, §1.11, Lampiran E).
 | U-05 | FR-MST-008 "Tambah Jenis" (membuat jenis jabatan baru) **belum ada**; hanya aktif/nonaktif jenis bawaan | `pages/master/PositionsPage.tsx`, `masterApi` | Sedang | Tambah formulir jenis (nama, lini, peran bawaan, multi-Pejabat, isian identitas) |
 | U-06 | FR-AUT-006: menu "Sunting" pengguna hanya mengubah peran manual; ubah NIP/nama/email oleh Superadmin belum ada | `pages/admin/UsersPage.tsx` | Sedang | Tambah dialog sunting identitas + audit |
 | U-07 | Versi lembar otomatis (`runSheetFreeze`) hanya dievaluasi saat aplikasi dimulai atau jam simulasi digeser, tidak langsung setelah "Kirim Penjelasan" atau hasil Lini 3 terlambat terbuka | `data/local/scheduler.ts`, `data/api/assessment.ts` | Sedang | Panggil setelah event terkait (seperti `runComparisons`) |
-| U-08 | Isi lampiran tidak disimpan (field `blobKey`/IndexedDB disiapkan tetapi tidak dipakai); gambar = placeholder; alur karantina pemindaian gagal tidak pernah terjadi | `domain/types.ts` (`Attachment`), `data/api/thread.ts` | Sedang | Backend MinIO + ClamAV; di prototipe opsional simpan gambar ≤ 500 KB di IndexedDB (CLAUDE.md §4) |
+| U-08 | Isi lampiran tidak disimpan (field `blobKey`/IndexedDB disiapkan tetapi tidak dipakai); gambar = placeholder; alur karantina pemindaian gagal tidak pernah terjadi | `domain/types.ts` (`Attachment`), `data/api/thread.ts` | Sedang | Backend RustFS + ClamAV; di prototipe opsional simpan gambar ≤ 500 KB di IndexedDB (CLAUDE.md §4) |
 | U-09 | Bentuk data prototipe menyimpang dari PRD §2.8.1 di beberapa entitas (`mentionUserIds`, `supports[]` tertanam, `PrintPhotoSelection` di preferensi `userId='*'`, tanpa `ImportJob`, tanpa `no_step_flag`, dll.) | `domain/types.ts` | Sedang | Ikuti tabel [01_backend.md §4.2](01_backend.md#42-perbedaan-bentuk-yang-harus-diputuskan-saat-membangun-backend) |
 | U-10 | Bundel JavaScript tunggal **812 kB** (gzip 228 kB) — Vite memperingatkan > 500 kB; hanya galeri komponen yang dimuat malas; template seed 120 kB ikut dibundel | `src/App.tsx`, `vite.config.ts` | Rendah | `lazy()` per modul halaman; di produksi seed tidak dibundel |
 | U-11 | Pencarian global (Ctrl K) hanya mencari halaman dan jabatan, padahal placeholder "Cari risiko atau jabatan…"; komentar kode masih "Risks join in Tahap 5" | `layout/Topbar.tsx` | Rendah | Tambah risiko (uraian) ke hasil, atau ubah placeholder |

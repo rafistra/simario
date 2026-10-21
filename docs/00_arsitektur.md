@@ -15,7 +15,7 @@ Repositori ini saat ini berisi **prototipe frontend saja**:
 | Backend / API | ⬜ **Belum ada.** Perannya disimulasikan di browser (`frontend/src/data/`) | Django 5 + Django REST Framework |
 | Basis data | `localStorage` browser, satu kunci per koleksi (`simario:v1:*`) | PostgreSQL 16 |
 | Tugas terjadwal | Evaluator di browser (`data/local/scheduler.ts`) | Celery + Redis, Celery Beat |
-| Penyimpanan berkas | Hanya metadata; isi berkas tidak disimpan | MinIO + pemindaian ClamAV |
+| Penyimpanan berkas | Hanya metadata; isi berkas tidak disimpan | RustFS (S3; PRD: MinIO) + pemindaian ClamAV |
 | Autentikasi | Pemilih persona + akun lokal dari seed | Keycloak (OIDC) realm "Otorita IKN", akun lokal sebagai cadangan |
 | Penyebaran | Netlify, SPA statis (`netlify.toml`) | Docker Compose di belakang nginx, staging + produksi, lingkungan internal OIKN |
 
@@ -114,7 +114,7 @@ flowchart LR
   RD --> CW[Celery worker]
   CB[Celery Beat] --> RD
   CW --> PG
-  DJ -->|pre-signed URL 5 menit| MO[(MinIO)]
+  DJ -->|pre-signed URL 5 menit| MO[(RustFS<br/>S3)]
   CW --> AV[ClamAV]
   AV --> MO
   DJ -->|OIDC| KC[Keycloak<br/>sso.ikn.go.id]
@@ -193,6 +193,8 @@ Perbedaan bentuk data prototipe terhadap PRD dicatat di [01_backend.md §4](01_b
 | A-8 | Isian Data Umum "Tujuan" opsional dan nonaktif secara bawaan (`objectiveEnabled`) | Keputusan pengguna; **berbeda dari PRD** | CLAUDE.md Tahap 10 |
 | A-9 | Sidebar dapat diciutkan menjadi rel 72 px; konten melebar hingga 1368 px | PRD v2.9 | PRD §1.8.1, §2.2 |
 | A-10 | Penyebaran demo di Netlify sebagai SPA statis dengan `noindex` | Berbagi prototipe; data fiktif saja | `netlify.toml` |
+| A-11 | Stack backend: Python 3.12, Django 5.2 LTS + DRF, PostgreSQL 16, Celery + Redis, Keycloak, ClamAV; sesi cookie di server (BFF), kontrak OpenAPI → tipe TS | Melengkapi PRD §2.1 dengan versi dan pola integrasi | [01_backend.md §2.1](01_backend.md#21-keputusan-stack-21-okt-2026) |
+| A-12 | Penyimpanan objek RustFS lewat API S3 standar, bukan MinIO | Keputusan pengguna 21 Okt 2026; lisensi Apache 2.0, edisi komunitas MinIO dikurangi; **berbeda dari PRD** (risiko R-09) | [01_backend.md §2.1](01_backend.md#21-keputusan-stack-21-okt-2026) |
 
 ## 7. Dokumen terkait
 

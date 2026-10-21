@@ -27,12 +27,46 @@ Dokumen ini menjelaskan **target backend** menurut PRD dan **apa yang perlu dipi
 | Kerangka | Django 5 + Django REST Framework |
 | Asinkron & terjadwal | Celery + Redis; Celery Beat untuk pengingat tenggat, pembukaan perbandingan, deteksi Berulang, arsip |
 | Basis data | PostgreSQL 16 |
-| Penyimpanan objek | MinIO, terpisah dari basis data, untuk lampiran dan berkas SK/surat |
+| Penyimpanan objek | MinIO, terpisah dari basis data, untuk lampiran dan berkas SK/surat — **diganti RustFS** (§2.1) |
 | Autentikasi | Keycloak (OIDC), realm "Otorita IKN" di sso.ikn.go.id; NIP sebagai pengenal tetap; akun lokal sebagai cadangan |
 | Pemindaian berkas | ClamAV sebelum berkas dapat diunduh (NFR-010) |
 | Penyebaran | Docker Compose di belakang nginx; staging dan produksi terpisah; lingkungan internal OIKN |
 
 Kebutuhan non-fungsional yang menjadi tanggung jawab backend (PRD §2.3): HTTPS, sanitasi XSS (isi komentar teks biasa), CSRF, kata sandi lokal ber-hash, pembatasan percobaan masuk (NFR-002); audit hanya-tambah dengan redaksi VIS-8 (NFR-007); sesi 60 menit (NFR-008); format & ukuran berkas diverifikasi di server dari isinya (NFR-009); URL pre-signed 5 menit setelah cek izin dan konfidensialitas (NFR-011); kuota 1 GB per jabatan Lini 1 per TA (NFR-012); retensi minimal 5 TA (NFR-013); cadangan harian, RPO 24 jam, RTO 8 jam (NFR-014); target konkurensi 120 pengguna sampai jabatan di-seed (NFR-006).
+
+### 2.1 Keputusan stack (21 Okt 2026)
+
+Diputuskan pengguna. Melengkapi PRD §2.1 dengan versi, pustaka, dan pola integrasi. Satu butir **berbeda dari PRD**: penyimpanan objek memakai RustFS, bukan MinIO (PRD §2.1 perlu diperbarui).
+
+| Lapisan | Pilihan | Versi | Catatan |
+|---|---|---|---|
+| Bahasa | Python | 3.12 | — |
+| Kerangka | Django + Django REST Framework | Django 5.2 LTS, DRF 3.15+ | LTS didukung sampai Apr 2028 |
+| Basis data | PostgreSQL | 16 | Sesuai PRD |
+| Asinkron & terjadwal | Celery + Redis + `django-celery-beat` | Celery 5.5, Redis 7 | Jadwal Beat terlihat di Django Admin |
+| Penyimpanan objek | **RustFS** (kompatibel S3, Apache 2.0) | rilis stabil terbaru saat dibangun | Menggantikan MinIO: edisi komunitas MinIO dikurangi sejak 2025 dan berlisensi AGPL. Risiko kematangan: R-09 di [04_risk_and_debt.md](04_risk_and_debt.md) |
+| Autentikasi | Keycloak (OIDC) lewat `mozilla-django-oidc` | Keycloak 26 untuk dev | Produksi: realm OIKN |
+| Pemindaian berkas | ClamAV (`clamd` lewat soket) | 1.x | Container sendiri, `freshclam`, RAM ± 1–1,5 GB. Bisa diganti pemindai terpusat OIKN bila ada; perilaku NFR-010 tetap |
+| Penyebaran | Docker Compose + nginx | — | Monorepo: `backend/` di samping `frontend/`, satu `docker-compose.yml` di root |
+
+Pustaka pendukung:
+
+| Kebutuhan | Pustaka |
+|---|---|
+| Kontrak API | `drf-spectacular` (OpenAPI 3) → `openapi-typescript` menghasilkan tipe TS di frontend |
+| camelCase ↔ snake_case | `djangorestframework-camel-case` |
+| Penyimpanan berkas | `django-storages` + `boto3` (API S3 saja) |
+| Uji | `pytest-django`, `factory-boy` |
+| Kualitas kode | `ruff` (lint + format), `mypy` + `django-stubs` |
+| Dependensi | `uv` (lockfile) |
+
+Pola integrasi:
+
+1. **Sesi cookie di server (BFF).** Django menjalankan alur OIDC dan memberi cookie sesi `httpOnly`; token tidak pernah disimpan di browser. Memenuhi CSRF, sesi 60 menit, dan pembatalan sesi saat peran berubah (NFR-008, U-04).
+2. **Ganti implementasi, bukan antarmuka.** `data/http/` memenuhi antarmuka `repository.ts` yang sama; `VITE_DATA_SOURCE=local|http` memilih implementasi, sehingga prototipe tetap bisa didemokan dan modul dipindah satu per satu.
+3. **Backend satu-satunya sumber kebenaran aturan.** Aturan `domain/rules/*` ditulis ulang di Python; kasus uji `*.test.ts` diekspor sebagai vektor uji JSON yang dijalankan Vitest dan pytest selama masa pemindahan.
+4. **Jam simulasi di backend.** Layanan `clock` yang dapat di-override per sesi hanya di staging (untuk demo dan UAT seperti DevPanel); mati di produksi.
+5. **Hanya API S3 standar.** Tidak memakai fitur khas RustFS, agar penggantinya (SeaweedFS, Garage, Ceph RGW, atau S3 internal OIKN) cukup lewat konfigurasi. Kuota 1 GB per jabatan (NFR-012) dihitung dari tabel `Attachment`, bukan dari storage.
 
 ## 3. Struktur aplikasi Django (usulan)
 
@@ -97,7 +131,7 @@ Tidak ada di prototipe: `Permission` (katalog statis di `domain/permissions.ts`)
 | `User` | `password` teks polos (seed), `orgUnitId`; tanpa `keycloakSub` | `keycloak_sub`, kata sandi ber-hash | Ikuti PRD; tambah `org_unit_id` bila tetap ditampilkan di Pengguna |
 | `PositionType` | `code`, `identitySchema` berupa array `{key,label,kind}` | `identity_schema` JSONB | JSONB berisi array yang sama |
 | `Position` | `shortName` (KEP, PAI), `deactivatedAt`, `deactivationReason` | tidak ada | Tambahkan (dipakai chip predikat & nonaktif beralasan) |
-| `PositionOccupancy` / `PositionDelegate` | `decreeFile` / `letterFile` = nama berkas | `decree_object_key` / `letter_object_key` | Kunci objek MinIO |
+| `PositionOccupancy` / `PositionDelegate` | `decreeFile` / `letterFile` = nama berkas | `decree_object_key` / `letter_object_key` | Kunci objek S3 (RustFS) |
 | `UserRole` | tanpa `source_ref` | `source_ref` | Ikuti PRD |
 | `MonitoringAssignment` | `supports[]` tertanam | tabel `MonitoringSupport` | Tabel terpisah |
 | `DataUmumForm` | `fields[]`, **`objectiveEnabled`** | `schema` JSONB, Tujuan isian tetap wajib | `objective_enabled` adalah **keputusan pengguna yang berbeda dari PRD** — perbarui PRD atau konfirmasi ulang |
@@ -108,7 +142,7 @@ Tidak ada di prototipe: `Permission` (katalog statis di `domain/permissions.ts`)
 | `Comment` | `mentionUserIds[]` | tabel `Mention` | Tabel `Mention` |
 | `RiskQuarter` | tanpa `no_step_flag` (dihitung `isQuiet`) | `no_step_flag` | Kolom tersimpan + diperbarui saat Langkah/tarik |
 | `Assessment` | `updatedAt` | — | Tambahkan (dipakai autosave & `seedAsOf`) |
-| `Attachment` | tanpa `object_key`; `blobKey` (IndexedDB, belum dipakai) | `object_key` | Kunci MinIO |
+| `Attachment` | tanpa `object_key`; `blobKey` (IndexedDB, belum dipakai) | `object_key` | Kunci objek S3 (RustFS) |
 | `PrintSnapshot` | pilihan foto ikut di payload | `photo_attachment_ids` | Ikuti PRD |
 | `PrintPhotoSelection` | disimpan sebagai `UserPreference` dengan `userId = '*'` | tabel sendiri | Tabel sendiri |
 | `Notification` | **`eventKey`** untuk idempotensi | tidak ada | Tambahkan, unik per (`user_id`, `event_key`) |
@@ -165,7 +199,7 @@ Prototipe hanya menyimpan metadata `Attachment` (nama, ukuran, MIME, `scanStatus
 
 ## 8. Daftar kerja pemindahan ke backend
 
-1. Proyek Django + Docker Compose (nginx, Django, PostgreSQL, Redis, Celery worker/beat, MinIO, ClamAV, Keycloak dev).
+1. Proyek Django + Docker Compose (nginx, Django, PostgreSQL, Redis, Celery worker/beat, RustFS, ClamAV, Keycloak dev), sesuai §2.1. Sertakan uji integrasi penyimpanan (unggah, URL pre-signed, karantina, hapus) terhadap RustFS di CI.
 2. Model + migrasi sesuai §4, constraint dan trigger §4.3.
 3. Fixture/management command dari `docs/seed/template_risiko_rapim.json` (4 jenis, 14 tahap, 146 risiko, 302 mitigasi) dan `docs/seed/pilihan_penilaian.json`; data contoh persona dari `frontend/src/data/seed/` hanya untuk staging.
 4. Endpoint per namespace mengikuti [03_api_contract.md](03_api_contract.md), termasuk endpoint baca yang sekarang belum ada (halaman membaca store langsung).
