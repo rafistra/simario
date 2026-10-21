@@ -391,11 +391,13 @@ Hasil:
 
 Catatan Tahap B3: app `registers` (+ `RiskProposal` di `reference`, `RiskQuarter` di `assessments`) memporting `data/api/register.ts` 1:1; aturan murni di `simario/domain/register.py` dengan vektor bersama. View server menambah `previousRegister`, `stagesDone`, `flagged`. Halaman Register membaca view lewat `useRegisterViews`; usulan lewat `GET /api/v1/proposals`. Jembatan ID kini juga menerjemahkan kunci objek yang berupa ID. Petunjuk pemakaian di halaman master masih dari store lokal (U-22). Modul papan/penilaian/lembar masih membaca register lokal sampai tahapnya.
 
-### Tahap B4 — Papan, Utas, Lampiran ⬜
+### Tahap B4 — Papan, Utas, Lampiran ✅
 
 Hasil:
-- [ ] PPN penuh, polling 30 detik
-- [ ] RustFS + ClamAV + karantina + URL pre-signed lewat `/storage`, kuota; Beranda sementara
+- [x] PPN penuh, polling 30 detik
+- [x] RustFS + ClamAV + karantina + URL pre-signed lewat `/storage`, kuota; Beranda sementara dipindah ke B4s bersama gerbang modul
+
+Catatan Tahap B4: app `board` memporting `data/api/{board,thread}.ts`; aturan murni `simario/domain/{board,visibility}.py` dengan vektor bersama (VIS-1/2/3/9). `Assessment` dan `ComparisonResult` sudah berupa model dengan data demo agar panel triwulan dan chip predikat tampil; perilakunya di B5. Unggahan multipart, MIME dari isi (`puremagic`), pemindaian ClamAV lewat Celery + sapuan terjadwal, karantina, unduhan 302 ke URL pre-signed `/storage` (proxy Vite kini `changeOrigin`). Diuji manual: PDF bersih terunduh, DOCX berisi EICAR dikarantina. Utas mem-poll `?since=` tiap 30 detik.
 
 ### Tahap B4s — Staging ⬜
 

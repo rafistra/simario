@@ -4,7 +4,7 @@
 
 ## 1. Status dan cakupan
 
-**API HTTP dibangun per tahap (spec integrasi backend).** Sejak B2, `authApi`, `notificationApi`, `masterApi` (kecuali usulan risiko, B3), `adminApi`, `calendarApi`, dan `importApi` memanggil Django lewat `frontend/src/data/http/`; namespace lain masih lokal. Kontrak yang berlaku adalah antarmuka TypeScript di `frontend/src/data/repository.ts`: kumpulan namespace `*Api` yang asinkron (mengembalikan `Promise`) dan diimplementasikan di browser (`frontend/src/data/api/*.ts`, `frontend/src/data/local/*`). Halaman memanggil namespace ini, bukan `localStorage`.
+**API HTTP dibangun per tahap (spec integrasi backend).** Sejak B2, `authApi`, `notificationApi`, `masterApi` (kecuali usulan risiko, B3), `adminApi`, `calendarApi`, dan `importApi`, `registerApi` (B3), `boardApi`, dan `threadApi` (B4) memanggil Django lewat `frontend/src/data/http/`; namespace lain masih lokal. Kontrak yang berlaku adalah antarmuka TypeScript di `frontend/src/data/repository.ts`: kumpulan namespace `*Api` yang asinkron (mengembalikan `Promise`) dan diimplementasikan di browser (`frontend/src/data/api/*.ts`, `frontend/src/data/local/*`). Halaman memanggil namespace ini, bukan `localStorage`.
 
 Dokumen ini mencatat:
 
@@ -125,18 +125,20 @@ Baca: `GET /collections/<nama>` (baris berbentuk tipe `domain/types.ts`, untuk p
 
 Backend: `simario/registers/selectors.py` (`build_register_view`), `services.py`, aturan murni `simario/domain/register.py` + vektor `shared/test-vectors/register.json`. Halaman Register membaca view lewat `useRegisterViews` (`data/http/register.ts`); setiap mutasi memuat ulang view. Prototipe: read model di `data/api/registerView.ts`: `buildRegisterView` (dipakai `registerApi.view` dan, secara sinkron, oleh halaman Register), `registerAccess`, `pendingItems`, `wouldFlagNoMitigation`. Halaman juga memakai `registerGaps`, `completeStages` (`domain/rules/register.ts`).
 
-### 4.5 `boardApi`, `threadApi` — Papan & Utas (PPN)
+### 4.5 `boardApi`, `threadApi` — Papan & Utas (PPN) — diputuskan, B4
 
-| Metode | Masukan | Keluaran / efek | Izin | PRD | Usulan REST |
+| Metode | Masukan | Keluaran / efek | Izin | PRD | REST (`/v1`) |
 |---|---|---|---|---|---|
-| `boardApi.board` | `positionId, fiscalYear` | `BoardView` (kelompok tahap › jenis, `BoardRow` dengan hitungan per lini, chip predikat terbuka, penanda, titik aktivitas) | Cakupan baca (§5) | FR-PPN-001 | `GET /api/positions/{pos}/board/{ta}` |
-| `boardApi.thread` | `riskId` | `ThreadView` (header, kelompok per TW, sub-utas mitigasi, panel `QuarterCard` VIS-1/2, info partisipasi, panduan fase buta) | idem | FR-PPN-002 | `GET /api/register-risks/{id}/thread` |
-| `threadApi.post` | `PostInput {riskId, mitigationId, body, quarterId?, isStep, files[], mentionUserIds[]}` | Komentar + lampiran `pending`; berlangganan; notifikasi sebut & komentar baru | Partisipasi; Langkah hanya Lini 1 & triwulan berjalan | FR-PPN-003…007, RB-PPN-004 | `POST /api/register-risks/{id}/comments` (multipart) |
-| `threadApi.edit` | `commentId, body` | "(disunting)" | Penulis, ≤ 15 menit | FR-PPN-008, INV-19 | `PATCH /api/comments/{id}` |
-| `threadApi.withdraw` | `commentId` | Isi asli hanya di audit | Penulis | FR-PPN-008, VIS-6 | `POST /api/comments/{id}/withdraw` |
-| `threadApi.setConfidential` | `attachmentId, on` | Diaudit | Menyalakan: pengunggah Lini 3; mematikan: izin 25 | FR-PPN-006 | `PATCH /api/attachments/{id}` |
-| `threadApi.follow` | `riskId, on` | | Pemegang jabatan tidak bisa berhenti | FR-PPN-010 | `PUT/DELETE /api/register-risks/{id}/subscription` |
-| `threadApi.markSeen` | `riskId` | Sinkron, tidak diaudit | — | FR-PPN-001 | `POST /api/register-risks/{id}/seen` |
+| `boardApi.board` | `positionId, fiscalYear` | `BoardView` (kelompok tahap › jenis, `BoardRow` dengan hitungan per lini, chip predikat terbuka, penanda, titik aktivitas) | Cakupan baca (§5) | FR-PPN-001 | `GET /positions/{pos}/board/{ta}` |
+| `boardApi.thread` | `riskId` | `ThreadView` (header, kelompok per TW, sub-utas mitigasi, panel `QuarterCard` VIS-1/2, info partisipasi, panduan fase buta) | idem | FR-PPN-002 | `GET /register-risks/{id}/thread`; polling 30 detik: `?since=` → `{comments, latestAt}`; peserta @sebut: `GET /register-risks/{id}/participants?quarterId=` |
+| `threadApi.post` | `PostInput {riskId, mitigationId, body, quarterId?, isStep, files[], mentionUserIds[]}` | Komentar + lampiran `pending`; berlangganan; notifikasi sebut & komentar baru | Partisipasi; Langkah hanya Lini 1 & triwulan berjalan | FR-PPN-003…007, RB-PPN-004 | `POST /register-risks/{id}/comments` (multipart: bagian `data` JSON + `files`; `confidential[]` sejajar urutan berkas) |
+| `threadApi.edit` | `commentId, body` | "(disunting)" | Penulis, ≤ 15 menit | FR-PPN-008, INV-19 | `PATCH /comments/{id}` |
+| `threadApi.withdraw` | `commentId` | Isi asli hanya di audit | Penulis | FR-PPN-008, VIS-6 | `POST /comments/{id}/withdraw` |
+| `threadApi.setConfidential` | `attachmentId, on` | Diaudit | Menyalakan: pengunggah Lini 3; mematikan: izin 25 | FR-PPN-006 | `PATCH /attachments/{id}` |
+| `threadApi.follow` | `riskId, on` | | Pemegang jabatan tidak bisa berhenti | FR-PPN-010 | `PUT`/`DELETE /register-risks/{id}/subscription` |
+| `threadApi.markSeen` | `riskId` | Sinkron, tidak diaudit | — | FR-PPN-001 | `POST /register-risks/{id}/seen` |
+
+Lampiran (spec §4.7): isi diperiksa di server (ekstensi, ukuran ≤ 20 MB, ≤ 10 berkas, MIME dari isi lewat `puremagic`), disimpan di RustFS `attachments/<pos>/<ta>/<uuid>`, kuota 1 GB per jabatan per TA (galat `quota`, 413). Unduh: `GET /attachments/{id}/download` → 302 ke URL pre-signed 5 menit di `/storage/…`; berkas `pending`/`quarantined`, konfidensial tanpa izin 10, atau di luar cakupan baca → 404. Lampiran demo tanpa isi diunduh sebagai berkas contoh.
 
 ### 4.6 `assessmentApi` — Penilaian (NIL)
 
@@ -202,7 +204,7 @@ Prinsip CLAUDE.md §4 ("halaman tidak pernah menyentuh `localStorage` langsung")
 | `pages/register/*` | **B3:** view dari `GET /api/v1/registers/{pos}/{ta}`; data master lewat `CollectionGate` | — |
 | `pages/master/*` | **B2/B3:** koleksi master dari backend lewat `CollectionGate`; usulan dari `GET /api/v1/proposals`. Petunjuk pemakaian register ("Dipakai N jabatan", "dapat dihapus", dampak nonaktif) masih dihitung dari store lokal (U-22) | `GET /api/v1/risk-templates/usage`, `/positions/{id}/impact` |
 | `pages/admin/*` | **B2:** Pengguna, Peran, Penugasan, Tahun Anggaran, Jabatan Saya, Impor dari koleksi backend lewat `CollectionGate`; status arsip masih dihitung dari penilaian lokal (B5); Audit dan Metrik lokal (B8) | `GET /api/v1/audit`, `/metrics` (B8) |
-| `pages/board/ThreadPage.tsx` | Peserta untuk @sebut (`threadParticipants`), izin 25 | `GET /api/register-risks/{id}/participants` |
+| `pages/board/*` | **B4:** papan dan utas dari backend; peserta @sebut dari `GET …/participants` | — |
 | `pages/assessment/AssessmentPage.tsx` | `finalisePreview` | `GET …/finalise-preview` |
 | `pages/sheets/SheetPage.tsx` | Snapshot yang baru dibuat `sheetApi.print`, lalu `maskPayloadFor` | `sheetApi.print` mengembalikan payload tersamar, bukan hanya ID |
 | `pages/auth/LoginPage.tsx` | Daftar persona, `staffDirectory` | Dihapus di produksi (Keycloak) |

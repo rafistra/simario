@@ -69,6 +69,8 @@ B3: semua cerita REG berjalan di backend (view per pembaca, terbit, tambahan, no
 
 ## 5. Papan Risiko & Utas (PPN)
 
+B4: semua cerita PPN berjalan di backend, termasuk unggahan sungguhan, pemindaian virus, dan polling 30 detik.
+
 | ID | Sebagai … saya ingin … | FR | Status | Coba |
 |---|---|---|---|---|
 | US-PPN-001 | Sebagai peserta, saya ingin semua risiko satu jabatan ada di satu papan, dapat difilter, dengan apa yang berubah baru-baru ini | FR-PPN-001 | ✅ | `/jabatan/pos-ppk-a1/papan/2027` |
