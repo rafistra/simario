@@ -13,6 +13,8 @@ x-backend: &backend
     DATABASE_URL: postgres://simario:simario@db:5432/simario
     REDIS_URL: redis://redis:6379/0
     S3_ENDPOINT_URL: http://storage:9000
+    # Download URLs are signed for the host the browser-side proxy forwards to (spec §4.7).
+    S3_PUBLIC_ENDPOINT: http://127.0.0.1:9100
     CLAMAV_HOST: clamav
     OIDC_BACKCHANNEL_URL: http://keycloak:8080/realms/otorita-ikn
   # Mount source only: the image keeps its own /app/.venv, so --build picks up new dependencies.

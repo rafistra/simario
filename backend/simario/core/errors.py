@@ -56,6 +56,8 @@ STATUS_BY_CODE: dict[str, int] = {
     "gaps": 422,
     "no_previous": 409,
     "not_empty": 409,
+    "quota": 413,
+    "edit_window": 409,
     "nothing": 409,
     "server": 500,
 }

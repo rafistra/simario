@@ -606,3 +606,28 @@ def participants(user: User, risk_id: uuid.UUID, quarter_id: str) -> list[Row]:
     return rules.thread_participants(
         db, str(position.id), quarter_id, clock.today().isoformat(), str(user.id)
     )
+
+
+def downloadable(user: User, attachment_id: uuid.UUID) -> Attachment:
+    """The attachment when the viewer may read its thread (or assessment) and see the file
+    (VIS-3, INV-10); not_found otherwise, so nothing leaks."""
+    a = Attachment.objects.filter(pk=attachment_id).first()
+    if a is None:
+        raise ApiError("not_found", "Lampiran tidak ditemukan.")
+    risks = RegisterRisk.objects.select_related("register")
+    if a.owner_kind == "comment":
+        risk = risks.filter(comments__id=a.owner_id).first()
+    else:
+        risk = risks.filter(quarters__assessments__id=a.owner_id).first()
+    if risk is None:
+        raise ApiError("not_found", "Lampiran tidak ditemukan.")
+    assert_can_read(user, str(risk.register.position_id), risk.register.fiscal_year_id)
+    viewer = vis.viewer_for(load_access_db(), str(user.id), clock.today().isoformat())
+    row = {
+        "scan_status": a.scan_status,
+        "uploaded_by_id": str(a.uploaded_by_id),
+        "is_confidential": a.is_confidential,
+    }
+    if a.scan_status != "clean" or not vis.can_see_attachment(viewer, row):
+        raise ApiError("not_found", "Lampiran tidak ditemukan.")
+    return a

@@ -4,6 +4,42 @@
  */
 
 export interface paths {
+    "/api/v1/attachments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["attachments_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/attachments/{id}/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description 302 to a 5-minute pre-signed URL under /storage (NFR-011); demo files without content
+         *     answer with a sample file.
+         */
+        get: operations["attachments_download_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/config": {
         parameters: {
             query?: never;
@@ -80,6 +116,38 @@ export interface paths {
         get: operations["collections_retrieve"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/comments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["comments_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/comments/{id}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["comments_withdraw_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -763,6 +831,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/register-risks/{id}/comments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description POST multipart: `data` (JSON, camelCase) and `files` (one part per file). */
+        post: operations["register_risks_comments_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/register-risks/{id}/deactivate": {
         parameters: {
             query?: never;
@@ -806,6 +891,38 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/register-risks/{id}/seen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["register_risks_seen_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/register-risks/{id}/subscription": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["register_risks_subscription_update"];
+        post?: never;
+        delete: operations["register_risks_subscription_destroy"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1372,6 +1489,18 @@ export interface components {
             serverNow: string;
             ran: string[];
         };
+        CommentInputRequest: {
+            /** Format: uuid */
+            mitigationId?: string | null;
+            /** @default  */
+            body: string;
+            /** Format: uuid */
+            quarterId?: string | null;
+            /** @default false */
+            isStep: boolean;
+            mentionUserIds?: string[];
+            confidential?: boolean[];
+        };
         CopySummary: {
             risks: number;
             mitigations: number;
@@ -1629,6 +1758,12 @@ export interface components {
         };
         PatchedActiveRequest: {
             active?: boolean;
+        };
+        PatchedCommentEditRequest: {
+            body?: string;
+        };
+        PatchedConfidentialRequest: {
+            isConfidential?: boolean;
         };
         PatchedDataUmumPatchRequest: {
             tujuan?: string;
@@ -1915,6 +2050,52 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    attachments_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedConfidentialRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedConfidentialRequest"];
+                "multipart/form-data": components["schemas"]["PatchedConfidentialRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    attachments_download_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            302: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     auth_config_retrieve: {
         parameters: {
             query?: never;
@@ -2021,6 +2202,52 @@ export interface operations {
                         [key: string]: unknown;
                     };
                 };
+            };
+        };
+    };
+    comments_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCommentEditRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedCommentEditRequest"];
+                "multipart/form-data": components["schemas"]["PatchedCommentEditRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    comments_withdraw_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -3019,6 +3246,32 @@ export interface operations {
             };
         };
     };
+    register_risks_comments_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": components["schemas"]["CommentInputRequest"];
+                "application/json": components["schemas"]["CommentInputRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Id"];
+                };
+            };
+        };
+    };
     register_risks_deactivate_create: {
         parameters: {
             query?: never;
@@ -3093,6 +3346,66 @@ export interface operations {
                         [key: string]: unknown;
                     };
                 };
+            };
+        };
+    };
+    register_risks_seen_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    register_risks_subscription_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    register_risks_subscription_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

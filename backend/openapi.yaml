@@ -3,6 +3,54 @@ info:
   title: SIMARIO API
   version: '1'
 paths:
+  /api/v1/attachments/{id}:
+    patch:
+      operationId: attachments_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - board
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedConfidentialRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedConfidentialRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedConfidentialRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/attachments/{id}/download:
+    get:
+      operationId: attachments_download_retrieve
+      description: |-
+        302 to a 5-minute pre-signed URL under /storage (NFR-011); demo files without content
+        answer with a sample file.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - board
+      security:
+      - cookieAuth: []
+      responses:
+        '302':
+          description: No response body
   /api/v1/auth/config:
     get:
       operationId: auth_config_retrieve
@@ -101,6 +149,51 @@ paths:
                 type: object
                 additionalProperties: {}
           description: ''
+  /api/v1/comments/{id}:
+    patch:
+      operationId: comments_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - board
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCommentEditRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCommentEditRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCommentEditRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/comments/{id}/withdraw:
+    post:
+      operationId: comments_withdraw_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - board
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/delegates/{id}/revoke:
     post:
       operationId: delegates_revoke_create
@@ -1117,6 +1210,37 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/register-risks/{id}/comments:
+    post:
+      operationId: register_risks_comments_create
+      description: 'POST multipart: `data` (JSON, camelCase) and `files` (one part
+        per file).'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - board
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CommentInputRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentInputRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Id'
+          description: ''
   /api/v1/register-risks/{id}/deactivate:
     post:
       operationId: register_risks_deactivate_create
@@ -1201,6 +1325,56 @@ paths:
                 type: object
                 additionalProperties: {}
           description: ''
+  /api/v1/register-risks/{id}/seen:
+    post:
+      operationId: register_risks_seen_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - board
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/register-risks/{id}/subscription:
+    put:
+      operationId: register_risks_subscription_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - board
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+    delete:
+      operationId: register_risks_subscription_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - board
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/register-risks/{id}/template-mitigations/{template_id}:
     put:
       operationId: register_risks_template_mitigations_update
@@ -2339,6 +2513,32 @@ components:
       required:
       - ran
       - serverNow
+    CommentInputRequest:
+      type: object
+      properties:
+        mitigationId:
+          type: string
+          format: uuid
+          nullable: true
+        body:
+          type: string
+          default: ''
+        quarterId:
+          type: string
+          format: uuid
+          nullable: true
+        isStep:
+          type: boolean
+          default: false
+        mentionUserIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        confidential:
+          type: array
+          items:
+            type: boolean
     CopySummary:
       type: object
       properties:
@@ -2969,6 +3169,16 @@ components:
       type: object
       properties:
         active:
+          type: boolean
+    PatchedCommentEditRequest:
+      type: object
+      properties:
+        body:
+          type: string
+    PatchedConfidentialRequest:
+      type: object
+      properties:
+        isConfidential:
           type: boolean
     PatchedDataUmumPatchRequest:
       type: object

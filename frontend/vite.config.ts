@@ -20,8 +20,10 @@ export default defineConfig({
       // checks it against the Origin header for CSRF.
       '/api': { target: 'http://127.0.0.1:8100', changeOrigin: false },
       '/oidc': { target: 'http://127.0.0.1:8100', changeOrigin: false },
+      // Pre-signed download URLs are signed for 127.0.0.1:9100: forward with that Host.
       '/storage': {
         target: 'http://127.0.0.1:9100',
+        changeOrigin: true,
         rewrite: (path) => path.replace(/^\/storage/, ''),
       },
     },

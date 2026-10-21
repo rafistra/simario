@@ -84,6 +84,10 @@ S3_ENDPOINT_URL = env("S3_ENDPOINT_URL", default="http://localhost:9000")
 S3_ACCESS_KEY = env("S3_ACCESS_KEY", default="")
 S3_SECRET_KEY = env("S3_SECRET_KEY", default="")
 S3_BUCKET = env("S3_BUCKET", default="simario")
+# Downloads (spec §4.7): URLs are signed for the storage host the proxy forwards to and served
+# under the application origin, so RustFS is never exposed to the browser.
+S3_PUBLIC_ENDPOINT = env("S3_PUBLIC_ENDPOINT", default="http://127.0.0.1:9100")
+S3_PUBLIC_PREFIX = env("S3_PUBLIC_PREFIX", default="/storage")
 
 CLAMAV_HOST = env("CLAMAV_HOST", default="localhost")
 CLAMAV_PORT = env.int("CLAMAV_PORT", default=3310)

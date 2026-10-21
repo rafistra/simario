@@ -17,6 +17,7 @@ dependencies = [
     "gunicorn>=26.2.0",
     "mozilla-django-oidc>=5.0.2",
     "psycopg[binary]>=3.3.6",
+    "puremagic>=1.28",
     "redis>=8.1.0",
     "requests>=2.34.2",
 ]
