@@ -28,6 +28,8 @@ export interface NewFile {
   size: number;
   mime: string;
   confidential: boolean;
+  /** The file itself (uploaded by the HTTP implementation). */
+  file?: File;
 }
 
 export interface PostInput {

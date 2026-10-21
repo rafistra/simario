@@ -11,6 +11,7 @@ import {
 } from '@/components';
 import type { ThreadComment } from '@/data/api/board';
 import { formatDateTime, formatFileSize, formatRelative } from '@/lib/format';
+import { attachmentUrl } from '@/data/repository';
 
 interface Props {
   comment: ThreadComment;
@@ -200,7 +201,7 @@ export function CommentItem({
                     meta={`${EXT_LABEL(a.filename)} · ${formatFileSize(a.sizeBytes)}`}
                     scanning={scanning}
                     confidential={a.isConfidential}
-                    href={`data:${a.mimeType};charset=utf-8,${encodeURIComponent(`Berkas contoh SIMARIO: ${a.filename}`)}`}
+                    href={scanning ? undefined : attachmentUrl(a.id)}
                   />
                 )}
                 {c.isOwn && c.line === 3 && !a.isConfidential && !scanning && (

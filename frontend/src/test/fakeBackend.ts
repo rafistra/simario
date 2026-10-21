@@ -9,6 +9,7 @@ import { calendarApi as localCalendarApi } from '@/data/api/calendar';
 import { importApi as localImportApi, type ImportKind } from '@/data/api/importer';
 import { masterApi as localMasterApi, type PositionInput } from '@/data/api/master';
 import { localAuthApi, localNotificationApi } from '@/data/local/authApi';
+import { BOARD_ROUTES } from './fakeBoardRoutes';
 import { REGISTER_ROUTES } from './fakeRegisterRoutes';
 import { getDb, useDb } from '@/data/local/store';
 import { staffDirectory } from '@/data/seed';
@@ -449,16 +450,20 @@ export function installFakeBackend() {
     const path = toLocalIds(url.pathname);
     const method = (init.method ?? 'GET').toUpperCase();
     const body = toLocalIds(
-      typeof init.body === 'string'
-        ? (JSON.parse(init.body) as Record<string, unknown>)
-        : Object.fromEntries(url.searchParams),
+      init.body instanceof FormData
+        ? (JSON.parse(String(init.body.get('data'))) as Record<string, unknown>)
+        : typeof init.body === 'string'
+          ? (JSON.parse(init.body) as Record<string, unknown>)
+          : Object.fromEntries(url.searchParams),
     );
+    if (init.body instanceof FormData) body.__files = init.body.getAll('files');
     let reply: Reply = fail('not_found', 'Data tidak ditemukan.', 404);
     for (const [m, re, handler] of [
       ...ROUTES,
       ...MASTER_ROUTES,
       ...ADMIN_ROUTES,
       ...REGISTER_ROUTES,
+      ...BOARD_ROUTES,
     ]) {
       const match = method === m ? path.match(re) : null;
       if (!match) continue;

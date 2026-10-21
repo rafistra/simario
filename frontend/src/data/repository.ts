@@ -23,8 +23,8 @@ export type { Notification };
 
 export { masterApi, proposalApi, type ProposalRow } from './http/master';
 export { registerApi, registerViewKey, useRegisterViews } from './http/register';
-export { threadApi } from './api/thread';
-export { boardApi } from './api/board';
+export { threadApi, attachmentUrl, useBoardRevision } from './http/board';
+export { boardApi } from './http/board';
 export { assessmentApi } from './api/assessment';
 export { historyApi } from './api/history';
 export { homeApi } from './api/home';

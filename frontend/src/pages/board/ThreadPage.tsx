@@ -23,11 +23,8 @@ import {
   toast,
 } from '@/components';
 import type { QuarterCard, QuarterGroup, ThreadComment, ThreadView } from '@/data/api/board';
-import { boardApi, threadApi } from '@/data/repository';
-import { getDb, useDb } from '@/data/local/store';
+import { boardApi, threadApi, useBoardRevision } from '@/data/repository';
 import { QUARTER_ROMAN } from '@/domain/calendar';
-import { hasPermission } from '@/domain/rules/access';
-import { threadParticipants } from '@/domain/rules/board';
 import { RISK_TYPE_LABEL } from '@/domain/types';
 import type { WorkspaceOutletContext } from '@/layout/Workspace';
 import { usePageMeta } from '@/layout/pageMeta';
@@ -47,7 +44,8 @@ export default function ThreadPage() {
   const { rid = '' } = useParams();
   usePageMeta(['Papan Risiko', `${position.name} · ${unitCode}`, 'Utas Risiko']);
   const auth = useAuth();
-  const q = useQuery(() => boardApi.thread(rid), [rid, auth.user.id]);
+  const revision = useBoardRevision((s) => s.revision);
+  const q = useQuery(() => boardApi.thread(rid), [rid, auth.user.id, revision]);
 
   if (q.loading && !q.data) return <ThreadSkeleton />;
   if (q.error && !q.data)
@@ -120,21 +118,33 @@ function Thread({ view, positionName }: { view: ThreadView; positionName: string
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hash]);
 
-  const participants = useMemo(
+  const people = useQuery(
     () =>
       view.postingQuarter
-        ? threadParticipants(
-            getDb(),
-            view.positionId,
-            view.postingQuarter.id,
-            auth.today,
-            auth.user.id,
-          )
-        : [],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [view.positionId, view.postingQuarter?.id, auth.today, auth.user.id],
+        ? threadApi.participants(risk.id, view.postingQuarter.id)
+        : Promise.resolve([]),
+    [risk.id, view.postingQuarter?.id, auth.user.id],
   );
-  const canUnset = useDb((s) => hasPermission(s.db, auth.user.id, 25, auth.today));
+  const participants = people.data ?? [];
+  const canUnset = auth.can(25);
+
+  // NFR-015: poll every 30 s for comments by others (they wait behind the banner); while a
+  // file of this viewer is being scanned, check every 3 s.
+  const scanning = allIds.some((c) => c.attachments.some((a) => a.scanning));
+  const latestSeen = allIds.reduce((m, c) => (c.createdAt > m ? c.createdAt : m), '');
+  useEffect(() => {
+    const timer = setInterval(
+      () => {
+        if (scanning) return useBoardRevision.getState().bump();
+        void threadApi
+          .since(risk.id, latestSeen || '2000-01-01T00:00')
+          .then((r) => r.comments > 0 && useBoardRevision.getState().bump())
+          .catch(() => undefined);
+      },
+      scanning ? 3_000 : 30_000,
+    );
+    return () => clearInterval(timer);
+  }, [risk.id, latestSeen, scanning]);
   const canPost = !!view.participation && !!view.postingQuarter && !view.archivedOn;
 
   const send = (mitigationId: string | null) => async (input: ComposerSubmit) => {

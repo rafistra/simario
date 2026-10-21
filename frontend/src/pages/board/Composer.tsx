@@ -110,6 +110,7 @@ export function Composer({
           size: f.size,
           mime: f.type || 'application/octet-stream',
           confidential: false,
+          file: f,
           problem: fileProblem(f.name, f.size),
         })),
       ].slice(0, MAX_FILES + 5),
@@ -140,6 +141,7 @@ export function Composer({
         size: f.size,
         mime: f.mime,
         confidential: f.confidential,
+        file: f.file,
       })),
       mentionUserIds: mentions.filter((m) => body.includes(`@${m.name}`)).map((m) => m.id),
     });

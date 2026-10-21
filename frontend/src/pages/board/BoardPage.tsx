@@ -13,7 +13,7 @@ import {
   type MarkerKind,
 } from '@/components';
 import type { BoardMarker, BoardRow, BoardView } from '@/data/api/board';
-import { boardApi, preferenceApi } from '@/data/repository';
+import { boardApi, preferenceApi, useBoardRevision } from '@/data/repository';
 import { QUARTER_ROMAN } from '@/domain/calendar';
 import { RISK_TYPE_LABEL, RISK_TYPES, type RiskType } from '@/domain/types';
 import type { WorkspaceOutletContext } from '@/layout/Workspace';
@@ -56,9 +56,10 @@ export default function BoardPage() {
     setFiltersState(f);
     preferenceApi.set(auth.user.id, prefKey, f);
   };
+  const revision = useBoardRevision((s) => s.revision);
   const q = useQuery(
     () => boardApi.board(position.id, fiscalYear),
-    [position.id, fiscalYear, auth.user.id],
+    [position.id, fiscalYear, auth.user.id, revision],
   );
   const isLini1Holder = auth.holdings.some((h) => h.positionId === position.id);
 

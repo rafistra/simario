@@ -42,6 +42,8 @@ function normaliseDates(value: unknown): unknown {
 export interface FetchInit {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   body?: unknown;
+  /** Multipart body (uploads); ids inside are the caller's to translate. */
+  form?: FormData;
   query?: Record<string, string | number | undefined>;
 }
 
@@ -59,7 +61,7 @@ export async function apiFetch<T>(path: string, init: FetchInit = {}): Promise<T
   for (const [key, value] of Object.entries(init.query ?? {}))
     if (value !== undefined) url.searchParams.set(key, String(toBackendIds(value)));
   const headers: Record<string, string> = { Accept: 'application/json' };
-  if (init.body !== undefined) headers['Content-Type'] = 'application/json';
+  if (init.body !== undefined && !init.form) headers['Content-Type'] = 'application/json';
   if (method !== 'GET') {
     // A fresh browser (or a session restored from its cookie) has no CSRF cookie yet;
     // GET /auth/config sets it.
@@ -74,7 +76,9 @@ export async function apiFetch<T>(path: string, init: FetchInit = {}): Promise<T
       method,
       credentials: 'same-origin',
       headers,
-      body: init.body === undefined ? undefined : JSON.stringify(toBackendIds(init.body)),
+      body:
+        init.form ??
+        (init.body === undefined ? undefined : JSON.stringify(toBackendIds(init.body))),
     });
   } catch {
     throw new ApiError('offline', OFFLINE_MESSAGE);
