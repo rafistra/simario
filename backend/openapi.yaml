@@ -264,6 +264,45 @@ paths:
               schema:
                 $ref: '#/components/schemas/MyPositions'
           description: ''
+  /api/v1/monitoring-assignments:
+    post:
+      operationId: monitoring_assignments_create
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignmentsInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AssignmentsInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AssignmentsInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/monitoring-assignments/{id}:
+    delete:
+      operationId: monitoring_assignments_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/notifications:
     get:
       operationId: notifications_list
@@ -771,6 +810,83 @@ paths:
                 type: object
                 additionalProperties: {}
           description: ''
+  /api/v1/roles:
+    post:
+      operationId: roles_create
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleNameRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RoleNameRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RoleNameRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Id'
+          description: ''
+  /api/v1/roles/{id}:
+    delete:
+      operationId: roles_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/roles/{id}/permissions/{code}:
+    put:
+      operationId: roles_permissions_update
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PermissionInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PermissionInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PermissionInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/score-band-versions:
     post:
       operationId: score_band_versions_create
@@ -1225,6 +1341,36 @@ components:
       - fillerChanged
       - occupancyId
       - promoted
+    AssignmentsInputRequest:
+      type: object
+      properties:
+        targetPositionIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        leadPositionId:
+          type: string
+          format: uuid
+          nullable: true
+        supports:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupportInputRequest'
+        quarterFromId:
+          type: string
+          minLength: 1
+        quarterToId:
+          type: string
+          minLength: 1
+        decreeNo:
+          type: string
+      required:
+      - decreeNo
+      - leadPositionId
+      - quarterFromId
+      - quarterToId
+      - targetPositionIds
     AuthConfig:
       type: object
       properties:
@@ -1389,6 +1535,14 @@ components:
       - delegations
       - fillerBlock
       - occupancies
+    DomainEnum:
+      enum:
+      - budget_performance
+      - procurement
+      type: string
+      description: |-
+        * `budget_performance` - budget_performance
+        * `procurement` - procurement
     FillerInputRequest:
       type: object
       properties:
@@ -1607,6 +1761,9 @@ components:
       - targetUrl
       - text
       - userId
+    NullEnum:
+      enum:
+      - null
     OfficialCard:
       type: object
       properties:
@@ -1804,6 +1961,18 @@ components:
           type: string
         active:
           type: boolean
+    PermissionInputRequest:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        scope:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/ScopeEnum'
+          - $ref: '#/components/schemas/NullEnum'
+      required:
+      - enabled
     PermissionScope:
       type: object
       properties:
@@ -2075,6 +2244,23 @@ components:
             format: uuid
       required:
       - roleIds
+    RoleNameRequest:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+      - name
+    ScopeEnum:
+      enum:
+      - sendiri
+      - unit
+      - semua
+      type: string
+      description: |-
+        * `sendiri` - sendiri
+        * `unit` - unit
+        * `semua` - semua
     SignInResult:
       type: object
       properties:
@@ -2123,6 +2309,17 @@ components:
             format: uuid
       required:
       - orderedIds
+    SupportInputRequest:
+      type: object
+      properties:
+        positionId:
+          type: string
+          format: uuid
+        domain:
+          $ref: '#/components/schemas/DomainEnum'
+      required:
+      - domain
+      - positionId
     TemplateRequest:
       type: object
       properties:

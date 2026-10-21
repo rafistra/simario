@@ -217,6 +217,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/monitoring-assignments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["monitoring_assignments_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/monitoring-assignments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["monitoring_assignments_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/notifications": {
         parameters: {
             query?: never;
@@ -506,6 +538,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["roles_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/roles/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["roles_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/roles/{id}/permissions/{code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["roles_permissions_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/score-band-versions": {
         parameters: {
             query?: never;
@@ -759,6 +839,15 @@ export interface components {
             promoted: number;
             fillerChanged: number;
         };
+        AssignmentsInputRequest: {
+            targetPositionIds: string[];
+            /** Format: uuid */
+            leadPositionId: string | null;
+            supports?: components["schemas"]["SupportInputRequest"][];
+            quarterFromId: string;
+            quarterToId: string;
+            decreeNo: string;
+        };
         AuthConfig: {
             devTools: boolean;
             oidcEnabled: boolean;
@@ -829,6 +918,12 @@ export interface components {
             appointedOperators: number;
             fillerBlock: string | null;
         };
+        /**
+         * @description * `budget_performance` - budget_performance
+         *     * `procurement` - procurement
+         * @enum {string}
+         */
+        DomainEnum: "budget_performance" | "procurement";
         FillerInputRequest: {
             /** Format: uuid */
             toOccupancyId: string;
@@ -913,6 +1008,8 @@ export interface components {
             createdAt: string;
             eventKey: string;
         };
+        /** @enum {unknown} */
+        NullEnum: null;
         OfficialCard: {
             /** Format: uuid */
             occupancyId: string;
@@ -994,6 +1091,10 @@ export interface components {
         PatchedStagePatchRequest: {
             name?: string;
             active?: boolean;
+        };
+        PermissionInputRequest: {
+            enabled: boolean;
+            scope?: (components["schemas"]["ScopeEnum"] | components["schemas"]["NullEnum"]) | null;
         };
         PermissionScope: {
             code: number;
@@ -1111,6 +1212,16 @@ export interface components {
         RoleIdsRequest: {
             roleIds: string[];
         };
+        RoleNameRequest: {
+            name: string;
+        };
+        /**
+         * @description * `sendiri` - sendiri
+         *     * `unit` - unit
+         *     * `semua` - semua
+         * @enum {string}
+         */
+        ScopeEnum: "sendiri" | "unit" | "semua";
         SignInResult: {
             ok: boolean;
             /** Format: uuid */
@@ -1129,6 +1240,11 @@ export interface components {
         };
         StageOrderRequest: {
             orderedIds: string[];
+        };
+        SupportInputRequest: {
+            /** Format: uuid */
+            positionId: string;
+            domain: components["schemas"]["DomainEnum"];
         };
         TemplateRequest: {
             /** Format: uuid */
@@ -1448,6 +1564,50 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["MyPositions"];
                 };
+            };
+        };
+    };
+    monitoring_assignments_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignmentsInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["AssignmentsInputRequest"];
+                "multipart/form-data": components["schemas"]["AssignmentsInputRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    monitoring_assignments_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -1931,6 +2091,78 @@ export interface operations {
                         [key: string]: unknown;
                     };
                 };
+            };
+        };
+    };
+    roles_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RoleNameRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["RoleNameRequest"];
+                "multipart/form-data": components["schemas"]["RoleNameRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Id"];
+                };
+            };
+        };
+    };
+    roles_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    roles_permissions_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: number;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PermissionInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PermissionInputRequest"];
+                "multipart/form-data": components["schemas"]["PermissionInputRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

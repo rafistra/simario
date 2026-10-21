@@ -31,4 +31,21 @@ urlpatterns = [
     ),
     path("delegates/<uuid:pk>/revoke", views.DelegateRevokeView.as_view(), name="delegate-revoke"),
     path("me/positions", views.MyPositionsView.as_view(), name="me-positions"),
+    path("roles", views.RoleListView.as_view(), name="roles"),
+    path("roles/<uuid:pk>", views.RoleView.as_view(), name="role"),
+    path(
+        "roles/<uuid:pk>/permissions/<int:code>",
+        views.RolePermissionView.as_view(),
+        name="role-permission",
+    ),
+    path(
+        "monitoring-assignments",
+        views.AssignmentListView.as_view(),
+        name="monitoring-assignments",
+    ),
+    path(
+        "monitoring-assignments/<uuid:pk>",
+        views.AssignmentView.as_view(),
+        name="monitoring-assignment",
+    ),
 ]

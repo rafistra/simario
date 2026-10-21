@@ -11,7 +11,7 @@ from simario.accounts.models import User
 from simario.core.api import ActiveSerializer, IdSerializer, ReasonSerializer, body
 from simario.core.permissions import require_permission
 
-from . import holdings, services
+from . import holdings, roles, services
 
 
 def _user(request: Request) -> User:
@@ -239,3 +239,79 @@ class MyPositionsView(APIView):
     @extend_schema(responses=MyPositionsSerializer, tags=["admin"])
     def get(self, request: Request) -> Response:
         return Response(MyPositionsSerializer(holdings.my_positions(_user(request))).data)
+
+
+class RoleNameSerializer(serializers.Serializer[None]):
+    name = serializers.CharField(allow_blank=True)
+
+
+class PermissionInputSerializer(serializers.Serializer[None]):
+    enabled = serializers.BooleanField()
+    scope = serializers.ChoiceField(
+        choices=["sendiri", "unit", "semua"], allow_null=True, required=False
+    )
+
+
+class SupportInputSerializer(serializers.Serializer[None]):
+    position_id = serializers.UUIDField()
+    domain = serializers.ChoiceField(choices=["budget_performance", "procurement"])
+
+
+class AssignmentsInputSerializer(serializers.Serializer[None]):
+    target_position_ids = serializers.ListField(child=serializers.UUIDField())
+    lead_position_id = serializers.UUIDField(allow_null=True)
+    supports = SupportInputSerializer(many=True, required=False)
+    quarter_from_id = serializers.CharField()
+    quarter_to_id = serializers.CharField()
+    decree_no = serializers.CharField(allow_blank=True)
+
+
+class RoleListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(request=RoleNameSerializer, responses={201: IdSerializer}, tags=["admin"])
+    def post(self, request: Request) -> Response:
+        actor = require_permission(_user(request), 22)
+        name = body(RoleNameSerializer, request)["name"]
+        return Response({"id": roles.add_role(actor, name)}, status=201)
+
+
+class RoleView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(responses={204: None}, tags=["admin"])
+    def delete(self, request: Request, pk: str) -> Response:
+        actor = require_permission(_user(request), 22)
+        roles.delete_role(actor, pk)  # type: ignore[arg-type]
+        return Response(status=204)
+
+
+class RolePermissionView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(request=PermissionInputSerializer, responses={204: None}, tags=["admin"])
+    def put(self, request: Request, pk: str, code: int) -> Response:
+        actor = require_permission(_user(request), 22)
+        data = body(PermissionInputSerializer, request)
+        roles.set_permission(actor, pk, code, data["enabled"], data.get("scope"))  # type: ignore[arg-type]
+        return Response(status=204)
+
+
+class AssignmentListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(request=AssignmentsInputSerializer, responses={204: None}, tags=["admin"])
+    def post(self, request: Request) -> Response:
+        actor = require_permission(_user(request), 20)
+        roles.add_assignments(actor, body(AssignmentsInputSerializer, request))
+        return Response(status=204)
+
+
+class AssignmentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(responses={204: None}, tags=["admin"])
+    def delete(self, request: Request, pk: str) -> Response:
+        actor = require_permission(_user(request), 20)
+        roles.remove_assignment(actor, pk)  # type: ignore[arg-type]
+        return Response(status=204)
