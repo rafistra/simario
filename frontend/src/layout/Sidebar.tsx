@@ -15,14 +15,12 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { CapacityChip, LineChip } from '@/components';
-import { useDb } from '@/data/local/store';
 import { ROLE_VIEW_LABEL } from '@/domain/permissions';
-import { positionLine } from '@/domain/rules/access';
 import type { Line } from '@/domain/types';
 import { initials } from '@/lib/format';
 import { applyTheme, getTheme } from '@/lib/theme';
 import { useSession } from '@/state/session';
-import { chooseActivePosition, signOutEverywhere } from '@/state/me';
+import { chooseActivePosition, signOutEverywhere, useMe } from '@/state/me';
 import { useAuth } from '@/state/useAuth';
 import { isActive, navFor } from './nav';
 import './Shell.css';
@@ -49,17 +47,18 @@ function useDismiss(open: boolean, close: () => void) {
 /** PositionSwitcher + PositionSwitcherMenu (.pen h7GXD4, zHvOw) — FR-AUT-009. */
 function PositionSwitcher({ onNavigate }: { onNavigate?: () => void }) {
   const auth = useAuth();
-  const db = useDb((s) => s.db);
+  const holdings = useMe((s) => s.me?.holdings ?? []);
   const setActive = chooseActivePosition;
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const ref = useDismiss(open, () => setOpen(false));
   if (!auth.active) return null;
-  // Lini 1 positions read "PPK A-1 · DDKB"; Lini 2/3 names already carry their unit.
+  // Lini 1 positions read "PPK A-1 · DDKB"; Lini 2/3 names already carry their unit. Names come
+  // from /me, which also knows positions created in the backend.
   const label = (positionId: string) => {
-    const p = db.positions.find((x) => x.id === positionId)!;
-    const unit = db.orgUnits.find((o) => o.id === p.orgUnitId)?.code;
-    return positionLine(db, positionId) === 1 ? `${p.name} · ${unit}` : p.name;
+    const h = holdings.find((x) => x.positionId === positionId);
+    if (!h) return positionId;
+    return h.line === 1 ? `${h.position.name} · ${h.unitCode}` : h.position.name;
   };
   const multiple = auth.holdings.length > 1;
   const choose = (positionId: string, line: Line) => {

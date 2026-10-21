@@ -20,8 +20,8 @@ import {
 } from '@/components';
 import { deactivationImpact } from '@/data/api/admin';
 import { adminApi } from '@/data/repository';
-import { useDb } from '@/data/local/store';
-import { effectiveRoleIds, hasPermission } from '@/domain/rules/access';
+import { useGateDb } from '@/components/DataGate/gateDb';
+import { effectiveRoleIds } from '@/domain/rules/access';
 import type { User } from '@/domain/types';
 import { usePageMeta } from '@/layout/pageMeta';
 import { useAuth } from '@/state/useAuth';
@@ -44,7 +44,7 @@ type Dialog =
 export default function UsersPage() {
   usePageMeta(['Pengaturan', 'Pengguna']);
   const auth = useAuth();
-  const db = useDb((s) => s.db);
+  const db = useGateDb();
   const today = auth.today;
   const [search, setSearch] = useState('');
   const [unit, setUnit] = useState('');
@@ -52,7 +52,7 @@ export default function UsersPage() {
   const [status, setStatus] = useState('aktif');
   const [page, setPage] = useState(1);
   const [dialog, setDialog] = useState<Dialog>(null);
-  const canRoles = hasPermission(db, auth.user.id, 22, today);
+  const canRoles = auth.can(22);
 
   const rows = db.users
     .filter((u) => (status === 'aktif' ? u.active : status === 'nonaktif' ? !u.active : true))
@@ -365,7 +365,7 @@ function Footer({
 }
 
 function AddUser({ onClose }: { onClose: () => void }) {
-  const db = useDb((s) => s.db);
+  const db = useGateDb();
   const [v, setV] = useState({
     nip: '',
     fullName: '',
@@ -460,7 +460,7 @@ function EditRoles({
   canRoles: boolean;
   onClose: () => void;
 }) {
-  const db = useDb((s) => s.db);
+  const db = useGateDb();
   const manual = db.userRoles
     .filter((r) => r.userId === user.id && r.source === 'manual')
     .map((r) => r.roleId);
@@ -516,7 +516,7 @@ function EditRoles({
 }
 
 function AssignPosition({ user, onClose }: { user: User; onClose: () => void }) {
-  const db = useDb((s) => s.db);
+  const db = useGateDb();
   const auth = useAuth();
   const [v, setV] = useState({
     positionId: '',
@@ -633,7 +633,7 @@ function AssignPosition({ user, onClose }: { user: User; onClose: () => void }) 
 }
 
 function ReplaceOfficial({ user, onClose }: { user: User | null; onClose: () => void }) {
-  const db = useDb((s) => s.db);
+  const db = useGateDb();
   const auth = useAuth();
   const today = auth.today;
   const firstOcc = user
@@ -823,7 +823,7 @@ function ResetPassword({ user, onClose }: { user: User; onClose: () => void }) {
 }
 
 function Deactivate({ user, onClose }: { user: User; onClose: () => void }) {
-  const db = useDb((s) => s.db);
+  const db = useGateDb();
   const auth = useAuth();
   const impact = deactivationImpact(db, user.id, auth.today);
   const [busy, setBusy] = useState(false);

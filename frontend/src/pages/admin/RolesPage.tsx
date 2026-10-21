@@ -2,7 +2,7 @@ import { Lock, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button, InlineAlert, PageHeader, TextInput, toast } from '@/components';
 import { adminApi } from '@/data/repository';
-import { useDb } from '@/data/local/store';
+import { useGateDb } from '@/components/DataGate/gateDb';
 import { PERMISSIONS, type PermissionGroup } from '@/domain/permissions';
 import type { Scope } from '@/domain/types';
 import { usePageMeta } from '@/layout/pageMeta';
@@ -24,7 +24,7 @@ const SCOPE_LABEL: Record<Scope, string> = { sendiri: 'Sendiri', unit: 'Unit', s
 /** /pengaturan/peran — FR-ADM-001, 002, 003, 009. */
 export default function RolesPage() {
   usePageMeta(['Pengaturan', 'Peran']);
-  const db = useDb((s) => s.db);
+  const db = useGateDb();
   const [selected, setSelected] = useState(db.roles[1]?.id ?? db.roles[0]!.id);
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState('');

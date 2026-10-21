@@ -67,9 +67,20 @@ export default function App() {
               path="jabatan-saya"
               element={
                 <RequireHolding>
-                  <DataGate>
+                  <CollectionGate
+                    names={[
+                      'occupancies',
+                      'delegates',
+                      'users',
+                      'positions',
+                      'positionTypes',
+                      'roles',
+                      'rolePermissions',
+                      'userRoles',
+                    ]}
+                  >
                     <MyPositionsPage />
-                  </DataGate>
+                  </CollectionGate>
                 </RequireHolding>
               }
             />
@@ -191,9 +202,21 @@ export default function App() {
                 path="pengguna"
                 element={
                   <RequirePermission anyOf={[21]}>
-                    <DataGate>
+                    <CollectionGate
+                      names={[
+                        'users',
+                        'userRoles',
+                        'roles',
+                        'rolePermissions',
+                        'occupancies',
+                        'delegates',
+                        'orgUnits',
+                        'positionTypes',
+                        'positions',
+                      ]}
+                    >
                       <UsersPage />
-                    </DataGate>
+                    </CollectionGate>
                   </RequirePermission>
                 }
               />
@@ -201,9 +224,11 @@ export default function App() {
                 path="peran"
                 element={
                   <RequirePermission anyOf={[22]}>
-                    <DataGate>
+                    <CollectionGate
+                      names={['roles', 'rolePermissions', 'userRoles', 'positionTypes']}
+                    >
                       <RolesPage />
-                    </DataGate>
+                    </CollectionGate>
                   </RequirePermission>
                 }
               />
@@ -211,9 +236,17 @@ export default function App() {
                 path="penugasan-pemantauan"
                 element={
                   <RequirePermission anyOf={[20]}>
-                    <DataGate>
+                    <CollectionGate
+                      names={[
+                        'assignments',
+                        'fiscalYears',
+                        'positionTypes',
+                        'positions',
+                        'quarters',
+                      ]}
+                    >
                       <AssignmentsPage />
-                    </DataGate>
+                    </CollectionGate>
                   </RequirePermission>
                 }
               />
@@ -221,9 +254,17 @@ export default function App() {
                 path="tahun-anggaran"
                 element={
                   <RequirePermission anyOf={[19]}>
-                    <DataGate>
+                    <CollectionGate
+                      names={[
+                        'fiscalYears',
+                        'quarters',
+                        'quarterAssessors',
+                        'positions',
+                        'positionTypes',
+                      ]}
+                    >
                       <FiscalYearsPage />
-                    </DataGate>
+                    </CollectionGate>
                   </RequirePermission>
                 }
               />
@@ -231,9 +272,9 @@ export default function App() {
                 path="impor"
                 element={
                   <RequirePermission anyOf={[18, 20, 21]}>
-                    <DataGate>
+                    <CollectionGate names={['positionTypes']}>
                       <ImportPage />
-                    </DataGate>
+                    </CollectionGate>
                   </RequirePermission>
                 }
               />

@@ -12,8 +12,7 @@ import {
 } from '@/components';
 import { archiveStatus, quarterProblems } from '@/data/api/calendar';
 import { ApiError, calendarApi } from '@/data/repository';
-import { useDb } from '@/data/local/store';
-import { hasPermission } from '@/domain/rules/access';
+import { useGateDb } from '@/components/DataGate/gateDb';
 import type { Quarter } from '@/domain/types';
 import { usePageMeta } from '@/layout/pageMeta';
 import { formatDate } from '@/lib/format';
@@ -39,7 +38,7 @@ const STATUS = {
 export default function FiscalYearsPage() {
   usePageMeta(['Pengaturan', 'Tahun Anggaran']);
   const auth = useAuth();
-  const db = useDb((s) => s.db);
+  const db = useGateDb();
   const years = [...db.fiscalYears].sort((a, b) => b.year - a.year);
   const [year, setYear] = useState(
     years.find((y) => y.status !== 'archived')?.year ?? years[0]!.year,
@@ -65,7 +64,7 @@ export default function FiscalYearsPage() {
   const archived = fy.status === 'archived';
   const problems = quarterProblems(year, draft);
   const st = archiveStatus(db, year, auth.today);
-  const canArchive = hasPermission(db, auth.user.id, 26, auth.today);
+  const canArchive = auth.can(26);
 
   const saveQuarter = async (q: Quarter, confirm = false) => {
     setError(null);

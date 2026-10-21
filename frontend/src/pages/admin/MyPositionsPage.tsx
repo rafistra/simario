@@ -15,7 +15,7 @@ import {
   toast,
 } from '@/components';
 import { adminApi } from '@/data/repository';
-import { useDb } from '@/data/local/store';
+import { useGateDb } from '@/components/DataGate/gateDb';
 import { checkAction, positionLine } from '@/domain/rules/access';
 import type { PositionDelegate } from '@/domain/types';
 import { usePageMeta } from '@/layout/pageMeta';
@@ -36,7 +36,7 @@ const END: Record<string, string> = {
 export default function MyPositionsPage() {
   usePageMeta(['Jabatan Saya']);
   const auth = useAuth();
-  const db = useDb((s) => s.db);
+  const db = useGateDb();
   const today = auth.today;
   const [appoint, setAppoint] = useState<string | null>(null);
   const [revoke, setRevoke] = useState<PositionDelegate | null>(null);

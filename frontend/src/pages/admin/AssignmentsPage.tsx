@@ -15,7 +15,7 @@ import {
   type Column,
 } from '@/components';
 import { adminApi } from '@/data/repository';
-import { useDb } from '@/data/local/store';
+import { useGateDb } from '@/components/DataGate/gateDb';
 import { postingQuarter } from '@/domain/rules/board';
 import type { MonitoringAssignment, MonitoringSupport } from '@/domain/types';
 import { usePageMeta } from '@/layout/pageMeta';
@@ -32,7 +32,7 @@ const DOMAIN: Record<MonitoringSupport['domain'], string> = {
 export default function AssignmentsPage() {
   usePageMeta(['Pengaturan', 'Penugasan Pemantauan']);
   const auth = useAuth();
-  const db = useDb((s) => s.db);
+  const db = useGateDb();
   const [adding, setAdding] = useState<string[] | null>(null);
   const [removing, setRemoving] = useState<MonitoringAssignment | null>(null);
   const year = Number(auth.today.slice(0, 4));
@@ -177,7 +177,7 @@ export default function AssignmentsPage() {
 }
 
 function AddDialog({ initial, onClose }: { initial: string[]; onClose: () => void }) {
-  const db = useDb((s) => s.db);
+  const db = useGateDb();
   const line = (id: string) =>
     db.positionTypes.find((t) => t.id === db.positions.find((p) => p.id === id)?.positionTypeId)
       ?.line;
