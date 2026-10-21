@@ -56,9 +56,10 @@ export const useMe = create<MeState>((set) => ({
 
 /** Ends the session on the server and locally (sign-out menu, idle timeout). */
 export async function signOutEverywhere() {
-  await authApi.signOut().catch(() => undefined);
+  const res = await authApi.signOut().catch(() => undefined);
   useSession.getState().signOut();
   useMe.getState().clear();
+  if (res?.redirectUrl) window.location.assign(res.redirectUrl);
 }
 
 /** Position switcher (FR-AUT-009): local choice now, remembered by the server for next time. */

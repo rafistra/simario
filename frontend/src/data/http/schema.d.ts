@@ -82,6 +82,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * @description Ends the session; after an SSO sign-in also answers the Keycloak end-session URL the
+         *     browser goes to, so the next "Masuk dengan Akun Otorita IKN" asks again (R-10).
+         */
         post: operations["auth_logout_create"];
         delete?: never;
         options?: never;
@@ -1639,6 +1643,9 @@ export interface components {
             nip: string;
             password: string;
         };
+        LogoutResult: {
+            redirectUrl: string | null;
+        };
         /** @description Response of GET /api/v1/me (`MeResponse` in the generated TypeScript types). */
         Me: {
             user: components["schemas"]["MeUser"];
@@ -2149,12 +2156,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description No response body */
-            204: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["LogoutResult"];
+                };
             };
         };
     };

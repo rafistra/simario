@@ -70,3 +70,7 @@ class MeSerializer(serializers.Serializer[dict[str, Any]]):
 
 class ActivePositionSerializer(serializers.Serializer[None]):
     position_id = serializers.UUIDField()
+
+
+class LogoutResultSerializer(serializers.Serializer[None]):
+    redirect_url = serializers.CharField(allow_null=True)

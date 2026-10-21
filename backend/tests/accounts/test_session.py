@@ -17,6 +17,6 @@ def test_session_expiry_is_60_minutes(client: APIClient, local_user: User) -> No
 
 def test_logout_ends_session(client: APIClient, local_user: User) -> None:
     client.force_login(local_user)
-    assert client.post("/api/v1/auth/logout").status_code == 204
+    assert client.post("/api/v1/auth/logout").status_code == 200
     res = client.post("/api/v1/auth/password", {"newPassword": "x" * 12}, format="json")
     assert res.status_code == 401

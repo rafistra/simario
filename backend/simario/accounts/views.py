@@ -1,4 +1,5 @@
 from typing import cast
+from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib.auth import logout
@@ -19,6 +20,7 @@ from .serializers import (
     ActivePositionSerializer,
     AuthConfigSerializer,
     LoginSerializer,
+    LogoutResultSerializer,
     MeSerializer,
     PasswordSerializer,
     SignInResultSerializer,
@@ -73,10 +75,18 @@ class PasswordView(APIView):
 class LogoutView(APIView):
     permission_classes = [AllowAny]
 
-    @extend_schema(request=None, responses={204: None}, tags=["auth"])
+    @extend_schema(request=None, responses=LogoutResultSerializer, tags=["auth"])
     def post(self, request: Request) -> Response:
+        """Ends the session; after an SSO sign-in also answers the Keycloak end-session URL the
+        browser goes to, so the next "Masuk dengan Akun Otorita IKN" asks again (R-10)."""
+        id_token = request.session.get("oidc_id_token")
+        redirect = None
+        if id_token and settings.OIDC_ISSUER:
+            back = request.build_absolute_uri("/login")
+            query = urlencode({"id_token_hint": id_token, "post_logout_redirect_uri": back})
+            redirect = f"{settings.OIDC_ISSUER.rstrip('/')}/protocol/openid-connect/logout?{query}"
         logout(request._request)
-        return Response(status=204)
+        return Response({"redirect_url": redirect})
 
 
 class MeView(APIView):

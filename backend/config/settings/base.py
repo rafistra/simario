@@ -191,6 +191,8 @@ OIDC_RP_SIGN_ALGO = "RS256"
 OIDC_RP_SCOPES = "openid"
 OIDC_CREATE_USER = True  # routed to SimarioOIDCBackend.create_user, which refuses and audits
 OIDC_CALLBACK_CLASS = "simario.accounts.oidc.SimarioCallbackView"
+# Kept in the session for RP-initiated logout at Keycloak (R-10).
+OIDC_STORE_ID_TOKEN = True
 LOGIN_REDIRECT_URL = "/"
 LOGIN_REDIRECT_URL_FAILURE = "/login?alasan=sso-gagal"
 AUTHENTICATION_BACKENDS = [

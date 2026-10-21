@@ -41,7 +41,9 @@ export const authApi = {
     return apiFetch<void>('/auth/password', { method: 'POST', body: input });
   },
 
-  signOut: () => apiFetch<void>('/auth/logout', { method: 'POST' }),
+  /** After an SSO sign-in the server answers Keycloak's end-session URL (R-10). */
+  signOut: () =>
+    apiFetch<{ redirectUrl: string | null } | undefined>('/auth/logout', { method: 'POST' }),
 
   config: () => apiFetch<AuthConfig>('/auth/config'),
 };
