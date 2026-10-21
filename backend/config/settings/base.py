@@ -42,6 +42,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "simario.accounts.middleware.AuthEpochMiddleware",
 ]
 
 AUTH_USER_MODEL = "accounts.User"
@@ -157,3 +158,10 @@ STORAGES = {
 CELERY_BEAT_SCHEDULE = {
     "run-scheduled": {"task": "simario.core.tasks.run_scheduled", "schedule": 15 * 60},
 }
+
+# Sessions (NFR-008): 60 minutes of inactivity, cookie only (BFF; tokens never reach the browser).
+SESSION_COOKIE_AGE = 3600
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "Lax"

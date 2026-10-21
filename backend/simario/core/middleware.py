@@ -27,6 +27,8 @@ class ApiErrorMiddleware:
         response = self.get_response(request)
         if not _is_api(request.path) or _is_json(response):
             return response
+        if response.status_code == 403:
+            return JsonResponse(envelope("forbidden"), status=403)
         if response.status_code == 404:
             return JsonResponse(envelope("not_found"), status=404)
         if response.status_code >= 500:
