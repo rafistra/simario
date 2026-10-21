@@ -1,4 +1,5 @@
 import json
+import re
 from typing import Any
 
 import pytest
@@ -79,3 +80,14 @@ def test_seed_demo_refused_without_dev_tools(settings: Any) -> None:
 def test_seed_demo_command_loads_data() -> None:
     call_command("seed_demo")
     assert User.objects.filter(nip="198204172008011003").exists()
+
+
+def test_target_urls_have_no_prototype_ids_even_in_fragments() -> None:
+    from simario.devtools.seed import known_ids, load_raw
+
+    load_demo()
+    known = known_ids(load_raw()["db"])
+    for url in Notification.objects.values_list("target_url", flat=True):
+        for token in re.split(r"[/?#&=]", url):
+            assert token not in known, url
+            assert not any(token.endswith(f"-{k}") for k in known), url

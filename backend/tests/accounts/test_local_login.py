@@ -73,3 +73,14 @@ def test_config_sets_csrf_cookie(client: APIClient, db: None) -> None:
     assert res.status_code == 200
     assert res.json() == {"devTools": True, "oidcEnabled": bool(settings.OIDC_ISSUER)}
     assert "csrftoken" in res.cookies
+
+
+def test_failure_count_locks_its_row(client: APIClient, local_user: User) -> None:
+    from django.db import connection
+    from django.test.utils import CaptureQueriesContext
+
+    with CaptureQueriesContext(connection) as ctx:
+        _login(client, LOCAL_NIP, "salah")
+    # The read the new count is computed from must hold the row lock (no lost increments).
+    first = next(q["sql"] for q in ctx.captured_queries if "accounts_loginlockout" in q["sql"])
+    assert "FOR UPDATE" in first

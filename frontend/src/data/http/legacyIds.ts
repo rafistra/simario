@@ -11,6 +11,18 @@ const TO_LEGACY: Record<string, string> = Object.fromEntries(
 );
 const UUID = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/g;
 
+const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+// Known ids as whole tokens: after start or / ? # & = - (fragments such as "komentar-cm-9"),
+// before end or / ? # &. Longest first so "rr-a1-x" wins over a shorter id inside it.
+const ID_TOKEN = new RegExp(
+  `(?:^|(?<=[/?#&=-]))(${Object.keys(TO_UUID)
+    .sort((a, b) => b.length - a.length)
+    .map(escapeRegExp)
+    .join('|')})(?=$|[/?#&])`,
+  'g',
+);
+
 function mapDeep(value: unknown, mapString: (s: string) => string): unknown {
   if (typeof value === 'string') return mapString(value);
   if (Array.isArray(value)) return value.map((v) => mapDeep(v, mapString));
@@ -19,19 +31,12 @@ function mapDeep(value: unknown, mapString: (s: string) => string): unknown {
   return value;
 }
 
-const toUuidString = (s: string) =>
-  TO_UUID[s] ??
-  (s.includes('/')
-    ? s
-        .split('/')
-        .map((p) => TO_UUID[p] ?? p)
-        .join('/')
-    : s);
+const toUuidString = (s: string) => s.replace(ID_TOKEN, (id) => TO_UUID[id] ?? id);
 
 const toLegacyString = (s: string) =>
   TO_LEGACY[s] ?? s.replace(UUID, (uuid) => TO_LEGACY[uuid] ?? uuid);
 
-/** Prototype ids → backend UUIDs (request bodies, queries, path segments). */
+/** Prototype ids → backend UUIDs (request bodies, queries, path segments, fragments). */
 export function toBackendIds<T>(value: T): T {
   return mapDeep(value, toUuidString) as T;
 }

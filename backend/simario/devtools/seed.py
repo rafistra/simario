@@ -6,6 +6,7 @@ import datetime as dt
 import json
 import re
 import uuid
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -101,17 +102,22 @@ def snake(name: str) -> str:
     return _CAMEL.sub("_", name).lower()
 
 
+@lru_cache(maxsize=4)
+def _id_pattern(known: frozenset[str]) -> re.Pattern[str]:
+    """Known ids as whole tokens: after start or / ? # & = - (fragments such as
+    "komentar-cm-9"), before end or / ? # &. Longest first so "rr-a1-x" wins over "a1-x"."""
+    ids = "|".join(re.escape(k) for k in sorted(known, key=len, reverse=True))
+    return re.compile(rf"(?:^|(?<=[/?#&=-]))({ids})(?=$|[/?#&])")
+
+
 def to_uuids(value: Any, known: set[str]) -> Any:
     """Known prototype ids → UUID strings, also inside strings such as target URLs."""
     if isinstance(value, dict):
         return {k: to_uuids(v, known) for k, v in value.items()}
     if isinstance(value, list):
         return [to_uuids(v, known) for v in value]
-    if isinstance(value, str):
-        if value in known:
-            return str(legacy_uuid(value))
-        if "/" in value:
-            return "/".join(str(legacy_uuid(p)) if p in known else p for p in value.split("/"))
+    if isinstance(value, str) and known:
+        return _id_pattern(frozenset(known)).sub(lambda m: str(legacy_uuid(m.group(1))), value)
     return value
 
 

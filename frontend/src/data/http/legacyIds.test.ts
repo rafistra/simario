@@ -28,3 +28,16 @@ describe('legacy id bridge', () => {
     expect(out).toEqual({ userId: 'usr-andi', holdings: [{ positionId: 'pos-ppk-a1', line: 1 }] });
   });
 });
+
+describe('legacy id bridge with fragments and queries', () => {
+  const ids = legacy as Record<string, string>;
+  it('translates ids after # and ? and inside "prefix-id" fragments', () => {
+    const url = '/jabatan/pos-ppk-a1/papan/2027/risiko/rr-a1-penyerapan#komentar-cm-1';
+    const back = toBackendIds(url);
+    expect(back).toBe(
+      `/jabatan/${ids['pos-ppk-a1']}/papan/2027/risiko/${ids['rr-a1-penyerapan']}#komentar-${ids['cm-1']}`,
+    );
+    expect(toLocalIds(back)).toBe(url);
+    expect(toBackendIds('/x?risk=rr-a1-penyerapan')).toBe(`/x?risk=${ids['rr-a1-penyerapan']}`);
+  });
+});

@@ -9,8 +9,8 @@
 | Kategori | Tinggi | Sedang | Rendah |
 |---|---|---|---|
 | Risiko produk & proses (R-P) | 2 | 4 | 1 |
-| Risiko teknis (R) | 3 | 5 | 1 |
-| Utang teknis (U) | 0 | 8 | 8 |
+| Risiko teknis (R) | 3 | 6 | 1 |
+| Utang teknis (U) | 0 | 9 | 9 |
 
 Yang paling penting: **backend belum ada** (R-01), sehingga seluruh aturan izin dan kerahasiaan saat ini hanya berjalan di browser (R-02), dan sebagian data dibaca halaman langsung dari store sehingga kontrak API belum lengkap (U-01). Utang tingkat Tinggi U-02 dan U-03 sudah diselesaikan (§5).
 
@@ -41,6 +41,7 @@ Sebagian besar bersumber dari PRD (§1.2, §1.3, §1.11, Lampiran E).
 | R-07 | Hari kerja dihitung Senin–Jumat tanpa kalender libur nasional (PRD §1.10) | Tenggat penjelasan dapat jatuh di hari libur | Sedang | Sudah di luar cakupan v1.0; dijadwalkan v1.1 (PRD Lampiran D) |
 | R-08 | Mockup `Simario.pen` hanya dapat dibaca lewat MCP Pencil; browser Pencil sering macet saat screenshot | Verifikasi visual bergantung pada satu alat | Rendah | Pakai Edge headless (lihat [05_local_dev_and_testing.md](05_local_dev_and_testing.md)) |
 | R-09 | **Kematangan RustFS** sebagai penyimpanan objek (keputusan 21 Okt 2026, [01_backend.md §2.1](01_backend.md#21-keputusan-stack-21-okt-2026)). Proyeknya masih muda: rilis stabil 1.x baru ada (B0 memakai `rustfs/rustfs:1.0.3`, 21 Okt 2026), riwayat produksinya pendek, dan pilihan ini berbeda dari PRD §2.1 (MinIO) | Kehilangan atau kerusakan berkas bukti audit; perilaku S3 yang tidak lengkap (pre-signed URL, multipart) baru ketahuan di produksi | Sedang | Pantau rilis 1.x sampai go-live; hanya pakai API S3 standar lewat `django-storages`; uji integrasi penyimpanan di CI (unggah, pre-signed 5 menit, multipart 20 MB, karantina, hapus); cadangan harian + uji pemulihan (NFR-014); siapkan pengganti (SeaweedFS, Garage, Ceph RGW, S3 internal OIKN); konfirmasi ke tim infrastruktur OIKN; perbarui PRD §2.1 |
+| R-10 | **"Keluar" tidak mengakhiri sesi Keycloak** (review B1): tombol Keluar hanya menutup sesi Django; menekan "Masuk dengan Akun Otorita IKN" lagi langsung masuk tanpa kata sandi | Di komputer bersama, pengguna berikutnya dapat masuk sebagai pengguna sebelumnya | Sedang | B4s: RP-initiated logout (`OIDC_OP_LOGOUT_URL_METHOD`, `OIDC_STORE_ID_TOKEN`) dengan redirect ke `/login`, bersama konfigurasi client staging/produksi |
 
 ## 4. Utang teknis
 
@@ -49,6 +50,8 @@ Sebagian besar bersumber dari PRD (§1.2, §1.3, §1.11, Lampiran E).
 | U-01 | **24 berkas di `pages/`, `layout/`, `components/` (+ `state/useAuth.ts`) membaca store langsung** (`useDb`/`getDb`) untuk daftar master, admin, register, notifikasi, konteks pengguna. Penulisan sudah lewat repository, pembacaan belum. Halaman Register sudah menerima data terfilter dari `buildRegisterView`, tetapi memanggilnya secara sinkron | Lihat daftar di [03_api_contract.md §5](03_api_contract.md#5-celah-kontrak-data-yang-dibaca-langsung-dari-store) | Sedang | Tambah metode baca di namespace (`masterApi.list…`, `adminApi.users`, `GET /api/me`) dan pakai `registerApi.view` di halaman sebelum pindah ke backend |
 | U-04 | FR-AUT-008: perubahan peran/izin/holding/delegasi **tidak membatalkan sesi** pengguna terkait. **B1:** backend sudah punya `User.auth_epoch` + `AuthEpochMiddleware` (`bump_auth_epoch`), tetapi pemicunya ada di layanan admin yang baru pindah di B2 | `simario/accounts/services.py`, `data/api/admin.ts` | Sedang | Panggil `bump_auth_epoch` dari layanan admin B2 |
 | U-18 | **Jembatan ID sementara** (`frontend/src/data/http/legacyIds.ts` + `legacy-ids.json`): UUID backend ↔ ID prototipe di batas HTTP selama transisi. Entitas baru di backend tidak punya padanan lokal, dan lonceng hanya menampilkan notifikasi backend | `data/http/` | Rendah | Hapus bersama mode lokal di B9 |
+| U-19 | Sesi SSO pengguna yang **dinonaktifkan** tetap hidup: `SimarioOIDCBackend.get_user` (bawaan mozilla) tidak memeriksa `is_active` (review B1) | `simario/accounts/oidc.py` | Sedang | B2: panggil `bump_auth_epoch` saat menonaktifkan pengguna, atau override `get_user` agar mengembalikan None untuk pengguna nonaktif |
+| U-20 | `seed_reference` (data referensi produksi) mengimpor helper dari `simario.devtools.seed` dan membaca `docs/seed` lewat `REPO_DIR = parents[3]` (di container: mount `./docs/seed:/docs/seed`) | `simario/reference/catalog.py`, `docker-compose.yml` | Rendah | B4s: pindahkan `legacy_uuid`/`convert_row` ke `simario.core`; image produksi menyalin `docs/seed` atau path dari setting |
 | U-05 | FR-MST-008 "Tambah Jenis" (membuat jenis jabatan baru) **belum ada**; hanya aktif/nonaktif jenis bawaan | `pages/master/PositionsPage.tsx`, `masterApi` | Sedang | Tambah formulir jenis (nama, lini, peran bawaan, multi-Pejabat, isian identitas) |
 | U-06 | FR-AUT-006: menu "Sunting" pengguna hanya mengubah peran manual; ubah NIP/nama/email oleh Superadmin belum ada | `pages/admin/UsersPage.tsx` | Sedang | Tambah dialog sunting identitas + audit |
 | U-07 | Versi lembar otomatis (`runSheetFreeze`) hanya dievaluasi saat aplikasi dimulai atau jam simulasi digeser, tidak langsung setelah "Kirim Penjelasan" atau hasil Lini 3 terlambat terbuka | `data/local/scheduler.ts`, `data/api/assessment.ts` | Sedang | Panggil setelah event terkait (seperti `runComparisons`) |

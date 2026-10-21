@@ -44,30 +44,33 @@ def bump_auth_epoch(user: User) -> None:
 
 
 def local_sign_in(request: HttpRequest, nip: str, password: str) -> User:
-    """Local account fallback with a 5-attempt / 15-minute lockout (FR-AUT-002). Not atomic:
-    the failure count must persist although the call raises."""
+    """Local account fallback with a 5-attempt / 15-minute lockout (FR-AUT-002). The count is
+    read and written under a row lock so parallel attempts cannot lose increments; refusals are
+    raised after that transaction so the count persists."""
     at = clock.now()
-    lock = LoginLockout.objects.filter(nip=nip).first()
-    if lock and lock.until and at < lock.until:
-        left = max(1, int((lock.until - at) / dt.timedelta(minutes=1)))
-        raise ApiError("locked_out", _locked_message(left))
-    user = User.objects.filter(nip=nip.strip(), is_local_account=True).first()
-    if not user or not user.check_password(password):
-        fails = (0 if lock and lock.until else (lock.fails if lock else 0)) + 1
-        locked = fails >= LOCK_ATTEMPTS
-        LoginLockout.objects.update_or_create(
-            nip=nip,
-            defaults={
-                "fails": fails,
-                "until": at + dt.timedelta(minutes=LOCK_MINUTES) if locked else None,
-            },
-        )
-        if locked:
-            raise ApiError("locked_out", _locked_message(LOCK_MINUTES))
-        raise ApiError("login_failed", WRONG_CREDENTIALS)
-    if not user.is_active:
-        raise ApiError("login_failed", INACTIVE)
-    LoginLockout.objects.filter(nip=nip).delete()
+    refusal: tuple[str, str] | None = None
+    with transaction.atomic():
+        lock, _ = LoginLockout.objects.select_for_update().get_or_create(nip=nip)
+        user = User.objects.filter(nip=nip.strip(), is_local_account=True).first()
+        if lock.until and at < lock.until:
+            left = max(1, int((lock.until - at) / dt.timedelta(minutes=1)))
+            refusal = ("locked_out", _locked_message(left))
+        elif not user or not user.check_password(password):
+            lock.fails = (0 if lock.until else lock.fails) + 1
+            locked = lock.fails >= LOCK_ATTEMPTS
+            lock.until = at + dt.timedelta(minutes=LOCK_MINUTES) if locked else None
+            lock.save(update_fields=["fails", "until"])
+            refusal = (
+                ("locked_out", _locked_message(LOCK_MINUTES))
+                if locked
+                else ("login_failed", WRONG_CREDENTIALS)
+            )
+        elif not user.is_active:
+            refusal = ("login_failed", INACTIVE)
+        else:
+            lock.delete()
+    if refusal or user is None:
+        raise ApiError(*(refusal or ("login_failed", WRONG_CREDENTIALS)))
     sign_in(request, user)
     return user
 
