@@ -69,6 +69,72 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/dev/clock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["dev_clock_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dev/impersonate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Same rules as the prototype's authApi.signInSso: matched by NIP, never created. */
+        post: operations["dev_impersonate_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dev/personas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Padanan describe() in the prototype's persona picker (LoginPage.tsx). */
+        get: operations["dev_personas_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dev/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["dev_reset_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me": {
         parameters: {
             query?: never;
@@ -174,6 +240,13 @@ export interface components {
          * @enum {string}
          */
         CapacityEnum: "pejabat" | "operator";
+        ClockRequest: {
+            at: string;
+        };
+        ClockResult: {
+            serverNow: string;
+            ran: string[];
+        };
         Holding: {
             kind: components["schemas"]["KindEnum"];
             /** Format: uuid */
@@ -222,6 +295,9 @@ export interface components {
             /** Format: uuid */
             orgUnitId: string | null;
         };
+        NipRequest: {
+            nip: string;
+        };
         /** @description Shape of `Notification` in frontend/src/domain/types.ts. */
         Notification: {
             /** Format: uuid */
@@ -250,6 +326,24 @@ export interface components {
         PermissionScope: {
             code: number;
             scope: string | null;
+        };
+        Persona: {
+            /** Format: uuid */
+            userId: string;
+            nip: string;
+            fullName: string;
+            active: boolean;
+            holdings: components["schemas"]["PersonaHolding"][];
+            roleViews: string[];
+        };
+        PersonaHolding: {
+            positionName: string;
+            line: number;
+            capacity: string;
+        };
+        Personas: {
+            personas: components["schemas"]["Persona"][];
+            unregistered: components["schemas"]["Unregistered"];
         };
         /** @description Shape of `Position` in frontend/src/domain/types.ts. */
         Position: {
@@ -290,10 +384,22 @@ export interface components {
             /** Format: uuid */
             readonly scoreBandVersionId: string | null;
         };
+        ResetRequest: {
+            asOf?: string;
+        };
+        ResetResult: {
+            counts: {
+                [key: string]: number;
+            };
+        };
         SignInResult: {
             ok: boolean;
             /** Format: uuid */
             userId: string;
+        };
+        Unregistered: {
+            nip: string;
+            fullName: string;
         };
     };
     responses: never;
@@ -387,6 +493,100 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    dev_clock_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClockRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ClockRequest"];
+                "multipart/form-data": components["schemas"]["ClockRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClockResult"];
+                };
+            };
+        };
+    };
+    dev_impersonate_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NipRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["NipRequest"];
+                "multipart/form-data": components["schemas"]["NipRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SignInResult"];
+                };
+            };
+        };
+    };
+    dev_personas_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Personas"];
+                };
+            };
+        };
+    };
+    dev_reset_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ResetRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ResetRequest"];
+                "multipart/form-data": components["schemas"]["ResetRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResetResult"];
+                };
             };
         };
     };

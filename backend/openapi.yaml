@@ -78,6 +78,101 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/dev/clock:
+    post:
+      operationId: dev_clock_create
+      tags:
+      - dev
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClockRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ClockRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ClockRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClockResult'
+          description: ''
+  /api/v1/dev/impersonate:
+    post:
+      operationId: dev_impersonate_create
+      description: 'Same rules as the prototype''s authApi.signInSso: matched by NIP,
+        never created.'
+      tags:
+      - dev
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NipRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NipRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NipRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignInResult'
+          description: ''
+  /api/v1/dev/personas:
+    get:
+      operationId: dev_personas_retrieve
+      description: Padanan describe() in the prototype's persona picker (LoginPage.tsx).
+      tags:
+      - dev
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Personas'
+          description: ''
+  /api/v1/dev/reset:
+    post:
+      operationId: dev_reset_create
+      tags:
+      - dev
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ResetRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResetRequest'
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResetResult'
+          description: ''
   /api/v1/me:
     get:
       operationId: me_retrieve
@@ -205,6 +300,27 @@ components:
       description: |-
         * `pejabat` - pejabat
         * `operator` - operator
+    ClockRequest:
+      type: object
+      properties:
+        at:
+          type: string
+          minLength: 1
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$
+      required:
+      - at
+    ClockResult:
+      type: object
+      properties:
+        serverNow:
+          type: string
+        ran:
+          type: array
+          items:
+            type: string
+      required:
+      - ran
+      - serverNow
     Holding:
       type: object
       properties:
@@ -334,6 +450,14 @@ components:
       - mustChangePassword
       - nip
       - orgUnitId
+    NipRequest:
+      type: object
+      properties:
+        nip:
+          type: string
+          minLength: 1
+      required:
+      - nip
     Notification:
       type: object
       description: Shape of `Notification` in frontend/src/domain/types.ts.
@@ -412,6 +536,58 @@ components:
       required:
       - code
       - scope
+    Persona:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        nip:
+          type: string
+        fullName:
+          type: string
+        active:
+          type: boolean
+        holdings:
+          type: array
+          items:
+            $ref: '#/components/schemas/PersonaHolding'
+        roleViews:
+          type: array
+          items:
+            type: string
+      required:
+      - active
+      - fullName
+      - holdings
+      - nip
+      - roleViews
+      - userId
+    PersonaHolding:
+      type: object
+      properties:
+        positionName:
+          type: string
+        line:
+          type: integer
+        capacity:
+          type: string
+      required:
+      - capacity
+      - line
+      - positionName
+    Personas:
+      type: object
+      properties:
+        personas:
+          type: array
+          items:
+            $ref: '#/components/schemas/Persona'
+        unregistered:
+          $ref: '#/components/schemas/Unregistered'
+      required:
+      - personas
+      - unregistered
     Position:
       type: object
       description: Shape of `Position` in frontend/src/domain/types.ts.
@@ -507,6 +683,22 @@ components:
       - number
       - scoreBandVersionId
       - startsOn
+    ResetRequest:
+      type: object
+      properties:
+        asOf:
+          type: string
+          minLength: 1
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$
+    ResetResult:
+      type: object
+      properties:
+        counts:
+          type: object
+          additionalProperties:
+            type: integer
+      required:
+      - counts
     SignInResult:
       type: object
       properties:
@@ -518,6 +710,16 @@ components:
       required:
       - ok
       - userId
+    Unregistered:
+      type: object
+      properties:
+        nip:
+          type: string
+        fullName:
+          type: string
+      required:
+      - fullName
+      - nip
   securitySchemes:
     cookieAuth:
       type: apiKey
