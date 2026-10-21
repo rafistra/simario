@@ -24,6 +24,7 @@ from .models import (
     MonitoringAssignment,
     MonitoringSupport,
     Permission,
+    Position,
     PositionDelegate,
     PositionOccupancy,
     PositionType,
@@ -165,7 +166,8 @@ def add_assignments(actor: Actor, data: dict[str, Any]) -> None:
     lo, hi = _key(q_from), _key(q_to)
     if lo > hi:
         raise ApiError("validation", "Triwulan awal harus sebelum atau sama dengan triwulan akhir.")
-    # Lock the existing assignments of the targets so INV-14 holds under concurrency.
+    # Lock the targets (also those without any assignment yet) so INV-14 holds under concurrency.
+    list(Position.objects.select_for_update().filter(pk__in=targets).order_by("pk"))
     existing = list(
         MonitoringAssignment.objects.select_for_update()
         .filter(target_position_id__in=targets)

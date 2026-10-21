@@ -24,7 +24,7 @@ export function CollectionGate({
   const state = useCollections(names);
   const local = useDb((s) => s.db);
   const db = useMemo(() => (state.db ? { ...local, ...state.db } : null), [local, state.db]);
-  if (state.error)
+  if (state.error && !db)
     return (
       <InlineAlert variant="error" title="Data gagal dimuat" onRetry={state.retry}>
         {state.error}
@@ -40,5 +40,16 @@ export function CollectionGate({
         </div>
       </LoadingRegion>
     );
-  return <GateDb.Provider value={db}>{children}</GateDb.Provider>;
+  // A failed reload after a mutation keeps the page (and anything typed or shown once, such as a
+  // temporary password) on screen with the last data, and says so above it.
+  return (
+    <>
+      {state.error && (
+        <InlineAlert variant="error" title="Data terbaru gagal dimuat" onRetry={state.retry}>
+          {state.error}
+        </InlineAlert>
+      )}
+      <GateDb.Provider value={db}>{children}</GateDb.Provider>
+    </>
+  );
 }

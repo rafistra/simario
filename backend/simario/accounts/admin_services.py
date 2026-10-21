@@ -8,14 +8,14 @@ import string
 import uuid
 from typing import Any
 
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.db.models import Q
 
 from simario.audit.services import record_by
 from simario.core.errors import ApiError
 from simario.core.permissions import Actor
 from simario.domain import access
-from simario.org.models import PositionDelegate, PositionOccupancy, UserRole
+from simario.org.models import OrgUnit, PositionDelegate, PositionOccupancy, Role, UserRole
 from simario.org.services import end_delegations
 
 from .models import User
@@ -57,16 +57,23 @@ def add_user(actor: Actor, data: dict[str, Any]) -> tuple[uuid.UUID, str | None]
         raise ApiError("validation", "Format email tidak valid.")
     local = bool(data["is_local_account"])
     temp = temporary_password() if local else None
-    user = User.objects.create_user(
-        nip=nip,
-        password=temp,
-        email=email,
-        full_name=full_name,
-        is_local_account=local,
-        must_change_password=local,
-        created_via="admin",
-        org_unit_id=data.get("org_unit_id"),
-    )
+    unit = data.get("org_unit_id")
+    if unit and not OrgUnit.objects.filter(pk=unit).exists():
+        raise ApiError("not_found", "Data tidak ditemukan.")
+    try:
+        with transaction.atomic():
+            user = User.objects.create_user(
+                nip=nip,
+                password=temp,
+                email=email,
+                full_name=full_name,
+                is_local_account=local,
+                must_change_password=local,
+                created_via="admin",
+                org_unit_id=unit,
+            )
+    except IntegrityError as exc:  # registered by another administrator since the check
+        raise ApiError("validation", "NIP ini sudah terdaftar.") from exc
     record_by(
         actor,
         "tambah_pengguna",
@@ -81,6 +88,8 @@ def add_user(actor: Actor, data: dict[str, Any]) -> tuple[uuid.UUID, str | None]
 @transaction.atomic
 def set_manual_roles(actor: Actor, user_id: uuid.UUID, role_ids: list[uuid.UUID]) -> None:
     user = User.objects.select_for_update().get(pk=user_id)
+    if Role.objects.filter(pk__in=role_ids).count() != len(set(role_ids)):
+        raise ApiError("not_found", "Data tidak ditemukan.")
     manual = UserRole.objects.filter(user=user, source="manual")
     before = [str(r.role_id) for r in manual]
     manual.delete()

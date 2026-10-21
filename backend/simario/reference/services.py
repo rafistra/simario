@@ -14,6 +14,7 @@ from simario.core.errors import ApiError
 from simario.core.permissions import Actor
 from simario.domain.score_bands import validate_bands
 from simario.domain.score_options import sort_options, validate_options
+from simario.org.models import PositionType
 from simario.registers import usage
 
 from .models import (
@@ -256,7 +257,9 @@ def save_data_umum_form(
             errors[str(i)] = "Tambahkan minimal dua pilihan."
     if errors:
         raise ApiError("validation", "Periksa kembali isian tambahan.", errors)
-    current = DataUmumForm.objects.select_for_update().filter(position_type_id=position_type_id)
+    # aggregate() drops FOR UPDATE: lock the position type so the next version number is unique.
+    PositionType.objects.select_for_update().get(pk=position_type_id)
+    current = DataUmumForm.objects.filter(position_type_id=position_type_id)
     version = (current.aggregate(m=Max("version"))["m"] or 0) + 1
     current.update(active=False)
     form = DataUmumForm.objects.create(

@@ -3,6 +3,7 @@ ready to show (docs/03_api_contract.md §2.1)."""
 
 from typing import Any
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from rest_framework import exceptions
 from rest_framework.response import Response
@@ -96,7 +97,7 @@ def api_exception_handler(exc: Exception, context: dict[str, Any]) -> Response |
         return _respond(envelope("unauthenticated"), 401)
     if isinstance(exc, exceptions.PermissionDenied):
         return _respond(envelope("forbidden"), 403)
-    if isinstance(exc, Http404 | exceptions.NotFound):
+    if isinstance(exc, Http404 | exceptions.NotFound | ObjectDoesNotExist):
         return _respond(envelope("not_found"), 404)
     if isinstance(exc, exceptions.ValidationError):
         return _respond(envelope("validation", details=exc.detail), 422)

@@ -8,7 +8,7 @@ import uuid
 from collections.abc import Callable
 from typing import Any
 
-from django.db import transaction
+from django.db import IntegrityError, transaction
 
 from simario.assessments import usage
 from simario.audit.services import record, record_by
@@ -58,7 +58,11 @@ def _row(q: Quarter) -> dict[str, Any]:
 def create_fiscal_year(actor: Actor, year: int) -> None:
     if FiscalYear.objects.filter(pk=year).exists():
         raise ApiError("validation", f"TA {year} sudah ada.")
-    fy = FiscalYear.objects.create(year=year)
+    try:
+        with transaction.atomic():
+            fy = FiscalYear.objects.create(year=year)
+    except IntegrityError as exc:  # created by another manager since the check
+        raise ApiError("validation", f"TA {year} sudah ada.") from exc
     Quarter.objects.bulk_create(Quarter(fiscal_year=fy, **q) for q in default_quarters(year))
     record_by(actor, "buat_tahun_anggaran", "FiscalYear", year, None, {"year": year})
 
