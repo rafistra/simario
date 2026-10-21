@@ -1,0 +1,1009 @@
+{
+  "source": "frontend/src/domain/rules/access.ts",
+  "notes": "Inputs from access.test.ts and readAccess.test.ts; \"$demo\" = the prototype seed, \"$permissions\" = the permission catalogue. finalisingOfficial compares the user id. permissionScopes is a sorted list of [code, scope].",
+  "rules": {
+    "holdingsOf": [
+      {
+        "name": "usr-andi",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-andi",
+          "today": "2027-04-06"
+        },
+        "expected": [
+          {
+            "kind": "occupancy",
+            "id": "occ-andi-a1",
+            "positionId": "pos-ppk-a1",
+            "capacity": "pejabat",
+            "line": 1,
+            "isFiller": true
+          }
+        ]
+      },
+      {
+        "name": "usr-dimas",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-dimas",
+          "today": "2027-04-06"
+        },
+        "expected": [
+          {
+            "kind": "occupancy",
+            "id": "occ-dimas-pokja",
+            "positionId": "pos-pokja-03",
+            "capacity": "pejabat",
+            "line": 1,
+            "isFiller": true
+          },
+          {
+            "kind": "delegate",
+            "id": "del-dimas-a2",
+            "positionId": "pos-ppk-a2",
+            "capacity": "operator",
+            "line": 1,
+            "isFiller": false
+          },
+          {
+            "kind": "delegate",
+            "id": "del-dimas-pjp-b",
+            "positionId": "pos-pjp-satker-b",
+            "capacity": "operator",
+            "line": 1,
+            "isFiller": false
+          }
+        ]
+      },
+      {
+        "name": "usr-budi",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-budi",
+          "today": "2027-04-06"
+        },
+        "expected": []
+      },
+      {
+        "name": "usr-rafi",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-rafi",
+          "today": "2027-04-06"
+        },
+        "expected": [
+          {
+            "kind": "delegate",
+            "id": "del-rafi-a1",
+            "positionId": "pos-ppk-a1",
+            "capacity": "operator",
+            "line": 1,
+            "isFiller": false
+          }
+        ]
+      },
+      {
+        "name": "usr-siti",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-siti",
+          "today": "2027-04-06"
+        },
+        "expected": [
+          {
+            "kind": "occupancy",
+            "id": "occ-siti-pj",
+            "positionId": "pos-pj-pemantauan",
+            "capacity": "pejabat",
+            "line": 2,
+            "isFiller": true
+          }
+        ]
+      },
+      {
+        "name": "usr-nur",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-nur",
+          "today": "2027-04-06"
+        },
+        "expected": []
+      },
+      {
+        "name": "usr-admin",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-admin",
+          "today": "2027-04-06"
+        },
+        "expected": []
+      },
+      {
+        "name": "usr-lestari",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-lestari",
+          "today": "2027-04-06"
+        },
+        "expected": [
+          {
+            "kind": "delegate",
+            "id": "del-lestari-ukpbj",
+            "positionId": "pos-sup-ukpbj",
+            "capacity": "operator",
+            "line": 2,
+            "isFiller": false
+          }
+        ]
+      }
+    ],
+    "effectiveRoleIds": [
+      {
+        "name": "usr-andi",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-andi",
+          "today": "2027-04-06"
+        },
+        "expected": [
+          "role-pmr"
+        ]
+      },
+      {
+        "name": "usr-nur",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-nur",
+          "today": "2027-04-06"
+        },
+        "expected": [
+          "role-pmd"
+        ]
+      },
+      {
+        "name": "usr-admin",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-admin",
+          "today": "2027-04-06"
+        },
+        "expected": [
+          "role-sad"
+        ]
+      },
+      {
+        "name": "usr-dewi",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-dewi",
+          "today": "2027-04-06"
+        },
+        "expected": [
+          "role-pmu"
+        ]
+      },
+      {
+        "name": "usr-dimas",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-dimas",
+          "today": "2027-04-06"
+        },
+        "expected": [
+          "role-pmr"
+        ]
+      }
+    ],
+    "permissionScopes": [
+      {
+        "name": "usr-andi",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-andi",
+          "today": "2027-04-06"
+        },
+        "expected": [
+          [
+            1,
+            "sendiri"
+          ],
+          [
+            2,
+            null
+          ],
+          [
+            3,
+            null
+          ],
+          [
+            4,
+            null
+          ],
+          [
+            5,
+            null
+          ],
+          [
+            6,
+            null
+          ],
+          [
+            7,
+            "sendiri"
+          ],
+          [
+            11,
+            null
+          ]
+        ]
+      },
+      {
+        "name": "usr-siti",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-siti",
+          "today": "2027-04-06"
+        },
+        "expected": [
+          [
+            1,
+            "sendiri"
+          ],
+          [
+            6,
+            null
+          ],
+          [
+            7,
+            "sendiri"
+          ],
+          [
+            11,
+            null
+          ]
+        ]
+      },
+      {
+        "name": "usr-hendra",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-hendra",
+          "today": "2027-04-06"
+        },
+        "expected": [
+          [
+            1,
+            "semua"
+          ],
+          [
+            6,
+            null
+          ],
+          [
+            7,
+            "semua"
+          ],
+          [
+            8,
+            "semua"
+          ],
+          [
+            9,
+            "semua"
+          ],
+          [
+            10,
+            "semua"
+          ],
+          [
+            11,
+            null
+          ],
+          [
+            23,
+            "semua"
+          ]
+        ]
+      },
+      {
+        "name": "usr-nur",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-nur",
+          "today": "2027-04-06"
+        },
+        "expected": [
+          [
+            12,
+            null
+          ],
+          [
+            13,
+            null
+          ],
+          [
+            14,
+            null
+          ],
+          [
+            15,
+            null
+          ],
+          [
+            16,
+            null
+          ],
+          [
+            17,
+            null
+          ],
+          [
+            18,
+            null
+          ]
+        ]
+      },
+      {
+        "name": "usr-admin",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-admin",
+          "today": "2027-04-06"
+        },
+        "expected": [
+          [
+            1,
+            "semua"
+          ],
+          [
+            2,
+            null
+          ],
+          [
+            3,
+            null
+          ],
+          [
+            4,
+            null
+          ],
+          [
+            5,
+            null
+          ],
+          [
+            6,
+            null
+          ],
+          [
+            7,
+            "semua"
+          ],
+          [
+            8,
+            "semua"
+          ],
+          [
+            9,
+            "semua"
+          ],
+          [
+            10,
+            "semua"
+          ],
+          [
+            11,
+            null
+          ],
+          [
+            12,
+            null
+          ],
+          [
+            13,
+            null
+          ],
+          [
+            14,
+            null
+          ],
+          [
+            15,
+            null
+          ],
+          [
+            16,
+            null
+          ],
+          [
+            17,
+            null
+          ],
+          [
+            18,
+            null
+          ],
+          [
+            19,
+            null
+          ],
+          [
+            20,
+            null
+          ],
+          [
+            21,
+            null
+          ],
+          [
+            22,
+            null
+          ],
+          [
+            23,
+            "semua"
+          ],
+          [
+            24,
+            null
+          ],
+          [
+            25,
+            null
+          ],
+          [
+            26,
+            null
+          ]
+        ]
+      },
+      {
+        "name": "usr-dewi",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-dewi",
+          "today": "2027-04-06"
+        },
+        "expected": [
+          [
+            1,
+            "unit"
+          ]
+        ]
+      }
+    ],
+    "hasPermission": [
+      {
+        "name": "usr-andi 5",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-andi",
+          "code": 5,
+          "today": "2027-04-06"
+        },
+        "expected": true
+      },
+      {
+        "name": "usr-siti 5",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-siti",
+          "code": 5,
+          "today": "2027-04-06"
+        },
+        "expected": false
+      },
+      {
+        "name": "usr-nur 12",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-nur",
+          "code": 12,
+          "today": "2027-04-06"
+        },
+        "expected": true
+      },
+      {
+        "name": "usr-nur 1",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-nur",
+          "code": 1,
+          "today": "2027-04-06"
+        },
+        "expected": false
+      },
+      {
+        "name": "usr-admin 24",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-admin",
+          "code": 24,
+          "today": "2027-04-06"
+        },
+        "expected": true
+      }
+    ],
+    "lini1PositionsInScope": [
+      {
+        "name": "usr-andi -",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-andi",
+          "today": "2027-04-06",
+          "code": 1,
+          "fiscalYear": null
+        },
+        "expected": [
+          "pos-ppk-a1"
+        ]
+      },
+      {
+        "name": "usr-siti 2027",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-siti",
+          "today": "2027-04-06",
+          "code": 1,
+          "fiscalYear": 2027
+        },
+        "expected": [
+          "pos-ppk-a1",
+          "pos-ppk-a2",
+          "pos-kpa-satker-a",
+          "pos-pokja-03",
+          "pos-pjp-satker-b"
+        ]
+      },
+      {
+        "name": "usr-siti 2026",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-siti",
+          "today": "2027-04-06",
+          "code": 1,
+          "fiscalYear": 2026
+        },
+        "expected": [
+          "pos-ppk-a1"
+        ]
+      },
+      {
+        "name": "usr-hendra -",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-hendra",
+          "today": "2027-04-06",
+          "code": 1,
+          "fiscalYear": null
+        },
+        "expected": [
+          "pos-kpa-satker-a",
+          "pos-ppk-a1",
+          "pos-ppk-a2",
+          "pos-ppk-b2",
+          "pos-pokja-03",
+          "pos-pjp-satker-b",
+          "pos-pjp-satker-c"
+        ]
+      },
+      {
+        "name": "usr-dewi -",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-dewi",
+          "today": "2027-04-06",
+          "code": 1,
+          "fiscalYear": null
+        },
+        "expected": [
+          "pos-ppk-a1",
+          "pos-ppk-a2"
+        ]
+      }
+    ],
+    "canReadPosition": [
+      {
+        "name": "usr-andi pos-ppk-a1 2027",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-andi",
+          "lini1PositionId": "pos-ppk-a1",
+          "today": "2027-04-06",
+          "fiscalYear": 2027
+        },
+        "expected": true
+      },
+      {
+        "name": "usr-andi pos-ppk-a2 2027",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-andi",
+          "lini1PositionId": "pos-ppk-a2",
+          "today": "2027-04-06",
+          "fiscalYear": 2027
+        },
+        "expected": false
+      },
+      {
+        "name": "usr-siti pos-ppk-a1 2027",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-siti",
+          "lini1PositionId": "pos-ppk-a1",
+          "today": "2027-04-06",
+          "fiscalYear": 2027
+        },
+        "expected": true
+      },
+      {
+        "name": "usr-siti pos-ppk-a1 2026",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-siti",
+          "lini1PositionId": "pos-ppk-a1",
+          "today": "2027-04-06",
+          "fiscalYear": 2026
+        },
+        "expected": true
+      },
+      {
+        "name": "usr-rafi pos-ppk-a1 2027",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-rafi",
+          "lini1PositionId": "pos-ppk-a1",
+          "today": "2027-04-06",
+          "fiscalYear": 2027
+        },
+        "expected": true
+      },
+      {
+        "name": "usr-dewi pos-ppk-a1 2027",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-dewi",
+          "lini1PositionId": "pos-ppk-a1",
+          "today": "2027-04-06",
+          "fiscalYear": 2027
+        },
+        "expected": true
+      },
+      {
+        "name": "usr-nur pos-ppk-a1 2027",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-nur",
+          "lini1PositionId": "pos-ppk-a1",
+          "today": "2027-04-06",
+          "fiscalYear": 2027
+        },
+        "expected": false
+      }
+    ],
+    "participationHolding": [
+      {
+        "name": "usr-rafi pos-ppk-a1",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-rafi",
+          "lini1PositionId": "pos-ppk-a1",
+          "quarterId": "q-2027-2",
+          "today": "2027-04-06"
+        },
+        "expected": {
+          "kind": "delegate",
+          "id": "del-rafi-a1",
+          "positionId": "pos-ppk-a1",
+          "capacity": "operator",
+          "line": 1,
+          "isFiller": false
+        }
+      },
+      {
+        "name": "usr-siti pos-ppk-a1",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-siti",
+          "lini1PositionId": "pos-ppk-a1",
+          "quarterId": "q-2027-2",
+          "today": "2027-04-06"
+        },
+        "expected": {
+          "kind": "occupancy",
+          "id": "occ-siti-pj",
+          "positionId": "pos-pj-pemantauan",
+          "capacity": "pejabat",
+          "line": 2,
+          "isFiller": true
+        }
+      },
+      {
+        "name": "usr-maya pos-ppk-a1",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-maya",
+          "lini1PositionId": "pos-ppk-a1",
+          "quarterId": "q-2027-2",
+          "today": "2027-04-06"
+        },
+        "expected": {
+          "kind": "occupancy",
+          "id": "occ-maya-pai",
+          "positionId": "pos-pai",
+          "capacity": "pejabat",
+          "line": 3,
+          "isFiller": true
+        }
+      },
+      {
+        "name": "usr-dimas pos-ppk-a1",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-dimas",
+          "lini1PositionId": "pos-ppk-a1",
+          "quarterId": "q-2027-2",
+          "today": "2027-04-06"
+        },
+        "expected": null
+      },
+      {
+        "name": "usr-siti pos-ppk-b2",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-siti",
+          "lini1PositionId": "pos-ppk-b2",
+          "quarterId": "q-2027-2",
+          "today": "2027-04-06"
+        },
+        "expected": null
+      }
+    ],
+    "checkAction": [
+      {
+        "name": "usr-andi 5 pos-ppk-a1",
+        "input": {
+          "db": "$demo",
+          "permissions": "$permissions",
+          "userId": "usr-andi",
+          "code": 5,
+          "actingPositionId": "pos-ppk-a1",
+          "today": "2027-04-06"
+        },
+        "expected": {
+          "ok": true,
+          "holding": {
+            "kind": "occupancy",
+            "id": "occ-andi-a1",
+            "positionId": "pos-ppk-a1",
+            "capacity": "pejabat",
+            "line": 1,
+            "isFiller": true
+          }
+        }
+      },
+      {
+        "name": "usr-rafi 5 pos-ppk-a1",
+        "input": {
+          "db": "$demo",
+          "permissions": "$permissions",
+          "userId": "usr-rafi",
+          "code": 5,
+          "actingPositionId": "pos-ppk-a1",
+          "today": "2027-04-06"
+        },
+        "expected": {
+          "ok": false,
+          "reason": "official"
+        }
+      },
+      {
+        "name": "usr-rafi 4 pos-ppk-a1",
+        "input": {
+          "db": "$demo",
+          "permissions": "$permissions",
+          "userId": "usr-rafi",
+          "code": 4,
+          "actingPositionId": "pos-ppk-a1",
+          "today": "2027-04-06"
+        },
+        "expected": {
+          "ok": true,
+          "holding": {
+            "kind": "delegate",
+            "id": "del-rafi-a1",
+            "positionId": "pos-ppk-a1",
+            "capacity": "operator",
+            "line": 1,
+            "isFiller": false
+          }
+        }
+      },
+      {
+        "name": "usr-andi 2 pos-ppk-a2",
+        "input": {
+          "db": "$demo",
+          "permissions": "$permissions",
+          "userId": "usr-andi",
+          "code": 2,
+          "actingPositionId": "pos-ppk-a2",
+          "today": "2027-04-06"
+        },
+        "expected": {
+          "ok": false,
+          "reason": "holding"
+        }
+      },
+      {
+        "name": "usr-admin 2 pos-ppk-a1",
+        "input": {
+          "db": "$demo",
+          "permissions": "$permissions",
+          "userId": "usr-admin",
+          "code": 2,
+          "actingPositionId": "pos-ppk-a1",
+          "today": "2027-04-06"
+        },
+        "expected": {
+          "ok": false,
+          "reason": "holding"
+        }
+      },
+      {
+        "name": "usr-ratna 2 pos-pokja-03",
+        "input": {
+          "db": "$demo",
+          "permissions": "$permissions",
+          "userId": "usr-ratna",
+          "code": 2,
+          "actingPositionId": "pos-pokja-03",
+          "today": "2027-04-06"
+        },
+        "expected": {
+          "ok": false,
+          "reason": "filler"
+        }
+      },
+      {
+        "name": "usr-dimas 2 pos-pokja-03",
+        "input": {
+          "db": "$demo",
+          "permissions": "$permissions",
+          "userId": "usr-dimas",
+          "code": 2,
+          "actingPositionId": "pos-pokja-03",
+          "today": "2027-04-06"
+        },
+        "expected": {
+          "ok": true,
+          "holding": {
+            "kind": "occupancy",
+            "id": "occ-dimas-pokja",
+            "positionId": "pos-pokja-03",
+            "capacity": "pejabat",
+            "line": 1,
+            "isFiller": true
+          }
+        }
+      },
+      {
+        "name": "usr-rina 2 pos-pokja-03",
+        "input": {
+          "db": "$demo",
+          "permissions": "$permissions",
+          "userId": "usr-rina",
+          "code": 2,
+          "actingPositionId": "pos-pokja-03",
+          "today": "2027-04-06"
+        },
+        "expected": {
+          "ok": true,
+          "holding": {
+            "kind": "delegate",
+            "id": "del-rina-pokja",
+            "positionId": "pos-pokja-03",
+            "capacity": "operator",
+            "line": 1,
+            "isFiller": false
+          }
+        }
+      }
+    ],
+    "finalisingOfficial": [
+      {
+        "name": "pos-ppk-a1",
+        "input": {
+          "db": "$demo",
+          "positionId": "pos-ppk-a1",
+          "today": "2027-04-06"
+        },
+        "expected": "usr-andi"
+      },
+      {
+        "name": "pos-pokja-03",
+        "input": {
+          "db": "$demo",
+          "positionId": "pos-pokja-03",
+          "today": "2027-04-06"
+        },
+        "expected": "usr-dimas"
+      },
+      {
+        "name": "pos-ppk-b2",
+        "input": {
+          "db": "$demo",
+          "positionId": "pos-ppk-b2",
+          "today": "2027-04-06"
+        },
+        "expected": null
+      }
+    ],
+    "positionLine": [
+      {
+        "name": "pos-ppk-a1",
+        "input": {
+          "db": "$demo",
+          "positionId": "pos-ppk-a1"
+        },
+        "expected": 1
+      },
+      {
+        "name": "pos-pj-pemantauan",
+        "input": {
+          "db": "$demo",
+          "positionId": "pos-pj-pemantauan"
+        },
+        "expected": 2
+      },
+      {
+        "name": "pos-kepatuhan",
+        "input": {
+          "db": "$demo",
+          "positionId": "pos-kepatuhan"
+        },
+        "expected": 3
+      }
+    ],
+    "assignedLini2": [
+      {
+        "name": "q-2027-1",
+        "input": {
+          "db": "$demo",
+          "lini1PositionId": "pos-ppk-a1",
+          "quarterId": "q-2027-1"
+        },
+        "expected": [
+          "pos-pj-pemantauan",
+          "pos-sup-birokeu",
+          "pos-sup-ukpbj"
+        ]
+      },
+      {
+        "name": "q-2027-2",
+        "input": {
+          "db": "$demo",
+          "lini1PositionId": "pos-ppk-a1",
+          "quarterId": "q-2027-2"
+        },
+        "expected": [
+          "pos-pj-pemantauan",
+          "pos-sup-birokeu",
+          "pos-sup-ukpbj"
+        ]
+      },
+      {
+        "name": "q-2026-4",
+        "input": {
+          "db": "$demo",
+          "lini1PositionId": "pos-ppk-a1",
+          "quarterId": "q-2026-4"
+        },
+        "expected": [
+          "pos-pj-pemantauan",
+          "pos-sup-birokeu",
+          "pos-sup-ukpbj"
+        ]
+      }
+    ]
+  }
+}

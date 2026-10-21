@@ -1,0 +1,56 @@
+{
+  "source": "frontend/src/domain/calendar.ts",
+  "notes": "\"$quarters\" = the prototype seed quarters; quarterContaining compares the quarter id.",
+  "rules": {
+    "quarterContaining": [
+      {
+        "name": "2027-01-01",
+        "input": {
+          "quarters": "$quarters",
+          "day": "2027-01-01"
+        },
+        "expected": "q-2027-1"
+      },
+      {
+        "name": "2027-03-31",
+        "input": {
+          "quarters": "$quarters",
+          "day": "2027-03-31"
+        },
+        "expected": "q-2027-1"
+      },
+      {
+        "name": "2027-04-06",
+        "input": {
+          "quarters": "$quarters",
+          "day": "2027-04-06"
+        },
+        "expected": "q-2027-2"
+      },
+      {
+        "name": "2027-12-31",
+        "input": {
+          "quarters": "$quarters",
+          "day": "2027-12-31"
+        },
+        "expected": "q-2027-4"
+      },
+      {
+        "name": "2028-01-01",
+        "input": {
+          "quarters": "$quarters",
+          "day": "2028-01-01"
+        },
+        "expected": null
+      },
+      {
+        "name": "2025-06-01",
+        "input": {
+          "quarters": "$quarters",
+          "day": "2025-06-01"
+        },
+        "expected": null
+      }
+    ]
+  }
+}

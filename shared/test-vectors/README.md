@@ -17,6 +17,8 @@ Aturan bisnis yang ada di dua sisi (TypeScript di `frontend/src/domain/`, Python
 - Kunci memakai camelCase seperti TypeScript. Pemuat Python mengubah kunci di dalam `input` menjadi snake_case.
 - Nilai string di `input` yang sama dengan nama di `fixtures` diganti isi fixture itu oleh pemuat di kedua sisi.
 - Nama fungsi Python = nama TS dalam snake_case (`predicateFor` → `predicate_for`).
+- Nilai bawaan yang dikenal kedua pemuat: `"$demo"` = basis data seed prototipe (Python: `demo.json` dengan kunci snake_case), `"$permissions"` = katalog izin, `"$quarters"` = triwulan seed. Pemuat Python juga mengubah kunci `expected` menjadi snake_case.
+- `access.json` dan `calendar.json` dibuat dari masukan di `access.test.ts` dan `readAccess.test.ts`, dengan nilai harapan dari implementasi TS acuan. Keluaran `Map` ditulis sebagai daftar pasangan `[[code, scope], …]` urut kode; fungsi yang mengembalikan objek pengguna atau triwulan dibandingkan lewat `id`.
 
 ## Aturan
 
