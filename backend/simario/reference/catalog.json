@@ -1,0 +1,758 @@
+{
+  "permissions": [
+    {
+      "code": 1,
+      "group": "Lini 1",
+      "label": "Lihat register dan papan",
+      "scopeKind": "scoped",
+      "requiresOfficial": false,
+      "isDrafting": false,
+      "isContentAction": false
+    },
+    {
+      "code": 2,
+      "group": "Lini 1",
+      "label": "Susun draf register",
+      "scopeKind": "own",
+      "requiresOfficial": false,
+      "isDrafting": true,
+      "isContentAction": true
+    },
+    {
+      "code": 3,
+      "group": "Lini 1",
+      "label": "Terbitkan dan nonaktifkan butir register",
+      "scopeKind": "own",
+      "requiresOfficial": true,
+      "isDrafting": false,
+      "isContentAction": true
+    },
+    {
+      "code": 4,
+      "group": "Lini 1",
+      "label": "Susun draf penilaian dan penjelasan Lini 1",
+      "scopeKind": "own",
+      "requiresOfficial": false,
+      "isDrafting": true,
+      "isContentAction": true
+    },
+    {
+      "code": 5,
+      "group": "Lini 1",
+      "label": "Tuntaskan penilaian Lini 1 dan kirim penjelasan",
+      "scopeKind": "own",
+      "requiresOfficial": true,
+      "isDrafting": false,
+      "isContentAction": true
+    },
+    {
+      "code": 6,
+      "group": "Papan",
+      "label": "Berpartisipasi di utas",
+      "scopeKind": "own",
+      "requiresOfficial": false,
+      "isDrafting": false,
+      "isContentAction": true
+    },
+    {
+      "code": 7,
+      "group": "Papan",
+      "label": "Unduh lampiran",
+      "scopeKind": "scoped",
+      "requiresOfficial": false,
+      "isDrafting": false,
+      "isContentAction": false
+    },
+    {
+      "code": 8,
+      "group": "Lini 3",
+      "label": "Susun draf penilaian Lini 3",
+      "scopeKind": "scoped",
+      "requiresOfficial": false,
+      "isDrafting": true,
+      "isContentAction": true
+    },
+    {
+      "code": 9,
+      "group": "Lini 3",
+      "label": "Tuntaskan penilaian Lini 3",
+      "scopeKind": "scoped",
+      "requiresOfficial": true,
+      "isDrafting": false,
+      "isContentAction": true
+    },
+    {
+      "code": 10,
+      "group": "Lini 3",
+      "label": "Lihat lampiran konfidensial",
+      "scopeKind": "scoped",
+      "requiresOfficial": false,
+      "isDrafting": false,
+      "isContentAction": false
+    },
+    {
+      "code": 11,
+      "group": "Delegasi",
+      "label": "Kelola operator sendiri",
+      "scopeKind": "own",
+      "requiresOfficial": true,
+      "isDrafting": false,
+      "isContentAction": true
+    },
+    {
+      "code": 12,
+      "group": "Master Data",
+      "label": "Kelola template",
+      "scopeKind": "none",
+      "requiresOfficial": false,
+      "isDrafting": false,
+      "isContentAction": false
+    },
+    {
+      "code": 13,
+      "group": "Master Data",
+      "label": "Putuskan usulan risiko",
+      "scopeKind": "none",
+      "requiresOfficial": false,
+      "isDrafting": false,
+      "isContentAction": false
+    },
+    {
+      "code": 14,
+      "group": "Master Data",
+      "label": "Kelola skala penilaian",
+      "scopeKind": "none",
+      "requiresOfficial": false,
+      "isDrafting": false,
+      "isContentAction": false
+    },
+    {
+      "code": 15,
+      "group": "Master Data",
+      "label": "Kelola tahap",
+      "scopeKind": "none",
+      "requiresOfficial": false,
+      "isDrafting": false,
+      "isContentAction": false
+    },
+    {
+      "code": 16,
+      "group": "Master Data",
+      "label": "Kelola formulir Data Umum",
+      "scopeKind": "none",
+      "requiresOfficial": false,
+      "isDrafting": false,
+      "isContentAction": false
+    },
+    {
+      "code": 17,
+      "group": "Master Data",
+      "label": "Kelola jenis jabatan",
+      "scopeKind": "none",
+      "requiresOfficial": false,
+      "isDrafting": false,
+      "isContentAction": false
+    },
+    {
+      "code": 18,
+      "group": "Master Data",
+      "label": "Kelola jabatan",
+      "scopeKind": "none",
+      "requiresOfficial": false,
+      "isDrafting": false,
+      "isContentAction": false
+    },
+    {
+      "code": 19,
+      "group": "Administrasi",
+      "label": "Kelola tahun anggaran dan triwulan",
+      "scopeKind": "none",
+      "requiresOfficial": false,
+      "isDrafting": false,
+      "isContentAction": false
+    },
+    {
+      "code": 20,
+      "group": "Administrasi",
+      "label": "Kelola penugasan pemantauan",
+      "scopeKind": "none",
+      "requiresOfficial": false,
+      "isDrafting": false,
+      "isContentAction": false
+    },
+    {
+      "code": 21,
+      "group": "Administrasi",
+      "label": "Kelola pengguna dan jabatan Pejabat",
+      "scopeKind": "none",
+      "requiresOfficial": false,
+      "isDrafting": false,
+      "isContentAction": false
+    },
+    {
+      "code": 22,
+      "group": "Administrasi",
+      "label": "Kelola peran dan akses",
+      "scopeKind": "none",
+      "requiresOfficial": false,
+      "isDrafting": false,
+      "isContentAction": false
+    },
+    {
+      "code": 23,
+      "group": "Audit",
+      "label": "Lihat jejak audit",
+      "scopeKind": "scoped",
+      "requiresOfficial": false,
+      "isDrafting": false,
+      "isContentAction": false
+    },
+    {
+      "code": 24,
+      "group": "Pengawasan",
+      "label": "Lihat penilaian sebelum hasilnya dibuka",
+      "scopeKind": "none",
+      "requiresOfficial": false,
+      "isDrafting": false,
+      "isContentAction": false
+    },
+    {
+      "code": 25,
+      "group": "Pengawasan",
+      "label": "Hapus tanda konfidensial",
+      "scopeKind": "none",
+      "requiresOfficial": false,
+      "isDrafting": false,
+      "isContentAction": false
+    },
+    {
+      "code": 26,
+      "group": "Pengawasan",
+      "label": "Arsipkan tahun anggaran secara manual",
+      "scopeKind": "none",
+      "requiresOfficial": false,
+      "isDrafting": false,
+      "isContentAction": false
+    }
+  ],
+  "roles": [
+    {
+      "id": "role-sad",
+      "code": "SAD",
+      "name": "Superadmin",
+      "isLocked": true
+    },
+    {
+      "id": "role-pmr",
+      "code": "PMR",
+      "name": "Pemilik Risiko",
+      "isLocked": false
+    },
+    {
+      "id": "role-pmt",
+      "code": "PMT",
+      "name": "Pemantau",
+      "isLocked": false
+    },
+    {
+      "id": "role-pjm",
+      "code": "PJM",
+      "name": "Penjamin Mutu",
+      "isLocked": false
+    },
+    {
+      "id": "role-pmd",
+      "code": "PMD",
+      "name": "Pengelola Master Data",
+      "isLocked": false
+    }
+  ],
+  "rolePermissions": [
+    {
+      "roleId": "role-pmr",
+      "permission": 1,
+      "scope": "sendiri"
+    },
+    {
+      "roleId": "role-pmr",
+      "permission": 2,
+      "scope": null
+    },
+    {
+      "roleId": "role-pmr",
+      "permission": 3,
+      "scope": null
+    },
+    {
+      "roleId": "role-pmr",
+      "permission": 4,
+      "scope": null
+    },
+    {
+      "roleId": "role-pmr",
+      "permission": 5,
+      "scope": null
+    },
+    {
+      "roleId": "role-pmr",
+      "permission": 6,
+      "scope": null
+    },
+    {
+      "roleId": "role-pmr",
+      "permission": 7,
+      "scope": "sendiri"
+    },
+    {
+      "roleId": "role-pmr",
+      "permission": 11,
+      "scope": null
+    },
+    {
+      "roleId": "role-pmt",
+      "permission": 1,
+      "scope": "sendiri"
+    },
+    {
+      "roleId": "role-pmt",
+      "permission": 6,
+      "scope": null
+    },
+    {
+      "roleId": "role-pmt",
+      "permission": 7,
+      "scope": "sendiri"
+    },
+    {
+      "roleId": "role-pmt",
+      "permission": 11,
+      "scope": null
+    },
+    {
+      "roleId": "role-pjm",
+      "permission": 1,
+      "scope": "semua"
+    },
+    {
+      "roleId": "role-pjm",
+      "permission": 6,
+      "scope": null
+    },
+    {
+      "roleId": "role-pjm",
+      "permission": 7,
+      "scope": "semua"
+    },
+    {
+      "roleId": "role-pjm",
+      "permission": 8,
+      "scope": "semua"
+    },
+    {
+      "roleId": "role-pjm",
+      "permission": 9,
+      "scope": "semua"
+    },
+    {
+      "roleId": "role-pjm",
+      "permission": 10,
+      "scope": "semua"
+    },
+    {
+      "roleId": "role-pjm",
+      "permission": 11,
+      "scope": null
+    },
+    {
+      "roleId": "role-pjm",
+      "permission": 23,
+      "scope": "semua"
+    },
+    {
+      "roleId": "role-pmd",
+      "permission": 12,
+      "scope": null
+    },
+    {
+      "roleId": "role-pmd",
+      "permission": 13,
+      "scope": null
+    },
+    {
+      "roleId": "role-pmd",
+      "permission": 14,
+      "scope": null
+    },
+    {
+      "roleId": "role-pmd",
+      "permission": 15,
+      "scope": null
+    },
+    {
+      "roleId": "role-pmd",
+      "permission": 16,
+      "scope": null
+    },
+    {
+      "roleId": "role-pmd",
+      "permission": 17,
+      "scope": null
+    },
+    {
+      "roleId": "role-pmd",
+      "permission": 18,
+      "scope": null
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 1,
+      "scope": "semua"
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 2,
+      "scope": null
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 3,
+      "scope": null
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 4,
+      "scope": null
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 5,
+      "scope": null
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 6,
+      "scope": null
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 7,
+      "scope": "semua"
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 8,
+      "scope": "semua"
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 9,
+      "scope": "semua"
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 10,
+      "scope": "semua"
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 11,
+      "scope": null
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 12,
+      "scope": null
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 13,
+      "scope": null
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 14,
+      "scope": null
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 15,
+      "scope": null
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 16,
+      "scope": null
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 17,
+      "scope": null
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 18,
+      "scope": null
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 19,
+      "scope": null
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 20,
+      "scope": null
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 21,
+      "scope": null
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 22,
+      "scope": null
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 23,
+      "scope": "semua"
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 24,
+      "scope": null
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 25,
+      "scope": null
+    },
+    {
+      "roleId": "role-sad",
+      "permission": 26,
+      "scope": null
+    }
+  ],
+  "positionTypes": [
+    {
+      "id": "pt-kpa",
+      "code": "KPA",
+      "name": "KPA/Kasatker",
+      "line": 1,
+      "defaultRoleId": "role-pmr",
+      "allowsMultipleOfficials": false,
+      "hasTemplates": true,
+      "isBuiltin": true,
+      "active": true,
+      "identitySchema": [
+        {
+          "key": "nama_satker",
+          "label": "Nama Satker",
+          "kind": "text"
+        },
+        {
+          "key": "nomor_dipa_petikan",
+          "label": "Nomor DIPA Petikan",
+          "kind": "text"
+        }
+      ]
+    },
+    {
+      "id": "pt-ppk",
+      "code": "PPK",
+      "name": "PPK",
+      "line": 1,
+      "defaultRoleId": "role-pmr",
+      "allowsMultipleOfficials": false,
+      "hasTemplates": true,
+      "isBuiltin": true,
+      "active": true,
+      "identitySchema": [
+        {
+          "key": "nama_jabatan_ppk",
+          "label": "Nama Jabatan PPK",
+          "kind": "text"
+        },
+        {
+          "key": "nomor_sk",
+          "label": "Nomor SK PPK",
+          "kind": "text"
+        },
+        {
+          "key": "tanggal_sk",
+          "label": "Tanggal SK PPK",
+          "kind": "date"
+        }
+      ]
+    },
+    {
+      "id": "pt-pokja",
+      "code": "POKJA",
+      "name": "Pokja Pemilihan",
+      "line": 1,
+      "defaultRoleId": "role-pmr",
+      "allowsMultipleOfficials": true,
+      "hasTemplates": true,
+      "isBuiltin": true,
+      "active": true,
+      "identitySchema": [
+        {
+          "key": "nama_jabatan_pokja",
+          "label": "Nama Jabatan Pokja",
+          "kind": "text"
+        },
+        {
+          "key": "nomor_sk",
+          "label": "Nomor SK Pokja",
+          "kind": "text"
+        },
+        {
+          "key": "tanggal_sk",
+          "label": "Tanggal SK Pokja",
+          "kind": "date"
+        }
+      ]
+    },
+    {
+      "id": "pt-pjp",
+      "code": "PJP",
+      "name": "Pejabat Pengadaan",
+      "line": 1,
+      "defaultRoleId": "role-pmr",
+      "allowsMultipleOfficials": false,
+      "hasTemplates": true,
+      "isBuiltin": true,
+      "active": true,
+      "identitySchema": [
+        {
+          "key": "nama_pejabat_pengadaan",
+          "label": "Nama Jabatan Pejabat Pengadaan",
+          "kind": "text"
+        },
+        {
+          "key": "nomor_sk",
+          "label": "Nomor SK Pejabat Pengadaan",
+          "kind": "text"
+        },
+        {
+          "key": "tanggal_sk",
+          "label": "Tanggal SK Pejabat Pengadaan",
+          "kind": "date"
+        }
+      ]
+    },
+    {
+      "id": "pt-pj-pemantauan",
+      "code": "PJPM",
+      "name": "Penanggung Jawab Pemantauan",
+      "line": 2,
+      "defaultRoleId": "role-pmt",
+      "allowsMultipleOfficials": false,
+      "hasTemplates": false,
+      "isBuiltin": true,
+      "active": true,
+      "identitySchema": []
+    },
+    {
+      "id": "pt-unit-pendukung",
+      "code": "UPPM",
+      "name": "Unit Pendukung Pemantauan",
+      "line": 2,
+      "defaultRoleId": "role-pmt",
+      "allowsMultipleOfficials": false,
+      "hasTemplates": false,
+      "isBuiltin": true,
+      "active": true,
+      "identitySchema": []
+    },
+    {
+      "id": "pt-penjamin-mutu",
+      "code": "PJM",
+      "name": "Penjamin Mutu",
+      "line": 3,
+      "defaultRoleId": "role-pjm",
+      "allowsMultipleOfficials": false,
+      "hasTemplates": false,
+      "isBuiltin": true,
+      "active": true,
+      "identitySchema": []
+    }
+  ],
+  "dataUmumForms": [
+    {
+      "id": "du-pt-kpa-v1",
+      "positionTypeId": "pt-kpa",
+      "version": 1,
+      "fields": [],
+      "objectiveEnabled": false,
+      "defaultObjective": "Memastikan pelaksanaan anggaran dilaksanakan secara taat azas dan risiko signifikan teridentifikasi.",
+      "active": true,
+      "createdAt": "2026-10-12"
+    },
+    {
+      "id": "du-pt-ppk-v1",
+      "positionTypeId": "pt-ppk",
+      "version": 1,
+      "fields": [],
+      "objectiveEnabled": false,
+      "defaultObjective": "Memastikan pelaksanaan anggaran dilaksanakan secara taat azas dan risiko signifikan teridentifikasi.",
+      "active": true,
+      "createdAt": "2026-10-12"
+    },
+    {
+      "id": "du-pt-pokja-v1",
+      "positionTypeId": "pt-pokja",
+      "version": 1,
+      "fields": [],
+      "objectiveEnabled": false,
+      "defaultObjective": "Memastikan pelaksanaan anggaran dilaksanakan secara taat azas dan risiko signifikan teridentifikasi.",
+      "active": true,
+      "createdAt": "2026-10-12"
+    },
+    {
+      "id": "du-pt-pjp-v1",
+      "positionTypeId": "pt-pjp",
+      "version": 1,
+      "fields": [],
+      "objectiveEnabled": false,
+      "defaultObjective": "Memastikan pelaksanaan anggaran dilaksanakan secara taat azas dan risiko signifikan teridentifikasi.",
+      "active": true,
+      "createdAt": "2026-10-12"
+    }
+  ],
+  "scoreBandVersions": [
+    {
+      "id": "sbv-1",
+      "number": 1,
+      "effectiveFrom": "2026-01-01",
+      "status": "active"
+    }
+  ],
+  "scoreBands": [
+    {
+      "versionId": "sbv-1",
+      "lowerExclusive": null,
+      "upperInclusive": 2,
+      "predicate": "kurang",
+      "order": 1,
+      "guidance": "Pengendalian belum dirancang atau tidak berjalan; risiko terjadi berulang tanpa tindak lanjut."
+    },
+    {
+      "versionId": "sbv-1",
+      "lowerExclusive": 2,
+      "upperInclusive": 3,
+      "predicate": "cukup",
+      "order": 2,
+      "guidance": "Pengendalian dirancang dan berjalan sebagian; masih ada kejadian atau bukti belum lengkap."
+    },
+    {
+      "versionId": "sbv-1",
+      "lowerExclusive": 3,
+      "upperInclusive": 4,
+      "predicate": "terkendali",
+      "order": 3,
+      "guidance": "Pengendalian berjalan efektif dan terdokumentasi; tidak ada kejadian material pada triwulan."
+    }
+  ]
+}
