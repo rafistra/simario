@@ -7,28 +7,13 @@ from typing import Any
 from django.db import transaction
 
 from simario.accounts.services import bump_auth_epoch
-from simario.audit.services import record
+from simario.audit.services import record_by
 from simario.core.errors import ApiError
 from simario.core.permissions import Actor
 from simario.notifications.services import notify
 from simario.registers import usage
 
 from .models import Position, PositionDelegate, PositionType
-
-
-def _audit(
-    actor: Actor, action: str, entity_type: str, entity_id: Any, before: Any, after: Any
-) -> None:
-    record(
-        action=action,
-        entity_type=entity_type,
-        entity_id=str(entity_id),
-        actor=actor.user,
-        acting_as=actor.acting_as,
-        before=before,
-        after=after,
-        at=actor.at,
-    )
 
 
 def _norm(s: str) -> str:
@@ -61,7 +46,7 @@ def set_position_type_active(actor: Actor, type_id: uuid.UUID, active: bool) -> 
             )
     ptype.active = active
     ptype.save(update_fields=["active"])
-    _audit(
+    record_by(
         actor,
         "aktifkan_jenis_jabatan" if active else "nonaktifkan_jenis_jabatan",
         "PositionType",
@@ -120,10 +105,10 @@ def save_position(
         for k, v in fields.items():
             setattr(pos, k, v)
         pos.save()
-        _audit(actor, "ubah_jabatan", "Position", pos.id, before, after)
+        record_by(actor, "ubah_jabatan", "Position", pos.id, before, after)
         return pos.id
     pos = Position.objects.create(**fields, active=True)
-    _audit(actor, "tambah_jabatan", "Position", pos.id, None, after)
+    record_by(actor, "tambah_jabatan", "Position", pos.id, None, after)
     return pos.id
 
 
@@ -162,7 +147,7 @@ def deactivate_position(actor: Actor, position_id: uuid.UUID, reason: str) -> No
             event_key=f"pos-deactivated:{pos.id}:{delegate.id}",
             at=actor.at,
         )
-    _audit(
+    record_by(
         actor,
         "nonaktifkan_jabatan",
         "Position",
@@ -179,4 +164,4 @@ def reactivate_position(actor: Actor, position_id: uuid.UUID) -> None:
     pos.deactivated_at = None
     pos.deactivation_reason = None
     pos.save(update_fields=["active", "deactivated_at", "deactivation_reason"])
-    _audit(actor, "aktifkan_jabatan", "Position", pos.id, {"active": False}, {"active": True})
+    record_by(actor, "aktifkan_jabatan", "Position", pos.id, {"active": False}, {"active": True})
