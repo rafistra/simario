@@ -232,6 +232,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/imports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["imports_list"];
+        put?: never;
+        post: operations["imports_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/imports/{id}/commit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["imports_commit_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/imports/kinds": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["imports_kinds_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/imports/templates/{kind}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["imports_templates_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me": {
         parameters: {
             query?: never;
@@ -1064,6 +1128,44 @@ export interface components {
             }[];
             activeOperators: number;
         };
+        ImportError: {
+            row: number;
+            column: string;
+            message: string;
+        };
+        ImportHistory: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            at: string;
+            actor: string;
+            kind: string;
+            rows: number;
+        };
+        ImportInputRequest: {
+            kind: components["schemas"]["ImportKindEnum"];
+            text: string;
+        };
+        ImportJob: {
+            /** Format: uuid */
+            readonly id: string;
+            kind: components["schemas"]["ImportKindEnum"];
+            status?: components["schemas"]["StatusEnum"];
+            rows?: number;
+            valid?: number;
+            errors: components["schemas"]["ImportError"][];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            appliedAt?: string | null;
+        };
+        /**
+         * @description * `jabatan` - jabatan
+         *     * `pejabat` - pejabat
+         *     * `penugasan` - penugasan
+         * @enum {string}
+         */
+        ImportKindEnum: "jabatan" | "pejabat" | "penugasan";
         LoginRequest: {
             nip: string;
             password: string;
@@ -1368,6 +1470,12 @@ export interface components {
         StageOrderRequest: {
             orderedIds: string[];
         };
+        /**
+         * @description * `dry_run` - dry_run
+         *     * `applied` - applied
+         * @enum {string}
+         */
+        StatusEnum: "dry_run" | "applied";
         SupportInputRequest: {
             /** Format: uuid */
             positionId: string;
@@ -1722,6 +1830,111 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ArchiveStatus"];
+                };
+            };
+        };
+    };
+    imports_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportHistory"][];
+                };
+            };
+        };
+    };
+    imports_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImportInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ImportInputRequest"];
+                "multipart/form-data": components["schemas"]["ImportInputRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportJob"];
+                };
+            };
+        };
+    };
+    imports_commit_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportJob"];
+                };
+            };
+        };
+    };
+    imports_kinds_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": ("jabatan" | "pejabat" | "penugasan")[];
+                };
+            };
+        };
+    };
+    imports_templates_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kind: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv": string;
                 };
             };
         };

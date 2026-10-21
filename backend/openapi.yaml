@@ -298,6 +298,112 @@ paths:
               schema:
                 $ref: '#/components/schemas/ArchiveStatus'
           description: ''
+  /api/v1/imports:
+    get:
+      operationId: imports_list
+      tags:
+      - admin
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImportHistory'
+          description: ''
+    post:
+      operationId: imports_create
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ImportInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ImportInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportJob'
+          description: ''
+  /api/v1/imports/{id}/commit:
+    post:
+      operationId: imports_commit_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportJob'
+          description: ''
+  /api/v1/imports/kinds:
+    get:
+      operationId: imports_kinds_list
+      tags:
+      - admin
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  enum:
+                  - jabatan
+                  - pejabat
+                  - penugasan
+                  type: string
+                  description: |-
+                    * `jabatan` - jabatan
+                    * `pejabat` - pejabat
+                    * `penugasan` - penugasan
+          description: ''
+  /api/v1/imports/templates/{kind}:
+    get:
+      operationId: imports_templates_retrieve
+      parameters:
+      - in: path
+        name: kind
+        schema:
+          type: string
+        required: true
+      tags:
+      - admin
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            text/csv:
+              schema:
+                type: string
+          description: ''
   /api/v1/me:
     get:
       operationId: me_retrieve
@@ -1792,6 +1898,95 @@ components:
       required:
       - activeOperators
       - publishedRegisters
+    ImportError:
+      type: object
+      properties:
+        row:
+          type: integer
+        column:
+          type: string
+        message:
+          type: string
+      required:
+      - column
+      - message
+      - row
+    ImportHistory:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        at:
+          type: string
+          format: date-time
+        actor:
+          type: string
+        kind:
+          type: string
+        rows:
+          type: integer
+      required:
+      - actor
+      - at
+      - id
+      - kind
+      - rows
+    ImportInputRequest:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/ImportKindEnum'
+        text:
+          type: string
+      required:
+      - kind
+      - text
+    ImportJob:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        kind:
+          $ref: '#/components/schemas/ImportKindEnum'
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        rows:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        valid:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportError'
+        createdAt:
+          type: string
+          format: date-time
+        appliedAt:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - createdAt
+      - errors
+      - id
+      - kind
+    ImportKindEnum:
+      enum:
+      - jabatan
+      - pejabat
+      - penugasan
+      type: string
+      description: |-
+        * `jabatan` - jabatan
+        * `pejabat` - pejabat
+        * `penugasan` - penugasan
     LoginRequest:
       type: object
       properties:
@@ -2516,6 +2711,14 @@ components:
             format: uuid
       required:
       - orderedIds
+    StatusEnum:
+      enum:
+      - dry_run
+      - applied
+      type: string
+      description: |-
+        * `dry_run` - dry_run
+        * `applied` - applied
     SupportInputRequest:
       type: object
       properties:

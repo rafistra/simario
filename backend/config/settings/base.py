@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "simario.org",
     "simario.calendar",
     "simario.reference",
+    "simario.imports",
     "simario.devtools",
     "simario.audit",
     "simario.notifications",
@@ -122,6 +123,7 @@ SPECTACULAR_SETTINGS = {
     "SWAGGER_UI_DIST": "SIDECAR",
     "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
     "REDOC_DIST": "SIDECAR",
+    "ENUM_NAME_OVERRIDES": {"ImportKindEnum": "simario.imports.models.ImportJob.KINDS"},
     "POSTPROCESSING_HOOKS": [
         "drf_spectacular.hooks.postprocess_schema_enums",
         "drf_spectacular.contrib.djangorestframework_camel_case.camelize_serializer_fields",
