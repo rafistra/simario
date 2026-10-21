@@ -14,6 +14,7 @@ urlpatterns = [
         name="assessment-finalise-preview",
     ),
     path("assessment-queue", views.QueueView.as_view(), name="assessment-queue"),
+    path("positions/<uuid:pk>/history/<int:year>", views.HistoryView.as_view(), name="history"),
     path(
         "risk-quarters/<uuid:pk>/assessments/<uuid:assessor>",
         views.CellView.as_view(),

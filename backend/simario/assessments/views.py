@@ -201,3 +201,15 @@ class ExplanationsSendView(APIView):
     def post(self, request: Request, pk: str) -> Response:
         ids = body(ResultIdsSerializer, request)["result_ids"]
         return Response({"count": services.send_explanations(_user(request), pk, ids)})
+
+
+class HistoryView(APIView):
+    """GET: the risk history of a position and fiscal year (`HistoryView`, FR-RWY-001)."""
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(responses={200: dict}, tags=["assessments"])
+    def get(self, request: Request, pk: str, year: int) -> Response:
+        from .history import build_history
+
+        return Response(build_history(_user(request), pk, year))  # type: ignore[arg-type]
