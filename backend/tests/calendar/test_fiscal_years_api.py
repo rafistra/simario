@@ -113,7 +113,10 @@ def test_archive_runs_registered_hooks(demo: None, monkeypatch: pytest.MonkeyPat
     admin = client_for("usr-admin")
     blocked = admin.post("/api/v1/fiscal-years/2027/archive")
     assert blocked.status_code == 409 and blocked.json()["code"] == "blocked"
-    assert blocked.json()["message"] == "TW IV belum lengkap: TW IV berakhir 31 Des 2027."
+    assert blocked.json()["message"] == (
+        "TW IV belum lengkap: 5 penjelasan wajib belum dikirim dan masih dalam tenggat; "
+        "TW IV berakhir 31 Des 2027."
+    )
     status = admin.get("/api/v1/fiscal-years/2027/archive-status").json()
     assert status["baseHardLimit"] == "2028-02-13"
     assert status["projected"] == "2028-02-13"
