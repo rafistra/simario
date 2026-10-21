@@ -5,3 +5,4 @@ package-lock.json
 src/styles/tokens.css
 scripts/pencil-variables.json
 src/data/http/schema.d.ts
+src/data/http/legacy-ids.json

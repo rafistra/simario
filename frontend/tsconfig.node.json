@@ -15,5 +15,6 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true
   },
-  "include": ["vite.config.ts", "scripts/**/*.ts"]
+  "include": ["vite.config.ts", "scripts/**/*.ts"],
+  "exclude": ["scripts/export-seed.ts", "scripts/export-seed.test.ts"]
 }
