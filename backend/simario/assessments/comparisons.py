@@ -117,6 +117,10 @@ def _persist(db: Db, rq: Row, change: Row, at: dt.datetime) -> list[Row]:
     return opened
 
 
+def _opened_rqs(db: Db, opened: dict[str, list[Row]]) -> list[Row]:
+    return [rq for rq in db["risk_quarters"] if rq["id"] in opened]
+
+
 def _register_of(db: Db, rq: Row) -> tuple[Row, Row]:
     risk = _find(db["risks"], "id", rq["register_risk_id"])
     assert risk is not None
@@ -284,3 +288,9 @@ def run_comparisons(as_of: dt.datetime, rq_ids: Iterable[Any] | None = None) -> 
         return
     _recurrence(db, opened, as_of, today)
     _notify_openings(db, opened, as_of, at, today)
+    # U-07: an opening (also a late one) can complete a quarter's sheet.
+    from simario.sheets.services import run_sheet_freeze
+
+    run_sheet_freeze(
+        as_of, {_register_of(db, rq)[1]["position_id"] for rq in _opened_rqs(db, opened)}
+    )

@@ -163,13 +163,21 @@ def _stripped(payload: Row) -> str:
     return json.dumps({**payload, "built_at": ""}, sort_keys=True, default=str)
 
 
-def _freeze(as_of: dt.datetime, years: set[int], trigger: str) -> int:
+def _freeze(
+    as_of: dt.datetime, years: set[int], trigger: str, positions: set[str] | None = None
+) -> int:
     at_iso = _iso(as_of)
     today = at_iso[:10]
     made = 0
-    db = sheet_db(None)
+    # One position (an event trigger) loads only its rows; the scheduled run loads all.
+    only = next(iter(positions)) if positions and len(positions) == 1 else None
+    db = sheet_db(only)
     lini1_types = {t["id"] for t in db["position_types"] if t["line"] == 1}
-    lini1 = [p for p in db["positions"] if p["position_type_id"] in lini1_types]
+    lini1 = [
+        p
+        for p in db["positions"]
+        if p["position_type_id"] in lini1_types and (positions is None or p["id"] in positions)
+    ]
     for q in db["quarters"]:
         if q["fiscal_year"] not in years or q["lini3_opens_on"] > today:
             continue
@@ -194,12 +202,16 @@ def _iso(at: dt.datetime) -> str:
 
 
 @scheduler.register("sheet_freeze")
+def scheduled_freeze(as_of: dt.datetime) -> None:
+    run_sheet_freeze(as_of)
+
+
 @transaction.atomic
-def run_sheet_freeze(as_of: dt.datetime) -> None:
+def run_sheet_freeze(as_of: dt.datetime, positions: set[str] | None = None) -> None:
     """FR-LBR-009: freeze each position-quarter automatically once ready; a new version whenever
     the content changed since the last automatic one. Archived years are left untouched."""
     years = set(FiscalYear.objects.exclude(status="archived").values_list("year", flat=True))
-    _freeze(as_of, years, "auto_freeze")
+    _freeze(as_of, years, "auto_freeze", positions)
 
 
 @on_archive

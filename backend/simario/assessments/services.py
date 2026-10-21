@@ -649,6 +649,10 @@ def send_explanations(user: User, lini1_position_id: Any, result_ids: list[Any])
             {"status": previous},
             {"status": "sent", "lateness": r.explanation_lateness},
         )
+    # U-07: the last explanation sent can complete the quarter's sheet.
+    from simario.sheets.services import run_sheet_freeze
+
+    run_sheet_freeze(a.at, {l1})
     return len(results)
 
 
