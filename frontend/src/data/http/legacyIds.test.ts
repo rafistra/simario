@@ -29,6 +29,16 @@ describe('legacy id bridge', () => {
   });
 });
 
+describe('legacy id bridge for maps keyed by id', () => {
+  it('translates keys that are exactly an id', () => {
+    expect(toLocalIds({ [A1]: [ANDI], other: 1 })).toEqual({
+      'pos-ppk-a1': ['usr-andi'],
+      other: 1,
+    });
+    expect(toBackendIds({ 'pos-ppk-a1': 1 })).toEqual({ [A1]: 1 });
+  });
+});
+
 describe('legacy id bridge with fragments and queries', () => {
   const ids = legacy as Record<string, string>;
   it('translates ids after # and ? and inside "prefix-id" fragments', () => {

@@ -22,7 +22,7 @@ export const preferenceApi = {
 export type { Notification };
 
 export { masterApi } from './http/master';
-export { registerApi } from './api/register';
+export { registerApi, useRegisterViews } from './http/register';
 export { threadApi } from './api/thread';
 export { boardApi } from './api/board';
 export { assessmentApi } from './api/assessment';

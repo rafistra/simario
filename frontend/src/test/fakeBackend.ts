@@ -9,6 +9,7 @@ import { calendarApi as localCalendarApi } from '@/data/api/calendar';
 import { importApi as localImportApi, type ImportKind } from '@/data/api/importer';
 import { masterApi as localMasterApi, type PositionInput } from '@/data/api/master';
 import { localAuthApi, localNotificationApi } from '@/data/local/authApi';
+import { REGISTER_ROUTES } from './fakeRegisterRoutes';
 import { getDb, useDb } from '@/data/local/store';
 import { staffDirectory } from '@/data/seed';
 import { holdingsOf } from '@/domain/rules/access';
@@ -453,7 +454,12 @@ export function installFakeBackend() {
         : Object.fromEntries(url.searchParams),
     );
     let reply: Reply = fail('not_found', 'Data tidak ditemukan.', 404);
-    for (const [m, re, handler] of [...ROUTES, ...MASTER_ROUTES, ...ADMIN_ROUTES]) {
+    for (const [m, re, handler] of [
+      ...ROUTES,
+      ...MASTER_ROUTES,
+      ...ADMIN_ROUTES,
+      ...REGISTER_ROUTES,
+    ]) {
       const match = method === m ? path.match(re) : null;
       if (!match) continue;
       try {

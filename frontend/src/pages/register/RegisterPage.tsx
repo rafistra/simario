@@ -1,5 +1,5 @@
 import { Archive, ClipboardList, Copy } from 'lucide-react';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 import {
   Button,
@@ -7,17 +7,19 @@ import {
   EmptyState,
   FinalizeOperatorButton,
   InlineAlert,
+  LoadingRegion,
+  Skeleton,
   StatusChip,
   BottomBar,
   toast,
   type StatusKind,
 } from '@/components';
-import { ApiError, registerApi } from '@/data/repository';
+import { useGateDb } from '@/components/DataGate/gateDb';
+import { ApiError, registerApi, useRegisterViews } from '@/data/repository';
 import type { CopySummary, RegisterKey } from '@/data/api/register';
-import { buildRegisterView, wouldFlagNoMitigation } from '@/data/api/registerView';
-import { useDb } from '@/data/local/store';
+import type { RegisterView } from '@/data/api/registerView';
 import { QUARTER_ROMAN } from '@/domain/calendar';
-import { completeStages, deactivationQuarter, type RegisterGap } from '@/domain/rules/register';
+import { deactivationQuarter, type RegisterGap } from '@/domain/rules/register';
 import {
   RISK_TYPE_LABEL,
   type RegisterMitigation,
@@ -41,21 +43,60 @@ const hhmm = (iso: string) => iso.slice(11, 16).replace(':', '.');
 export default function RegisterPage() {
   const { position, unitCode, fiscalYear } = useOutletContext<WorkspaceOutletContext>();
   usePageMeta(['Register', `${position.name} · ${unitCode}`]);
-  const auth = useAuth();
-  const db = useDb((s) => s.db);
   const key: RegisterKey = useMemo(
     () => ({ positionId: position.id, fiscalYear }),
     [position.id, fiscalYear],
   );
-  // Items are filtered per viewer in the data layer (FR-REG-012): readers get published ones only.
-  const view = buildRegisterView(db, auth.user.id, position.id, fiscalYear, auth.today);
+  const k = `${key.positionId}:${key.fiscalYear}`;
+  const view = useRegisterViews((s) => s.views[k]);
+  const error = useRegisterViews((s) => s.errors[k]);
+  const load = () => void useRegisterViews.getState().load(key);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- reload when the register changes
+  useEffect(load, [k]);
+  if (error && !view)
+    return (
+      <InlineAlert variant="error" title="Register gagal dimuat" onRetry={load}>
+        {error}
+      </InlineAlert>
+    );
+  if (!view)
+    return (
+      <LoadingRegion label="Memuat register…">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <Skeleton height={56} width="40%" />
+          <Skeleton height={320} radius="lg" />
+        </div>
+      </LoadingRegion>
+    );
+  return <RegisterContent registerKey={key} view={view} />;
+}
+
+function RegisterContent({
+  registerKey: key,
+  view,
+}: {
+  registerKey: RegisterKey;
+  view: RegisterView;
+}) {
+  const { position, fiscalYear } = useOutletContext<WorkspaceOutletContext>();
+  const auth = useAuth();
+  const gate = useGateDb();
+  // Items are filtered per viewer by the server (FR-REG-012): readers get published ones only.
+  const db = useMemo(
+    () => ({
+      ...gate,
+      registers: [
+        ...gate.registers.filter((r) => r.id !== view.register?.id),
+        ...(view.register ? [view.register] : []),
+      ],
+    }),
+    [gate, view.register],
+  );
   const { access, stages, risks, pending, unpublishedForReader } = view;
   const register = view.register ?? undefined;
   const editing = access.canDraft;
   const fy = db.fiscalYears.find((f) => f.year === fiscalYear);
-  const previous = db.registers.find(
-    (r) => r.positionId === position.id && r.fiscalYear === fiscalYear - 1,
-  );
+  const previous = view.previousRegister ? { fiscalYear: fiscalYear - 1 } : undefined;
 
   const { saving, failed, run } = useSaving();
   const [showGaps, setShowGaps] = useState(false);
@@ -243,9 +284,7 @@ export default function RegisterPage() {
   else
     meta = `${risks.length} risiko dipilih · ${stageCount} tahap${register.updatedAt ? ` · disimpan ${hhmm(register.updatedAt)} oleh ${user(register.updatedByUserId)}` : ''}`;
 
-  const stagesDone = register
-    ? completeStages(db, register.id)
-    : { complete: 0, total: stages.filter((s) => s.stage.active).length };
+  const stagesDone = view.stagesDone;
   const pendingCount = pending.risks.length + pending.mitigations.length;
   const pendingDraft = [...pending.risks, ...pending.mitigations].filter(
     (x) => x.status === 'draft',
@@ -268,7 +307,7 @@ export default function RegisterPage() {
     !copySummary &&
     risks.length === 0 &&
     !register?.copiedFromRegisterId;
-  const flagged = register && publishOpen ? wouldFlagNoMitigation(db, register.id) : [];
+  const flagged = register && publishOpen ? view.flagged : [];
   const threadUrl = (r: RegisterRisk) =>
     r.status === 'active' || r.status === 'inactive'
       ? `/jabatan/${position.id}/papan/${fiscalYear}/risiko/${r.id}`

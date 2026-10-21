@@ -116,9 +116,20 @@ export default function App() {
               <Route
                 path="register/:ta"
                 element={
-                  <DataGate>
+                  <CollectionGate
+                    names={[
+                      'positionTypes',
+                      'stages',
+                      'dataUmumForms',
+                      'riskTemplates',
+                      'mitigationTemplates',
+                      'users',
+                      'quarters',
+                      'fiscalYears',
+                    ]}
+                  >
                     <RegisterPage />
-                  </DataGate>
+                  </CollectionGate>
                 }
               />
               <Route path="penilaian/:ta/:tw" element={<AssessmentPage />} />

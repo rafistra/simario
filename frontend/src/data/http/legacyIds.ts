@@ -23,11 +23,18 @@ const ID_TOKEN = new RegExp(
   'g',
 );
 
-function mapDeep(value: unknown, mapString: (s: string) => string): unknown {
+/** Maps string values, and object keys that are exactly an id (maps keyed by id). */
+function mapDeep(
+  value: unknown,
+  mapString: (s: string) => string,
+  mapKey: (k: string) => string,
+): unknown {
   if (typeof value === 'string') return mapString(value);
-  if (Array.isArray(value)) return value.map((v) => mapDeep(v, mapString));
+  if (Array.isArray(value)) return value.map((v) => mapDeep(v, mapString, mapKey));
   if (value && typeof value === 'object')
-    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, mapDeep(v, mapString)]));
+    return Object.fromEntries(
+      Object.entries(value).map(([k, v]) => [mapKey(k), mapDeep(v, mapString, mapKey)]),
+    );
   return value;
 }
 
@@ -38,10 +45,10 @@ const toLegacyString = (s: string) =>
 
 /** Prototype ids → backend UUIDs (request bodies, queries, path segments, fragments). */
 export function toBackendIds<T>(value: T): T {
-  return mapDeep(value, toUuidString) as T;
+  return mapDeep(value, toUuidString, (k) => TO_UUID[k] ?? k) as T;
 }
 
 /** Backend UUIDs → prototype ids where known, also inside strings such as target URLs. */
 export function toLocalIds<T>(value: T): T {
-  return mapDeep(value, toLegacyString) as T;
+  return mapDeep(value, toLegacyString, (k) => TO_LEGACY[k] ?? k) as T;
 }

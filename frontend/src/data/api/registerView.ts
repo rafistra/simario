@@ -9,7 +9,12 @@ import {
   holdingsOf,
   type DenyReason,
 } from '@/domain/rules/access';
-import { registerGaps, registerStages, type RegisterGap } from '@/domain/rules/register';
+import {
+  completeStages,
+  registerGaps,
+  registerStages,
+  type RegisterGap,
+} from '@/domain/rules/register';
 import type {
   ISODate,
   Position,
@@ -201,6 +206,11 @@ export interface RegisterView {
   pending: { risks: RegisterRisk[]; mitigations: RegisterMitigation[] };
   /** Structural publish gaps (§2.6); only for viewers who may draft. */
   gaps: RegisterGap[];
+  /** Last fiscal year's register exists (the "Salin dari TA …" banner). */
+  previousRegister: boolean;
+  stagesDone: { complete: number; total: number };
+  /** Pending risks that would publish without an active mitigation; holders only. */
+  flagged: RegisterRisk[];
 }
 
 /**
@@ -239,5 +249,16 @@ export function buildRegisterView(
     pending:
       register && access.isHolder ? pendingItems(db, register.id) : { risks: [], mitigations: [] },
     gaps: register && editing ? registerGaps(db, register.id) : [],
+    previousRegister: db.registers.some(
+      (r) => r.positionId === positionId && r.fiscalYear === fiscalYear - 1,
+    ),
+    stagesDone: register
+      ? completeStages(db, register.id)
+      : {
+          complete: 0,
+          total: db.stages.filter((s) => s.positionTypeId === position.positionTypeId && s.active)
+            .length,
+        },
+    flagged: register && access.isHolder ? wouldFlagNoMitigation(db, register.id) : [],
   };
 }
