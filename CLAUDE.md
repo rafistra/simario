@@ -24,6 +24,20 @@ Panduan kerja untuk Claude di repositori ini. Baca seluruhnya sebelum menulis ko
 
 Bila PRD dan mockup berbeda, ikuti PRD dan catat perbedaannya di laporan.
 
+### Dokumentasi teknis (`docs/00_…`–`docs/06_…`)
+
+Ringkasan keadaan kode dan rancangan, diturunkan dari PRD dan kode. Baca dokumen yang relevan sebelum mengubah bagian terkait, dan perbarui dalam komit yang sama bila isinya tidak lagi benar. PRD tetap menang bila berbeda; kode adalah keadaan sebenarnya.
+
+| Berkas | Isi | Perbarui bila |
+|---|---|---|
+| [`docs/00_arsitektur.md`](docs/00_arsitektur.md) | Arsitektur prototipe vs target, lapisan, modul, prinsip, keputusan arsitektur | Lapisan, alur data, atau keputusan arsitektur berubah |
+| [`docs/01_backend.md`](docs/01_backend.md) | Status backend (**belum ada**), rancangan Django/Celery/MinIO/Keycloak, model data PRD vs prototipe, tugas terjadwal | Entitas, tugas terjadwal, atau rencana backend berubah |
+| [`docs/02_frontend.md`](docs/02_frontend.md) | Stack, struktur folder, rute, pola halaman, komponen, gaya, aksesibilitas | Rute, komponen, atau pola halaman baru |
+| [`docs/03_api_contract.md`](docs/03_api_contract.md) | Kontrak `data/repository.ts` per namespace, galat, usulan endpoint REST, data yang masih dibaca langsung dari store | Metode repository ditambah atau diubah |
+| [`docs/04_risk_and_debt.md`](docs/04_risk_and_debt.md) | Risiko produk/teknis dan utang teknis (R-P, R, U) | Menemukan atau menyelesaikan risiko/utang |
+| [`docs/05_local_dev_and_testing.md`](docs/05_local_dev_and_testing.md) | Menjalankan lokal, persona, DevPanel, pengujian, verifikasi visual, rilis Netlify | Skrip, persona, seed, atau uji berubah |
+| [`docs/06_user_stories.md`](docs/06_user_stories.md) | 71 user story PRD (Bahasa Indonesia) dengan status implementasi dan cara mencobanya | Status sebuah cerita berubah |
+
 ## 3. Stack & struktur
 
 - **React 18 + Vite + TypeScript** (PRD §2.1), React Router, Zustand, `lucide-react`. Versi dikunci persis di `frontend/package.json` (React 18.3.1, Vite 6.4, React Router 7 — v6 punya kerentanan, v7 tetap mendukung React 18 —, Vitest 5). Alias impor: `@/` → `src/`, `@seed/` → `docs/seed/`.

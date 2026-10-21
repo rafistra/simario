@@ -1,6 +1,8 @@
 # SIMARIO — prototipe frontend
 
-Prototipe Sistem Informasi Mitigasi Risiko Otorita IKN yang terasa seperti aplikasi asli: semua modul PRD v2.7, tanpa backend. Data disimpan di `localStorage` browser dan dapat diatur ulang kapan saja.
+Prototipe Sistem Informasi Mitigasi Risiko Otorita IKN yang terasa seperti aplikasi asli: semua modul PRD v2.9, tanpa backend. Data disimpan di `localStorage` browser dan dapat diatur ulang kapan saja.
+
+Dokumentasi teknis lengkap ada di `docs/`: [arsitektur](../docs/00_arsitektur.md), [backend](../docs/01_backend.md), [frontend](../docs/02_frontend.md), [kontrak API](../docs/03_api_contract.md), [risiko & utang teknis](../docs/04_risk_and_debt.md), [pengembangan lokal & pengujian](../docs/05_local_dev_and_testing.md), [user story](../docs/06_user_stories.md).
 
 ## Menjalankan
 
