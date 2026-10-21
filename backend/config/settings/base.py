@@ -201,3 +201,6 @@ if OIDC_ISSUER:
     from simario.accounts.oidc_config import oidc_endpoints
 
     globals().update(oidc_endpoints(OIDC_ISSUER, OIDC_BACKCHANNEL_URL))
+
+# Uploads (NFR-009): 10 files of 20 MB per comment; the view refuses more before reading.
+DATA_UPLOAD_MAX_NUMBER_FILES = 20

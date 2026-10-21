@@ -14,6 +14,8 @@ from rest_framework.views import APIView
 
 from simario.accounts.models import User
 from simario.core.api import IdSerializer, body
+from simario.core.errors import ApiError
+from simario.domain import board as rules
 
 from . import files, selectors, services
 
@@ -90,14 +92,25 @@ class CommentListView(APIView):
     def post(self, request: Request, pk: str) -> Response:
         form = cast(dict[str, Any], request.data)
         raw = form.get("data")
-        payload = underscoreize(json.loads(raw)) if isinstance(raw, str) else form
+        try:
+            payload = underscoreize(json.loads(raw)) if isinstance(raw, str) else form
+        except json.JSONDecodeError as exc:
+            raise ApiError("validation", "Isian komentar tidak valid.") from exc
         s = CommentInputSerializer(data=payload)
         s.is_valid(raise_exception=True)
         data = dict(s.validated_data)
         flags = data.pop("confidential", None) or []
+        parts = request.FILES.getlist("files")
+        # Limits before anything is read into memory (NFR-009).
+        if len(parts) > rules.MAX_FILES:
+            raise ApiError("validation", f"Maksimal {rules.MAX_FILES} berkas per komentar.")
+        for f in parts:
+            problem = rules.file_problem(f.name or "", f.size or 0)
+            if problem:
+                raise ApiError("validation", f"{f.name}: {problem}")
         uploads = [
-            services.Upload(f.name, f.read(), bool(flags[i]) if i < len(flags) else False)
-            for i, f in enumerate(request.FILES.getlist("files"))
+            services.Upload(f.name or "", f.read(), bool(flags[i]) if i < len(flags) else False)
+            for i, f in enumerate(parts)
         ]
         cid = services.post(_user(request), pk, data, uploads)
         return Response({"id": cid}, status=201)

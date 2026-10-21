@@ -96,7 +96,7 @@ export const threadApi = {
 
   /** 30-second poll (NFR-015): newer comments by others since `since`. */
   since: (riskId: string, since: string) =>
-    apiFetch<{ comments: number; latestAt: string | null }>(`/register-risks/${riskId}/thread`, {
+    apiFetch<{ comments: number; commentIds: string[] }>(`/register-risks/${riskId}/thread`, {
       query: { since },
     }),
 };

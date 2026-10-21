@@ -3,7 +3,9 @@ and as a scheduled sweep of anything still pending."""
 
 import datetime as dt
 import logging
+from typing import Any
 
+from botocore.exceptions import BotoCoreError, ClientError
 from celery import shared_task
 from django.db import transaction
 
@@ -34,7 +36,7 @@ def scan_one(attachment_id: str) -> str:
         return "clean"
     try:
         clean = files.clamd_scan(files.read(a.object_key))
-    except OSError:
+    except (OSError, BotoCoreError, ClientError):
         log.warning("attachment_scan: clamd unavailable, %s stays pending", a.id)
         return "pending"
     at = clock.now()
@@ -65,12 +67,19 @@ def scan_one(attachment_id: str) -> str:
     return "quarantined"
 
 
-@shared_task(name="attachment_scan")
-def scan_attachment(attachment_id: str) -> str:
-    return scan_one(attachment_id)
+@shared_task(name="attachment_scan", bind=True, max_retries=5, default_retry_delay=60)
+def scan_attachment(self: Any, attachment_id: str) -> str:
+    """Retries every minute while clamd or storage is down, then leaves it to the sweep."""
+    result = scan_one(attachment_id)
+    if result == "pending" and self.request.retries < self.max_retries:
+        raise self.retry()
+    return result
 
 
 @scheduler.register("attachment_scan")
 def sweep_pending(as_of: dt.datetime) -> None:
     for aid in Attachment.objects.filter(scan_status="pending").values_list("id", flat=True):
-        scan_one(str(aid))
+        try:
+            scan_one(str(aid))
+        except Exception:  # one bad file never stops the other scheduled tasks
+            log.exception("attachment_scan: %s failed", aid)

@@ -62,7 +62,7 @@ def test_thread_since(demo: None) -> None:
     assert risk is not None
     url = f"/api/v1/register-risks/{risk.register_risk_id}/thread"
     none = client_for("usr-andi").get(url, {"since": "2099-01-01T00:00"}).json()
-    assert none == {"comments": 0, "latestAt": None}
+    assert none == {"comments": 0, "commentIds": []}
     some = client_for("usr-admin").get(url, {"since": "2000-01-01T00:00"}).json()
     assert some["comments"] >= 1
 

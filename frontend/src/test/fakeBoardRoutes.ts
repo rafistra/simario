@@ -28,11 +28,11 @@ export const BOARD_ROUTES: [string, RegExp, Handler][] = [
         const newer = getDb().comments.filter(
           (c) =>
             c.registerRiskId === m[1] &&
-            c.createdAt > String(b.since) &&
+            c.createdAt >= String(b.since) &&
             c.authorUserId !== me &&
             !c.withdrawnAt,
         );
-        return ok({ comments: newer.length, latestAt: newer.at(-1)?.createdAt ?? null });
+        return ok({ comments: newer.length, commentIds: newer.map((c) => c.id) });
       }
       return ok(await localBoard.thread(m[1]!));
     },

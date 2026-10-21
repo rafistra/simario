@@ -23,7 +23,8 @@ from simario.domain import board as rules
 from simario.notifications.models import Notification
 from simario.notifications.services import notify
 from simario.org.models import Position
-from simario.registers.models import Register, RegisterRisk
+from simario.registers.models import Register, RegisterMitigation, RegisterRisk
+from simario.registers.selectors import assert_can_read
 
 from . import files
 from .models import Attachment, Comment, Mention, ThreadSubscription, ThreadView
@@ -113,8 +114,57 @@ def storage_used(position_id: Any, fiscal_year: int) -> int:
     return int(total)
 
 
-@transaction.atomic
+@dataclass(frozen=True)
+class Stored:
+    id: uuid.UUID
+    key: str
+    mime: str
+    upload: Upload
+
+
+def check_files(uploads: list[Upload]) -> list[str]:
+    """Count, extension, size and content checks (NFR-009); returns the proven MIME types."""
+    if len(uploads) > rules.MAX_FILES:
+        raise ApiError("validation", f"Maksimal {rules.MAX_FILES} berkas per komentar.")
+    mimes = []
+    for f in uploads:
+        problem = rules.file_problem(f.name, len(f.data))
+        if problem:
+            raise ApiError("validation", f"{f.name}: {problem}")
+        mime = files.content_mime(f.name, f.data)
+        if mime is None:
+            raise ApiError("validation", f"{f.name}: {files.CONTENT_MISMATCH}")
+        mimes.append(mime)
+    return mimes
+
+
 def post(user: User, risk_id: Any, data: dict[str, Any], uploads: list[Upload]) -> uuid.UUID:
+    """Files go to storage before the transaction (the register lock covers DB work only) and are
+    removed again when the post is refused or fails."""
+    mimes = check_files(uploads)
+    risk = RegisterRisk.objects.select_related("register").filter(pk=risk_id).first()
+    if risk is None:
+        raise ApiError("not_found", "Risiko tidak ditemukan.")
+    stored = []
+    try:
+        for f, mime in zip(uploads, mimes, strict=True):
+            aid = uuid.uuid4()
+            key = files.key_for(risk.register.position_id, risk.register.fiscal_year_id, aid)
+            files.put(key, f.data, mime)
+            stored.append(Stored(aid, key, mime, f))
+        return _post(user, risk_id, data, stored)
+    except BaseException:
+        for item in stored:
+            try:
+                files.delete(item.key)
+            except Exception:
+                log.exception("could not remove %s after a failed post", item.key)
+        raise
+
+
+@transaction.atomic
+def _post(user: User, risk_id: Any, data: dict[str, Any], stored: list[Stored]) -> uuid.UUID:
+    uploads = [s.upload for s in stored]
     at = clock.now()
     at_iso = now_iso()
     today = at_iso[:10]
@@ -151,17 +201,6 @@ def post(user: User, risk_id: Any, data: dict[str, Any], uploads: list[Upload]) 
             "Langkah selalu tercatat pada triwulan berjalan; pilih triwulan berjalan untuk "
             "menandai Langkah.",
         )
-    if len(uploads) > rules.MAX_FILES:
-        raise ApiError("validation", f"Maksimal {rules.MAX_FILES} berkas per komentar.")
-    mimes = []
-    for f in uploads:
-        problem = rules.file_problem(f.name, len(f.data))
-        if problem:
-            raise ApiError("validation", f"{f.name}: {problem}")
-        mime = files.content_mime(f.name, f.data)
-        if mime is None:
-            raise ApiError("validation", f"{f.name}: {files.CONTENT_MISMATCH}")
-        mimes.append(mime)
     if any(f.confidential for f in uploads) and holding["line"] != 3:
         raise ApiError("validation", "Hanya Lini 3 yang dapat menandai lampiran konfidensial.")
     incoming = sum(len(f.data) for f in uploads)
@@ -184,6 +223,13 @@ def post(user: User, risk_id: Any, data: dict[str, Any], uploads: list[Upload]) 
     ]
 
     mitigation_id = data.get("mitigation_id")
+    if (
+        mitigation_id
+        and not RegisterMitigation.objects.filter(
+            pk=mitigation_id, register_risk=risk, status__in=("active", "inactive")
+        ).exists()
+    ):
+        raise ApiError("validation", "Mitigasi tidak ditemukan pada risiko ini.")
     comment = Comment.objects.create(
         register_risk=risk,
         register_mitigation_id=mitigation_id,
@@ -197,25 +243,20 @@ def post(user: User, risk_id: Any, data: dict[str, Any], uploads: list[Upload]) 
         created_at=at,
     )
     Mention.objects.bulk_create([Mention(comment=comment, user_id=m) for m in mentions])
-    stored: list[uuid.UUID] = []
-    for f, mime in zip(uploads, mimes, strict=True):
-        aid = uuid.uuid4()
-        key = files.key_for(register.position_id, register.fiscal_year_id, aid)
-        files.put(key, f.data, mime)
+    for item in stored:
         Attachment.objects.create(
-            id=aid,
+            id=item.id,
             owner_kind="comment",
             owner_id=comment.id,
-            filename=f.name,
-            size=len(f.data),
-            mime_type=mime,
+            filename=item.upload.name,
+            size=len(item.upload.data),
+            mime_type=item.mime,
             scan_status="pending",
-            is_confidential=f.confidential,
+            is_confidential=item.upload.confidential,
             uploaded_by=user,
             uploaded_at=at,
-            object_key=key,
+            object_key=item.key,
         )
-        stored.append(aid)
     _subscribe(user.id, risk)
     ThreadView.objects.update_or_create(
         user=user, register_risk=risk, defaults={"last_seen_at": at}
@@ -288,10 +329,16 @@ def post(user: User, risk_id: Any, data: dict[str, Any], uploads: list[Upload]) 
         from .tasks import scan_attachment
 
         def scan_later(aid: uuid.UUID) -> None:
-            transaction.on_commit(lambda: scan_attachment.delay(str(aid)))
+            def enqueue() -> None:
+                try:
+                    scan_attachment.delay(str(aid))
+                except Exception:  # broker down: the scheduled sweep scans it later
+                    log.exception("could not queue the scan of %s", aid)
 
-        for aid in stored:
-            scan_later(aid)
+            transaction.on_commit(enqueue)
+
+        for item in stored:
+            scan_later(item.id)
     return comment.id
 
 
@@ -375,9 +422,15 @@ def set_confidential(user: User, attachment_id: Any, on: bool) -> None:
     a = Attachment.objects.select_for_update().filter(pk=attachment_id).first()
     if a is None:
         raise ApiError("not_found", "Lampiran tidak ditemukan.")
-    c = Comment.objects.filter(pk=a.owner_id).first()
-    if c:
-        _context(c.register_risk_id)
+    owner = (
+        RegisterRisk.objects.filter(comments__id=a.owner_id)
+        if a.owner_kind == "comment"
+        else RegisterRisk.objects.filter(quarters__assessments__id=a.owner_id)
+    ).first()
+    if owner is None:
+        raise ApiError("not_found", "Lampiran tidak ditemukan.")
+    _, register = _context(owner.id)
+    assert_can_read(user, str(register.position_id), register.fiscal_year_id)
     if on and a.uploaded_by_id != user.id:
         raise ApiError("forbidden", "Hanya pengunggah yang dapat menandai lampiran konfidensial.")
     today = clock.today().isoformat()
@@ -403,6 +456,7 @@ def set_confidential(user: User, attachment_id: Any, on: bool) -> None:
 def follow(user: User, risk_id: Any, on: bool) -> None:
     """FR-PPN-010: the position's holders cannot unfollow."""
     risk, register = _context(risk_id)
+    assert_can_read(user, str(register.position_id), register.fiscal_year_id)
     today = clock.today().isoformat()
     if not on and rules.is_always_subscribed(
         load_access_db(), str(user.id), str(register.position_id), today
@@ -415,7 +469,9 @@ def follow(user: User, risk_id: Any, on: bool) -> None:
 
 def mark_seen(user: User, risk_id: Any) -> None:
     """Records the visit for unseen-activity dots (FR-PPN-001). Not audited."""
-    if RegisterRisk.objects.filter(pk=risk_id).exists():
+    risk = RegisterRisk.objects.select_related("register").filter(pk=risk_id).first()
+    if risk is not None:
+        assert_can_read(user, str(risk.register.position_id), risk.register.fiscal_year_id)
         ThreadView.objects.update_or_create(
             user=user, register_risk_id=risk_id, defaults={"last_seen_at": clock.now()}
         )

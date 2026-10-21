@@ -57,6 +57,10 @@ def put(key: str, data: bytes, mime: str) -> None:
     s3_client().put_object(Bucket=settings.S3_BUCKET, Key=key, Body=data, ContentType=mime)
 
 
+def delete(key: str) -> None:
+    s3_client().delete_object(Bucket=settings.S3_BUCKET, Key=key)
+
+
 def read(key: str) -> bytes:
     body = s3_client().get_object(Bucket=settings.S3_BUCKET, Key=key)["Body"]
     return bytes(body.read())

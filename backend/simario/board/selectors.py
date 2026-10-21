@@ -580,19 +580,24 @@ def build_thread(user: User, risk_id: uuid.UUID) -> Row:
 
 
 def thread_since(user: User, risk_id: uuid.UUID, since: str) -> Row:
-    """Polling (NFR-015, every 30 s): visible comments newer than `since` by other users."""
+    """Polling (NFR-015, every 30 s): ids of visible comments by others posted from `since` on
+    (minute precision, as the page shows times); the page compares them with what it shows."""
     risk = RegisterRisk.objects.select_related("register").filter(pk=risk_id).first()
-    if risk is None:
+    if risk is None or risk.status not in ("active", "inactive"):
         raise ApiError("not_found", "Risiko tidak ditemukan.")
+    try:
+        start = clock.parse_local(since)
+    except ValueError as exc:
+        raise ApiError("validation", "Parameter since tidak valid.") from exc
     assert_can_read(user, str(risk.register.position_id), risk.register.fiscal_year_id)
     newer = Comment.objects.filter(
         Q(register_risk=risk)
-        & Q(created_at__gt=clock.parse_local(since))
+        & Q(created_at__gte=start)
         & ~Q(author=user)
         & Q(withdrawn_at__isnull=True)
     )
-    latest = newer.order_by("-created_at").values_list("created_at", flat=True).first()
-    return {"comments": newer.count(), "latest_at": latest}
+    ids = [str(i) for i in newer.order_by("created_at").values_list("id", flat=True)]
+    return {"comments": len(ids), "comment_ids": ids}
 
 
 def participants(user: User, risk_id: uuid.UUID, quarter_id: str) -> list[Row]:
@@ -616,6 +621,8 @@ def downloadable(user: User, attachment_id: uuid.UUID) -> Attachment:
         raise ApiError("not_found", "Lampiran tidak ditemukan.")
     risks = RegisterRisk.objects.select_related("register")
     if a.owner_kind == "comment":
+        if Comment.objects.filter(pk=a.owner_id, withdrawn_at__isnull=False).exists():
+            raise ApiError("not_found", "Lampiran tidak ditemukan.")  # VIS-6
         risk = risks.filter(comments__id=a.owner_id).first()
     else:
         risk = risks.filter(quarters__assessments__id=a.owner_id).first()
@@ -630,4 +637,23 @@ def downloadable(user: User, attachment_id: uuid.UUID) -> Attachment:
     }
     if a.scan_status != "clean" or not vis.can_see_attachment(viewer, row):
         raise ApiError("not_found", "Lampiran tidak ditemukan.")
+    if a.owner_kind == "assessment":
+        # Assessment evidence follows the assessment's own visibility (VIS-1/2/5/9, INV-16).
+        assessment = Assessment.objects.select_related("risk_quarter").get(pk=a.owner_id)
+        rq = assessment.risk_quarter
+        results = rows(ResultRow, ComparisonResult.objects.filter(risk_quarter=rq))
+        at = now_iso()
+        opened = {r["lini3_position_id"] for r in results if r["opened_at"][:16] <= at[:16]}
+        expected = [
+            str(p)
+            for p in QuarterAssessor.objects.filter(
+                quarter_id=rq.quarter_id, excluded=False
+            ).values_list("position_id", flat=True)
+        ]
+        a_row = {
+            "assessor_position_id": str(assessment.assessor_position_id),
+            "assessor_line": assessment.assessor_line,
+        }
+        if not vis.can_see_assessment(viewer, a_row, opened, expected):
+            raise ApiError("not_found", "Lampiran tidak ditemukan.")
     return a

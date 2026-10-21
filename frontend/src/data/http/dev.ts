@@ -2,6 +2,7 @@
 
 import { authApi } from './auth';
 import { apiFetch } from './client';
+import { useBoardRevision } from './board';
 import { useRegisterViews } from './register';
 
 export interface Persona {
@@ -26,6 +27,7 @@ export const devApi = {
       body: { at },
     });
     useRegisterViews.getState().clear();
+    useBoardRevision.getState().bump();
     return res;
   },
   /** Reloads the demo seed (optionally as of a moment) and signs everyone out. */
@@ -35,6 +37,7 @@ export const devApi = {
       body: asOf ? { asOf } : {},
     });
     useRegisterViews.getState().clear();
+    useBoardRevision.getState().bump();
     return res;
   },
 };
