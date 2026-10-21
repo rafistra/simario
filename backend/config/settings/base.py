@@ -31,6 +31,8 @@ INSTALLED_APPS = [
     "simario.calendar",
     "simario.reference",
     "simario.devtools",
+    "simario.audit",
+    "simario.notifications",
 ]
 
 MIDDLEWARE = [
