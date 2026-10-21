@@ -1,7 +1,9 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { CollectionGate } from '@/components/DataGate/CollectionGate';
 import { useToastStore } from '@/components/Feedback/toastStore';
 import { useDb } from '@/data/local/store';
+import { useCollectionCache } from '@/lib/useCollections';
 import { useClock } from '@/state/clock';
 import { useDevSettings } from '@/state/devSettings';
 import { useSession } from '@/state/session';
@@ -15,14 +17,33 @@ beforeEach(() => {
     useDb.getState().reset();
     useToastStore.setState({ toasts: [] });
     useSession.getState().signIn('usr-nur');
+    useCollectionCache.setState({ data: {}, errors: {} });
   });
 });
 
-const renderPage = (ui: React.ReactNode) => render(<MemoryRouter>{ui}</MemoryRouter>);
+/** Renders a master page behind its route's CollectionGate and waits for the data. */
+async function renderPage(page: 'bands' | 'proposals') {
+  render(
+    <MemoryRouter>
+      {page === 'bands' ? (
+        <CollectionGate names={['quarters', 'scoreBandVersions', 'scoreBands', 'scoreOptions']}>
+          <ScoreBandsPage />
+        </CollectionGate>
+      ) : (
+        <CollectionGate names={['positionTypes', 'stages', 'riskTemplates', 'mitigationTemplates']}>
+          <ProposalsPage />
+        </CollectionGate>
+      )}
+    </MemoryRouter>,
+  );
+  await screen.findByRole('heading', {
+    name: page === 'bands' ? 'Skala Penilaian' : 'Usulan Risiko',
+  });
+}
 
 describe('Usulan Risiko', () => {
   it('keeps "Tolak Usulan" pressable and asks for a reason before rejecting', async () => {
-    renderPage(<ProposalsPage />);
+    await renderPage('proposals');
     fireEvent.click(screen.getAllByRole('button', { name: 'Tolak' })[0]!);
     fireEvent.click(screen.getByRole('button', { name: 'Tolak Usulan' }));
     expect(await screen.findByText('Alasan penolakan wajib diisi.')).toBeInTheDocument();
@@ -38,7 +59,7 @@ describe('Usulan Risiko', () => {
 
 describe('Skala Penilaian', () => {
   it('shows the draft gap and refuses to save it', async () => {
-    renderPage(<ScoreBandsPage />);
+    await renderPage('bands');
     expect(screen.getByText('Rentang tidak dapat disimpan')).toBeInTheDocument();
     expect(screen.getByText(/Ada celah antara 1,9 dan 2,0/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Simpan Versi 2' }));
@@ -50,14 +71,14 @@ describe('Skala Penilaian', () => {
   });
 
   it('lists the draft statements and reports the uncovered predicate', async () => {
-    renderPage(<ScoreBandsPage />);
+    await renderPage('bands');
     expect(screen.getByRole('table', { name: 'Pilihan penilaian' })).toBeInTheDocument();
     expect(screen.getByDisplayValue('Mitigasi belum dilaksanakan')).toBeInTheDocument();
     expect(screen.getByText('Predikat Cukup Terkendali belum punya kalimat.')).toBeInTheDocument();
   });
 
   it('adds a statement in the draft and shows its predicate', async () => {
-    renderPage(<ScoreBandsPage />);
+    await renderPage('bands');
     fireEvent.click(screen.getByRole('button', { name: 'Tambah Pilihan' }));
     const values = screen.getAllByRole('textbox', { name: /^Nilai pilihan/ });
     const last = values.at(-1)!;
@@ -72,7 +93,7 @@ describe('Skala Penilaian', () => {
   });
 
   it('allows only text edits on the active version', async () => {
-    renderPage(<ScoreBandsPage />);
+    await renderPage('bands');
     fireEvent.change(screen.getByLabelText('Versi'), { target: { value: 'sbv-1' } });
     expect(screen.getAllByRole('textbox', { name: /^Nilai pilihan/ })[0]).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Tambah Pilihan' })).toBeDisabled();
@@ -91,7 +112,7 @@ describe('Skala Penilaian', () => {
 
   it('keeps text typed in another row while an earlier edit is still saving', async () => {
     act(() => useDevSettings.getState().set({ latency: true }));
-    renderPage(<ScoreBandsPage />);
+    await renderPage('bands');
     const labels = () => screen.getAllByRole('textbox', { name: /^Kalimat pilihan/ });
     fireEvent.change(labels()[0]!, { target: { value: 'Belum dilaksanakan sama sekali' } });
     fireEvent.blur(labels()[0]!);
@@ -107,7 +128,7 @@ describe('Skala Penilaian', () => {
   });
 
   it('refuses to save invalid statements and explains why inline', async () => {
-    renderPage(<ScoreBandsPage />);
+    await renderPage('bands');
     const lower = screen.getByLabelText('Batas bawah Cukup Terkendali');
     fireEvent.change(lower, { target: { value: '1,9' } });
     fireEvent.blur(lower);
@@ -127,7 +148,7 @@ describe('Skala Penilaian', () => {
   });
 
   it('reverts only the refused statement on the active version and says why', async () => {
-    renderPage(<ScoreBandsPage />);
+    await renderPage('bands');
     fireEvent.change(screen.getByLabelText('Versi'), { target: { value: 'sbv-1' } });
     const labels = () => screen.getAllByRole('textbox', { name: /^Kalimat pilihan/ });
     const original = (labels()[1] as HTMLInputElement).value;
@@ -147,7 +168,7 @@ describe('Skala Penilaian', () => {
   });
 
   it('treats a trailing space on the active version as no change', async () => {
-    renderPage(<ScoreBandsPage />);
+    await renderPage('bands');
     fireEvent.change(screen.getByLabelText('Versi'), { target: { value: 'sbv-1' } });
     const first = screen.getAllByRole('textbox', { name: /^Kalimat pilihan/ })[0]!;
     const original = (first as HTMLInputElement).value;

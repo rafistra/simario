@@ -16,9 +16,13 @@ describe('shared vectors: quarterContaining', () => {
 
 describe('shared vectors: defaultQuarters', () => {
   it.each(rules.defaultQuarters!)('$name', ({ input, expected }) => {
-    const rows = defaultQuarters((input as { year: number }).year).map(
-      ({ id: _id, fiscalYear: _fy, scoreBandVersionId: _sb, ...rest }) => rest,
-    );
+    const rows = defaultQuarters((input as { year: number }).year).map((q) => {
+      const row: Partial<Quarter> = { ...q };
+      delete row.id;
+      delete row.fiscalYear;
+      delete row.scoreBandVersionId;
+      return row;
+    });
     expect(rows).toEqual(expected);
   });
 });

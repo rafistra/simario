@@ -24,7 +24,7 @@ import {
   positionDeactivationImpact,
   type PositionInput,
 } from '@/data/api/master';
-import { useDb } from '@/data/local/store';
+import { useGateDb } from '@/components/DataGate/gateDb';
 import { officialsOf } from '@/domain/rules/access';
 import type { Line, Position, PositionType } from '@/domain/types';
 import { usePageMeta } from '@/layout/pageMeta';
@@ -47,7 +47,7 @@ function PositionForm({
   editing: Position | 'new' | null;
   onClose: () => void;
 }) {
-  const db = useDb((s) => s.db);
+  const db = useGateDb();
   const [input, setInput] = useState<PositionInput>(EMPTY);
   const [errors, setErrors] = useState<Partial<Record<keyof PositionInput, string>>>({});
   const [saving, setSaving] = useState(false);
@@ -184,7 +184,7 @@ function PositionForm({
 export default function PositionsPage() {
   usePageMeta(['Master Data', 'Jabatan']);
   const auth = useAuth();
-  const db = useDb((s) => s.db);
+  const db = useGateDb();
   const [q, setQ] = useState('');
   const [line, setLine] = useState('');
   const [typeFilter, setTypeFilter] = useState('');

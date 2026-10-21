@@ -14,7 +14,7 @@ import {
 } from '@/components';
 import { masterApi } from '@/data/repository';
 import { templateEverUsed, templateUsage } from '@/data/api/master';
-import { useDb } from '@/data/local/store';
+import { useGateDb } from '@/components/DataGate/gateDb';
 import { RISK_TYPES, RISK_TYPE_LABEL, type RiskTemplate, type RiskType } from '@/domain/types';
 import { usePageMeta } from '@/layout/pageMeta';
 import { formatDate } from '@/lib/format';
@@ -34,7 +34,7 @@ const PAGE = 25;
 export default function TemplatesPage() {
   usePageMeta(['Master Data', 'Template']);
   const auth = useAuth();
-  const db = useDb((s) => s.db);
+  const db = useGateDb();
   const types = db.positionTypes.filter((t) => t.line === 1 && t.hasTemplates);
   const stagesOf = (typeId: string) =>
     db.stages

@@ -12,7 +12,7 @@ import {
   toast,
 } from '@/components';
 import { ApiError, masterApi } from '@/data/repository';
-import { useDb } from '@/data/local/store';
+import { useGateDb } from '@/components/DataGate/gateDb';
 import type { DataUmumField } from '@/domain/types';
 import { usePageMeta } from '@/layout/pageMeta';
 import { formatDate } from '@/lib/format';
@@ -37,7 +37,7 @@ const KINDS: { value: DataUmumField['kind']; label: string }[] = [
 export default function DataUmumPage() {
   usePageMeta(['Master Data', 'Data Umum']);
   const auth = useAuth();
-  const db = useDb((s) => s.db);
+  const db = useGateDb();
   const types = db.positionTypes.filter((t) => t.line === 1 && t.hasTemplates);
   const [typeId, setTypeId] = useState('pt-ppk');
   const [pendingType, setPendingType] = useState<string | null>(null);

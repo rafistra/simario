@@ -1,6 +1,7 @@
 import { lazy, Suspense, type ReactNode } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { DataGate, Toaster } from '@/components';
+import { CollectionGate } from '@/components/DataGate/CollectionGate';
 import { DevPanel } from '@/dev/DevPanel';
 import { AppShell } from '@/layout/AppShell';
 import { RequireHolding, RequirePermission } from '@/layout/RequirePermission';
@@ -119,9 +120,11 @@ export default function App() {
                 path="jabatan"
                 element={
                   <RequirePermission anyOf={[17, 18]}>
-                    <DataGate>
+                    <CollectionGate
+                      names={['orgUnits', 'positionTypes', 'positions', 'roles', 'delegates']}
+                    >
                       <PositionsPage />
-                    </DataGate>
+                    </CollectionGate>
                   </RequirePermission>
                 }
               />
@@ -129,9 +132,9 @@ export default function App() {
                 path="tahap"
                 element={
                   <RequirePermission anyOf={[15]}>
-                    <DataGate>
+                    <CollectionGate names={['positionTypes', 'stages', 'riskTemplates']}>
                       <StagesPage />
-                    </DataGate>
+                    </CollectionGate>
                   </RequirePermission>
                 }
               />
@@ -139,9 +142,11 @@ export default function App() {
                 path="template"
                 element={
                   <RequirePermission anyOf={[12]}>
-                    <DataGate>
+                    <CollectionGate
+                      names={['positionTypes', 'stages', 'riskTemplates', 'mitigationTemplates']}
+                    >
                       <TemplatesPage />
-                    </DataGate>
+                    </CollectionGate>
                   </RequirePermission>
                 }
               />
@@ -149,9 +154,11 @@ export default function App() {
                 path="usulan"
                 element={
                   <RequirePermission anyOf={[13]}>
-                    <DataGate>
+                    <CollectionGate
+                      names={['positionTypes', 'stages', 'riskTemplates', 'mitigationTemplates']}
+                    >
                       <ProposalsPage />
-                    </DataGate>
+                    </CollectionGate>
                   </RequirePermission>
                 }
               />
@@ -159,9 +166,9 @@ export default function App() {
                 path="data-umum"
                 element={
                   <RequirePermission anyOf={[16]}>
-                    <DataGate>
+                    <CollectionGate names={['positionTypes', 'dataUmumForms']}>
                       <DataUmumPage />
-                    </DataGate>
+                    </CollectionGate>
                   </RequirePermission>
                 }
               />
@@ -169,9 +176,11 @@ export default function App() {
                 path="skala-penilaian"
                 element={
                   <RequirePermission anyOf={[14]}>
-                    <DataGate>
+                    <CollectionGate
+                      names={['quarters', 'scoreBandVersions', 'scoreBands', 'scoreOptions']}
+                    >
                       <ScoreBandsPage />
-                    </DataGate>
+                    </CollectionGate>
                   </RequirePermission>
                 }
               />

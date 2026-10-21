@@ -3,7 +3,7 @@ import { useEffect, useState, type DragEvent } from 'react';
 import { Button, ConfirmDialog, InlineAlert, SlideOver, Textarea, toast } from '@/components';
 import { masterApi } from '@/data/repository';
 import { templateEverUsed, templateUsage } from '@/data/api/master';
-import { useDb } from '@/data/local/store';
+import { useGateDb } from '@/components/DataGate/gateDb';
 import { RISK_TYPE_LABEL, type RiskType } from '@/domain/types';
 import { useAuth } from '@/state/useAuth';
 import './Master.css';
@@ -28,7 +28,7 @@ export function TemplateEditor({
   target: TemplateEditorTarget | null;
   onClose: () => void;
 }) {
-  const db = useDb((s) => s.db);
+  const db = useGateDb();
   const auth = useAuth();
   const [description, setDescription] = useState('');
   const [mitigations, setMitigations] = useState<string[]>([]);

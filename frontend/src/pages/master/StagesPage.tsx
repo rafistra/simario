@@ -3,7 +3,7 @@ import { useState, type DragEvent, type KeyboardEvent } from 'react';
 import { Button, ConfirmDialog, LineChip, PageHeader, Toggle, toast } from '@/components';
 import { masterApi } from '@/data/repository';
 import { stageUsedByRegister } from '@/data/api/master';
-import { useDb } from '@/data/local/store';
+import { useGateDb } from '@/components/DataGate/gateDb';
 import type { PositionType, Stage } from '@/domain/types';
 import { usePageMeta } from '@/layout/pageMeta';
 import { useAuth } from '@/state/useAuth';
@@ -54,7 +54,7 @@ function TypeSection({
   open: boolean;
   onToggle: () => void;
 }) {
-  const db = useDb((s) => s.db);
+  const db = useGateDb();
   const all = db.stages.filter((s) => s.positionTypeId === type.id);
   const active = all.filter((s) => s.active).sort((a, b) => a.order - b.order);
   const inactive = all.filter((s) => !s.active);
@@ -280,7 +280,7 @@ function TypeSection({
 export default function StagesPage() {
   usePageMeta(['Master Data', 'Tahap']);
   const auth = useAuth();
-  const types = useDb((s) => s.db.positionTypes).filter((t) => t.line === 1 && t.hasTemplates);
+  const types = useGateDb().positionTypes.filter((t) => t.line === 1 && t.hasTemplates);
   const [open, setOpen] = useState<string[]>(['pt-ppk']);
   return (
     <div className="master-page">

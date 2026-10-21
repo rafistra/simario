@@ -15,7 +15,7 @@ import {
   type StatusKind,
 } from '@/components';
 import { ApiError, masterApi } from '@/data/repository';
-import { useDb } from '@/data/local/store';
+import { useGateDb } from '@/components/DataGate/gateDb';
 import {
   sortOptions,
   validateBands,
@@ -168,7 +168,7 @@ function BandPreview({
 export default function ScoreBandsPage() {
   usePageMeta(['Master Data', 'Skala Penilaian']);
   const auth = useAuth();
-  const db = useDb((s) => s.db);
+  const db = useGateDb();
   const versions = [...db.scoreBandVersions].sort((a, b) => b.number - a.number);
   const editable = versions.find((v) => v.status === 'draft');
   const [selectedId, setSelectedId] = useState(

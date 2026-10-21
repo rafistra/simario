@@ -4,6 +4,7 @@
 
 import { ApiError } from '@/data/errors';
 import { toLocalIds } from '@/data/http/legacyIds';
+import { masterApi as localMasterApi, type PositionInput } from '@/data/api/master';
 import { localAuthApi, localNotificationApi } from '@/data/local/authApi';
 import { getDb, useDb } from '@/data/local/store';
 import { staffDirectory } from '@/data/seed';
@@ -28,6 +29,142 @@ const signInReply = (o: { ok: true; userId: string } | { ok: false; message: str
       : fail('login_failed', o.message, 401);
 
 const userId = () => useSession.getState().userId;
+
+/* eslint-disable @typescript-eslint/no-explicit-any -- request bodies are untyped JSON */
+const MASTER_ROUTES: [string, RegExp, Handler][] = [
+  [
+    'PATCH',
+    /^\/api\/v1\/position-types\/([^/]+)$/,
+    async (m, b) => (
+      await localMasterApi.setPositionTypeActive(m[1]!, Boolean(b.active)),
+      noContent
+    ),
+  ],
+  [
+    'POST',
+    /^\/api\/v1\/positions$/,
+    async (_, b) => json({ id: await localMasterApi.savePosition(b as unknown as PositionInput) }),
+  ],
+  [
+    'PUT',
+    /^\/api\/v1\/positions\/([^/]+)$/,
+    async (m, b) =>
+      json({ id: await localMasterApi.savePosition(b as unknown as PositionInput, m[1]!) }),
+  ],
+  [
+    'POST',
+    /^\/api\/v1\/positions\/([^/]+)\/deactivate$/,
+    async (m, b) => (await localMasterApi.deactivatePosition(m[1]!, String(b.reason)), noContent),
+  ],
+  [
+    'POST',
+    /^\/api\/v1\/positions\/([^/]+)\/reactivate$/,
+    async (m) => (await localMasterApi.reactivatePosition(m[1]!), noContent),
+  ],
+  [
+    'POST',
+    /^\/api\/v1\/stages$/,
+    async (_, b) =>
+      json({ id: await localMasterApi.addStage(String(b.positionTypeId), String(b.name)) }),
+  ],
+  [
+    'PATCH',
+    /^\/api\/v1\/stages\/([^/]+)$/,
+    async (m, b) => {
+      if (b.name !== undefined) await localMasterApi.renameStage(m[1]!, String(b.name));
+      if (b.active !== undefined) await localMasterApi.setStageActive(m[1]!, Boolean(b.active));
+      return noContent;
+    },
+  ],
+  [
+    'DELETE',
+    /^\/api\/v1\/stages\/([^/]+)$/,
+    async (m) => (await localMasterApi.deleteStage(m[1]!), noContent),
+  ],
+  [
+    'PUT',
+    /^\/api\/v1\/position-types\/([^/]+)\/stage-order$/,
+    async (m, b) => (
+      await localMasterApi.reorderStages(m[1]!, b.orderedIds as string[]),
+      noContent
+    ),
+  ],
+  [
+    'POST',
+    /^\/api\/v1\/risk-templates$/,
+    async (_, b) => json({ id: await localMasterApi.saveTemplate(b as any) }),
+  ],
+  [
+    'PUT',
+    /^\/api\/v1\/risk-templates\/([^/]+)$/,
+    async (m, b) => json({ id: await localMasterApi.saveTemplate(b as any, m[1]!) }),
+  ],
+  [
+    'PATCH',
+    /^\/api\/v1\/risk-templates\/([^/]+)$/,
+    async (m, b) => (await localMasterApi.setTemplateActive(m[1]!, Boolean(b.active)), noContent),
+  ],
+  [
+    'DELETE',
+    /^\/api\/v1\/risk-templates\/([^/]+)$/,
+    async (m) => (await localMasterApi.deleteTemplate(m[1]!), noContent),
+  ],
+  [
+    'POST',
+    /^\/api\/v1\/position-types\/([^/]+)\/data-umum-forms$/,
+    async (m, b) =>
+      json({
+        version: await localMasterApi.saveDataUmumForm(
+          m[1]!,
+          String(b.defaultObjective),
+          b.fields as any,
+          Boolean(b.objectiveEnabled),
+        ),
+      }),
+  ],
+  [
+    'POST',
+    /^\/api\/v1\/score-band-versions$/,
+    async (_, b) => json({ id: await localMasterApi.createBandDraft(String(b.effectiveFrom)) }),
+  ],
+  [
+    'PUT',
+    /^\/api\/v1\/score-band-versions\/([^/]+)$/,
+    async (m, b) => (
+      await localMasterApi.updateBandDraft(
+        m[1]!,
+        (b.bands as any[]).map((x) => ({ ...x, versionId: m[1]! })),
+        String(b.effectiveFrom),
+        b.options as any,
+      ),
+      noContent
+    ),
+  ],
+  [
+    'DELETE',
+    /^\/api\/v1\/score-band-versions\/([^/]+)$/,
+    async (m) => (await localMasterApi.discardBandDraft(m[1]!), noContent),
+  ],
+  [
+    'POST',
+    /^\/api\/v1\/score-band-versions\/([^/]+)\/schedule$/,
+    async (m, b) => (await localMasterApi.saveBandVersion(m[1]!, b as any), noContent),
+  ],
+  [
+    'PATCH',
+    /^\/api\/v1\/score-bands\/([^/]+)$/,
+    async (m, b) => (
+      await localMasterApi.updateActiveGuidance(m[1]! as any, String(b.guidance)),
+      noContent
+    ),
+  ],
+  [
+    'PATCH',
+    /^\/api\/v1\/score-options\/([^/]+)$/,
+    async (m, b) => (await localMasterApi.updateOptionLabel(m[1]!, String(b.label)), noContent),
+  ],
+];
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 const ROUTES: [string, RegExp, Handler][] = [
   ['GET', /^\/api\/v1\/auth\/config$/, () => json({ devTools: true, oidcEnabled: true })],
@@ -149,7 +286,7 @@ export function installFakeBackend() {
       typeof init.body === 'string' ? (JSON.parse(init.body) as Record<string, unknown>) : {},
     );
     let reply: Reply = fail('not_found', 'Data tidak ditemukan.', 404);
-    for (const [m, re, handler] of ROUTES) {
+    for (const [m, re, handler] of [...ROUTES, ...MASTER_ROUTES]) {
       const match = method === m ? path.match(re) : null;
       if (!match) continue;
       try {
@@ -157,7 +294,10 @@ export function installFakeBackend() {
       } catch (e) {
         reply =
           e instanceof ApiError
-            ? fail(e.code, e.message, e.code === 'forbidden' ? 403 : 422)
+            ? json(
+                { code: e.code, message: e.message, details: e.details ?? null },
+                e.code === 'forbidden' ? 403 : 422,
+              )
             : fail('server', String(e), 500);
       }
       break;
