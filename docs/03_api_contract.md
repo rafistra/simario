@@ -157,15 +157,15 @@ Lampiran (spec §4.7): isi diperiksa di server (ekstensi, ukuran ≤ 20 MB, ≤ 
 
 Baris penilaian dan perbandingan dikunci per `RiskQuarter` (`select_for_update`) pada setiap mutasi dan pada `run_comparisons`, sehingga dua direktorat yang menuntaskan bersamaan membuka setiap hasil sekali.
 
-### 4.7 `historyApi`, `homeApi`, `sheetApi` — Riwayat, Beranda, Lembar (RWY, BRD, LBR)
+### 4.7 `historyApi`, `homeApi`, `sheetApi` — Riwayat, Beranda, Lembar (RWY, BRD, LBR) — `historyApi` dan `homeApi` diputuskan, B6
 
 `historyApi.history`, `sheetApi.view`, dan `sheetApi.print` memeriksa cakupan baca (§5); `homeApi` hanya mengembalikan jabatan dalam cakupan.
 
 | Metode | Masukan | Keluaran | PRD | Usulan REST |
 |---|---|---|---|---|
-| `historyApi.history` | `positionId, fiscalYear` | `HistoryView` (Lembar Mutu per TW, `HistoryRow` × TW, lintas tahun per `lineageId`) | FR-RWY-001…006 | `GET /api/positions/{pos}/history?ta=` |
-| `homeApi.home` | `activePositionId` (boleh null) | `HomeView` (kartu per FR-BRD-010) | FR-BRD-001…010 | `GET /api/home?position=` |
-| `homeApi.positions` | — | `PositionListRow[]` dalam cakupan | FR-BRD-011 | `GET /api/positions?scope=` |
+| `historyApi.history` | `positionId, fiscalYear` | `HistoryView` (Lembar Mutu per TW, `HistoryRow` × TW, lintas tahun per `lineageId`) | FR-RWY-001…006 | `GET /v1/positions/{pos}/history/{ta}` (B6) |
+| `homeApi.home` | `activePositionId` (boleh null) | `HomeView` (kartu per FR-BRD-010) | FR-BRD-001…010 | `GET /v1/home[?position=]` (B6) |
+| `homeApi.positions` | — | `PositionListRow[]` dalam cakupan | FR-BRD-011 | `GET /v1/my-positions` (B6) |
 | `sheetApi.view` | `positionId, fiscalYear, tw, snapshotId` (null = tampilan berjalan) | `SheetView` (payload berjalan atau salinan beku, tersamar per VIS-9, daftar versi) | FR-LBR-001…005, 010 | `GET /api/positions/{pos}/sheets/{ta}/{tw}?snapshot=` |
 | `sheetApi.setPhotos` | `positionId, quarterId, section, attachmentIds[]` (≤ 5) | `void` | FR-LBR-005 | `PUT …/sheets/{ta}/{tw}/photos/{section}` |
 | `sheetApi.print` | `positionId, fiscalYear, tw, kinds[]` | Snapshot baru `trigger=print` (sementara bila belum ada versi otomatis) | FR-LBR-006 | `POST …/sheets/{ta}/{tw}/print` |

@@ -415,10 +415,12 @@ Hasil:
 
 Catatan Tahap B5: aturan penilaian & perbandingan dipindah ke `simario/domain/{assessment,comparison}.py` dengan vektor bersama `assessment.json` (`evaluate_opening` murni; layanan menyimpan hasilnya). Uji API INV-16 (draf buta tidak pernah terkirim, termasuk kalimat pilihan) dan INV-17 (bukti konfidensial hanya hitungan) lulus. Tampilan buta dicatat server pada setiap `GET …?blind=1`; teks draf penjelasan hanya dikirim ke pemegang Lini 1. Mutasi dan `run_comparisons` mengunci `RiskQuarter` (diuji dengan dua utas). Reset demo "Sesuaikan data ke tanggal ini" kini memangkas data di backend seperti `seed/asOf.ts`. Arsip TA menutup penilaian dan penjelasan (`assessments/archive.py`); U-21 selesai. Endpoint baru `finalise-preview` menggantikan pembacaan store di dialog Tuntaskan. Modul `penilaian` masuk gerbang build uji coba.
 
-### Tahap B6 — Riwayat, Notifikasi, Beranda ⬜
+### Tahap B6 — Riwayat, Notifikasi, Beranda ✅
 
 Hasil:
-- [ ] RWY, NTF (semua event + `reminders`), BRD, `/jabatan`, `/pantauan`
+- [x] RWY, NTF (semua event + `reminders`), BRD, `/jabatan`, `/pantauan`
+
+Catatan Tahap B6: Lembar Mutu pindah ke `simario/domain/sheets.py` (vektor `sheets.json`, dipakai lagi di B7). `GET /positions/{pos}/history/{ta}`, `GET /home`, `GET /my-positions` mem-port `history.ts`/`home.ts` dengan VIS-9 di selector; hasil di riwayat memakai penyamaran draf penjelasan yang sama dengan halaman penilaian. Tugas `reminders` (FR-NTF-005/006/009 H-1/012) ada di `assessments/reminders.py`, idempoten per kunci dan tidak memunculkan peristiwa > 3 hari. Beranda sementara (`TrialHome`) dihapus; build uji coba kini menampilkan Beranda penuh, Riwayat, `/jabatan`, dan `/pantauan` (tautan Lembar di kartu Lini 1 masih 404 sampai B7). Semua event NTF lain sudah berjalan di backend sejak B3–B5.
 
 ### Tahap B7 — Lembar & Cetak ⬜
 
