@@ -1341,6 +1341,122 @@ paths:
               schema:
                 $ref: '#/components/schemas/ReplaceResult'
           description: ''
+  /api/v1/positions/{id}/sheet-photos/{section}:
+    put:
+      operationId: positions_sheet_photos_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: section
+        schema:
+          type: string
+        required: true
+      tags:
+      - sheets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhotosRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PhotosRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PhotosRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/positions/{id}/sheets/{year}/{tw}:
+    get:
+      operationId: positions_sheets_retrieve
+      description: 'GET: the running sheet, or a frozen copy with `?snapshot=` (`SheetView`,
+        FR-LBR-001).'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: query
+        name: snapshot
+        schema:
+          type: string
+      - in: path
+        name: tw
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - sheets
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/positions/{id}/sheets/{year}/{tw}/print:
+    post:
+      operationId: positions_sheets_print_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: tw
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - sheets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrintRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PrintRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PrintRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
   /api/v1/proposals:
     get:
       operationId: proposals_list
@@ -2494,6 +2610,26 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/snapshots:
+    get:
+      operationId: snapshots_retrieve
+      parameters:
+      - in: query
+        name: number
+        schema:
+          type: string
+      tags:
+      - sheets
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
   /api/v1/staff:
     get:
       operationId: staff_list
@@ -3274,6 +3410,14 @@ components:
         * `jabatan` - jabatan
         * `pejabat` - pejabat
         * `penugasan` - penugasan
+    KindsEnum:
+      enum:
+      - komunikasi
+      - mutu
+      type: string
+      description: |-
+        * `komunikasi` - komunikasi
+        * `mutu` - mutu
     LoginRequest:
       type: object
       properties:
@@ -3796,6 +3940,20 @@ components:
       required:
       - personas
       - unregistered
+    PhotosRequest:
+      type: object
+      properties:
+        quarterId:
+          type: string
+          format: uuid
+        attachmentIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+      - attachmentIds
+      - quarterId
     Position:
       type: object
       description: Shape of `Position` in frontend/src/domain/types.ts.
@@ -3870,6 +4028,16 @@ components:
         * `kurang` - kurang
         * `cukup` - cukup
         * `terkendali` - terkendali
+    PrintRequest:
+      type: object
+      properties:
+        kinds:
+          type: array
+          items:
+            $ref: '#/components/schemas/KindsEnum'
+          minItems: 1
+      required:
+      - kinds
     ProposalRow:
       type: object
       properties:
