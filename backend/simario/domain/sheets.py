@@ -9,6 +9,7 @@ from typing import Any
 from .access import Db
 from .assessment import predicate_in, quarter_risks
 from .board import expected_lini3, opened_results
+from .index import by
 from .visibility import is_late_directorate
 
 Row = dict[str, Any]
@@ -55,7 +56,7 @@ def lembar_mutu(db: Db, viewer: Row, position_id: str, quarter: Row, at: str) ->
                 a = next(
                     (
                         y
-                        for y in db["assessments"]
+                        for y in by(db, "assessments", "risk_quarter_id").get((x["rq"]["id"],), [])
                         if y["risk_quarter_id"] == x["rq"]["id"]
                         and y["assessor_position_id"] == a_["position_id"]
                     ),
@@ -84,7 +85,7 @@ def lembar_mutu(db: Db, viewer: Row, position_id: str, quarter: Row, at: str) ->
         a = next(
             (
                 y
-                for y in db["assessments"]
+                for y in by(db, "assessments", "risk_quarter_id").get((rq_id,), [])
                 if y["risk_quarter_id"] == rq_id and y["assessor_line"] == 1
             ),
             None,

@@ -25,6 +25,7 @@ from simario.domain import assessment as rules
 from simario.domain import board as board_rules
 from simario.domain import register as register_rules
 from simario.domain import visibility as vis
+from simario.domain.index import by
 from simario.domain.score_bands import predicate_for
 from simario.registers.models import Register, RegisterMitigation, RegisterRisk
 from simario.registers.selectors import assert_can_read, permission_rows
@@ -233,7 +234,7 @@ def build_assessment(
             a = next(
                 (
                     x
-                    for x in db["assessments"]
+                    for x in by(db, "assessments", "risk_quarter_id").get((rq["id"],), [])
                     if x["risk_quarter_id"] == rq["id"] and x["assessor_position_id"] == col_id
                 ),
                 None,
@@ -466,7 +467,7 @@ def default_queue_quarter(db: Db, today: str, directorate_id: str | None) -> Row
                 a = next(
                     (
                         x
-                        for x in db["assessments"]
+                        for x in by(db, "assessments", "risk_quarter_id").get((rq["id"],), [])
                         if x["risk_quarter_id"] == rq["id"]
                         and x["assessor_position_id"] == directorate_id
                     ),
@@ -539,7 +540,7 @@ def build_queue(user: User, quarter_id: str | None) -> Row:
             return next(
                 (
                     a
-                    for a in db["assessments"]
+                    for a in by(db, "assessments", "risk_quarter_id").get((rq["id"],), [])
                     if a["risk_quarter_id"] == rq["id"]
                     and (position is None or a["assessor_position_id"] == position)
                     and (line is None or a["assessor_line"] == line)
@@ -621,7 +622,7 @@ def finalise_candidates(
         a = next(
             (
                 x
-                for x in db["assessments"]
+                for x in by(db, "assessments", "risk_quarter_id").get((rq["id"],), [])
                 if x["risk_quarter_id"] == rq["id"]
                 and x["assessor_position_id"] == assessor_position_id
             ),

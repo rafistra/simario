@@ -13,6 +13,7 @@ from simario.core.format import format_date
 from simario.domain import assessment as rules
 from simario.domain import board as board_rules
 from simario.domain.calendar import add_days
+from simario.domain.index import by
 
 from .comparisons import _iso, _send, holders_of
 from .selectors import assessment_db
@@ -50,7 +51,7 @@ def run_reminders(as_of: dt.datetime) -> None:
         a = next(
             (
                 x
-                for x in db["assessments"]
+                for x in by(db, "assessments", "risk_quarter_id").get((rq_id,), [])
                 if x["risk_quarter_id"] == rq_id and x["assessor_line"] == 1
             ),
             None,
@@ -94,7 +95,7 @@ def run_reminders(as_of: dt.datetime) -> None:
                             a["risk_quarter_id"] == rq["id"]
                             and a["assessor_position_id"] == d
                             and a["status"] == "final"
-                            for a in db["assessments"]
+                            for a in by(db, "assessments", "risk_quarter_id").get((rq["id"],), [])
                         )
                     ]
                 )

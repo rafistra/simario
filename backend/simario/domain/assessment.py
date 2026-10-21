@@ -10,6 +10,7 @@ from .access import Db
 from .board import expected_lini3, opened_results
 from .calendar import add_days, lateness_at
 from .comparison import compare_assessments, explanation_due_on
+from .index import by
 from .register import assessed_in_quarter
 from .score_bands import predicate_for
 from .score_options import _tenths, sort_options
@@ -64,30 +65,19 @@ def option_label_of(db: Db, version_id: str | None, score: float | None) -> str 
 def quarter_risks(db: Db, position_id: str, q: Row) -> list[tuple[Row, Row]]:
     """The published risks of a position assessed in a quarter (RB-REG-006), with their
     RiskQuarter."""
-    register = next(
-        (
-            r
-            for r in db["registers"]
-            if r["position_id"] == position_id and r["fiscal_year"] == q["fiscal_year"]
-        ),
-        None,
+    registers = by(db, "registers", "position_id", "fiscal_year").get(
+        (position_id, q["fiscal_year"])
     )
-    if register is None:
+    if not registers:
         return []
+    rqs = by(db, "risk_quarters", "register_risk_id", "quarter_id")
     out = []
-    for risk in db["risks"]:
-        if risk["register_id"] != register["id"] or not assessed_in_quarter(db, risk, q):
+    for risk in by(db, "risks", "register_id").get((registers[0]["id"],), []):
+        if not assessed_in_quarter(db, risk, q):
             continue
-        rq = next(
-            (
-                x
-                for x in db["risk_quarters"]
-                if x["register_risk_id"] == risk["id"] and x["quarter_id"] == q["id"]
-            ),
-            None,
-        )
-        if rq is not None:
-            out.append((risk, rq))
+        found = rqs.get((risk["id"], q["id"]))
+        if found:
+            out.append((risk, found[0]))
     return out
 
 

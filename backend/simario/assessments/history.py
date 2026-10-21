@@ -10,6 +10,7 @@ from simario.domain import board as board_rules
 from simario.domain import register as register_rules
 from simario.domain import sheets
 from simario.domain import visibility as vis
+from simario.domain.index import by
 from simario.registers.selectors import assert_can_read
 
 from .selectors import Db, assessment_db, shown_result, to_display
@@ -58,7 +59,7 @@ def _cell(db: Db, viewer: Row, risk: Row, position_id: str, quarter: Row, at: st
         return next(
             (
                 a
-                for a in db["assessments"]
+                for a in by(db, "assessments", "risk_quarter_id").get((rq["id"],), [])
                 if a["risk_quarter_id"] == rq["id"] and a["assessor_position_id"] == pid
             ),
             None,

@@ -16,6 +16,7 @@ from simario.domain import assessment as rules
 from simario.domain import board as board_rules
 from simario.domain import visibility as vis
 from simario.domain.calendar import lateness_at
+from simario.domain.index import by
 from simario.reference.models import RiskProposal
 
 Row = dict[str, Any]
@@ -114,7 +115,11 @@ def _last_activity_of(db: Db, position_id: str, year: int) -> str | None:
 
 def _l1_of(db: Db, rq_id: str) -> Row | None:
     return next(
-        (a for a in db["assessments"] if a["risk_quarter_id"] == rq_id and a["assessor_line"] == 1),
+        (
+            a
+            for a in by(db, "assessments", "risk_quarter_id").get((rq_id,), [])
+            if a["risk_quarter_id"] == rq_id and a["assessor_line"] == 1
+        ),
         None,
     )
 
@@ -290,7 +295,7 @@ def _lini3_card(db: Db, holding: Any, quarters: list[Row], at: str, today: str) 
         return next(
             (
                 a
-                for a in db["assessments"]
+                for a in by(db, "assessments", "risk_quarter_id").get((rq_id,), [])
                 if a["risk_quarter_id"] == rq_id and a["assessor_position_id"] == d
             ),
             None,

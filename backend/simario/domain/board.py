@@ -6,6 +6,7 @@ import datetime as dt
 from typing import Any
 
 from .access import Db, holdings_of, participation_holding
+from .index import by
 from .register import assessed_in_quarter
 from .visibility import is_late_directorate
 
@@ -38,8 +39,8 @@ def opened_results(db: Db, risk_quarter_id: str, at: str) -> list[Row]:
     """Results whose opening moment has passed."""
     return [
         r
-        for r in db["results"]
-        if r["risk_quarter_id"] == risk_quarter_id and r["opened_at"][:16] <= at[:16]
+        for r in by(db, "results", "risk_quarter_id").get((risk_quarter_id,), [])
+        if r["opened_at"][:16] <= at[:16]
     ]
 
 
@@ -89,8 +90,8 @@ def _live_step(c: Row) -> bool:
 
 def has_langkah(db: Db, risk_id: str, quarter_id: str) -> bool:
     return any(
-        c["register_risk_id"] == risk_id and c["quarter_id"] == quarter_id and _live_step(c)
-        for c in db["comments"]
+        c["quarter_id"] == quarter_id and _live_step(c)
+        for c in by(db, "comments", "register_risk_id").get((risk_id,), [])
     )
 
 
@@ -226,7 +227,7 @@ def is_following(db: Db, user_id: str, risk_id: str, position_id: str, today: st
 
 
 def last_activity(db: Db, risk_id: str) -> str | None:
-    times = [c["created_at"] for c in db["comments"] if c["register_risk_id"] == risk_id]
+    times = [c["created_at"] for c in by(db, "comments", "register_risk_id").get((risk_id,), [])]
     return max(times) if times else None
 
 

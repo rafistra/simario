@@ -5,6 +5,8 @@ string ids and ISO date strings."""
 from collections.abc import Mapping, Sequence
 from typing import Any
 
+from .index import one
+
 Row = dict[str, Any]
 Db = Mapping[str, Sequence[Row]]
 
@@ -183,7 +185,7 @@ def assessed_in_quarter(db: Db, risk: Row, quarter: Row) -> bool:
     deactivated_from_quarter — whatever its current status."""
     if not risk.get("published_at"):
         return False
-    register = _find(db["registers"], "id", risk["register_id"])
+    register = one(db, "registers", "id", risk["register_id"])
     assert register is not None
     if register["fiscal_year"] != quarter["fiscal_year"]:
         return False
@@ -192,7 +194,7 @@ def assessed_in_quarter(db: Db, risk: Row, quarter: Row) -> bool:
     if risk["status"] == "inactive":
         if not risk.get("deactivated_from_quarter_id"):
             return True
-        start = _find(db["quarters"], "id", risk["deactivated_from_quarter_id"])
+        start = one(db, "quarters", "id", risk["deactivated_from_quarter_id"])
         assert start is not None
         return bool(quarter["number"] < start["number"])
     return True
