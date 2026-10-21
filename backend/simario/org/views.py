@@ -1,6 +1,6 @@
 from typing import Any, cast
 
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import serializers
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
@@ -315,3 +315,21 @@ class AssignmentView(APIView):
         actor = require_permission(_user(request), 20)
         roles.remove_assignment(actor, pk)  # type: ignore[arg-type]
         return Response(status=204)
+
+
+class WorkspaceView(APIView):
+    """GET: the workspace header of a Lini 1 position (`?ta=` for the viewed fiscal year)."""
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        parameters=[OpenApiParameter("ta", int, required=False)],
+        responses={200: dict},
+        tags=["org"],
+    )
+    def get(self, request: Request, pk: str) -> Response:
+        from .workspace import workspace
+
+        ta = request.query_params.get("ta")
+        year = int(ta) if ta and ta.isdigit() else None
+        return Response(workspace(cast(User, request.user), pk, year))

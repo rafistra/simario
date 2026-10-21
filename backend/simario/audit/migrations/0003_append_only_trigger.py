@@ -21,6 +21,6 @@ DROP FUNCTION IF EXISTS audit_auditlog_reject_change();
 
 
 class Migration(migrations.Migration):
-    dependencies = [("audit", "0001_initial")]
+    dependencies = [("audit", "0002_initial")]
 
     operations = [migrations.RunSQL(CREATE, DROP)]

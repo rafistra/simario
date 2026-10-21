@@ -7,6 +7,7 @@ urlpatterns = [
     path("positions", views.PositionListView.as_view(), name="positions"),
     path("positions/<uuid:pk>", views.PositionView.as_view(), name="position"),
     path("positions/<uuid:pk>/impact", views.PositionImpactView.as_view(), name="position-impact"),
+    path("positions/<uuid:pk>/workspace", views.WorkspaceView.as_view(), name="workspace"),
     path(
         "positions/<uuid:pk>/deactivate",
         views.PositionDeactivateView.as_view(),

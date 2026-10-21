@@ -3,6 +3,7 @@ No Django permission framework: capabilities come from permission codes 1–26 (
 
 from typing import ClassVar
 
+from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 
@@ -48,3 +49,15 @@ class LoginLockout(models.Model):
     nip = models.CharField(max_length=32, unique=True)
     fails = models.PositiveSmallIntegerField(default=0)
     until = models.DateTimeField(null=True, blank=True)
+
+
+class Preference(models.Model):
+    """Per-user conveniences kept on the server (spec §4.10): board filters per position, the
+    collapsed sidebar. Keys are short strings chosen by the client; values are small JSON."""
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="+")
+    key = models.CharField(max_length=128)
+    value = models.JSONField(null=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["user", "key"], name="uniq_preference")]
