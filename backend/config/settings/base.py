@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "simario.org",
     "simario.calendar",
     "simario.reference",
+    "simario.devtools",
 ]
 
 MIDDLEWARE = [
@@ -149,4 +150,8 @@ STORAGES = {
         },
     },
     "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+}
+
+CELERY_BEAT_SCHEDULE = {
+    "run-scheduled": {"task": "simario.core.tasks.run_scheduled", "schedule": 15 * 60},
 }
