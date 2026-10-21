@@ -5,8 +5,8 @@
 import { create } from 'zustand';
 import type { DataUmumValues, RiskType } from '@/domain/types';
 import { useSession } from '@/state/session';
-import type { CopySummary, PublishSummary, RegisterKey } from '../api/register';
-import type { RegisterView } from '../api/registerView';
+import type { CopySummary, PublishSummary, RegisterKey } from '@/test/fake/api/register';
+import type { RegisterView } from '@/test/fake/api/registerView';
 import { apiFetch, type FetchInit } from './client';
 
 /** Views are per viewer (FR-REG-012): the cache key carries the signed-in user. */

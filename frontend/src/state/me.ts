@@ -1,11 +1,11 @@
-// Signed-in context from the backend (GET /api/v1/me, spec §4.10). Namespaces that are still
-// local read the actor from useSession, so a loaded /me also signs the same user in locally (the
-// id bridge already turned its ids into prototype ids).
+// Signed-in context from the backend (GET /api/v1/me, spec §4.10). The session store mirrors the
+// signed-in user id, and the displayed clock follows the server's (simulated) time.
 
 import { create } from 'zustand';
 import { ApiError } from '@/data/errors';
 import { authApi } from '@/data/http/auth';
 import { meApi, type MeResponse } from '@/data/http/me';
+import { loadPreferences, usePreferences } from '@/data/http/preferences';
 import { minutesBetween, now, useClock } from './clock';
 import { useSession } from './session';
 
@@ -25,9 +25,10 @@ interface MeState {
 function syncLocal(me: MeResponse) {
   const session = useSession.getState();
   if (session.userId !== me.user.id) session.signIn(me.user.id);
-  // Keep the local clock (still used by local namespaces) on the server's simulated time.
-  if (me.devTools && Math.abs(minutesBetween(now(), me.serverNow)) > 1)
-    useClock.getState().setNow(me.serverNow);
+  // The displayed clock follows the server's (simulated) time.
+  if (Math.abs(minutesBetween(now(), me.serverNow)) > 1) useClock.getState().setNow(me.serverNow);
+  if (usePreferences.getState().userId !== me.user.id)
+    void loadPreferences(me.user.id).catch(() => undefined);
 }
 
 export const useMe = create<MeState>((set) => ({

@@ -1,12 +1,11 @@
-// Simulated clock (CLAUDE.md §5). Business rules never call `new Date()`; they use `now()`.
-// The simulated time advances with real time from the moment it was set, so lockouts and
-// "x menit lalu" behave naturally. The DevPanel can jump to any moment.
+// Displayed clock (CLAUDE.md §5): the server's time (`/me` serverNow — simulated in development),
+// advancing with real time from the moment it was received, so "x menit lalu" behaves naturally.
+// Kept in memory only; the server's clock is the source of truth.
 
 import { useEffect, useState } from 'react';
 import { create } from 'zustand';
 import type { ISODate, ISODateTime } from '@/domain/types';
 
-const KEY = 'simario:clock';
 export const DEFAULT_NOW: ISODateTime = '2027-04-06T09:00';
 
 interface ClockState {
@@ -17,27 +16,10 @@ interface ClockState {
   setNow: (iso: ISODateTime) => void;
 }
 
-function load(): Pick<ClockState, 'baseSim' | 'baseReal'> {
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (raw) return JSON.parse(raw);
-  } catch {
-    // ignore
-  }
-  return { baseSim: DEFAULT_NOW, baseReal: Date.now() };
-}
-
 export const useClock = create<ClockState>((set) => ({
-  ...load(),
-  setNow: (iso) => {
-    const next = { baseSim: iso.slice(0, 16), baseReal: Date.now() };
-    try {
-      localStorage.setItem(KEY, JSON.stringify(next));
-    } catch {
-      // ignore
-    }
-    set(next);
-  },
+  baseSim: DEFAULT_NOW,
+  baseReal: Date.now(),
+  setNow: (iso) => set({ baseSim: iso.slice(0, 16), baseReal: Date.now() }),
 }));
 
 const pad = (n: number) => String(n).padStart(2, '0');

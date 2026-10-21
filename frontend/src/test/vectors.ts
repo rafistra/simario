@@ -2,7 +2,7 @@
 // A string input equal to a fixture name becomes that fixture; "$demo" is the prototype seed,
 // "$permissions" the permission catalogue, "$quarters" the seed quarters.
 
-import { buildSeed } from '@/data/seed';
+import { buildSeed } from '@/test/fake/seed';
 import { PERMISSIONS } from '@/domain/permissions';
 
 export interface VectorCase {

@@ -4,7 +4,7 @@
 import { create } from 'zustand';
 import type { SheetSection } from '@/domain/rules/sheetPayload';
 import type { PrintSnapshot } from '@/domain/types';
-import type { SheetView } from '../api/sheets';
+import type { SheetView } from '@/test/fake/api/sheets';
 import { apiFetch } from './client';
 
 interface Revision {

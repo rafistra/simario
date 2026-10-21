@@ -3,7 +3,7 @@
 // through useCollections show the result as they did with the local store. Risk proposals (B3)
 // are read through proposalApi.list.
 
-import type { OptionInput, PositionInput } from '../api/master';
+import type { OptionInput, PositionInput } from '@/test/fake/api/master';
 import type { DataUmumField, RiskProposal, RiskType, ScoreBand } from '@/domain/types';
 import { useCollectionCache } from '@/lib/useCollections';
 import { apiFetch, type FetchInit } from './client';

@@ -4,7 +4,6 @@
 import { sortOptions, validateBands, validateOptions, type BandProblem } from '@/domain/scoreBands';
 import type {
   DataUmumField,
-  Position,
   PositionType,
   RiskTemplate,
   RiskType,
@@ -18,6 +17,20 @@ import { requireActor, type Actor } from '../local/actor';
 import { ApiError, call } from '../local/call';
 import { getDb, mutateDb } from '../local/store';
 import { newId, writeAudit, writeNotification } from '../local/writers';
+import {
+  templateUsage,
+  templateEverUsed,
+  stageUsedByRegister,
+  activePositionsOfType,
+  positionDeactivationImpact,
+} from '@/data/derive/master';
+export {
+  templateUsage,
+  templateEverUsed,
+  stageUsedByRegister,
+  activePositionsOfType,
+  positionDeactivationImpact,
+};
 
 const audit = (
   d: DB,
@@ -49,29 +62,6 @@ const norm = (s: string) => s.trim().replace(/\s+/g, ' ').toLowerCase();
 
 /* ---------- Derived reads ---------- */
 
-/** Registers of the current fiscal year that use a template ("Dipakai [N] jabatan", FR-MST-003). */
-export function templateUsage(db: DB, templateId: string, fiscalYear: number): number {
-  const registerIds = new Set(
-    db.risks.filter((r) => r.riskTemplateId === templateId).map((r) => r.registerId),
-  );
-  return db.registers.filter((r) => registerIds.has(r.id) && r.fiscalYear === fiscalYear).length;
-}
-
-export function templateEverUsed(db: DB, templateId: string): boolean {
-  return db.risks.some((r) => r.riskTemplateId === templateId);
-}
-
-export function stageUsedByRegister(db: DB, stageId: string): boolean {
-  return (
-    db.risks.some((r) => r.stageId === stageId) ||
-    db.declarations.some((d) => d.stageId === stageId)
-  );
-}
-
-export function activePositionsOfType(db: DB, typeId: string): Position[] {
-  return db.positions.filter((p) => p.positionTypeId === typeId && p.active);
-}
-
 /* ---------- Position types & positions (FR-MST-008, 009) ---------- */
 
 export interface PositionInput {
@@ -101,24 +91,6 @@ function validatePosition(db: DB, input: PositionInput, id?: string) {
 export interface DeactivationImpact {
   publishedRegisters: { fiscalYear: number; activeRisks: number }[];
   activeOperators: number;
-}
-
-export function positionDeactivationImpact(
-  db: DB,
-  positionId: string,
-  today: string,
-): DeactivationImpact {
-  const regs = db.registers.filter((r) => r.positionId === positionId && r.status === 'published');
-  return {
-    publishedRegisters: regs.map((r) => ({
-      fiscalYear: r.fiscalYear,
-      activeRisks: db.risks.filter((x) => x.registerId === r.id && x.status === 'active').length,
-    })),
-    activeOperators: db.delegates.filter(
-      (d) =>
-        d.positionId === positionId && d.startDate <= today && (!d.endDate || d.endDate >= today),
-    ).length,
-  };
 }
 
 export const masterApi = {

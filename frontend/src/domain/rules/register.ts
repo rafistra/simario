@@ -1,6 +1,6 @@
 // Register rules — PRD §5 (FR-REG-*), §2.6 validation, RB-REG-006, INV-7.
 
-import type { DB } from '@/data/db';
+import type { DB } from '@/test/fake/db';
 import { QUARTER_ROMAN } from '../calendar';
 import type { Quarter, Register, RegisterRisk, RiskType, Stage } from '../types';
 import { RISK_TYPES, RISK_TYPE_LABEL } from '../types';

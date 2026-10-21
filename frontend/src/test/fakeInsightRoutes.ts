@@ -1,8 +1,8 @@
 // Metrics and audit routes of the test fake backend (B8): the HTTP insightsApi in Vitest
 // reaches the local implementation in data/api/insights.ts over the prototype seed.
 
-import { insightsApi as local, type AuditFilter } from '@/data/api/insights';
-import { getDb } from '@/data/local/store';
+import { insightsApi as local, type AuditFilter } from '@/test/fake/api/insights';
+import { getDb } from '@/test/fake/local/store';
 import type { Handler } from './fakeRegisterRoutes';
 
 const path = (p: string) => new RegExp(`^/api/v1${p.replace(/:[a-z]+/g, '([^/]+)')}$`);

@@ -14,7 +14,7 @@ import {
   type Column,
   type StatusKind,
 } from '@/components';
-import type { PositionListRow } from '@/data/api/home';
+import type { PositionListRow } from '@/test/fake/api/home';
 import { homeApi } from '@/data/repository';
 import { usePageMeta } from '@/layout/pageMeta';
 import { formatRelative } from '@/lib/format';

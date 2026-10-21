@@ -1,10 +1,9 @@
 import { UserCog, X } from 'lucide-react';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { pathVisible } from '@/data/http/migrated';
-import { NotFoundPage } from '@/pages/faults/FaultPages';
 import { InlineAlert, Skeleton } from '@/components';
 import { setUnauthenticatedHandler } from '@/data/http/client';
+import { usePreferences } from '@/data/http/preferences';
 import { preferenceApi } from '@/data/repository';
 import { useFocusTrap } from '@/lib/useFocusTrap';
 import { useDevSettings } from '@/state/devSettings';
@@ -108,13 +107,14 @@ export function AppShell({ children }: { children?: ReactNode }) {
   const userId = auth?.user.id;
   // Each user's own stored choice; a local override only applies to the user who made it, so a
   // persona switch without reload picks up the new user's preference.
+  usePreferences((s) => s.values); // re-render when the server preferences arrive
   const stored = (userId && preferenceApi.get<boolean>(userId, SIDEBAR_COLLAPSED)) || false;
   const [override, setOverride] = useState<{ userId: string; value: boolean } | null>(null);
   const collapsed = override && override.userId === userId ? override.value : stored;
   const toggleCollapsed = () => {
     if (!userId) return;
     setOverride({ userId, value: !collapsed });
-    preferenceApi.set(userId, SIDEBAR_COLLAPSED, !collapsed);
+    void preferenceApi.set(userId, SIDEBAR_COLLAPSED, !collapsed);
   };
   useIdleSignOut();
 
@@ -168,9 +168,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
             </InlineAlert>
           )}
           <OperatorNotice />
-          <ErrorBoundary>
-            {children ?? (pathVisible(location.pathname) ? <Outlet /> : <NotFoundPage />)}
-          </ErrorBoundary>
+          <ErrorBoundary>{children ?? <Outlet />}</ErrorBoundary>
         </main>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { CollectionGate } from '@/components/DataGate/CollectionGate';
-import { getDb, useDb } from '@/data/local/store';
+import { getDb, useDb } from '@/test/fake/local/store';
 import { useCollectionCache } from '@/lib/useCollections';
 import { useClock } from '@/state/clock';
 import { useDevSettings } from '@/state/devSettings';

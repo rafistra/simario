@@ -123,8 +123,6 @@ services:
     build:
       context: .
       dockerfile: infra/nginx/Dockerfile
-      args:
-        VITE_HIDE_UNMIGRATED: ${VITE_HIDE_UNMIGRATED:-true}
     restart: unless-stopped
     environment:
       PUBLIC_HOSTNAME: ${PUBLIC_HOSTNAME:-localhost}

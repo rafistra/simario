@@ -1,6 +1,6 @@
 import { lazy, Suspense, type ReactNode } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { DataGate, Toaster } from '@/components';
+import { Toaster } from '@/components';
 import { CollectionGate } from '@/components/DataGate/CollectionGate';
 import { DevPanel } from '@/dev/DevPanel';
 import { AppShell } from '@/layout/AppShell';
@@ -55,14 +55,7 @@ export default function App() {
 
           <Route element={<AppShell />}>
             <Route index element={<HomePage />} />
-            <Route
-              path="notifikasi"
-              element={
-                <DataGate>
-                  <NotificationsPage />
-                </DataGate>
-              }
-            />
+            <Route path="notifikasi" element={<NotificationsPage />} />
             <Route
               path="jabatan-saya"
               element={
@@ -124,6 +117,7 @@ export default function App() {
                       'riskTemplates',
                       'mitigationTemplates',
                       'users',
+                      'occupancies',
                       'quarters',
                       'fiscalYears',
                     ]}

@@ -6,8 +6,8 @@ import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { DB } from '@/data/db';
-import { buildSeed, staffDirectory } from '@/data/seed';
+import type { DB } from '@/test/fake/db';
+import { buildSeed, staffDirectory } from '@/test/fake/seed';
 import { PERMISSIONS } from '@/domain/permissions';
 
 /** uuid.uuid5(uuid.NAMESPACE_DNS, 'simario.ikn.go.id') — same constant as the backend. */
@@ -32,7 +32,7 @@ export interface DemoExport {
 
 export function buildExport(): DemoExport {
   return {
-    generatedFrom: 'frontend/src/data/seed',
+    generatedFrom: 'frontend/src/test/fake/seed',
     permissions: PERMISSIONS,
     staffDirectory,
     db: buildSeed(),

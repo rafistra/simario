@@ -1,8 +1,9 @@
 import { useMemo, type ReactNode } from 'react';
+import type { DB } from '@/test/fake/db';
 import type { CollectionName } from '@/data/http/collections';
-import { useDb } from '@/data/local/store';
 import { useCollections } from '@/lib/useCollections';
 import { InlineAlert, LoadingRegion, Skeleton } from '../Feedback/Feedback';
+import { emptyDb } from './emptyDb';
 import { GateDb } from './gateDb';
 
 /**
@@ -22,8 +23,8 @@ export function CollectionGate({
   label?: string;
 }) {
   const state = useCollections(names);
-  const local = useDb((s) => s.db);
-  const db = useMemo(() => (state.db ? { ...local, ...state.db } : null), [local, state.db]);
+  // Collections a page did not ask for read as empty instead of undefined.
+  const db = useMemo(() => (state.db ? ({ ...emptyDb(), ...state.db } as DB) : null), [state.db]);
   if (state.error && !db)
     return (
       <InlineAlert variant="error" title="Data gagal dimuat" onRetry={state.retry}>

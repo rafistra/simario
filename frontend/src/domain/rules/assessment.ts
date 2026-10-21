@@ -1,7 +1,7 @@
 // Quarterly assessment rules — PRD §2.5, ch. 7 (FR-NIL-*), RB-NIL-*, INV-16/18/23.
 // Pure functions over a DB draft; the scheduler and the repository call them.
 
-import type { DB } from '@/data/db';
+import type { DB } from '@/test/fake/db';
 import { addDays, latenessAt, QUARTER_ROMAN } from '../calendar';
 import { optionFor, predicateFor, sortOptions } from '../scoreBands';
 import type {

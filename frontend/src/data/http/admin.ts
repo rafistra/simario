@@ -2,7 +2,7 @@
 // Mutations reload the collections they change before resolving, and refresh /me because
 // holdings, roles and delegations decide what the signed-in user may do (FR-AUT-008).
 
-import type { AssignInput, ReplaceInput } from '../api/admin';
+import type { AssignInput, ReplaceInput } from '@/test/fake/api/admin';
 import type { MonitoringSupport, Scope } from '@/domain/types';
 import { useCollectionCache } from '@/lib/useCollections';
 import { useMe } from '@/state/me';

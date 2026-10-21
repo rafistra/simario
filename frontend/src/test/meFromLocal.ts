@@ -1,7 +1,7 @@
 // Test helper: the GET /api/v1/me response the backend would give, computed from the local seed
 // with the prototype's access rules (the logic useAuth used before B1).
 
-import type { DB } from '@/data/db';
+import type { DB } from '@/test/fake/db';
 import type { MeResponse } from '@/data/http/me';
 import { quarterContaining } from '@/domain/calendar';
 import type { RoleViewCode } from '@/domain/permissions';

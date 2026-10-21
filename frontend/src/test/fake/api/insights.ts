@@ -12,6 +12,8 @@ import { requireActor } from '../local/actor';
 import { ApiError, call } from '../local/call';
 import { getDb, mutateDb } from '../local/store';
 import { writeAudit } from '../local/writers';
+import { metricsCsv } from '@/data/derive/insights';
+export { metricsCsv };
 
 /* ---------- Metrics ---------- */
 
@@ -224,25 +226,6 @@ export function buildMetrics(db: DB, year: number, at: ISODateTime): MetricCard[
     m.status = m.value === null ? '' : m.value >= target ? 'Memenuhi target' : 'Di bawah target';
   }
   return [m1, m2, m3, m4, m8, m9];
-}
-
-export function metricsCsv(cards: MetricCard[], year: number): string {
-  const lines = ['tujuan,judul,periode,nilai,pembilang,penyebut'];
-  for (const c of cards)
-    for (const p of c.points.length
-      ? c.points
-      : [{ label: `TA ${year}`, value: null, numerator: 0, denominator: 0 }])
-      lines.push(
-        [
-          c.objective,
-          `"${c.title}"`,
-          `"${p.label}"`,
-          p.value === null ? '' : c.unit === 'percent' ? (p.value * 100).toFixed(1) : p.value,
-          p.numerator,
-          p.denominator,
-        ].join(','),
-      );
-  return lines.join('\n');
 }
 
 /* ---------- Audit trail ---------- */

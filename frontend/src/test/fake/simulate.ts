@@ -1,7 +1,7 @@
 // Prototype-only helpers for demos (DevPanel). Not part of the repository layer.
 
-import { getDb, mutateDb } from '@/data/local/store';
-import { newId } from '@/data/local/writers';
+import { getDb, mutateDb } from './local/store';
+import { newId } from './local/writers';
 import { postingQuarter, threadParticipants } from '@/domain/rules/board';
 import { now } from '@/state/clock';
 

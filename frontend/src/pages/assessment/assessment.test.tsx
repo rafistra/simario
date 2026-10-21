@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
-import { getDb, useDb } from '@/data/local/store';
+import { getDb, useDb } from '@/test/fake/local/store';
 import type { WorkspaceOutletContext } from '@/layout/Workspace';
 import { useClock } from '@/state/clock';
 import { useDevSettings } from '@/state/devSettings';

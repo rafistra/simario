@@ -22,7 +22,7 @@ import {
   StatusChip,
   toast,
 } from '@/components';
-import type { QuarterCard, QuarterGroup, ThreadComment, ThreadView } from '@/data/api/board';
+import type { QuarterCard, QuarterGroup, ThreadComment, ThreadView } from '@/test/fake/api/board';
 import { boardApi, threadApi, useBoardRevision } from '@/data/repository';
 import { QUARTER_ROMAN } from '@/domain/calendar';
 import { RISK_TYPE_LABEL } from '@/domain/types';
@@ -45,7 +45,7 @@ export default function ThreadPage() {
   usePageMeta(['Papan Risiko', `${position.name} · ${unitCode}`, 'Utas Risiko']);
   const auth = useAuth();
   const revision = useBoardRevision((s) => s.revision);
-  const q = useQuery(() => boardApi.thread(rid), [rid, auth.user.id, revision]);
+  const q = useQuery(() => boardApi.thread(rid), [rid, auth.user.id], revision);
 
   if (q.loading && !q.data) return <ThreadSkeleton />;
   if (q.error && !q.data)

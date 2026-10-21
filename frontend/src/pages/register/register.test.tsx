@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
 import { CollectionGate } from '@/components/DataGate/CollectionGate';
-import { getDb, useDb } from '@/data/local/store';
+import { getDb, useDb } from '@/test/fake/local/store';
 import { useRegisterViews } from '@/data/repository';
 import { useCollectionCache } from '@/lib/useCollections';
 import type { WorkspaceOutletContext } from '@/layout/Workspace';
@@ -80,6 +80,7 @@ describe('Register page loading', () => {
           'riskTemplates',
           'mitigationTemplates',
           'users',
+          'occupancies',
           'quarters',
           'fiscalYears',
         ]),

@@ -1,7 +1,7 @@
 // insightsApi over HTTP (docs/03_api_contract.md §4.8). Same signatures as data/api/insights.ts,
 // plus `auditFacets` (filter choices, which the page read from the local store).
 
-import type { AuditFilter, AuditRow, MetricCard } from '../api/insights';
+import type { AuditFilter, AuditRow, MetricCard } from '@/test/fake/api/insights';
 import { apiFetch } from './client';
 
 const query = (f: AuditFilter, original: boolean) => {

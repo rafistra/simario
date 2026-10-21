@@ -1,9 +1,9 @@
 // Register routes of the test fake backend (B3): the HTTP registerApi in Vitest reaches the local
 // implementation in data/api/register.ts over the prototype seed.
 
-import { registerApi as local, type RegisterKey } from '@/data/api/register';
-import { masterApi as localMaster } from '@/data/api/master';
-import { getDb } from '@/data/local/store';
+import { registerApi as local, type RegisterKey } from '@/test/fake/api/register';
+import { masterApi as localMaster } from '@/test/fake/api/master';
+import { getDb } from '@/test/fake/local/store';
 import type { RiskType } from '@/domain/types';
 
 type Reply = { status: number; body?: unknown };

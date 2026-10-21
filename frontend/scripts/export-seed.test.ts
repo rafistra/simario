@@ -1,4 +1,4 @@
-import { buildSeed, staffDirectory } from '@/data/seed';
+import { buildSeed, staffDirectory } from '@/test/fake/seed';
 import { buildExport, buildLegacyIds, buildRealmUsers, uuid5 } from './export-seed';
 
 // Literal computed once with Python: uuid.uuid5(uuid.uuid5(uuid.NAMESPACE_DNS,

@@ -5,10 +5,9 @@
 import { create } from 'zustand';
 import { quarterLabel } from '@/domain/calendar';
 import type { Participant } from '@/domain/rules/board';
-import type { BoardView, ThreadView } from '../api/board';
-import type { PostInput } from '../api/thread';
+import type { BoardView, ThreadView } from '@/test/fake/api/board';
+import type { PostInput } from '@/test/fake/api/thread';
 import { apiFetch } from './client';
-import { toBackendIds } from './legacyIds';
 
 interface Revision {
   revision: number;
@@ -27,8 +26,7 @@ const bump = <T>(p: Promise<T>) =>
   });
 
 /** Download link for an attachment (302 to a short-lived URL under /storage). */
-export const attachmentUrl = (id: string) =>
-  `/api/v1${toBackendIds(`/attachments/${id}/download`)}`;
+export const attachmentUrl = (id: string) => `/api/v1/attachments/${id}/download`;
 
 export const boardApi = {
   board: (positionId: string, fiscalYear: number) =>
@@ -43,16 +41,14 @@ export const threadApi = {
     const form = new FormData();
     form.append(
       'data',
-      JSON.stringify(
-        toBackendIds({
-          mitigationId: input.mitigationId,
-          body: input.body,
-          quarterId: input.quarterId ?? null,
-          isStep: input.isStep,
-          mentionUserIds: input.mentionUserIds,
-          confidential: input.files.map((f) => f.confidential),
-        }),
-      ),
+      JSON.stringify({
+        mitigationId: input.mitigationId,
+        body: input.body,
+        quarterId: input.quarterId ?? null,
+        isStep: input.isStep,
+        mentionUserIds: input.mentionUserIds,
+        confidential: input.files.map((f) => f.confidential),
+      }),
     );
     for (const f of input.files)
       form.append('files', f.file ?? new Blob([], { type: f.mime }), f.name);

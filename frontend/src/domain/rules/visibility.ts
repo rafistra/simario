@@ -1,7 +1,7 @@
 // Visibility rules — PRD §2.7 (VIS-1 … VIS-9), INV-16, INV-17. Applied in data selectors, never
 // only in JSX (CLAUDE.md §6). These functions decide; callers filter what they return.
 
-import type { DB } from '@/data/db';
+import type { DB } from '@/test/fake/db';
 import type { Assessment, Attachment, ComparisonResult, ISODate, RiskQuarter } from '../types';
 import { hasPermission, holdingsOf } from './access';
 

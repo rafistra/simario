@@ -2,7 +2,7 @@
 // permission (capability) → holding / assignment / line rule (object) → Pejabat (finalising).
 // Role names are never consulted (RB-ADM-002).
 
-import type { DB } from '@/data/db';
+import type { DB } from '@/test/fake/db';
 import { PERMISSION_BY_CODE } from '../permissions';
 import type { Capacity, ISODate, Line, Position, Quarter, Scope } from '../types';
 

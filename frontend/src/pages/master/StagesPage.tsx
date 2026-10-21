@@ -2,7 +2,7 @@ import { ChevronDown, ChevronRight, GripVertical, Pencil, Plus, Trash2 } from 'l
 import { useState, type DragEvent, type KeyboardEvent } from 'react';
 import { Button, ConfirmDialog, LineChip, PageHeader, Toggle, toast } from '@/components';
 import { masterApi } from '@/data/repository';
-import { stageUsedByRegister } from '@/data/api/master';
+import { stageUsedByRegister } from '@/data/derive/master';
 import { useGateDb } from '@/components/DataGate/gateDb';
 import type { PositionType, Stage } from '@/domain/types';
 import { usePageMeta } from '@/layout/pageMeta';

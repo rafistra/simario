@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/vitest';
-import { getDb, useDb } from '@/data/local/store';
+import { getDb, useDb } from '@/test/fake/local/store';
 import { today, useClock } from '@/state/clock';
 import { useMe } from '@/state/me';
 import { useSession } from '@/state/session';

@@ -1,8 +1,8 @@
 // Assessment routes of the test fake backend (B5): the HTTP assessmentApi in Vitest reaches the
 // local implementation in data/api/assessment.ts over the prototype seed.
 
-import { assessmentApi as local, finalisePreview } from '@/data/api/assessment';
-import { getDb } from '@/data/local/store';
+import { assessmentApi as local, finalisePreview } from '@/test/fake/api/assessment';
+import { getDb } from '@/test/fake/local/store';
 import { now } from '@/state/clock';
 import type { Handler } from './fakeRegisterRoutes';
 

@@ -1,5 +1,5 @@
 import { act } from '@testing-library/react';
-import { buildSeed } from '@/data/seed';
+import { buildSeed } from '@/test/fake/seed';
 import { meFromLocal } from '@/test/meFromLocal';
 import { useSession } from './session';
 import { authFromMe } from './useAuth';

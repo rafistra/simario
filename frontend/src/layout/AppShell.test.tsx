@@ -1,7 +1,8 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { preferenceApi } from '@/data/repository';
-import { useDb } from '@/data/local/store';
+import { loadPreferences } from '@/data/http/preferences';
+import { useDb } from '@/test/fake/local/store';
 import { useClock } from '@/state/clock';
 import { useDevSettings } from '@/state/devSettings';
 import { useSession } from '@/state/session';
@@ -50,11 +51,17 @@ describe('Sidebar collapse', () => {
     expect(preferenceApi.get('usr-nur', 'sidebarCollapsed')).toBe(false);
   });
 
-  it("follows the signed-in user's own choice when the persona changes", () => {
-    act(() => preferenceApi.set('usr-admin', 'sidebarCollapsed', true));
+  it("follows the signed-in user's own choice when the persona changes", async () => {
+    // Admin DKB collapsed the sidebar earlier (stored on the server).
+    act(() => useSession.getState().signIn('usr-admin'));
+    await act(() => loadPreferences('usr-admin'));
+    await act(() => preferenceApi.set('usr-admin', 'sidebarCollapsed', true));
+    act(() => useSession.getState().signIn('usr-andi'));
+    await act(() => loadPreferences('usr-andi'));
     const { container } = renderShell();
     expect(container.querySelector('.shell')).not.toHaveClass('shell--collapsed');
     act(() => useSession.getState().signIn('usr-admin'));
+    await act(() => loadPreferences('usr-admin'));
     expect(container.querySelector('.shell')).toHaveClass('shell--collapsed');
   });
 });

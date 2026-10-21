@@ -3,20 +3,19 @@
 // implementations. Requests arrive through the real client (UUIDs from the id bridge).
 
 import { ApiError } from '@/data/errors';
-import { toLocalIds } from '@/data/http/legacyIds';
-import { adminApi as localAdminApi } from '@/data/api/admin';
-import { calendarApi as localCalendarApi } from '@/data/api/calendar';
-import { importApi as localImportApi, type ImportKind } from '@/data/api/importer';
-import { masterApi as localMasterApi, type PositionInput } from '@/data/api/master';
-import { localAuthApi, localNotificationApi } from '@/data/local/authApi';
+import { adminApi as localAdminApi } from '@/test/fake/api/admin';
+import { calendarApi as localCalendarApi } from '@/test/fake/api/calendar';
+import { importApi as localImportApi, type ImportKind } from '@/test/fake/api/importer';
+import { masterApi as localMasterApi, type PositionInput } from '@/test/fake/api/master';
+import { localAuthApi, localNotificationApi } from '@/test/fake/local/authApi';
 import { ASSESSMENT_ROUTES } from './fakeAssessmentRoutes';
 import { BOARD_ROUTES } from './fakeBoardRoutes';
 import { HOME_ROUTES } from './fakeHomeRoutes';
 import { INSIGHT_ROUTES } from './fakeInsightRoutes';
 import { SHEET_ROUTES } from './fakeSheetRoutes';
 import { REGISTER_ROUTES } from './fakeRegisterRoutes';
-import { getDb, useDb } from '@/data/local/store';
-import { staffDirectory } from '@/data/seed';
+import { getDb, useDb } from '@/test/fake/local/store';
+import { staffDirectory } from '@/test/fake/seed';
 import { holdingsOf } from '@/domain/rules/access';
 import { today, useClock } from '@/state/clock';
 import { useSession } from '@/state/session';
@@ -451,15 +450,15 @@ const ROUTES: [string, RegExp, Handler][] = [
 export function installFakeBackend() {
   vi.stubGlobal('fetch', async (input: string, init: RequestInit = {}) => {
     const url = new URL(input, 'http://localhost');
-    const path = toLocalIds(url.pathname);
+    const path = decodeURIComponent(url.pathname);
     const method = (init.method ?? 'GET').toUpperCase();
-    const body = toLocalIds(
+    const body = (
       init.body instanceof FormData
-        ? (JSON.parse(String(init.body.get('data'))) as Record<string, unknown>)
+        ? (JSON.parse(String(init.body.get('data') ?? '{}')) as Record<string, unknown>)
         : typeof init.body === 'string'
           ? (JSON.parse(init.body) as Record<string, unknown>)
-          : Object.fromEntries(url.searchParams),
-    );
+          : Object.fromEntries(url.searchParams)
+    ) as Record<string, unknown>;
     if (init.body instanceof FormData) body.__files = init.body.getAll('files');
     let reply: Reply = fail('not_found', 'Data tidak ditemukan.', 404);
     for (const [m, re, handler] of [

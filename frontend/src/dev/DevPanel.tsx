@@ -1,10 +1,8 @@
-import { FlaskConical, MessageSquarePlus, Moon, RotateCcw, Sun, X } from 'lucide-react';
-import { useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { FlaskConical, Moon, RotateCcw, Sun, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button, ConfirmDialog, Select, Toggle, toast } from '@/components';
-import { devApi } from '@/data/http/dev';
-import { runScheduledTasks } from '@/data/local/scheduler';
-import { useDb } from '@/data/local/store';
+import { devApi, type Persona } from '@/data/http/dev';
 import { useFocusTrap } from '@/lib/useFocusTrap';
 import { formatDateTime } from '@/lib/format';
 import { applyTheme, getTheme, type Theme } from '@/lib/theme';
@@ -12,7 +10,6 @@ import { DEFAULT_NOW, useClock, useNow } from '@/state/clock';
 import { useDevSettings } from '@/state/devSettings';
 import { useMe } from '@/state/me';
 import { useSession } from '@/state/session';
-import { simulateIncomingComment } from './simulate';
 import './DevPanel.css';
 
 const PRESETS: { label: string; at: string }[] = [
@@ -29,13 +26,18 @@ export function DevPanel() {
   const [open, setOpen] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
   const [confirmAsOf, setConfirmAsOf] = useState(false);
-  const threadRisk = /\/risiko\/([^/?#]+)/.exec(useLocation().pathname)?.[1];
   const [theme, setThemeState] = useState<Theme>(getTheme());
   const ref = useRef<HTMLDivElement>(null);
   useFocusTrap(ref, open, () => setOpen(false));
   const navigate = useNavigate();
-  const users = useDb((s) => s.db.users);
-  const reset = useDb((s) => s.reset);
+  const [users, setUsers] = useState<Persona[]>([]);
+  useEffect(() => {
+    if (open)
+      devApi.personas().then(
+        (r) => setUsers(r.personas),
+        () => setUsers([]),
+      );
+  }, [open]);
   const userId = useSession((s) => s.userId);
   // The backend keeps its own simulated clock and data (spec §4.5); move both together.
   const setNow = (at: string) => {
@@ -46,7 +48,7 @@ export function DevPanel() {
       .catch((e: Error) => toast.error('Jam server tidak dapat digeser', e.message));
   };
   const resetBackend = async (asOf?: string) => {
-    const nip = users.find((u) => u.id === userId)?.nip;
+    const nip = users.find((u) => u.userId === userId)?.nip;
     try {
       await devApi.reset(asOf);
       if (nip) await devApi.impersonate(nip);
@@ -59,7 +61,7 @@ export function DevPanel() {
   const dev = useDevSettings();
 
   const signInAs = async (id: string) => {
-    const user = users.find((u) => u.id === id);
+    const user = users.find((u) => u.userId === id);
     if (!user) return;
     const outcome = await devApi.impersonate(user.nip);
     if (!outcome.ok) toast.error('Tidak dapat masuk', outcome.message);
@@ -112,7 +114,7 @@ export function DevPanel() {
                   placeholder="Pilih persona"
                   options={users
                     .filter((u) => u.active)
-                    .map((u) => ({ value: u.id, label: u.fullName }))}
+                    .map((u) => ({ value: u.userId, label: u.fullName }))}
                   onChange={(e) => signInAs(e.target.value)}
                 />
               </section>
@@ -195,25 +197,6 @@ export function DevPanel() {
                 >
                   {theme === 'light' ? 'Mode gelap' : 'Mode terang'}
                 </Button>
-                {threadRisk && (
-                  <Button
-                    variant="secondary"
-                    icon={MessageSquarePlus}
-                    onClick={() => {
-                      const name = simulateIncomingComment(
-                        threadRisk,
-                        useSession.getState().userId ?? '',
-                      );
-                      if (name)
-                        toast.success(
-                          'Komentar masuk disimulasikan',
-                          `${name} mengirim komentar di utas ini.`,
-                        );
-                    }}
-                  >
-                    Simulasikan komentar masuk
-                  </Button>
-                )}
                 <Button
                   variant="destructive"
                   icon={RotateCcw}
@@ -233,13 +216,15 @@ export function DevPanel() {
         confirmLabel="Atur Ulang Data"
         onCancel={() => setConfirmReset(false)}
         onConfirm={() => {
-          reset();
           void resetBackend();
           setConfirmReset(false);
-          toast.success('Data contoh dipulihkan', 'Semua perubahan di browser ini dihapus.');
+          toast.success(
+            'Data contoh dipulihkan',
+            'Semua perubahan di server pengembangan dihapus.',
+          );
         }}
       >
-        Semua perubahan yang Anda buat di browser ini akan hilang dan data kembali seperti awal.
+        Semua perubahan di server pengembangan akan hilang dan data kembali seperti awal.
       </ConfirmDialog>
       <ConfirmDialog
         open={confirmAsOf}
@@ -248,8 +233,6 @@ export function DevPanel() {
         confirmLabel="Sesuaikan Data"
         onCancel={() => setConfirmAsOf(false)}
         onConfirm={() => {
-          reset(now);
-          runScheduledTasks();
           void resetBackend(now);
           setConfirmAsOf(false);
           toast.success(
@@ -259,8 +242,8 @@ export function DevPanel() {
         }}
       >
         Data contoh dimuat ulang seperti keadaannya pada {formatDateTime(now)}: komentar, penilaian,
-        hasil perbandingan, notifikasi, dan jejak audit sesudah tanggal itu dihapus. Perubahan Anda
-        di browser ini hilang.
+        hasil perbandingan, notifikasi, dan jejak audit sesudah tanggal itu dihapus. Perubahan di
+        server pengembangan hilang.
       </ConfirmDialog>
     </>
   );

@@ -12,7 +12,7 @@ import {
   Skeleton,
   SlideOver,
 } from '@/components';
-import type { ChipView, HistoryCell, HistoryRow, HistoryView } from '@/data/api/history';
+import type { ChipView, HistoryCell, HistoryRow, HistoryView } from '@/test/fake/api/history';
 import { historyApi } from '@/data/repository';
 import { QUARTER_ROMAN } from '@/domain/calendar';
 import type { LembarMutu } from '@/domain/rules/sheets';

@@ -9,15 +9,15 @@ import {
   useParams,
   useSearchParams,
 } from 'react-router-dom';
-import { LineChip } from '@/components';
-import { useDb } from '@/data/local/store';
-import { canReadPosition, officialsOf, positionLine } from '@/domain/rules/access';
+import { InlineAlert, LineChip, LoadingRegion, Skeleton } from '@/components';
+import { ApiError } from '@/data/errors';
+import { workspaceApi } from '@/data/http/workspace';
 import type { Position } from '@/domain/types';
+import { useQuery } from '@/lib/useQuery';
 import { ForbiddenPage, NotFoundPage } from '@/pages/faults/FaultPages';
 import { chooseActivePosition } from '@/state/me';
 import { useAuth } from '@/state/useAuth';
 import { workspacePaths } from './nav';
-import { pathVisible } from '@/data/http/migrated';
 import './Shell.css';
 
 const TABS = [
@@ -40,12 +40,10 @@ export function WorkspaceLayout() {
   const { jid = '', ta, tw } = useParams();
   const [search] = useSearchParams();
   const auth = useAuth();
-  const db = useDb((s) => s.db);
   const setActive = chooseActivePosition;
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
-  const position = db.positions.find((p) => p.id === jid);
   const held = auth.holdings.some((h) => h.positionId === jid);
 
   // Visiting a held position's workspace switches the acting holding to it (FR-AUT-009).
@@ -56,30 +54,29 @@ export function WorkspaceLayout() {
   // Riwayat has no year segment; its fiscal year travels as ?ta= (FR-RWY-004).
   const fiscalYear = Number(ta ?? search.get('ta') ?? auth.currentFiscalYear);
 
-  // Same copy for unknown ids and ids outside scope would leak nothing; PRD uses 404 for unknown.
-  // The read models apply the same check; this only turns it into the 403 page.
-  if (!position || positionLine(db, position.id) !== 1) return <NotFoundPage />;
-  if (!canReadPosition(db, auth.user.id, jid, auth.today, fiscalYear)) return <ForbiddenPage />;
-
-  const unit = db.orgUnits.find((o) => o.id === position.orgUnitId)!;
+  // The server decides: 404 for unknown or non-Lini 1 positions, 403 outside the read scope.
+  const q = useQuery(() => workspaceApi.header(jid, fiscalYear), [jid, fiscalYear]);
+  if (q.error && !q.data) {
+    const code = q.error instanceof ApiError ? q.error.code : '';
+    if (code === 'not_found') return <NotFoundPage />;
+    if (code === 'forbidden') return <ForbiddenPage />;
+    return (
+      <InlineAlert variant="error" title="Jabatan gagal dimuat" onRetry={q.retry}>
+        {q.error.message}
+      </InlineAlert>
+    );
+  }
+  if (!q.data)
+    return (
+      <LoadingRegion label="Memuat jabatan…">
+        <Skeleton height={96} radius="lg" />
+      </LoadingRegion>
+    );
+  const { position, unit, officials, operators } = q.data;
   const currentQ = auth.currentQuarter;
   const quarter = Number(tw ?? (currentQ?.fiscalYear === fiscalYear ? currentQ.number : 4));
-  const years = [
-    ...new Set([
-      ...db.registers.filter((r) => r.positionId === jid).map((r) => r.fiscalYear),
-      auth.currentFiscalYear,
-    ]),
-  ].sort((a, b) => b - a);
-  const archived = (y: number) => db.fiscalYears.find((f) => f.year === y)?.status === 'archived';
-  const officials = officialsOf(db, jid, auth.today);
-  const operators = db.delegates
-    .filter(
-      (d) =>
-        d.positionId === jid &&
-        d.startDate <= auth.today &&
-        (!d.endDate || d.endDate >= auth.today),
-    )
-    .map((d) => db.users.find((u) => u.id === d.userId)!.fullName);
+  const years = q.data.years.map((y) => y.year);
+  const archived = (y: number) => q.data!.years.find((x) => x.year === y)?.archived ?? false;
   const paths = workspacePaths(jid, fiscalYear, quarter);
   const activeTab = TABS.find((t) => pathname.startsWith(`/jabatan/${jid}/${t.key}`))?.key;
 
@@ -102,7 +99,7 @@ export function WorkspaceLayout() {
             <p className="workspace__subtitle">
               {unit.name} ({unit.code})
               {officials.length > 0
-                ? ` · Pejabat: ${officials.map((o) => o.user.fullName + (officials.length > 1 && o.occupancy.isFiller ? ' (Pengisi)' : '')).join(', ')}`
+                ? ` · Pejabat: ${officials.map((o) => o.name + (officials.length > 1 && o.isFiller ? ' (Pengisi)' : '')).join(', ')}`
                 : ' · Belum ada Pejabat'}
               {operators.length > 0 && ` · Operator: ${operators.join(', ')}`}
             </p>
@@ -122,7 +119,7 @@ export function WorkspaceLayout() {
           </label>
         </div>
         <div className="tabs" role="tablist" aria-label="Bagian workspace">
-          {TABS.filter((t) => pathVisible(paths[t.key])).map((t) => (
+          {TABS.map((t) => (
             <Link
               key={t.key}
               to={paths[t.key]}

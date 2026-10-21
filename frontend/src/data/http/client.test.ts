@@ -70,14 +70,12 @@ describe('apiFetch', () => {
     await expect(apiFetch('/x')).resolves.toEqual({});
   });
 
-  it('bridges ids and normalises server datetimes', async () => {
+  it('passes ids through and normalises server datetimes', async () => {
     const calls = mockFetch({
       'GET /api/v1/x': () => ({ body: { userId: ANDI, at: '2027-04-06T09:00:00+08:00' } }),
     });
-    const res = await apiFetch<{ userId: string; at: string }>('/x', {
-      query: { user: 'usr-andi' },
-    });
-    expect(res).toEqual({ userId: 'usr-andi', at: '2027-04-06T09:00' });
+    const res = await apiFetch<{ userId: string; at: string }>('/x', { query: { user: ANDI } });
+    expect(res).toEqual({ userId: ANDI, at: '2027-04-06T09:00' });
     expect(calls[0]!.url).toContain(ANDI);
   });
 

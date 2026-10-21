@@ -1,6 +1,6 @@
 import vectors from '@vectors/calendar.json';
 import { loadVectors } from '@/test/vectors';
-import { quarterProblems } from '@/data/api/calendar';
+import { quarterProblems } from '@/test/fake/api/calendar';
 import { addWorkdays, defaultQuarters, latenessAt, quarterContaining } from './calendar';
 import type { Quarter } from './types';
 

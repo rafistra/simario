@@ -2,7 +2,7 @@ import { ArrowDown, ArrowUp, GripVertical, Plus, Save, Trash2, X } from 'lucide-
 import { useEffect, useState, type DragEvent } from 'react';
 import { Button, ConfirmDialog, InlineAlert, SlideOver, Textarea, toast } from '@/components';
 import { masterApi } from '@/data/repository';
-import { templateEverUsed, templateUsage } from '@/data/api/master';
+import { templateEverUsed, templateUsage } from '@/data/derive/master';
 import { useGateDb } from '@/components/DataGate/gateDb';
 import { RISK_TYPE_LABEL, type RiskType } from '@/domain/types';
 import { useAuth } from '@/state/useAuth';

@@ -2,10 +2,8 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import { devApi } from './data/http/dev';
-import { getDb, useDb } from './data/local/store';
-import { runScheduledTasks } from './data/local/scheduler';
+import legacyIds from './data/http/legacy-ids.json';
 import { applyTheme, getTheme } from './lib/theme';
-import { useClock } from './state/clock';
 import { useMe } from './state/me';
 import './styles/base.css';
 import './styles/print.css';
@@ -13,37 +11,31 @@ import './styles/print.css';
 applyTheme(getTheme());
 
 /**
- * Demo links (development backend only): `?sebagai=usr-andi` signs in as that persona,
- * `&waktu=YYYY-MM-DDTHH:mm` moves the simulated clock, `&data=sesuai` also rolls the sample data
- * back to that moment. Each acts on the backend (dev endpoints) and on the local store that the
- * not-yet-migrated namespaces still use.
+ * Demo links (development backend only): `?sebagai=usr-andi` signs in as that persona (prototype
+ * persona ids map to the demo users' ids), `&waktu=YYYY-MM-DDTHH:mm` moves the server clock, and
+ * `&data=sesuai` also rolls the demo data back to that moment.
  */
 async function applyDemoLink() {
   const params = new URLSearchParams(window.location.search);
   const at = params.get('waktu');
   const validAt = at && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(at) ? at : null;
   const persona = params.get('sebagai');
-  const nip = persona && getDb().users.find((u) => u.id === persona && u.active)?.nip;
   try {
-    if (validAt && params.get('data') === 'sesuai') {
-      await devApi.reset(validAt);
-      useDb.getState().reset(validAt);
+    if (validAt && params.get('data') === 'sesuai') await devApi.reset(validAt);
+    if (validAt) await devApi.setClock(validAt);
+    if (persona) {
+      const id = (legacyIds as Record<string, string>)[persona] ?? persona;
+      const { personas } = await devApi.personas();
+      const nip = personas.find((p) => p.userId === id && p.active)?.nip;
+      if (nip) await devApi.impersonate(nip);
     }
-    if (validAt) {
-      useClock.getState().setNow(validAt);
-      await devApi.setClock(validAt);
-    }
-    if (nip) await devApi.impersonate(nip);
   } catch {
-    // Without dev tools the backend ignores demo links; the app still starts.
+    // Without dev tools the backend refuses demo links; the app still starts.
   }
 }
 
 async function start() {
   await applyDemoLink();
-  // Scheduled tasks of the local namespaces run at start-up and whenever the clock moves.
-  runScheduledTasks();
-  useClock.subscribe(() => runScheduledTasks());
   await useMe.getState().refresh();
   createRoot(document.getElementById('root')!).render(
     <StrictMode>

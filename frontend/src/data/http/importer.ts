@@ -3,14 +3,9 @@
 // server checks again against current data. The CSV template stays a local derivation of the
 // position types (the page builds the download synchronously).
 
-import {
-  IMPORT_PERMISSION,
-  importApi as localImportApi,
-  type DryRun,
-  type ImportError,
-  type ImportJob,
-  type ImportKind,
-} from '../api/importer';
+import { csvTemplate, IMPORT_PERMISSION } from '@/data/derive/importer';
+import type { DryRun, ImportError, ImportJob, ImportKind } from '@/test/fake/api/importer';
+import type { DB } from '@/test/fake/db';
 import { useCollectionCache } from '@/lib/useCollections';
 import { useMe } from '@/state/me';
 import { apiFetch } from './client';
@@ -41,7 +36,12 @@ async function dryRunJob(kind: ImportKind, text: string): Promise<Job> {
 }
 
 export const importApi = {
-  template: (kind: ImportKind) => localImportApi.template(kind),
+  /** Built from the position types in the collection cache (the import page loads them). */
+  template: (kind: ImportKind) =>
+    csvTemplate(
+      { positionTypes: useCollectionCache.getState().data.positionTypes ?? [] } as DB,
+      kind,
+    ),
 
   dryRun: async (kind: ImportKind, text: string): Promise<DryRun> => {
     const job = await dryRunJob(kind, text);

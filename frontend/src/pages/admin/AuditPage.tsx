@@ -12,7 +12,7 @@ import {
   Skeleton,
   toast,
 } from '@/components';
-import type { AuditFilter, AuditRow } from '@/data/api/insights';
+import type { AuditFilter, AuditRow } from '@/test/fake/api/insights';
 import { insightsApi } from '@/data/repository';
 import { useGateDb } from '@/components/DataGate/gateDb';
 import { usePageMeta } from '@/layout/pageMeta';

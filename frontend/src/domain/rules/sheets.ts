@@ -1,7 +1,7 @@
 // Derived quarter summaries — FR-LBR-004 (Lembar Mutu), FR-RWY-001, FR-BRD-004. Neutral to the
 // reader except VIS-9: a late directorate's viewer gets nothing about risks it is still blind on.
 
-import type { DB } from '@/data/db';
+import type { DB } from '@/test/fake/db';
 import type { ISODateTime, Predicate, Quarter, RegisterRisk, RiskType } from '../types';
 import { RISK_TYPES } from '../types';
 import { predicateIn, quarterRisks } from './assessment';

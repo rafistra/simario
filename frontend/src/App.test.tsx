@@ -49,9 +49,9 @@ describe('routing and access guards', () => {
     expect(screen.getByText('Anda tidak memiliki akses ke halaman ini')).toBeInTheDocument();
   });
 
-  it('returns 403 for a workspace outside scope and 404 for an unknown id', () => {
+  it('returns 403 for a workspace outside scope and 404 for an unknown id', async () => {
     visit('/jabatan/pos-ppk-a2/papan/2027', 'usr-andi');
-    expect(screen.getByText('Anda tidak memiliki akses ke halaman ini')).toBeInTheDocument();
+    expect(await screen.findByText('Anda tidak memiliki akses ke halaman ini')).toBeInTheDocument();
   });
 
   it('returns 404 for unknown routes', () => {
@@ -59,9 +59,9 @@ describe('routing and access guards', () => {
     expect(screen.getByRole('heading', { name: 'Halaman tidak ditemukan' })).toBeInTheDocument();
   });
 
-  it('opens a workspace in scope with its header and tabs', () => {
+  it('opens a workspace in scope with its header and tabs', async () => {
     visit('/jabatan/pos-ppk-a1/papan/2027', 'usr-siti');
-    expect(screen.getByRole('heading', { name: 'PPK A-1' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'PPK A-1' })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Papan' })).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByText(/Pejabat: Andi Wirawan · Operator: Rafi Ananda/)).toBeInTheDocument();
   });

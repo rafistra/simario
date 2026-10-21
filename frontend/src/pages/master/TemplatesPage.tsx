@@ -13,7 +13,7 @@ import {
   type Column,
 } from '@/components';
 import { masterApi } from '@/data/repository';
-import { templateEverUsed, templateUsage } from '@/data/api/master';
+import { templateEverUsed, templateUsage } from '@/data/derive/master';
 import { useGateDb } from '@/components/DataGate/gateDb';
 import { RISK_TYPES, RISK_TYPE_LABEL, type RiskTemplate, type RiskType } from '@/domain/types';
 import { usePageMeta } from '@/layout/pageMeta';

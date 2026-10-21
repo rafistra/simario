@@ -22,7 +22,7 @@ describe('authApi over HTTP', () => {
     });
     await expect(authApi.signInSso('198204172008011003')).resolves.toEqual({
       ok: true,
-      userId: 'usr-andi',
+      userId: '640e8841-12a2-598c-a4d1-f5905f6c4c70',
     });
     expect(calls.find((c) => c.method === 'POST')!.body).toEqual({ nip: '198204172008011003' });
   });

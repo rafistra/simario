@@ -3,8 +3,13 @@
 // bump `useAssessmentRevision`, which the assessment pages include in their query keys.
 
 import { create } from 'zustand';
-import type { AssessmentView, CellPatch, FinalisePreview, QueueView } from '../api/assessment';
-import type { NewFile } from '../api/thread';
+import type {
+  AssessmentView,
+  CellPatch,
+  FinalisePreview,
+  QueueView,
+} from '@/test/fake/api/assessment';
+import type { NewFile } from '@/test/fake/api/thread';
 import { apiFetch } from './client';
 
 interface Revision {

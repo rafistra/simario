@@ -1,10 +1,10 @@
 import { ChevronDown, CircleAlert, Plus } from 'lucide-react';
 import { useEffect, useId, useState } from 'react';
 import { Button, Checkbox, MarkerBadge, Toggle } from '@/components';
-import type { DB } from '@/data/db';
+import type { DB } from '@/test/fake/db';
 import { stageAnchor, subsectionAnchor } from '@/domain/rules/register';
 import { RISK_TYPE_LABEL, type RegisterRisk, type RiskType } from '@/domain/types';
-import type { RegisterAccess, StageModel, SubsectionModel } from '@/data/api/registerView';
+import type { RegisterAccess, StageModel, SubsectionModel } from '@/test/fake/api/registerView';
 import { RiskCard, type RiskCardActions } from './RiskCard';
 
 const SHORT: Record<RiskType, string> = {

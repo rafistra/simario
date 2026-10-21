@@ -11,13 +11,8 @@ import {
   toast,
   type Column,
 } from '@/components';
-import {
-  IMPORT_LABEL,
-  type DryRun,
-  type ImportError,
-  type ImportJob,
-  type ImportKind,
-} from '@/data/api/importer';
+import { IMPORT_LABEL } from '@/data/derive/importer';
+import type { DryRun, ImportError, ImportJob, ImportKind } from '@/test/fake/api/importer';
 import { importApi } from '@/data/repository';
 import { usePageMeta } from '@/layout/pageMeta';
 import { formatDateTime } from '@/lib/format';

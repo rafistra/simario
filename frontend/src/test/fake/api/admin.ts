@@ -18,6 +18,8 @@ import { ApiError, call } from '../local/call';
 import { getDb, mutateDb } from '../local/store';
 import { newId, writeAudit, writeNotification } from '../local/writers';
 import { staffDirectory } from '../seed';
+import { deactivationImpact } from '@/data/derive/admin';
+export { deactivationImpact };
 
 const audit = (
   d: DB,
@@ -109,32 +111,6 @@ export interface ReplaceInput {
   decreeNo: string;
   decreeDate: string;
   decreeFile: string | null;
-}
-
-/** What deactivating a user would end (dialog consequences, FR-ADM-004). */
-export function deactivationImpact(db: DB, userId: string, today: string) {
-  const occ = db.occupancies.filter(
-    (o) => o.userId === userId && activeOn(o.startDate, o.endDate, today),
-  );
-  const dels = db.delegates.filter(
-    (x) => x.userId === userId && activeOn(x.startDate, x.endDate, today),
-  );
-  const appointed = occ.flatMap((o) => activeDelegatesOfOccupancy(db, o.id, today));
-  const fillerBlock = occ.find(
-    (o) =>
-      o.isFiller &&
-      multi(db, o.positionId) &&
-      db.occupancies.some(
-        (x) =>
-          x.positionId === o.positionId && x.id !== o.id && activeOn(x.startDate, x.endDate, today),
-      ),
-  );
-  return {
-    occupancies: occ.length,
-    delegations: dels.length,
-    appointedOperators: appointed.length,
-    fillerBlock: fillerBlock ? posName(db, fillerBlock.positionId) : null,
-  };
 }
 
 /** Core appointment, shared with the bulk import (FR-ADM-013). Mutates the draft. */

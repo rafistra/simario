@@ -14,7 +14,7 @@ import {
   type Column,
   type StatusKind,
 } from '@/components';
-import type { QueueRow, QueueStatus } from '@/data/api/assessment';
+import type { QueueRow, QueueStatus } from '@/test/fake/api/assessment';
 import { assessmentApi, useAssessmentRevision } from '@/data/repository';
 import { QUARTER_ROMAN } from '@/domain/calendar';
 import { usePageMeta } from '@/layout/pageMeta';
@@ -42,7 +42,7 @@ export default function QueuePage() {
   const [status, setStatus] = useState<QueueStatus | ''>('');
   const [attention, setAttention] = useState<Attention[]>([]);
   const revision = useAssessmentRevision((s) => s.revision);
-  const q = useQuery(() => assessmentApi.queue(quarterId), [quarterId, revision]);
+  const q = useQuery(() => assessmentApi.queue(quarterId), [quarterId], revision);
 
   if (q.loading && !q.data)
     return (

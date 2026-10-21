@@ -1,6 +1,6 @@
 import vectors from '@vectors/metrics.json';
-import type { DB } from '@/data/db';
-import { buildMetrics } from '@/data/api/insights';
+import type { DB } from '@/test/fake/db';
+import { buildMetrics } from '@/test/fake/api/insights';
 import { loadVectors } from '@/test/vectors';
 
 // Shared with backend/tests/insights/test_metrics.py (spec §4.9).

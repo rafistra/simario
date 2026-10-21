@@ -18,7 +18,7 @@ import {
   toast,
   type Column,
 } from '@/components';
-import { deactivationImpact } from '@/data/api/admin';
+import { deactivationImpact } from '@/data/derive/admin';
 import { adminApi } from '@/data/repository';
 import { useGateDb } from '@/components/DataGate/gateDb';
 import { effectiveRoleIds } from '@/domain/rules/access';

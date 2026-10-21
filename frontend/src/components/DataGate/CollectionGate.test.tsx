@@ -1,6 +1,6 @@
 import { act, render, screen } from '@testing-library/react';
 import { useState } from 'react';
-import { useDb } from '@/data/local/store';
+import { useDb } from '@/test/fake/local/store';
 import { useCollectionCache } from '@/lib/useCollections';
 import { useDevSettings } from '@/state/devSettings';
 import { useSession } from '@/state/session';

@@ -1,6 +1,6 @@
 import boardVectors from '@vectors/board.json';
 import visibilityVectors from '@vectors/visibility.json';
-import type { DB } from '@/data/db';
+import type { DB } from '@/test/fake/db';
 import { loadVectors } from '@/test/vectors';
 import {
   canEditComment,

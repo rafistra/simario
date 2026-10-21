@@ -27,4 +27,3 @@ export { ConfirmDialog, SlideOver } from './Overlay/Overlay';
 export { BottomBar } from './BottomBar/BottomBar';
 export { ScoreInput, type ScoreOptionItem } from './ScoreInput/ScoreInput';
 export { NotificationPanel, NotificationItem } from './NotificationPanel/NotificationPanel';
-export { DataGate } from './DataGate/DataGate';

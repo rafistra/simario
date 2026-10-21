@@ -1,8 +1,8 @@
 import { Bell, ChevronRight, Menu, Search } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDb } from '@/data/local/store';
-import { lini1PositionsInScope } from '@/domain/rules/access';
+import { homeApi } from '@/data/repository';
+import { useQuery } from '@/lib/useQuery';
 import { useFocusTrap } from '@/lib/useFocusTrap';
 import { useNotifications } from '@/state/notifications';
 import { useAuth } from '@/state/useAuth';
@@ -14,7 +14,8 @@ import './Shell.css';
 /** Global search (Ctrl K): pages in the current menu and Lini 1 positions in scope. Risks join in Tahap 5. */
 function SearchDialog({ onClose }: { onClose: () => void }) {
   const auth = useAuth();
-  const db = useDb((s) => s.db);
+  // Lini 1 positions in the viewer's scope, from the server (FR-BRD-011 list).
+  const scope = useQuery(() => homeApi.positions(), [auth.user.id]);
   const navigate = useNavigate();
   const ref = useRef<HTMLDivElement>(null);
   const [q, setQ] = useState('');
@@ -23,20 +24,16 @@ function SearchDialog({ onClose }: { onClose: () => void }) {
     const pages = navFor(auth.roleView, auth).flatMap((s) =>
       s.items.map((i) => ({ kind: 'Halaman', label: i.label, to: i.to })),
     );
-    const positions = lini1PositionsInScope(db, auth.user.id, auth.today).map((id) => {
-      const p = db.positions.find((x) => x.id === id)!;
-      const unit = db.orgUnits.find((o) => o.id === p.orgUnitId)!;
-      return {
-        kind: 'Jabatan',
-        label: `${p.name} · ${unit.code}`,
-        to: `/jabatan/${p.id}/papan/${auth.currentFiscalYear}`,
-      };
-    });
+    const positions = (scope.data ?? []).map((p) => ({
+      kind: 'Jabatan',
+      label: `${p.name} · ${p.unit}`,
+      to: `/jabatan/${p.positionId}/papan/${auth.currentFiscalYear}`,
+    }));
     const needle = q.trim().toLowerCase();
     return [...pages, ...positions]
       .filter((i) => !needle || i.label.toLowerCase().includes(needle))
       .slice(0, 12);
-  }, [auth, db, q]);
+  }, [auth, scope.data, q]);
   const go = (to: string) => {
     onClose();
     navigate(to);

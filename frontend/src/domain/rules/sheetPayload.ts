@@ -3,7 +3,7 @@
 // result for the risk has opened. Payloads keep per-risk values so a late directorate can be
 // masked per reader (FR-LBR-010, VIS-9) and totals recomputed without masked risks.
 
-import type { DB } from '@/data/db';
+import type { DB } from '@/test/fake/db';
 import { QUARTER_ROMAN } from '../calendar';
 import { predicateFor } from '../scoreBands';
 import type {

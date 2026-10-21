@@ -19,11 +19,8 @@ import {
   type Column,
 } from '@/components';
 import { ApiError, masterApi } from '@/data/repository';
-import {
-  activePositionsOfType,
-  positionDeactivationImpact,
-  type PositionInput,
-} from '@/data/api/master';
+import { activePositionsOfType, positionDeactivationImpact } from '@/data/derive/master';
+import type { PositionInput } from '@/test/fake/api/master';
 import { useGateDb } from '@/components/DataGate/gateDb';
 import { officialsOf } from '@/domain/rules/access';
 import type { Line, Position, PositionType } from '@/domain/types';

@@ -2,7 +2,7 @@ import { Check, Ellipsis, Lock, MessageSquare, Plus, Trash2 } from 'lucide-react
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, MarkerBadge } from '@/components';
-import type { DB } from '@/data/db';
+import type { DB } from '@/test/fake/db';
 import { inactiveLabel } from '@/domain/rules/register';
 import type {
   MitigationTemplate,
@@ -10,7 +10,7 @@ import type {
   RegisterRisk,
   RiskTemplate,
 } from '@/domain/types';
-import type { RegisterAccess } from '@/data/api/registerView';
+import type { RegisterAccess } from '@/test/fake/api/registerView';
 
 const isPublished = (x: { status: string }) => x.status === 'active' || x.status === 'inactive';
 

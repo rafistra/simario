@@ -3,7 +3,7 @@
 
 import { minutesBetween, now } from '@/state/clock';
 import { useSession } from '@/state/session';
-import type { SsoOutcome } from '../http/auth';
+import type { SsoOutcome } from '@/data/http/auth';
 import { ApiError, call } from './call';
 import { getDb, mutateDb } from './store';
 import { writeAudit } from './writers';

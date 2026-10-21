@@ -17,8 +17,8 @@ import type {
   RowSummary,
   RowView,
   ScoreOptionItem,
-} from '@/data/api/assessment';
-import type { NewFile } from '@/data/api/thread';
+} from '@/test/fake/api/assessment';
+import type { NewFile } from '@/test/fake/api/thread';
 import { attachmentUrl } from '@/data/repository';
 import { RISK_TYPE_LABEL } from '@/domain/types';
 import { formatDate, formatDateTime, formatFileSize } from '@/lib/format';

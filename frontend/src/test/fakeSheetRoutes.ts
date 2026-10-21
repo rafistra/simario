@@ -1,7 +1,7 @@
 // Sheet routes of the test fake backend (B7): the HTTP sheetApi in Vitest reaches the local
 // implementation in data/api/sheets.ts over the prototype seed.
 
-import { sheetApi as local } from '@/data/api/sheets';
+import { sheetApi as local } from '@/test/fake/api/sheets';
 import type { SheetSection } from '@/domain/rules/sheetPayload';
 import type { PrintSnapshot } from '@/domain/types';
 import type { Handler } from './fakeRegisterRoutes';

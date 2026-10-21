@@ -13,7 +13,7 @@ import {
   StatusChip,
   toast,
 } from '@/components';
-import type { SheetView } from '@/data/api/sheets';
+import type { SheetView } from '@/test/fake/api/sheets';
 import { sheetApi, useSheetRevision } from '@/data/repository';
 import { QUARTER_ROMAN } from '@/domain/calendar';
 import type { SheetPayload, SheetSection } from '@/domain/rules/sheetPayload';
@@ -42,7 +42,8 @@ export default function SheetPage() {
   const revision = useSheetRevision((s) => s.revision);
   const q = useQuery(
     () => sheetApi.view(position.id, fiscalYear, quarter, snapshotId),
-    [position.id, fiscalYear, quarter, snapshotId, revision],
+    [position.id, fiscalYear, quarter, snapshotId],
+    revision,
   );
   if (q.loading && !q.data)
     return (

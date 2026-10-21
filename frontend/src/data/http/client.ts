@@ -4,7 +4,6 @@
 
 import { useDevSettings } from '@/state/devSettings';
 import { ApiError, DISCONNECTED_MESSAGE, OFFLINE_MESSAGE } from '../errors';
-import { toBackendIds, toLocalIds } from './legacyIds';
 
 const BASE = '/api/v1';
 const WITA_MS = 8 * 60 * 60 * 1000;
@@ -42,24 +41,26 @@ function normaliseDates(value: unknown): unknown {
 export interface FetchInit {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   body?: unknown;
-  /** Multipart body (uploads); ids inside are the caller's to translate. */
+  /** Multipart body (uploads). */
   form?: FormData;
   query?: Record<string, string | number | undefined>;
+  /** Background loads (preferences) skip the DevPanel's simulated latency and failures. */
+  background?: boolean;
 }
 
 export async function apiFetch<T>(path: string, init: FetchInit = {}): Promise<T> {
   const dev = useDevSettings.getState();
-  if (dev.latency) await wait(150 + Math.random() * 250);
+  if (dev.latency && !init.background) await wait(150 + Math.random() * 250);
   if (dev.offline) throw new ApiError('offline', OFFLINE_MESSAGE);
-  if (dev.failNext) {
+  if (dev.failNext && !init.background) {
     useDevSettings.getState().set({ failNext: false });
     throw new ApiError('server', DISCONNECTED_MESSAGE);
   }
 
   const method = init.method ?? 'GET';
-  const url = new URL(BASE + toBackendIds(path), window.location.origin);
+  const url = new URL(BASE + path, window.location.origin);
   for (const [key, value] of Object.entries(init.query ?? {}))
-    if (value !== undefined) url.searchParams.set(key, String(toBackendIds(value)));
+    if (value !== undefined) url.searchParams.set(key, String(value));
   const headers: Record<string, string> = { Accept: 'application/json' };
   if (init.body !== undefined && !init.form) headers['Content-Type'] = 'application/json';
   if (method !== 'GET') {
@@ -76,9 +77,7 @@ export async function apiFetch<T>(path: string, init: FetchInit = {}): Promise<T
       method,
       credentials: 'same-origin',
       headers,
-      body:
-        init.form ??
-        (init.body === undefined ? undefined : JSON.stringify(toBackendIds(init.body))),
+      body: init.form ?? (init.body === undefined ? undefined : JSON.stringify(init.body)),
     });
   } catch {
     throw new ApiError('offline', OFFLINE_MESSAGE);
@@ -89,7 +88,7 @@ export async function apiFetch<T>(path: string, init: FetchInit = {}): Promise<T
     const body = (data ?? {}) as { code?: string; message?: string; details?: unknown };
     const code = body.code ?? 'server';
     if (res.status === 401 && code === 'unauthenticated') onUnauthenticated?.();
-    throw new ApiError(code, body.message ?? DISCONNECTED_MESSAGE, toLocalIds(body.details));
+    throw new ApiError(code, body.message ?? DISCONNECTED_MESSAGE, body.details);
   }
-  return toLocalIds(normaliseDates(data)) as T;
+  return normaliseDates(data) as T;
 }

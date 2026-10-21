@@ -14,6 +14,7 @@ from simario.domain import access
 from simario.registers.models import Register
 
 from .models import OrgUnit, Position, PositionDelegate
+from .serializers import PositionSerializer
 
 Row = dict[str, Any]
 
@@ -50,15 +51,7 @@ def workspace(user: User, position_id: Any, fiscal_year: int | None) -> Row:
         if _active(d.start_date, d.end_date, today)
     ]
     return {
-        "position": {
-            "id": str(position.id),
-            "code": position.code,
-            "name": position.name,
-            "short_name": position.short_name,
-            "org_unit_id": str(position.org_unit_id),
-            "position_type_id": str(position.position_type_id),
-            "active": position.active,
-        },
+        "position": dict(PositionSerializer(position).data),
         "unit": {"id": str(unit.id), "code": unit.code, "name": unit.name},
         "years": [{"year": y, "archived": y in archived} for y in years],
         "officials": [

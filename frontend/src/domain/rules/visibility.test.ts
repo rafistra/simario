@@ -1,4 +1,4 @@
-import { buildSeed } from '@/data/seed';
+import { buildSeed } from '@/test/fake/seed';
 import type { Assessment } from '../types';
 import {
   canSeeAssessment,

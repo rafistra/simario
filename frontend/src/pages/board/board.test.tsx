@@ -1,7 +1,8 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
-import { getDb, useDb } from '@/data/local/store';
-import { simulateIncomingComment } from '@/dev/simulate';
+import { useBoardRevision } from '@/data/repository';
+import { getDb, useDb } from '@/test/fake/local/store';
+import { simulateIncomingComment } from '@/test/fake/simulate';
 import type { WorkspaceOutletContext } from '@/layout/Workspace';
 import { useClock } from '@/state/clock';
 import { useDevSettings } from '@/state/devSettings';
@@ -45,10 +46,12 @@ describe('Papan Risiko', () => {
     expect(screen.getByText(/1 dari \d+ risiko/)).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /^Penyerapan anggaran/ })).not.toBeInTheDocument();
     // Filters are remembered per user per position.
-    expect(
-      getDb().preferences.find((p) => p.userId === 'usr-andi' && p.key === 'papan:pos-ppk-a1')
-        ?.value,
-    ).toMatchObject({ markers: ['berulang'] });
+    await waitFor(() =>
+      expect(
+        getDb().preferences.find((p) => p.userId === 'usr-andi' && p.key === 'papan:pos-ppk-a1')
+          ?.value,
+      ).toMatchObject({ markers: ['berulang'] }),
+    );
   });
 
   it('shows the unpublished empty state with "Buka Register" for Lini 1', async () => {
@@ -100,6 +103,8 @@ describe('Utas Risiko', () => {
     act(() => {
       simulateIncomingComment('rr-a1-pembayaran', 'usr-andi');
     });
+    // The 30-second poll finds a comment by someone else and reloads the thread view.
+    act(() => useBoardRevision.getState().bump());
     const banner = await screen.findByRole('button', { name: '1 komentar baru — Tampilkan' });
     expect(
       screen.queryByText('Mohon pembaruan progres minggu ini beserta dokumen pendukungnya.'),

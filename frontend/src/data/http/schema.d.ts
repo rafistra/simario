@@ -4,6 +4,55 @@
  */
 
 export interface paths {
+    "/api/v1/assessment-files/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["assessment_files_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assessment-queue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET: the Lini 3 queue (`QueueView`, FR-NIL-010). */
+        get: operations["assessment_queue_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assessments/{id}/reopen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["assessments_reopen_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/attachments/{id}": {
         parameters: {
             query?: never;
@@ -32,6 +81,42 @@ export interface paths {
          *     answer with a sample file.
          */
         get: operations["attachments_download_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description GET: the audit trail (FR-ADM-008), redacted per VIS-8 unless `original=1` (izin 24,
+         *     logged).
+         */
+        get: operations["audit_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/audit/facets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["audit_facets_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -304,6 +389,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/home": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET: the home cards for the active holding (`HomeView`, FR-BRD-001 … 010). */
+        get: operations["home_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/imports": {
         parameters: {
             query?: never;
@@ -417,6 +519,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/metrics/{year}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["metrics_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/metrics/{year}.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["metrics_.csv_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/monitoring-assignments": {
         parameters: {
             query?: never;
@@ -444,6 +578,23 @@ export interface paths {
         put?: never;
         post?: never;
         delete: operations["monitoring_assignments_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/my-positions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET: Lini 1 positions in the viewer's scope (`PositionListRow[]`, FR-BRD-011). */
+        get: operations["my_positions_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -594,6 +745,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/positions/{id}/assessments/{year}/{tw}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description GET: the assessment page of a position and quarter (`AssessmentView`, FR-NIL-001). With
+         *     `?blind=1` and permission 24 the Superadmin sees unopened assessments; every such view is
+         *     audit-logged (FR-NIL-012).
+         */
+        get: operations["positions_assessments_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/positions/{id}/assessments/{year}/{tw}/finalise-preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["positions_assessments_finalise_preview_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/positions/{id}/board/{year}": {
         parameters: {
             query?: never;
@@ -643,6 +831,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/positions/{id}/explanations/ready": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["positions_explanations_ready_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/positions/{id}/explanations/send": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["positions_explanations_send_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/positions/{id}/filler": {
         parameters: {
             query?: never;
@@ -659,6 +879,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/positions/{id}/history/{year}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET: the risk history of a position and fiscal year (`HistoryView`, FR-RWY-001). */
+        get: operations["positions_history_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/positions/{id}/impact": {
         parameters: {
             query?: never;
@@ -669,6 +906,38 @@ export interface paths {
         get: operations["positions_impact_retrieve"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/positions/{id}/quarters/{quarter}/assessments/{assessor}/finalise": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["positions_quarters_assessments_finalise_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/positions/{id}/quarters/{quarter}/assessments/{assessor}/ready": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["positions_quarters_assessments_ready_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -701,6 +970,105 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["positions_replace_official_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/positions/{id}/sheet-photos/{section}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["positions_sheet_photos_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/positions/{id}/sheets/{year}/{tw}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET: the running sheet, or a frozen copy with `?snapshot=` (`SheetView`, FR-LBR-001). */
+        get: operations["positions_sheets_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/positions/{id}/sheets/{year}/{tw}/print": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["positions_sheets_print_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/positions/{id}/workspace": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET: the workspace header of a Lini 1 position (`?ta=` for the viewed fiscal year). */
+        get: operations["positions_workspace_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/preferences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET: `{key: value}` of the signed-in user. Keys are returned as stored (not camelCased). */
+        get: operations["preferences_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/preferences/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["preferences_update"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1088,6 +1456,56 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/results/{id}/explanation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["results_explanation_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/risk-quarters/{id}/assessments/{assessor}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description PATCH: autosave of the viewer's own cell (FR-NIL-002, 005). */
+        patch: operations["risk_quarters_assessments_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/risk-quarters/{id}/assessments/{assessor}/files": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description POST (multipart `files`, optional `data` = {"confidential": [bool]}): evidence files. */
+        post: operations["risk_quarters_assessments_files_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/risk-templates": {
         parameters: {
             query?: never;
@@ -1262,6 +1680,22 @@ export interface paths {
         options?: never;
         head?: never;
         patch: operations["score_options_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/snapshots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["snapshots_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/staff": {
@@ -1514,6 +1948,9 @@ export interface components {
             }[];
             fromYear: number;
         };
+        Count: {
+            count: number;
+        };
         CreatedUser: {
             /** Format: uuid */
             id: string;
@@ -1639,6 +2076,12 @@ export interface components {
          * @enum {string}
          */
         ImportKindEnum: "jabatan" | "pejabat" | "penugasan";
+        /**
+         * @description * `komunikasi` - komunikasi
+         *     * `mutu` - mutu
+         * @enum {string}
+         */
+        KindsEnum: "komunikasi" | "mutu";
         LoginRequest: {
             nip: string;
             password: string;
@@ -1766,6 +2209,13 @@ export interface components {
         PatchedActiveRequest: {
             active?: boolean;
         };
+        PatchedCellPatchRequest: {
+            /** Format: double */
+            score?: number | null;
+            notRelevant?: boolean;
+            notRelevantReason?: string | null;
+            note?: string;
+        };
         PatchedCommentEditRequest: {
             body?: string;
         };
@@ -1787,6 +2237,10 @@ export interface components {
             stageId?: string;
             riskType?: (components["schemas"]["RiskTypeEnum"] | components["schemas"]["NullEnum"]) | null;
             reason?: string;
+        };
+        PatchedExplanationPatchRequest: {
+            reason?: string;
+            plan?: string;
         };
         PatchedFiscalYearPatchRequest: {
             toleranceDays?: number;
@@ -1845,6 +2299,11 @@ export interface components {
             personas: components["schemas"]["Persona"][];
             unregistered: components["schemas"]["Unregistered"];
         };
+        PhotosRequest: {
+            /** Format: uuid */
+            quarterId: string;
+            attachmentIds: string[];
+        };
         /** @description Shape of `Position` in frontend/src/domain/types.ts. */
         Position: {
             /** Format: uuid */
@@ -1880,6 +2339,12 @@ export interface components {
          * @enum {string}
          */
         PredicateEnum: "kurang" | "cukup" | "terkendali";
+        PreferenceRequest: {
+            value: unknown;
+        };
+        PrintRequest: {
+            kinds: components["schemas"]["KindsEnum"][];
+        };
         ProposalRow: {
             /** Format: uuid */
             id: string;
@@ -1961,6 +2426,9 @@ export interface components {
             counts: {
                 [key: string]: number;
             };
+        };
+        ResultIdsRequest: {
+            resultIds: string[];
         };
         /**
          * @description * `kinerja_anggaran` - kinerja_anggaran
@@ -2057,6 +2525,69 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    assessment_files_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    assessment_queue_retrieve: {
+        parameters: {
+            query?: {
+                quarterId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    assessments_reopen_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     attachments_partial_update: {
         parameters: {
             query?: never;
@@ -2100,6 +2631,56 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    audit_retrieve: {
+        parameters: {
+            query?: {
+                action?: string;
+                actor?: string;
+                entityType?: string;
+                from?: string;
+                original?: string;
+                position?: string;
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    audit_facets_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
             };
         };
     };
@@ -2464,6 +3045,29 @@ export interface operations {
             };
         };
     };
+    home_retrieve: {
+        parameters: {
+            query?: {
+                position?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
     imports_list: {
         parameters: {
             query?: never;
@@ -2631,6 +3235,50 @@ export interface operations {
             };
         };
     };
+    metrics_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    "metrics_.csv_retrieve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
     monitoring_assignments_create: {
         parameters: {
             query?: never;
@@ -2672,6 +3320,27 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    my_positions_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
             };
         };
     };
@@ -2891,6 +3560,60 @@ export interface operations {
             };
         };
     };
+    positions_assessments_retrieve: {
+        parameters: {
+            query?: {
+                blind?: boolean;
+            };
+            header?: never;
+            path: {
+                id: string;
+                tw: number;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    positions_assessments_finalise_preview_retrieve: {
+        parameters: {
+            query?: {
+                assessorPositionId?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+                tw: number;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
     positions_board_retrieve: {
         parameters: {
             query?: never;
@@ -2968,6 +3691,59 @@ export interface operations {
             };
         };
     };
+    positions_explanations_ready_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResultIdsRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ResultIdsRequest"];
+                "multipart/form-data": components["schemas"]["ResultIdsRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    positions_explanations_send_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResultIdsRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ResultIdsRequest"];
+                "multipart/form-data": components["schemas"]["ResultIdsRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Count"];
+                };
+            };
+        };
+    };
     positions_filler_create: {
         parameters: {
             query?: never;
@@ -2995,6 +3771,30 @@ export interface operations {
             };
         };
     };
+    positions_history_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
     positions_impact_retrieve: {
         parameters: {
             query?: never;
@@ -3012,6 +3812,54 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Impact"];
+                };
+            };
+        };
+    };
+    positions_quarters_assessments_finalise_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                assessor: string;
+                id: string;
+                quarter: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    positions_quarters_assessments_ready_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                assessor: string;
+                id: string;
+                quarter: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Count"];
                 };
             };
         };
@@ -3060,6 +3908,163 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ReplaceResult"];
                 };
+            };
+        };
+    };
+    positions_sheet_photos_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                section: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PhotosRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PhotosRequest"];
+                "multipart/form-data": components["schemas"]["PhotosRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    positions_sheets_retrieve: {
+        parameters: {
+            query?: {
+                snapshot?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+                tw: number;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    positions_sheets_print_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                tw: number;
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PrintRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PrintRequest"];
+                "multipart/form-data": components["schemas"]["PrintRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    positions_workspace_retrieve: {
+        parameters: {
+            query?: {
+                ta?: number;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    preferences_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    preferences_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PreferenceRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PreferenceRequest"];
+                "multipart/form-data": components["schemas"]["PreferenceRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -3695,6 +4700,80 @@ export interface operations {
             };
         };
     };
+    results_explanation_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedExplanationPatchRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedExplanationPatchRequest"];
+                "multipart/form-data": components["schemas"]["PatchedExplanationPatchRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    risk_quarters_assessments_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                assessor: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCellPatchRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedCellPatchRequest"];
+                "multipart/form-data": components["schemas"]["PatchedCellPatchRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    risk_quarters_assessments_files_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                assessor: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     risk_templates_create: {
         parameters: {
             query?: never;
@@ -4032,6 +5111,29 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    snapshots_retrieve: {
+        parameters: {
+            query?: {
+                number?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
             };
         };
     };

@@ -17,8 +17,8 @@ import {
 import { useGateDb } from '@/components/DataGate/gateDb';
 import { ApiError, registerApi, registerViewKey, useRegisterViews } from '@/data/repository';
 import { useSession } from '@/state/session';
-import type { CopySummary, RegisterKey } from '@/data/api/register';
-import type { RegisterView } from '@/data/api/registerView';
+import type { CopySummary, RegisterKey } from '@/test/fake/api/register';
+import type { RegisterView } from '@/test/fake/api/registerView';
 import { QUARTER_ROMAN } from '@/domain/calendar';
 import { deactivationQuarter, type RegisterGap } from '@/domain/rules/register';
 import {

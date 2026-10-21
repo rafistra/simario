@@ -1,6 +1,6 @@
 // homeApi over HTTP (docs/03_api_contract.md §4.7). Same signatures as data/api/home.ts.
 
-import type { HomeView, PositionListRow } from '../api/home';
+import type { HomeView, PositionListRow } from '@/test/fake/api/home';
 import { apiFetch } from './client';
 
 export const homeApi = {

@@ -1,5 +1,5 @@
 import { attachmentUrl } from '@/data/repository';
-import type { SnapshotInfo } from '@/data/api/sheets';
+import type { SnapshotInfo } from '@/test/fake/api/sheets';
 import { QUARTER_ROMAN } from '@/domain/calendar';
 import {
   mutuFromPayload,

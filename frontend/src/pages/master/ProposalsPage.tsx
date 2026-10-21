@@ -32,7 +32,7 @@ export default function ProposalsPage() {
   usePageMeta(['Master Data', 'Usulan']);
   const auth = useAuth();
   const [revision, setRevision] = useState(0);
-  const query = useQuery(() => proposalApi.list(), [revision]);
+  const query = useQuery(() => proposalApi.list(), [], revision);
   const [status, setStatus] = useState<RiskProposal['status']>('pending');
   const [page, setPage] = useState(1);
   const [rejecting, setRejecting] = useState<ProposalRow | null>(null);

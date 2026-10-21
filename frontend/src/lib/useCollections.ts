@@ -4,7 +4,7 @@
 
 import { useCallback, useEffect, useMemo } from 'react';
 import { create } from 'zustand';
-import type { DB } from '@/data/db';
+import type { DB } from '@/test/fake/db';
 import { collectionsApi, type CollectionName } from '@/data/http/collections';
 
 interface Cache {

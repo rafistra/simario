@@ -1,7 +1,7 @@
 import { Plus, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Card, Select, Textarea, TextInput } from '@/components';
-import type { DB } from '@/data/db';
+import type { DB } from '@/test/fake/db';
 import { finalisingOfficial } from '@/domain/rules/access';
 import { dataUmumAnchor } from '@/domain/rules/register';
 import type { DataUmumField, DataUmumValues, Position, Register } from '@/domain/types';

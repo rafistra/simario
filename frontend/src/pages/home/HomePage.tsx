@@ -11,7 +11,7 @@ import {
   Skeleton,
   StatusChip,
 } from '@/components';
-import type { ActivityRow, HomeView, Obligation } from '@/data/api/home';
+import type { ActivityRow, HomeView, Obligation } from '@/test/fake/api/home';
 import { homeApi } from '@/data/repository';
 import { QUARTER_ROMAN } from '@/domain/calendar';
 import type { LembarMutu } from '@/domain/rules/sheets';

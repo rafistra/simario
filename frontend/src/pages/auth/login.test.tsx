@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { useDb } from '@/data/local/store';
+import { useDb } from '@/test/fake/local/store';
 import { useDevSettings } from '@/state/devSettings';
 import { useSession } from '@/state/session';
 import LoginPage from './LoginPage';

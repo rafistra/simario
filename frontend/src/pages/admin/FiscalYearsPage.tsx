@@ -10,7 +10,7 @@ import {
   TextInput,
   toast,
 } from '@/components';
-import { archiveStatus, quarterProblems } from '@/data/api/calendar';
+import { archiveStatus, quarterProblems } from '@/data/derive/calendar';
 import { ApiError, calendarApi } from '@/data/repository';
 import { useGateDb } from '@/components/DataGate/gateDb';
 import type { Quarter } from '@/domain/types';

@@ -1,7 +1,7 @@
 import { act, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { apiFetch } from '@/data/http/client';
-import { useDb } from '@/data/local/store';
+import { useDb } from '@/test/fake/local/store';
 import { useDevSettings } from '@/state/devSettings';
 import { useMe } from '@/state/me';
 import { useSession } from '@/state/session';

@@ -1,7 +1,7 @@
 import { useDevSettings } from '@/state/devSettings';
-import { ApiError, DISCONNECTED_MESSAGE, OFFLINE_MESSAGE } from '../errors';
+import { ApiError, DISCONNECTED_MESSAGE, OFFLINE_MESSAGE } from '@/data/errors';
 
-export { ApiError } from '../errors';
+export { ApiError } from '@/data/errors';
 
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 

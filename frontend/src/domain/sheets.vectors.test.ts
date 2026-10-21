@@ -1,5 +1,5 @@
 import vectors from '@vectors/sheets.json';
-import type { DB } from '@/data/db';
+import type { DB } from '@/test/fake/db';
 import { loadVectors } from '@/test/vectors';
 import { latestOpenedQuarter, lembarMutu } from './rules/sheets';
 import { viewerFor } from './rules/visibility';

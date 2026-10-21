@@ -1,7 +1,7 @@
 // Collection reads (GET /api/v1/collections/<name>): prototype-shaped rows for the master-data
 // and administration pages, which keep their own derivations (B2).
 
-import type { DB } from '@/data/db';
+import type { DB } from '@/test/fake/db';
 import { apiFetch } from './client';
 
 export type CollectionName = keyof DB;

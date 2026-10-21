@@ -4,7 +4,6 @@
 
 import { useEffect } from 'react';
 import { create } from 'zustand';
-import { useDb } from '@/data/local/store';
 import { notificationApi } from '@/data/repository';
 import type { Notification } from '@/domain/types';
 import { now } from './clock';
@@ -47,13 +46,12 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   },
 }));
 
-/** Loads (and reloads after local data changes) the notifications of `userId`. */
+/** Loads the notifications of `userId` (the bell polls; pages reload on mount). */
 export function useNotifications(userId: string) {
-  const version = useDb((s) => s.version);
   const state = useNotificationStore();
   useEffect(() => {
     void useNotificationStore.getState().load(userId);
-  }, [userId, version]);
+  }, [userId]);
   const mine = state.userId === userId;
   return {
     items: mine ? state.items : [],

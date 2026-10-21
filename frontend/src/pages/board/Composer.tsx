@@ -1,7 +1,7 @@
 import { AtSign, Paperclip, Send, X } from 'lucide-react';
 import { useId, useMemo, useRef, useState, type ChangeEvent, type KeyboardEvent } from 'react';
 import { Button, Checkbox, InlineAlert, Toggle } from '@/components';
-import type { NewFile } from '@/data/api/thread';
+import type { NewFile } from '@/test/fake/api/thread';
 import type { Holding } from '@/domain/rules/access';
 import { fileProblem, MAX_COMMENT_LENGTH, MAX_FILES, type Participant } from '@/domain/rules/board';
 import type { Quarter } from '@/domain/types';

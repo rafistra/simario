@@ -9,7 +9,7 @@ import {
   LineChip,
   MarkerBadge,
 } from '@/components';
-import type { ThreadComment } from '@/data/api/board';
+import type { ThreadComment } from '@/test/fake/api/board';
 import { formatDateTime, formatFileSize, formatRelative } from '@/lib/format';
 import { attachmentUrl } from '@/data/repository';
 

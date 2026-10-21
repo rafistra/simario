@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useDb } from '@/data/local/store';
 
 export interface QueryState<T> {
   data: T | undefined;
@@ -9,11 +8,15 @@ export interface QueryState<T> {
 }
 
 /**
- * Runs an async repository call and re-runs it whenever the database changes. The first load
- * shows `loading` (skeleton); refreshes after mutations keep the previous data on screen.
+ * Runs an async repository call. A change in `deps` is a new query (skeleton, data cleared); a
+ * change in `refresh` (a namespace revision bumped after mutations or a poll) reloads the same
+ * query and keeps the previous data on screen.
  */
-export function useQuery<T>(fn: () => Promise<T>, deps: unknown[]): QueryState<T> {
-  const version = useDb((s) => s.version);
+export function useQuery<T>(
+  fn: () => Promise<T>,
+  deps: unknown[],
+  refresh?: unknown,
+): QueryState<T> {
   const [state, setState] = useState<{
     data: T | undefined;
     loading: boolean;
@@ -41,7 +44,7 @@ export function useQuery<T>(fn: () => Promise<T>, deps: unknown[]): QueryState<T
     return () => {
       cancelled = true;
     };
-  }, [depsKey, version, attempt]);
+  }, [depsKey, refresh, attempt]);
 
   const retry = useCallback(() => {
     setState((s) => ({ ...s, loading: true, error: null }));

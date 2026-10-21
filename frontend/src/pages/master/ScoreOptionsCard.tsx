@@ -2,7 +2,7 @@ import { Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button, Card, PredicateBadge } from '@/components';
 import { predicateFor, type OptionProblem } from '@/domain/scoreBands';
-import { type ScoreBand, type ScoreBandVersion, type ScoreOption } from '@/domain/types';
+import type { ScoreBand, ScoreBandVersion, ScoreOption } from '@/domain/types';
 import { formatScore, parseScore } from '@/lib/format';
 
 const ROW_ERROR: Record<Exclude<OptionProblem['kind'], 'band-uncovered'>, string> = {

@@ -16,7 +16,7 @@ import {
   Toggle,
   toast,
 } from '@/components';
-import type { AssessmentView, FinalisePreview } from '@/data/api/assessment';
+import type { AssessmentView, FinalisePreview } from '@/test/fake/api/assessment';
 import { assessmentApi, useAssessmentRevision } from '@/data/repository';
 import { QUARTER_ROMAN } from '@/domain/calendar';
 import type { WorkspaceOutletContext } from '@/layout/Workspace';
@@ -39,7 +39,8 @@ export default function AssessmentPage() {
   const revision = useAssessmentRevision((s) => s.revision);
   const q = useQuery(
     () => assessmentApi.page(position.id, fiscalYear, quarter, blind),
-    [position.id, fiscalYear, quarter, blind, revision],
+    [position.id, fiscalYear, quarter, blind],
+    revision,
   );
 
   if (q.loading && !q.data) return <AssessmentSkeleton />;

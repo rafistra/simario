@@ -1560,6 +1560,79 @@ paths:
                 type: object
                 additionalProperties: {}
           description: ''
+  /api/v1/positions/{id}/workspace:
+    get:
+      operationId: positions_workspace_retrieve
+      description: 'GET: the workspace header of a Lini 1 position (`?ta=` for the
+        viewed fiscal year).'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: query
+        name: ta
+        schema:
+          type: integer
+      tags:
+      - org
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/preferences:
+    get:
+      operationId: preferences_retrieve
+      description: 'GET: `{key: value}` of the signed-in user. Keys are returned as
+        stored (not camelCased).'
+      tags:
+      - auth
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/preferences/{key}:
+    put:
+      operationId: preferences_update
+      parameters:
+      - in: path
+        name: key
+        schema:
+          type: string
+        required: true
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreferenceRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PreferenceRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PreferenceRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/proposals:
     get:
       operationId: proposals_list
@@ -4131,6 +4204,13 @@ components:
         * `kurang` - kurang
         * `cukup` - cukup
         * `terkendali` - terkendali
+    PreferenceRequest:
+      type: object
+      properties:
+        value:
+          nullable: true
+      required:
+      - value
     PrintRequest:
       type: object
       properties:

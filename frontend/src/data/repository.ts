@@ -1,23 +1,13 @@
-// Repository: the only door to data for pages and components (CLAUDE.md §4). Each namespace is
-// async; namespaces move from the local implementation to data/http/ stage by stage (spec §4.10).
+// Repository: the only door to data for pages and components (CLAUDE.md §4). Every namespace is
+// served by the backend (data/http/, spec §4.10).
 
 import type { Notification } from '@/domain/types';
-import { getDb, mutateDb } from './local/store';
 
 export { ApiError } from './errors';
 export { authApi, type SsoOutcome } from './http/auth';
 export { notificationApi } from './http/notifications';
 
-export const preferenceApi = {
-  get: <T>(userId: string, key: string): T | undefined =>
-    getDb().preferences.find((p) => p.userId === userId && p.key === key)?.value as T | undefined,
-  set: (userId: string, key: string, value: unknown) =>
-    mutateDb((d) => {
-      const p = d.preferences.find((x) => x.userId === userId && x.key === key);
-      if (p) p.value = value;
-      else d.preferences.push({ userId, key, value });
-    }),
-};
+export { preferenceApi } from './http/preferences';
 
 export type { Notification };
 

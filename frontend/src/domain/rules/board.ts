@@ -1,6 +1,6 @@
 // Board and thread rules — PRD §6 (FR-PPN-*), RB-PPN-004, §1.5 participation, VIS-1/2/3/9.
 
-import type { DB } from '@/data/db';
+import type { DB } from '@/test/fake/db';
 import type {
   Comment,
   ComparisonResult,

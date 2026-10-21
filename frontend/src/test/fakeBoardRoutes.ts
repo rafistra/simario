@@ -1,9 +1,9 @@
 // Board and thread routes of the test fake backend (B4): the HTTP boardApi/threadApi in Vitest
 // reach the local implementations in data/api/{board,thread}.ts over the prototype seed.
 
-import { boardApi as localBoard } from '@/data/api/board';
-import { threadApi as localThread } from '@/data/api/thread';
-import { getDb } from '@/data/local/store';
+import { boardApi as localBoard } from '@/test/fake/api/board';
+import { threadApi as localThread } from '@/test/fake/api/thread';
+import { getDb } from '@/test/fake/local/store';
 import { threadParticipants } from '@/domain/rules/board';
 import { today } from '@/state/clock';
 import { useSession } from '@/state/session';

@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { getDb, useDb } from '@/data/local/store';
+import { getDb, useDb } from '@/test/fake/local/store';
 import { Topbar } from '@/layout/Topbar';
 import { useClock } from '@/state/clock';
 import { useDevSettings } from '@/state/devSettings';

@@ -9,7 +9,8 @@ import {
   Select,
   Skeleton,
 } from '@/components';
-import { metricsCsv, type MetricCard } from '@/data/api/insights';
+import { metricsCsv } from '@/data/derive/insights';
+import type { MetricCard } from '@/test/fake/api/insights';
 import { insightsApi } from '@/data/repository';
 import { useGateDb } from '@/components/DataGate/gateDb';
 import { usePageMeta } from '@/layout/pageMeta';

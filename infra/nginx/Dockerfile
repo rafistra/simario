@@ -1,8 +1,6 @@
 # Built SPA served by nginx (spec §4.11). Build context: the repository root (the frontend imports
 # docs/seed and shared/test-vectors at build time).
 FROM node:24-alpine AS build
-ARG VITE_HIDE_UNMIGRATED=true
-ENV VITE_HIDE_UNMIGRATED=$VITE_HIDE_UNMIGRATED
 WORKDIR /src
 COPY docs/seed docs/seed
 COPY shared shared
