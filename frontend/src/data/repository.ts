@@ -21,7 +21,7 @@ export const preferenceApi = {
 
 export type { Notification };
 
-export { masterApi } from './http/master';
+export { masterApi, proposalApi, type ProposalRow } from './http/master';
 export { registerApi, useRegisterViews } from './http/register';
 export { threadApi } from './api/thread';
 export { boardApi } from './api/board';

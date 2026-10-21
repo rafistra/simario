@@ -1,10 +1,10 @@
 // masterApi over HTTP (docs/03_api_contract.md §4.3). Same signatures as data/api/master.ts.
 // Each mutation reloads the collections it changes before resolving, so pages reading them
-// through useCollections show the result as they did with the local store. Risk proposals stay
-// local until registers move (B3): rejectProposal and saveTemplate(…, fromProposalId).
+// through useCollections show the result as they did with the local store. Risk proposals (B3)
+// are read through proposalApi.list.
 
-import { masterApi as localMasterApi, type OptionInput, type PositionInput } from '../api/master';
-import type { DataUmumField, RiskType, ScoreBand } from '@/domain/types';
+import type { OptionInput, PositionInput } from '../api/master';
+import type { DataUmumField, RiskProposal, RiskType, ScoreBand } from '@/domain/types';
 import { useCollectionCache } from '@/lib/useCollections';
 import { apiFetch, type FetchInit } from './client';
 import type { CollectionName } from './collections';
@@ -95,10 +95,13 @@ export const masterApi = {
     id?: string,
     fromProposalId?: string,
   ) => {
-    if (fromProposalId) return localMasterApi.saveTemplate(input, id, fromProposalId);
     const res = await mutate<{ id: string }>(
-      id ? `/risk-templates/${id}` : '/risk-templates',
-      { method: id ? 'PUT' : 'POST', body: input },
+      fromProposalId
+        ? `/proposals/${fromProposalId}/accept`
+        : id
+          ? `/risk-templates/${id}`
+          : '/risk-templates',
+      { method: id && !fromProposalId ? 'PUT' : 'POST', body: input },
       TEMPLATES,
     );
     return res.id;
@@ -111,7 +114,7 @@ export const masterApi = {
     mutate<void>(`/risk-templates/${templateId}`, { method: 'DELETE' }, TEMPLATES),
 
   rejectProposal: (proposalId: string, reason: string) =>
-    localMasterApi.rejectProposal(proposalId, reason),
+    apiFetch<void>(`/proposals/${proposalId}/reject`, { method: 'POST', body: { reason } }),
 
   saveDataUmumForm: async (
     positionTypeId: string,
@@ -166,4 +169,21 @@ export const masterApi = {
 
   updateOptionLabel: (optionId: string, label: string) =>
     mutate<void>(`/score-options/${optionId}`, { method: 'PATCH', body: { label } }, BANDS),
+};
+
+/** A proposal row with its source risk's context (GET /api/v1/proposals). */
+export interface ProposalRow extends RiskProposal {
+  proposerName: string;
+  positionId: string;
+  positionName: string;
+  positionTypeId: string;
+  positionTypeName: string;
+  stageId: string;
+  stageName: string;
+  riskType: RiskType;
+  mitigations: string[];
+}
+
+export const proposalApi = {
+  list: () => apiFetch<ProposalRow[]>('/proposals'),
 };

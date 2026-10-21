@@ -6,16 +6,19 @@ import {
   DataTable,
   EmptyState,
   FilterPills,
+  InlineAlert,
+  LoadingRegion,
   PageHeader,
   Pagination,
+  Skeleton,
   StatusChip,
   Textarea,
   toast,
   type Column,
 } from '@/components';
-import { masterApi } from '@/data/repository';
-import { useDb } from '@/data/local/store';
+import { masterApi, proposalApi, type ProposalRow } from '@/data/repository';
 import { RISK_TYPE_LABEL, type RiskProposal } from '@/domain/types';
+import { useQuery } from '@/lib/useQuery';
 import { usePageMeta } from '@/layout/pageMeta';
 import { formatDate } from '@/lib/format';
 import { useAuth } from '@/state/useAuth';
@@ -28,49 +31,32 @@ const PAGE = 25;
 export default function ProposalsPage() {
   usePageMeta(['Master Data', 'Usulan']);
   const auth = useAuth();
-  const db = useDb((s) => s.db);
+  const [revision, setRevision] = useState(0);
+  const query = useQuery(() => proposalApi.list(), [revision]);
   const [status, setStatus] = useState<RiskProposal['status']>('pending');
   const [page, setPage] = useState(1);
-  const [rejecting, setRejecting] = useState<RiskProposal | null>(null);
+  const [rejecting, setRejecting] = useState<ProposalRow | null>(null);
   const [reason, setReason] = useState('');
   const [reasonError, setReasonError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [accepting, setAccepting] = useState<TemplateEditorTarget | null>(null);
 
-  const info = useMemo(
-    () => (p: RiskProposal) => {
-      const risk = db.risks.find((r) => r.id === p.sourceRegisterRiskId)!;
-      const register = db.registers.find((r) => r.id === risk.registerId)!;
-      const position = db.positions.find((x) => x.id === register.positionId)!;
-      const type = db.positionTypes.find((t) => t.id === position.positionTypeId)!;
-      const stage = db.stages.find((s) => s.id === risk.stageId)!;
-      const proposer = db.users.find((u) => u.id === p.proposerUserId)!;
-      const mitigations = db.mitigations
-        .filter((m) => m.registerRiskId === risk.id)
-        .sort((a, b) => a.order - b.order)
-        .map((m) => m.descriptionSnapshot);
-      return { risk, position, type, stage, proposer, mitigations };
-    },
-    [db],
-  );
-
-  const all = db.proposals;
+  const all = useMemo(() => query.data ?? [], [query.data]);
   const rows = all
     .filter((p) => p.status === status)
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
-  const columns: Column<RiskProposal>[] = [
+  const columns: Column<ProposalRow>[] = [
     {
       key: 'usulan',
       header: 'Usulan',
       primary: true,
       render: (p) => {
-        const i = info(p);
         return (
           <span className="cell-title">
             <strong>{p.description}</strong>
             <span className="t-caption">
-              {i.type.name} · {i.stage.name} · {RISK_TYPE_LABEL[i.risk.riskType]}
+              {p.positionTypeName} · {p.stageName} · {RISK_TYPE_LABEL[p.riskType]}
               {p.status === 'rejected' && p.rejectionReason
                 ? ` · Ditolak: ${p.rejectionReason}`
                 : ''}
@@ -84,8 +70,7 @@ export default function ProposalsPage() {
       header: 'Pengusul · Jabatan',
       width: 220,
       render: (p) => {
-        const i = info(p);
-        return `${i.proposer.fullName} · ${i.position.name}`;
+        return `${p.proposerName} · ${p.positionName}`;
       },
     },
     {
@@ -96,7 +81,6 @@ export default function ProposalsPage() {
         if (p.status === 'accepted')
           return <StatusChip status="terbit" label="Dijadikan template" />;
         if (p.status === 'rejected') return <StatusChip status="diarsipkan" label="Ditolak" />;
-        const i = info(p);
         return (
           <span className="row-actions">
             <Button
@@ -105,11 +89,11 @@ export default function ProposalsPage() {
               onClick={() =>
                 setAccepting({
                   id: null,
-                  positionTypeId: i.type.id,
-                  stageId: i.stage.id,
-                  riskType: i.risk.riskType,
+                  positionTypeId: p.positionTypeId,
+                  stageId: p.stageId,
+                  riskType: p.riskType,
                   description: p.description,
-                  mitigations: i.mitigations,
+                  mitigations: p.mitigations,
                   fromProposalId: p.id,
                 })
               }
@@ -150,6 +134,7 @@ export default function ProposalsPage() {
       await masterApi.rejectProposal(rejecting!.id, reason);
       toast.success('Usulan ditolak', 'Pengusul diberi tahu beserta alasannya.');
       setRejecting(null);
+      setRevision((n) => n + 1);
     } catch (e) {
       setReasonError((e as Error).message);
     } finally {
@@ -157,7 +142,20 @@ export default function ProposalsPage() {
     }
   };
 
-  const rejectingInfo = rejecting ? info(rejecting) : null;
+  const rejectingInfo = rejecting;
+
+  if (query.error && !query.data)
+    return (
+      <InlineAlert variant="error" title="Usulan gagal dimuat" onRetry={query.retry}>
+        {query.error.message}
+      </InlineAlert>
+    );
+  if (!query.data)
+    return (
+      <LoadingRegion label="Memuat usulan…">
+        <Skeleton height={320} radius="lg" />
+      </LoadingRegion>
+    );
 
   return (
     <div className="master-page">
@@ -224,8 +222,8 @@ export default function ProposalsPage() {
         {rejectingInfo && (
           <div className="dialog-stack">
             <p className="t-eyebrow">
-              {rejectingInfo.type.name} · {rejectingInfo.stage.name} ·{' '}
-              {RISK_TYPE_LABEL[rejectingInfo.risk.riskType]}
+              {rejectingInfo.positionTypeName} · {rejectingInfo.stageName} ·{' '}
+              {RISK_TYPE_LABEL[rejectingInfo.riskType]}
             </p>
             <p className="t-body-strong">{rejecting!.description}</p>
             <Textarea
@@ -241,12 +239,18 @@ export default function ProposalsPage() {
             />
             <p className="t-caption">
               Pengusul diberi tahu beserta alasannya. Risiko di register{' '}
-              {rejectingInfo.position.name} tetap ada sebagai risiko sendiri.
+              {rejectingInfo.positionName} tetap ada sebagai risiko sendiri.
             </p>
           </div>
         )}
       </ConfirmDialog>
-      <TemplateEditor target={accepting} onClose={() => setAccepting(null)} />
+      <TemplateEditor
+        target={accepting}
+        onClose={() => {
+          setAccepting(null);
+          setRevision((n) => n + 1);
+        }}
+      />
     </div>
   );
 }
