@@ -171,7 +171,7 @@ Baris penilaian dan perbandingan dikunci per `RiskQuarter` (`select_for_update`)
 | `sheetApi.print` | `positionId, fiscalYear, tw, kinds[]` | Snapshot baru `trigger=print` (sementara bila belum ada versi otomatis) | FR-LBR-006 | `POST /v1/positions/{pos}/sheets/{ta}/{tw}/print` `{kinds}` → `{ids}` (B7; nomor unik, dikunci per jabatan) |
 | `sheetApi.findByNumber` | `number` | `{id, positionId, fiscalYear, tw, kind}` | FR-LBR-010 | `GET /v1/snapshots?number=` (B7) |
 
-### 4.8 `adminApi`, `calendarApi`, `importApi`, `insightsApi` — Administrasi (ADM) — diputuskan B2, kecuali `insightsApi` (B8)
+### 4.8 `adminApi`, `calendarApi`, `importApi`, `insightsApi` — Administrasi (ADM) — diputuskan B2, `insightsApi` B8
 
 | Metode | Izin | PRD | REST (`/api/v1`) |
 |---|---|---|---|
@@ -189,9 +189,10 @@ Baris penilaian dan perbandingan dikunci per `RiskQuarter` (`select_for_update`)
 | `calendarApi.excludeAssessor` | 19 | §2.5 | `POST /quarters/{id}/assessors/{pos}/exclude` |
 | `calendarApi.archiveManually` | 26 | §2.5 | `POST /fiscal-years/{y}/archive`; `GET /fiscal-years/{y}/archive-status` (19/26) |
 | `importApi.template`, `dryRun`, `apply`, `history`, `kindsFor` | 18 / 21 / 20 per jenis | FR-ADM-013 | `GET /imports/templates/{kind}` (CSV), `GET /imports/kinds`, `POST /imports` (dry run → `ImportJob`), `POST /imports/{id}/commit` (cek ulang; galat → 422 `errors`), `GET /imports` |
-| `insightsApi.metrics(year)` | 22 | FR-ADM-011 | usulan `GET /metrics?ta=` (+ `?format=csv`) |
-| `insightsApi.audit(filter, original)` | 23 (+24 untuk nilai asli) | FR-ADM-008, VIS-8 | usulan `GET /audit?…&original=1` |
-| `insightsApi.logShowOriginal` | 24 | FR-ADM-008 | dicatat server |
+| `insightsApi.metrics(year)` | 22 | FR-ADM-011 | `GET /v1/metrics/{ta}` (+ `GET /v1/metrics/{ta}.csv`, tanda kutip digandakan) |
+| `insightsApi.audit(filter, original)` | 23 (+24 untuk nilai asli) | FR-ADM-008, VIS-8 | `GET /v1/audit?from&to&actor&position&entityType&action[&original=1]`; redaksi VIS-8 di server (termasuk "Belum relevan" Lini 1 dan nama berkas konfidensial yang sudah dihapus); paling baru 500 baris, sisanya lewat filter tanggal; `original=1` dicatat `tampilkan_nilai_asli` |
+| `insightsApi.auditFacets()` | 23 | FR-ADM-008 | `GET /v1/audit/facets` → `{actions, entityTypes}` dalam cakupan |
+| `insightsApi.logShowOriginal` | 24 | FR-ADM-008 | tanpa panggilan (server mencatat saat `original=1`) |
 
 Mutasi yang mengubah holding, peran, atau delegasi menaikkan `auth_epoch` pengguna terkait (FR-AUT-008): sesi mereka berakhir pada permintaan berikutnya (`401 unauthenticated`). Frontend memuat ulang koleksi yang berubah dan `/me` setelah mutasi.
 
@@ -222,6 +223,6 @@ Keluaran read model sudah difilter; backend harus menghasilkan keluaran yang sam
 | VIS-3/4 lampiran konfidensial | `canSeeAttachment`; tampilan "[n] lampiran konfidensial" |
 | VIS-6 komentar ditarik | `buildThread` mengirim `body = null` |
 | VIS-7 tampilan turunan netral-pembaca | `buildSheetPayload` (`domain/rules/sheetPayload.ts`), `lembarMutu` |
-| VIS-8 redaksi audit | `redact` di `api/insights.ts` (`[disamarkan]`, `[konfidensial]`) |
+| VIS-8 redaksi audit | `redact` di `api/insights.ts` (`[disamarkan]`, `[konfidensial]`); backend `simario/insights/audit_trail.py` (B8) |
 | VIS-9 penyamaran snapshot | `maskPayloadFor` |
 | Skor tidak ditampilkan (v2.8) | `toDisplay` mengganti `score` dengan `optionLabel` |

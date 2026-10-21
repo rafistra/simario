@@ -429,10 +429,12 @@ Hasil:
 
 Catatan Tahap B7: payload lembar pindah ke `simario/domain/sheet_payload.py` (vektor `sheet-payload.json`); blok tanda tangan Lini 3 kini diturunkan dari jabatan Lini 3 aktif (prototipe menulis id langsung). App `simario.sheets` menyimpan `PrintSnapshot` (payload snake_case, tidak pernah diubah selain `superseded_by`) dan `SheetPhotoSelection`. Penyamaran VIS-9 diterapkan di server, juga pada salinan beku dan salinan yang baru dicetak. Nomor cetak dikunci per jabatan + unik. `sheet_freeze` berjalan terjadwal dan langsung setelah Kirim Penjelasan serta pembukaan hasil (U-07 selesai); arsip TA membuat versi `archive` bila isi berubah. Pilihan foto hanya menerima gambar bersih non-konfidensial dari utas lini itu; foto ditampilkan dari berkas asli lewat unduhan pre-signed. Modul `lembar` masuk gerbang build uji coba.
 
-### Tahap B8 — Metrik & Jejak Audit ⬜
+### Tahap B8 — Metrik & Jejak Audit ✅
 
 Hasil:
-- [ ] `insights` (metrik + CSV), audit dengan redaksi VIS-8 dan nilai asli (izin 24)
+- [x] `insights` (metrik + CSV), audit dengan redaksi VIS-8 dan nilai asli (izin 24)
+
+Catatan Tahap B8: app `simario.insights` mem-port `insights.ts` (vektor `metrics.json` untuk keenam kartu; CSV menggandakan tanda kutip dan meniru `toFixed(1)`). Jejak audit memfilter di SQL sesuai cakupan izin 23 (sendiri/unit/semua), lalu meredaksi per baris (VIS-8: nilai penilaian buta, nama berkas konfidensial tanpa izin 10, skor sebagai kalimat). `original=1` (izin 24) dicatat server pada setiap pemuatan. Pilihan filter dari `GET /audit/facets`; daftar pengguna/jabatan dari `CollectionGate`. Gerbang build uji coba kini menampilkan semua modul.
 
 ### Tahap B9 — Pemutusan mode lokal & kesiapan ⬜
 
