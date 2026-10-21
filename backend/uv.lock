@@ -937,6 +937,7 @@ dependencies = [
     { name = "mozilla-django-oidc" },
     { name = "psycopg", extra = ["binary"] },
     { name = "redis" },
+    { name = "requests" },
 ]
 
 [package.dev-dependencies]
@@ -965,6 +966,7 @@ requires-dist = [
     { name = "mozilla-django-oidc", specifier = ">=5.0.2" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.3.6" },
     { name = "redis", specifier = ">=8.1.0" },
+    { name = "requests", specifier = ">=2.34.2" },
 ]
 
 [package.metadata.requires-dev]

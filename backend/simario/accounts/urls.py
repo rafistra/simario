@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from . import admin_views, views
 
 urlpatterns = [
     path("auth/config", views.AuthConfigView.as_view(), name="auth-config"),
@@ -9,4 +9,22 @@ urlpatterns = [
     path("auth/logout", views.LogoutView.as_view(), name="auth-logout"),
     path("me", views.MeView.as_view(), name="me"),
     path("me/active-position", views.ActivePositionView.as_view(), name="me-active-position"),
+    path("users", admin_views.UserListView.as_view(), name="users"),
+    path("users/<uuid:pk>/roles", admin_views.UserRolesView.as_view(), name="user-roles"),
+    path(
+        "users/<uuid:pk>/deactivate",
+        admin_views.UserDeactivateView.as_view(),
+        name="user-deactivate",
+    ),
+    path(
+        "users/<uuid:pk>/reactivate",
+        admin_views.UserReactivateView.as_view(),
+        name="user-reactivate",
+    ),
+    path(
+        "users/<uuid:pk>/reset-password",
+        admin_views.UserResetPasswordView.as_view(),
+        name="user-reset-password",
+    ),
+    path("staff", admin_views.StaffSearchView.as_view(), name="staff"),
 ]

@@ -490,6 +490,26 @@ export interface paths {
         patch: operations["score_options_partial_update"];
         trace?: never;
     };
+    "/api/v1/staff": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Staff directory for the Operator picker (FR-ADM-010); any signed-in user, as in the
+         *     prototype, since Pejabat appoint their own Operators.
+         */
+        get: operations["staff_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/stages": {
         parameters: {
             query?: never;
@@ -520,6 +540,86 @@ export interface paths {
         options?: never;
         head?: never;
         patch: operations["stages_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["users_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/{id}/deactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["users_deactivate_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/{id}/reactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["users_reactivate_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/{id}/reset-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["users_reset_password_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/{id}/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["users_roles_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
 }
@@ -572,6 +672,11 @@ export interface components {
             serverNow: string;
             ran: string[];
         };
+        CreatedUser: {
+            /** Format: uuid */
+            id: string;
+            temporaryPassword: string | null;
+        };
         /**
          * @description * `text` - text
          *     * `number` - number
@@ -593,6 +698,12 @@ export interface components {
             fields: components["schemas"]["DataUmumFieldRequest"][];
             /** @default false */
             objectiveEnabled: boolean;
+        };
+        DeactivationImpact: {
+            occupancies: number;
+            delegations: number;
+            appointedOperators: number;
+            fillerBlock: string | null;
         };
         Holding: {
             kind: components["schemas"]["HoldingKindEnum"];
@@ -796,10 +907,19 @@ export interface components {
          * @enum {string}
          */
         RiskTypeEnum: "kinerja_anggaran" | "ketidakpatuhan" | "kecurangan";
+        RoleIdsRequest: {
+            roleIds: string[];
+        };
         SignInResult: {
             ok: boolean;
             /** Format: uuid */
             userId: string;
+        };
+        Staff: {
+            nip: string;
+            fullName: string;
+            email: string;
+            orgUnitId: string;
         };
         StageCreateRequest: {
             /** Format: uuid */
@@ -818,9 +938,20 @@ export interface components {
             description: string;
             mitigations?: string[];
         };
+        TemporaryPassword: {
+            temporaryPassword: string;
+        };
         Unregistered: {
             nip: string;
             fullName: string;
+        };
+        UserInputRequest: {
+            nip: string;
+            fullName: string;
+            email: string;
+            /** Format: uuid */
+            orgUnitId?: string | null;
+            isLocalAccount: boolean;
         };
         Version: {
             version: number;
@@ -1606,6 +1737,27 @@ export interface operations {
             };
         };
     };
+    staff_list: {
+        parameters: {
+            query?: {
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Staff"][];
+                };
+            };
+        };
+    };
     stages_create: {
         parameters: {
             query?: never;
@@ -1665,6 +1817,119 @@ export interface operations {
                 "application/json": components["schemas"]["PatchedStagePatchRequest"];
                 "application/x-www-form-urlencoded": components["schemas"]["PatchedStagePatchRequest"];
                 "multipart/form-data": components["schemas"]["PatchedStagePatchRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    users_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["UserInputRequest"];
+                "multipart/form-data": components["schemas"]["UserInputRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreatedUser"];
+                };
+            };
+        };
+    };
+    users_deactivate_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeactivationImpact"];
+                };
+            };
+        };
+    };
+    users_reactivate_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    users_reset_password_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TemporaryPassword"];
+                };
+            };
+        };
+    };
+    users_roles_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RoleIdsRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["RoleIdsRequest"];
+                "multipart/form-data": components["schemas"]["RoleIdsRequest"];
             };
         };
         responses: {

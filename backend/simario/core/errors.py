@@ -38,6 +38,8 @@ STATUS_BY_CODE: dict[str, int] = {
     "stage_has_templates": 409,
     "template_used": 409,
     "draft_exists": 409,
+    "filler": 409,
+    "inv5": 409,
     "nothing": 409,
     "server": 500,
 }

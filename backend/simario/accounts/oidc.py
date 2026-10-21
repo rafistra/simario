@@ -29,6 +29,11 @@ class SimarioOIDCBackend(OIDCAuthenticationBackend):  # type: ignore[misc]
         self.request.session[FAILURE_KEY] = "belum-terdaftar"
         return None
 
+    def get_user(self, user_id: Any) -> User | None:
+        """Sessions of a deactivated user are not restored (U-19)."""
+        user = super().get_user(user_id)
+        return user if user is not None and user.is_active else None
+
     def update_user(self, user: User, claims: dict[str, Any]) -> User:
         if not user.is_active:
             # The callback view refuses inactive users; remember why for the login page.

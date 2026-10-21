@@ -1,7 +1,9 @@
 """Position types and positions (FR-MST-008, 009). Ports masterApi in
 frontend/src/data/api/master.ts: same checks, error copy, audit actions and notifications."""
 
+import datetime as dt
 import uuid
+from collections.abc import Iterable
 from typing import Any
 
 from django.db import transaction
@@ -165,3 +167,25 @@ def reactivate_position(actor: Actor, position_id: uuid.UUID) -> None:
     pos.deactivation_reason = None
     pos.save(update_fields=["active", "deactivated_at", "deactivation_reason"])
     record_by(actor, "aktifkan_jabatan", "Position", pos.id, {"active": False}, {"active": True})
+
+
+def end_delegations(delegates: Iterable[PositionDelegate], reason: str, actor: Actor) -> int:
+    """Ends Operator holdings the day before today, notifying the Operators unless they were
+    promoted or deactivated (FR-NTF-011). Port of endDelegations in data/api/admin.ts."""
+    today = dt.date.fromisoformat(actor.today)
+    ended = 0
+    for delegate in delegates:
+        if delegate.end_date and delegate.end_date < today:
+            continue
+        end_delegate(delegate, reason, max(delegate.start_date, today - dt.timedelta(days=1)))
+        ended += 1
+        if reason not in ("promoted", "user_deactivated"):
+            notify(
+                user=delegate.user,
+                kind="operator_revoked",
+                text=(f"Penunjukan Anda sebagai operator untuk {delegate.position.name} berakhir"),
+                target_url="/jabatan-saya",
+                event_key=f"op-end:{delegate.id}",
+                at=actor.at,
+            )
+    return ended

@@ -770,6 +770,30 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/staff:
+    get:
+      operationId: staff_list
+      description: |-
+        Staff directory for the Operator picker (FR-ADM-010); any signed-in user, as in the
+        prototype, since Pejabat appoint their own Operators.
+      parameters:
+      - in: query
+        name: q
+        schema:
+          type: string
+      tags:
+      - admin
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Staff'
+          description: ''
   /api/v1/stages:
     post:
       operationId: stages_create
@@ -835,6 +859,120 @@ paths:
         required: true
       tags:
       - master
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/users:
+    post:
+      operationId: users_create
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedUser'
+          description: ''
+  /api/v1/users/{id}/deactivate:
+    post:
+      operationId: users_deactivate_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeactivationImpact'
+          description: ''
+  /api/v1/users/{id}/reactivate:
+    post:
+      operationId: users_reactivate_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/users/{id}/reset-password:
+    post:
+      operationId: users_reset_password_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemporaryPassword'
+          description: ''
+  /api/v1/users/{id}/roles:
+    put:
+      operationId: users_roles_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleIdsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RoleIdsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RoleIdsRequest'
+        required: true
       security:
       - cookieAuth: []
       responses:
@@ -950,6 +1088,18 @@ components:
       required:
       - ran
       - serverNow
+    CreatedUser:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        temporaryPassword:
+          type: string
+          nullable: true
+      required:
+      - id
+      - temporaryPassword
     DataUmumFieldKindEnum:
       enum:
       - text
@@ -998,6 +1148,23 @@ components:
       required:
       - defaultObjective
       - fields
+    DeactivationImpact:
+      type: object
+      properties:
+        occupancies:
+          type: integer
+        delegations:
+          type: integer
+        appointedOperators:
+          type: integer
+        fillerBlock:
+          type: string
+          nullable: true
+      required:
+      - appointedOperators
+      - delegations
+      - fillerBlock
+      - occupancies
     Holding:
       type: object
       properties:
@@ -1483,6 +1650,16 @@ components:
         * `kinerja_anggaran` - kinerja_anggaran
         * `ketidakpatuhan` - ketidakpatuhan
         * `kecurangan` - kecurangan
+    RoleIdsRequest:
+      type: object
+      properties:
+        roleIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+      - roleIds
     SignInResult:
       type: object
       properties:
@@ -1494,6 +1671,22 @@ components:
       required:
       - ok
       - userId
+    Staff:
+      type: object
+      properties:
+        nip:
+          type: string
+        fullName:
+          type: string
+        email:
+          type: string
+        orgUnitId:
+          type: string
+      required:
+      - email
+      - fullName
+      - nip
+      - orgUnitId
     StageCreateRequest:
       type: object
       properties:
@@ -1537,6 +1730,13 @@ components:
       - positionTypeId
       - riskType
       - stageId
+    TemporaryPassword:
+      type: object
+      properties:
+        temporaryPassword:
+          type: string
+      required:
+      - temporaryPassword
     Unregistered:
       type: object
       properties:
@@ -1546,6 +1746,26 @@ components:
           type: string
       required:
       - fullName
+      - nip
+    UserInputRequest:
+      type: object
+      properties:
+        nip:
+          type: string
+        fullName:
+          type: string
+        email:
+          type: string
+        orgUnitId:
+          type: string
+          format: uuid
+          nullable: true
+        isLocalAccount:
+          type: boolean
+      required:
+      - email
+      - fullName
+      - isLocalAccount
       - nip
     Version:
       type: object
