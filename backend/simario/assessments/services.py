@@ -311,7 +311,13 @@ def _add_files(user: User, rq_id: str, pos: str, stored: list[Stored]) -> None:
         "Assessment",
         x.id,
         None,
-        {"files": [s.upload.name for s in stored]},
+        {
+            "files": [s.upload.name for s in stored],
+            # Kept so the audit trail can hide these names even after the files are removed.
+            "confidentialFiles": [
+                s.upload.name for s in stored if line == 3 and s.upload.confidential
+            ],
+        },
     )
     from simario.board.tasks import scan_attachment
 
@@ -350,7 +356,14 @@ def _remove_file(user: User, attachment_id: Any) -> str | None:
         raise ApiError("final", "Penilaian ini sudah dituntaskan.")
     key = f.object_key
     f.delete()
-    _audit(a, "hapus_bukti_penilaian", "Assessment", x.id, {"file": f.filename}, None)
+    _audit(
+        a,
+        "hapus_bukti_penilaian",
+        "Assessment",
+        x.id,
+        {"file": f.filename, "confidential": f.is_confidential},
+        None,
+    )
     return key
 
 

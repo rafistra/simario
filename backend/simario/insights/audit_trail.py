@@ -2,6 +2,7 @@
 frontend/src/data/api/insights.ts: scope by permission 23, filters in SQL, then redaction per
 row before anything leaves the server. Original values need permission 24 and are logged."""
 
+import uuid
 from typing import Any
 
 from django.db.models import Q
@@ -9,7 +10,6 @@ from rest_framework import serializers
 
 from simario.accounts.models import User
 from simario.accounts.selectors import load_access_db
-from simario.assessments.selectors import assessment_db
 from simario.audit.models import AuditLog
 from simario.audit.services import record
 from simario.board.models import Attachment
@@ -22,7 +22,10 @@ from simario.domain.visibility import REDACTED, REDACTED_FILE
 from simario.org.models import Position
 
 Row = dict[str, Any]
-SCORE_KEYS = {"score", "predicate", "note"}
+# Lini 1 "Belum relevan" and its reason are part of the blind judgement too (VIS-1).
+SCORE_KEYS = {"score", "predicate", "note", "notRelevant", "notRelevantReason"}
+# Newest first; older rows are reached with the date filters.
+MAX_ROWS = 500
 _DT = serializers.DateTimeField()
 
 
@@ -76,11 +79,46 @@ def _walk(v: Any, blind: bool, confidential: set[str], key: str | None = None) -
     return v
 
 
+def _named_confidential(entry: Row) -> set[str]:
+    """File names an audit entry itself marks as confidential (evidence upload and removal)."""
+    out: set[str] = set()
+    for side in (entry.get("before"), entry.get("after")):
+        if not isinstance(side, dict):
+            continue
+        out |= {n for n in side.get("confidentialFiles") or [] if isinstance(n, str)}
+        if side.get("confidential") is True and isinstance(side.get("file"), str):
+            out.add(side["file"])
+    return out
+
+
+def _page_db(assessment_ids: set[str]) -> Row:
+    """The rows `assessment_frozen` and option labels need for these assessments only."""
+    from simario.assessments.models import Assessment, ComparisonResult
+    from simario.board.serializers import AssessmentRow, ResultRow, rows
+    from simario.core.collections import COLLECTIONS
+
+    ids = []
+    for i in assessment_ids:
+        try:
+            ids.append(uuid.UUID(i))
+        except ValueError:
+            continue
+    assessments = rows(AssessmentRow, Assessment.objects.filter(pk__in=ids))
+    rq_ids = {a["risk_quarter_id"] for a in assessments}
+    qs, serializer = COLLECTIONS["scoreOptions"]
+    return {
+        "assessments": assessments,
+        "by_id": {a["id"]: a for a in assessments},
+        "results": rows(ResultRow, ComparisonResult.objects.filter(risk_quarter_id__in=rq_ids)),
+        "score_options": rows(serializer, qs()),
+    }
+
+
 def _label_scores(db: Row, entry: Row) -> Row:
     """PRD v2.8: numbers in Assessment before/after read as the chosen statement."""
     if entry["entity_type"] != "Assessment":
         return entry
-    a = next((x for x in db["assessments"] if x["id"] == entry["entity_id"]), None)
+    a = db["by_id"].get(entry["entity_id"])
     version = a["score_band_version_id"] if a else None
 
     def swap(v: Any) -> Any:
@@ -106,23 +144,17 @@ def build_audit(user: User, f: Row, original: bool) -> list[Row]:
         .select_related("actor", "acting_position")
         .order_by("-at")
     )
-    entries = list(qs)
+    entries = list(qs[:MAX_ROWS])
     assessment_ids = {e.entity_id for e in entries if e.entity_type == "Assessment"}
-    db: Row = {"assessments": []}
-    if assessment_ids:
-        from simario.assessments.models import Assessment
-
-        positions = set(
-            Assessment.objects.filter(pk__in=list(assessment_ids)).values_list(
-                "risk_quarter__register_risk__register__position_id", flat=True
-            )
-        )
-        db = assessment_db(positions)
-    confidential: set[str] = set()
+    db = _page_db(assessment_ids)
+    confidential: set[str] | None = None
     if not original and not access.has_permission(load_access_db(), str(user.id), 10, today):
         confidential = set(
             Attachment.objects.filter(is_confidential=True).values_list("filename", flat=True)
         )
+        # Names recorded as confidential when written, also for files removed since.
+        for e in entries:
+            confidential |= _named_confidential({"before": e.before, "after": e.after})
     out = []
     for e in entries:
         row: Row = {
@@ -138,14 +170,11 @@ def build_audit(user: User, f: Row, original: bool) -> list[Row]:
             "after": e.after,
         }
         if not original:
-            a = (
-                next((x for x in db["assessments"] if x["id"] == e.entity_id), None)
-                if e.entity_type == "Assessment"
-                else None
-            )
+            a = db["by_id"].get(e.entity_id) if e.entity_type == "Assessment" else None
             blind = a is not None and not rules.assessment_frozen(db, a, at)
-            row["before"] = _walk(row["before"], blind, confidential)
-            row["after"] = _walk(row["after"], blind, confidential)
+            hidden = confidential | _named_confidential(row) if confidential is not None else set()
+            row["before"] = _walk(row["before"], blind, hidden)
+            row["after"] = _walk(row["after"], blind, hidden)
             row = _label_scores(db, row)
         row["actor_name"] = e.actor.full_name if e.actor else "Sistem"
         row["position_name"] = e.acting_position.name if e.acting_position else "—"
