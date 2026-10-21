@@ -1,0 +1,3982 @@
+{
+  "source": "frontend/src/domain/rules/board.ts",
+  "notes": "\"$demo\" = the prototype seed at 2027-04-06T09:00. Map rules give one value per id.",
+  "rules": {
+    "postingQuarter": [
+      {
+        "name": "2026-12-31",
+        "input": {
+          "db": "$demo",
+          "fiscalYear": 2027,
+          "today": "2026-12-31"
+        },
+        "expected": null
+      },
+      {
+        "name": "2027-01-01",
+        "input": {
+          "db": "$demo",
+          "fiscalYear": 2027,
+          "today": "2027-01-01"
+        },
+        "expected": "q-2027-1"
+      },
+      {
+        "name": "2027-04-06",
+        "input": {
+          "db": "$demo",
+          "fiscalYear": 2027,
+          "today": "2027-04-06"
+        },
+        "expected": "q-2027-2"
+      },
+      {
+        "name": "2027-12-31",
+        "input": {
+          "db": "$demo",
+          "fiscalYear": 2027,
+          "today": "2027-12-31"
+        },
+        "expected": "q-2027-4"
+      },
+      {
+        "name": "2028-01-10",
+        "input": {
+          "db": "$demo",
+          "fiscalYear": 2027,
+          "today": "2028-01-10"
+        },
+        "expected": "q-2027-4"
+      }
+    ],
+    "openedResults": [
+      {
+        "name": "all risk quarters",
+        "input": {
+          "db": "$demo",
+          "at": "2027-04-06T09:00"
+        },
+        "expected": {
+          "rq-rr26-pemecahan-q-2026-1": [
+            "cr-rq-rr26-pemecahan-q-2026-1-pos-kepatuhan",
+            "cr-rq-rr26-pemecahan-q-2026-1-pos-pai"
+          ],
+          "rq-rr26-penyerapan-q-2026-1": [
+            "cr-rq-rr26-penyerapan-q-2026-1-pos-kepatuhan",
+            "cr-rq-rr26-penyerapan-q-2026-1-pos-pai"
+          ],
+          "rq-rr26-pembayaran-q-2026-1": [
+            "cr-rq-rr26-pembayaran-q-2026-1-pos-kepatuhan",
+            "cr-rq-rr26-pembayaran-q-2026-1-pos-pai"
+          ],
+          "rq-rr26-pl-q-2026-1": [
+            "cr-rq-rr26-pl-q-2026-1-pos-kepatuhan",
+            "cr-rq-rr26-pl-q-2026-1-pos-pai"
+          ],
+          "rq-rr26-pemecahan-q-2026-2": [
+            "cr-rq-rr26-pemecahan-q-2026-2-pos-kepatuhan",
+            "cr-rq-rr26-pemecahan-q-2026-2-pos-pai"
+          ],
+          "rq-rr26-penyerapan-q-2026-2": [
+            "cr-rq-rr26-penyerapan-q-2026-2-pos-kepatuhan",
+            "cr-rq-rr26-penyerapan-q-2026-2-pos-pai"
+          ],
+          "rq-rr26-pembayaran-q-2026-2": [
+            "cr-rq-rr26-pembayaran-q-2026-2-pos-kepatuhan",
+            "cr-rq-rr26-pembayaran-q-2026-2-pos-pai"
+          ],
+          "rq-rr26-pl-q-2026-2": [
+            "cr-rq-rr26-pl-q-2026-2-pos-kepatuhan",
+            "cr-rq-rr26-pl-q-2026-2-pos-pai"
+          ],
+          "rq-rr26-pemecahan-q-2026-3": [
+            "cr-rq-rr26-pemecahan-q-2026-3-pos-kepatuhan",
+            "cr-rq-rr26-pemecahan-q-2026-3-pos-pai"
+          ],
+          "rq-rr26-penyerapan-q-2026-3": [
+            "cr-rq-rr26-penyerapan-q-2026-3-pos-kepatuhan",
+            "cr-rq-rr26-penyerapan-q-2026-3-pos-pai"
+          ],
+          "rq-rr26-pembayaran-q-2026-3": [
+            "cr-rq-rr26-pembayaran-q-2026-3-pos-kepatuhan",
+            "cr-rq-rr26-pembayaran-q-2026-3-pos-pai"
+          ],
+          "rq-rr26-pl-q-2026-3": [
+            "cr-rq-rr26-pl-q-2026-3-pos-kepatuhan",
+            "cr-rq-rr26-pl-q-2026-3-pos-pai"
+          ],
+          "rq-rr26-pemecahan-q-2026-4": [
+            "cr-rq-rr26-pemecahan-q-2026-4-pos-kepatuhan",
+            "cr-rq-rr26-pemecahan-q-2026-4-pos-pai"
+          ],
+          "rq-rr26-penyerapan-q-2026-4": [
+            "cr-rq-rr26-penyerapan-q-2026-4-pos-kepatuhan",
+            "cr-rq-rr26-penyerapan-q-2026-4-pos-pai"
+          ],
+          "rq-rr26-pembayaran-q-2026-4": [
+            "cr-rq-rr26-pembayaran-q-2026-4-pos-kepatuhan",
+            "cr-rq-rr26-pembayaran-q-2026-4-pos-pai"
+          ],
+          "rq-rr26-pl-q-2026-4": [
+            "cr-rq-rr26-pl-q-2026-4-pos-kepatuhan",
+            "cr-rq-rr26-pl-q-2026-4-pos-pai"
+          ],
+          "rq-rr-a1-penyerapan-q-2027-1": [
+            "cr-rq-rr-a1-penyerapan-q-2027-1-pos-kepatuhan",
+            "cr-rq-rr-a1-penyerapan-q-2027-1-pos-pai"
+          ],
+          "rq-rr-a1-dipa-q-2027-1": [
+            "cr-rq-rr-a1-dipa-q-2027-1-pos-kepatuhan",
+            "cr-rq-rr-a1-dipa-q-2027-1-pos-pai"
+          ],
+          "rq-rr-a1-rpd-q-2027-1": [
+            "cr-rq-rr-a1-rpd-q-2027-1-pos-kepatuhan",
+            "cr-rq-rr-a1-rpd-q-2027-1-pos-pai"
+          ],
+          "rq-rr-a1-pemecahan-q-2027-1": [
+            "cr-rq-rr-a1-pemecahan-q-2027-1-pos-kepatuhan",
+            "cr-rq-rr-a1-pemecahan-q-2027-1-pos-pai"
+          ],
+          "rq-rr-a1-pembayaran-q-2027-1": [
+            "cr-rq-rr-a1-pembayaran-q-2027-1-pos-kepatuhan",
+            "cr-rq-rr-a1-pembayaran-q-2027-1-pos-pai"
+          ],
+          "rq-rr-a1-material-q-2027-1": [
+            "cr-rq-rr-a1-material-q-2027-1-pos-kepatuhan",
+            "cr-rq-rr-a1-material-q-2027-1-pos-pai"
+          ],
+          "rq-rr-a1-penyuapan-q-2027-1": [
+            "cr-rq-rr-a1-penyuapan-q-2027-1-pos-kepatuhan",
+            "cr-rq-rr-a1-penyuapan-q-2027-1-pos-pai"
+          ],
+          "rq-rr-a2-kebutuhan-q-2027-1": [
+            "cr-rq-rr-a2-kebutuhan-q-2027-1-pos-kepatuhan",
+            "cr-rq-rr-a2-kebutuhan-q-2027-1-pos-pai"
+          ],
+          "rq-rr-a2-luar-rencana-q-2027-1": [
+            "cr-rq-rr-a2-luar-rencana-q-2027-1-pos-kepatuhan",
+            "cr-rq-rr-a2-luar-rencana-q-2027-1-pos-pai"
+          ],
+          "rq-rr-a2-markup-q-2027-1": [
+            "cr-rq-rr-a2-markup-q-2027-1-pos-kepatuhan",
+            "cr-rq-rr-a2-markup-q-2027-1-pos-pai"
+          ],
+          "rq-rr-pjp-pemilihan-q-2027-1": [
+            "cr-rq-rr-pjp-pemilihan-q-2027-1-pos-kepatuhan"
+          ],
+          "rq-rr-pjp-evaluasi-q-2027-1": [
+            "cr-rq-rr-pjp-evaluasi-q-2027-1-pos-kepatuhan"
+          ],
+          "rq-rr-pjp-konflik-q-2027-1": [
+            "cr-rq-rr-pjp-konflik-q-2027-1-pos-kepatuhan"
+          ],
+          "rq-rr-a1-penyerapan-q-2027-2": [],
+          "rq-rr-a1-dipa-q-2027-2": [],
+          "rq-rr-a1-pemecahan-q-2027-2": [],
+          "rq-rr-a1-pembayaran-q-2027-2": [],
+          "rq-rr-a1-material-q-2027-2": [],
+          "rq-rr-a1-penyuapan-q-2027-2": [],
+          "rq-rr-a2-kebutuhan-q-2027-2": [],
+          "rq-rr-a2-luar-rencana-q-2027-2": [],
+          "rq-rr-a2-markup-q-2027-2": [],
+          "rq-rr-pjp-pemilihan-q-2027-2": [],
+          "rq-rr-pjp-evaluasi-q-2027-2": [],
+          "rq-rr-pjp-konflik-q-2027-2": []
+        }
+      }
+    ],
+    "expectedLini3": [
+      {
+        "name": "all quarters",
+        "input": {
+          "db": "$demo"
+        },
+        "expected": {
+          "q-2026-1": [
+            "pos-kepatuhan",
+            "pos-pai"
+          ],
+          "q-2026-2": [
+            "pos-kepatuhan",
+            "pos-pai"
+          ],
+          "q-2026-3": [
+            "pos-kepatuhan",
+            "pos-pai"
+          ],
+          "q-2026-4": [
+            "pos-kepatuhan",
+            "pos-pai"
+          ],
+          "q-2027-1": [
+            "pos-kepatuhan",
+            "pos-pai"
+          ],
+          "q-2027-2": [
+            "pos-kepatuhan",
+            "pos-pai"
+          ],
+          "q-2027-3": [],
+          "q-2027-4": []
+        }
+      }
+    ],
+    "isQuiet": [
+      {
+        "name": "posting quarter of 2027-04-06",
+        "input": {
+          "db": "$demo",
+          "today": "2027-04-06"
+        },
+        "expected": {
+          "rr26-pemecahan": false,
+          "rr26-penyerapan": false,
+          "rr26-pembayaran": false,
+          "rr26-pl": false,
+          "rr-a1-dipa": true,
+          "rr-a1-rpd": false,
+          "rr-a1-pemecahan": true,
+          "rr-a1-penyerapan": false,
+          "rr-a1-berulang": false,
+          "rr-a1-pembayaran": true,
+          "rr-a1-material": true,
+          "rr-a1-penyuapan": true,
+          "rr-a2-kebutuhan": true,
+          "rr-a2-luar-rencana": true,
+          "rr-a2-markup": true,
+          "rr26-kpa-blokir": false,
+          "rr26-kpa-rpd": false,
+          "rr26-kpa-rup": false,
+          "rr26-kpa-sasaran": false,
+          "rr26-kpa-konflik": false,
+          "rr26-kpa-serapan": false,
+          "rr26-kpa-tagihan": false,
+          "rr26-kpa-suap": false,
+          "rr26-kpa-rencana": false,
+          "rr-pokja-kak": false,
+          "rr-pjp-pemilihan": true,
+          "rr-pjp-evaluasi": true,
+          "rr-pjp-konflik": true
+        }
+      }
+    ],
+    "lastActivity": [
+      {
+        "name": "all risks",
+        "input": {
+          "db": "$demo"
+        },
+        "expected": {
+          "rr26-pemecahan": null,
+          "rr26-penyerapan": null,
+          "rr26-pembayaran": null,
+          "rr26-pl": null,
+          "rr-a1-dipa": "2027-02-14T08:50",
+          "rr-a1-rpd": "2027-02-15T10:00",
+          "rr-a1-pemecahan": "2027-04-02T15:00",
+          "rr-a1-penyerapan": "2027-04-06T08:05",
+          "rr-a1-berulang": null,
+          "rr-a1-pembayaran": "2027-03-03T14:15",
+          "rr-a1-material": null,
+          "rr-a1-penyuapan": "2027-01-28T09:30",
+          "rr-a2-kebutuhan": null,
+          "rr-a2-luar-rencana": null,
+          "rr-a2-markup": "2027-02-22T10:00",
+          "rr26-kpa-blokir": null,
+          "rr26-kpa-rpd": null,
+          "rr26-kpa-rup": null,
+          "rr26-kpa-sasaran": null,
+          "rr26-kpa-konflik": null,
+          "rr26-kpa-serapan": null,
+          "rr26-kpa-tagihan": null,
+          "rr26-kpa-suap": null,
+          "rr26-kpa-rencana": null,
+          "rr-pokja-kak": null,
+          "rr-pjp-pemilihan": null,
+          "rr-pjp-evaluasi": null,
+          "rr-pjp-konflik": null
+        }
+      }
+    ],
+    "relatedQuarters": [
+      {
+        "name": "all risks",
+        "input": {
+          "db": "$demo",
+          "today": "2027-04-06",
+          "at": "2027-04-06T09:00"
+        },
+        "expected": {
+          "rr26-pemecahan": [],
+          "rr26-penyerapan": [],
+          "rr26-pembayaran": [],
+          "rr26-pl": [],
+          "rr-a1-dipa": [],
+          "rr-a1-rpd": [],
+          "rr-a1-pemecahan": [
+            "q-2027-1"
+          ],
+          "rr-a1-penyerapan": [
+            "q-2027-1"
+          ],
+          "rr-a1-berulang": [],
+          "rr-a1-pembayaran": [
+            "q-2027-1"
+          ],
+          "rr-a1-material": [
+            "q-2027-1"
+          ],
+          "rr-a1-penyuapan": [],
+          "rr-a2-kebutuhan": [],
+          "rr-a2-luar-rencana": [],
+          "rr-a2-markup": [],
+          "rr26-kpa-blokir": [],
+          "rr26-kpa-rpd": [],
+          "rr26-kpa-rup": [],
+          "rr26-kpa-sasaran": [],
+          "rr26-kpa-konflik": [],
+          "rr26-kpa-serapan": [],
+          "rr26-kpa-tagihan": [],
+          "rr26-kpa-suap": [],
+          "rr26-kpa-rencana": [],
+          "rr-pokja-kak": [],
+          "rr-pjp-pemilihan": [
+            "q-2027-1"
+          ],
+          "rr-pjp-evaluasi": [
+            "q-2027-1"
+          ],
+          "rr-pjp-konflik": [
+            "q-2027-1"
+          ]
+        }
+      }
+    ],
+    "latestOpened": [
+      {
+        "name": "usr-andi",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-andi",
+          "today": "2027-04-06",
+          "at": "2027-04-06T09:00"
+        },
+        "expected": {
+          "rr26-pemecahan": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr26-penyerapan": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "tidak_sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr26-pembayaran": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr26-pl": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a1-dipa": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a1-rpd": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": null
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "incomparable"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "incomparable"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a1-pemecahan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": true
+          },
+          "rr-a1-penyerapan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a1-berulang": null,
+          "rr-a1-pembayaran": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a1-material": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a1-penyuapan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "kurang"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a2-kebutuhan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a2",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a2-luar-rencana": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a2",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a2-markup": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a2",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr26-kpa-blokir": null,
+          "rr26-kpa-rpd": null,
+          "rr26-kpa-rup": null,
+          "rr26-kpa-sasaran": null,
+          "rr26-kpa-konflik": null,
+          "rr26-kpa-serapan": null,
+          "rr26-kpa-tagihan": null,
+          "rr26-kpa-suap": null,
+          "rr26-kpa-rencana": null,
+          "rr-pokja-kak": null,
+          "rr-pjp-pemilihan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-pjp-satker-b",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-pjp-evaluasi": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-pjp-satker-b",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-pjp-konflik": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-pjp-satker-b",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          }
+        }
+      },
+      {
+        "name": "usr-rafi",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-rafi",
+          "today": "2027-04-06",
+          "at": "2027-04-06T09:00"
+        },
+        "expected": {
+          "rr26-pemecahan": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr26-penyerapan": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "tidak_sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr26-pembayaran": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr26-pl": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a1-dipa": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a1-rpd": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": null
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "incomparable"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "incomparable"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a1-pemecahan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": true
+          },
+          "rr-a1-penyerapan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a1-berulang": null,
+          "rr-a1-pembayaran": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a1-material": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a1-penyuapan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "kurang"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a2-kebutuhan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a2",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a2-luar-rencana": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a2",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a2-markup": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a2",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr26-kpa-blokir": null,
+          "rr26-kpa-rpd": null,
+          "rr26-kpa-rup": null,
+          "rr26-kpa-sasaran": null,
+          "rr26-kpa-konflik": null,
+          "rr26-kpa-serapan": null,
+          "rr26-kpa-tagihan": null,
+          "rr26-kpa-suap": null,
+          "rr26-kpa-rencana": null,
+          "rr-pokja-kak": null,
+          "rr-pjp-pemilihan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-pjp-satker-b",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-pjp-evaluasi": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-pjp-satker-b",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-pjp-konflik": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-pjp-satker-b",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          }
+        }
+      },
+      {
+        "name": "usr-siti",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-siti",
+          "today": "2027-04-06",
+          "at": "2027-04-06T09:00"
+        },
+        "expected": {
+          "rr26-pemecahan": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr26-penyerapan": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "tidak_sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr26-pembayaran": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr26-pl": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a1-dipa": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a1-rpd": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": null
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "incomparable"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "incomparable"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a1-pemecahan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": true
+          },
+          "rr-a1-penyerapan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a1-berulang": null,
+          "rr-a1-pembayaran": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a1-material": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a1-penyuapan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "kurang"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a2-kebutuhan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a2",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a2-luar-rencana": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a2",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a2-markup": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a2",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr26-kpa-blokir": null,
+          "rr26-kpa-rpd": null,
+          "rr26-kpa-rup": null,
+          "rr26-kpa-sasaran": null,
+          "rr26-kpa-konflik": null,
+          "rr26-kpa-serapan": null,
+          "rr26-kpa-tagihan": null,
+          "rr26-kpa-suap": null,
+          "rr26-kpa-rencana": null,
+          "rr-pokja-kak": null,
+          "rr-pjp-pemilihan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-pjp-satker-b",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-pjp-evaluasi": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-pjp-satker-b",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-pjp-konflik": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-pjp-satker-b",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          }
+        }
+      },
+      {
+        "name": "usr-hendra",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-hendra",
+          "today": "2027-04-06",
+          "at": "2027-04-06T09:00"
+        },
+        "expected": {
+          "rr26-pemecahan": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr26-penyerapan": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "tidak_sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr26-pembayaran": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr26-pl": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a1-dipa": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a1-rpd": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": null
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "incomparable"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "incomparable"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a1-pemecahan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": true
+          },
+          "rr-a1-penyerapan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a1-berulang": null,
+          "rr-a1-pembayaran": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a1-material": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a1-penyuapan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "kurang"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a2-kebutuhan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a2",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a2-luar-rencana": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a2",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a2-markup": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a2",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr26-kpa-blokir": null,
+          "rr26-kpa-rpd": null,
+          "rr26-kpa-rup": null,
+          "rr26-kpa-sasaran": null,
+          "rr26-kpa-konflik": null,
+          "rr26-kpa-serapan": null,
+          "rr26-kpa-tagihan": null,
+          "rr26-kpa-suap": null,
+          "rr26-kpa-rencana": null,
+          "rr-pokja-kak": null,
+          "rr-pjp-pemilihan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-pjp-satker-b",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-pjp-evaluasi": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-pjp-satker-b",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-pjp-konflik": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-pjp-satker-b",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          }
+        }
+      },
+      {
+        "name": "usr-maya",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-maya",
+          "today": "2027-04-06",
+          "at": "2027-04-06T09:00"
+        },
+        "expected": {
+          "rr26-pemecahan": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr26-penyerapan": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "tidak_sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr26-pembayaran": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr26-pl": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a1-dipa": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a1-rpd": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": null
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "incomparable"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "incomparable"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a1-pemecahan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": true
+          },
+          "rr-a1-penyerapan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a1-berulang": null,
+          "rr-a1-pembayaran": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a1-material": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a1-penyuapan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "kurang"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a2-kebutuhan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a2",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a2-luar-rencana": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a2",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a2-markup": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a2",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr26-kpa-blokir": null,
+          "rr26-kpa-rpd": null,
+          "rr26-kpa-rup": null,
+          "rr26-kpa-sasaran": null,
+          "rr26-kpa-konflik": null,
+          "rr26-kpa-serapan": null,
+          "rr26-kpa-tagihan": null,
+          "rr26-kpa-suap": null,
+          "rr26-kpa-rencana": null,
+          "rr-pokja-kak": null,
+          "rr-pjp-pemilihan": {
+            "quarterId": "q-2027-1",
+            "hidden": true,
+            "chips": [],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-pjp-evaluasi": {
+            "quarterId": "q-2027-1",
+            "hidden": true,
+            "chips": [],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-pjp-konflik": {
+            "quarterId": "q-2027-1",
+            "hidden": true,
+            "chips": [],
+            "tidakSesuai": false,
+            "recurring": false
+          }
+        }
+      },
+      {
+        "name": "usr-admin",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-admin",
+          "today": "2027-04-06",
+          "at": "2027-04-06T09:00"
+        },
+        "expected": {
+          "rr26-pemecahan": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr26-penyerapan": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "tidak_sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr26-pembayaran": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr26-pl": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a1-dipa": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a1-rpd": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": null
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "incomparable"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "incomparable"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a1-pemecahan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": true
+          },
+          "rr-a1-penyerapan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a1-berulang": null,
+          "rr-a1-pembayaran": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a1-material": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a1-penyuapan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "kurang"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a2-kebutuhan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a2",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a2-luar-rencana": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a2",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a2-markup": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a2",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr26-kpa-blokir": null,
+          "rr26-kpa-rpd": null,
+          "rr26-kpa-rup": null,
+          "rr26-kpa-sasaran": null,
+          "rr26-kpa-konflik": null,
+          "rr26-kpa-serapan": null,
+          "rr26-kpa-tagihan": null,
+          "rr26-kpa-suap": null,
+          "rr26-kpa-rencana": null,
+          "rr-pokja-kak": null,
+          "rr-pjp-pemilihan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-pjp-satker-b",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-pjp-evaluasi": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-pjp-satker-b",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-pjp-konflik": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-pjp-satker-b",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          }
+        }
+      },
+      {
+        "name": "usr-dewi",
+        "input": {
+          "db": "$demo",
+          "userId": "usr-dewi",
+          "today": "2027-04-06",
+          "at": "2027-04-06T09:00"
+        },
+        "expected": {
+          "rr26-pemecahan": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr26-penyerapan": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "tidak_sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr26-pembayaran": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr26-pl": {
+            "quarterId": "q-2026-4",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a1-dipa": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a1-rpd": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": null
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "incomparable"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "incomparable"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a1-pemecahan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": true
+          },
+          "rr-a1-penyerapan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "kurang",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a1-berulang": null,
+          "rr-a1-pembayaran": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a1-material": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a1-penyuapan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a1",
+                "label": "L1",
+                "line": 1,
+                "predicate": "kurang"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "tidak_sesuai"
+              }
+            ],
+            "tidakSesuai": true,
+            "recurring": false
+          },
+          "rr-a2-kebutuhan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a2",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a2-luar-rencana": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a2",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-a2-markup": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-ppk-a2",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              },
+              {
+                "positionId": "pos-pai",
+                "label": "PAI",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr26-kpa-blokir": null,
+          "rr26-kpa-rpd": null,
+          "rr26-kpa-rup": null,
+          "rr26-kpa-sasaran": null,
+          "rr26-kpa-konflik": null,
+          "rr26-kpa-serapan": null,
+          "rr26-kpa-tagihan": null,
+          "rr26-kpa-suap": null,
+          "rr26-kpa-rencana": null,
+          "rr-pokja-kak": null,
+          "rr-pjp-pemilihan": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-pjp-satker-b",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-pjp-evaluasi": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-pjp-satker-b",
+                "label": "L1",
+                "line": 1,
+                "predicate": "terkendali"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "terkendali",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          },
+          "rr-pjp-konflik": {
+            "quarterId": "q-2027-1",
+            "hidden": false,
+            "chips": [
+              {
+                "positionId": "pos-pjp-satker-b",
+                "label": "L1",
+                "line": 1,
+                "predicate": "cukup"
+              },
+              {
+                "positionId": "pos-kepatuhan",
+                "label": "KEP",
+                "line": 3,
+                "predicate": "cukup",
+                "result": "sesuai"
+              }
+            ],
+            "tidakSesuai": false,
+            "recurring": false
+          }
+        }
+      }
+    ],
+    "threadParticipants": [
+      {
+        "name": "PPK A-1 2027",
+        "input": {
+          "db": "$demo",
+          "positionId": "pos-ppk-a1",
+          "today": "2027-04-06"
+        },
+        "expected": {
+          "q-2027-1": [
+            [
+              "usr-andi",
+              "pos-ppk-a1",
+              1
+            ],
+            [
+              "usr-rafi",
+              "pos-ppk-a1",
+              1
+            ],
+            [
+              "usr-lestari",
+              "pos-sup-ukpbj",
+              2
+            ],
+            [
+              "usr-siti",
+              "pos-pj-pemantauan",
+              2
+            ],
+            [
+              "usr-wahyu",
+              "pos-sup-ukpbj",
+              2
+            ],
+            [
+              "usr-yudi",
+              "pos-sup-birokeu",
+              2
+            ],
+            [
+              "usr-hendra",
+              "pos-kepatuhan",
+              3
+            ],
+            [
+              "usr-maya",
+              "pos-pai",
+              3
+            ],
+            [
+              "usr-rizky",
+              "pos-kepatuhan",
+              3
+            ]
+          ],
+          "q-2027-2": [
+            [
+              "usr-andi",
+              "pos-ppk-a1",
+              1
+            ],
+            [
+              "usr-rafi",
+              "pos-ppk-a1",
+              1
+            ],
+            [
+              "usr-lestari",
+              "pos-sup-ukpbj",
+              2
+            ],
+            [
+              "usr-siti",
+              "pos-pj-pemantauan",
+              2
+            ],
+            [
+              "usr-wahyu",
+              "pos-sup-ukpbj",
+              2
+            ],
+            [
+              "usr-yudi",
+              "pos-sup-birokeu",
+              2
+            ],
+            [
+              "usr-hendra",
+              "pos-kepatuhan",
+              3
+            ],
+            [
+              "usr-maya",
+              "pos-pai",
+              3
+            ],
+            [
+              "usr-rizky",
+              "pos-kepatuhan",
+              3
+            ]
+          ],
+          "q-2027-3": [
+            [
+              "usr-andi",
+              "pos-ppk-a1",
+              1
+            ],
+            [
+              "usr-rafi",
+              "pos-ppk-a1",
+              1
+            ],
+            [
+              "usr-lestari",
+              "pos-sup-ukpbj",
+              2
+            ],
+            [
+              "usr-siti",
+              "pos-pj-pemantauan",
+              2
+            ],
+            [
+              "usr-wahyu",
+              "pos-sup-ukpbj",
+              2
+            ],
+            [
+              "usr-yudi",
+              "pos-sup-birokeu",
+              2
+            ],
+            [
+              "usr-hendra",
+              "pos-kepatuhan",
+              3
+            ],
+            [
+              "usr-maya",
+              "pos-pai",
+              3
+            ],
+            [
+              "usr-rizky",
+              "pos-kepatuhan",
+              3
+            ]
+          ],
+          "q-2027-4": [
+            [
+              "usr-andi",
+              "pos-ppk-a1",
+              1
+            ],
+            [
+              "usr-rafi",
+              "pos-ppk-a1",
+              1
+            ],
+            [
+              "usr-lestari",
+              "pos-sup-ukpbj",
+              2
+            ],
+            [
+              "usr-siti",
+              "pos-pj-pemantauan",
+              2
+            ],
+            [
+              "usr-wahyu",
+              "pos-sup-ukpbj",
+              2
+            ],
+            [
+              "usr-yudi",
+              "pos-sup-birokeu",
+              2
+            ],
+            [
+              "usr-hendra",
+              "pos-kepatuhan",
+              3
+            ],
+            [
+              "usr-maya",
+              "pos-pai",
+              3
+            ],
+            [
+              "usr-rizky",
+              "pos-kepatuhan",
+              3
+            ]
+          ]
+        }
+      }
+    ],
+    "storageUsed": [
+      {
+        "name": "TA 2027",
+        "input": {
+          "db": "$demo",
+          "fiscalYear": 2027
+        },
+        "expected": {
+          "pos-kpa-satker-a": 0,
+          "pos-ppk-a1": 5448063,
+          "pos-ppk-a2": 0,
+          "pos-ppk-b2": 0,
+          "pos-pokja-03": 0,
+          "pos-pjp-satker-b": 0,
+          "pos-pjp-satker-c": 0,
+          "pos-pj-pemantauan": 0,
+          "pos-sup-birokeu": 0,
+          "pos-sup-ukpbj": 0,
+          "pos-kepatuhan": 0,
+          "pos-pai": 0
+        }
+      }
+    ],
+    "fileProblem": [
+      {
+        "name": "laporan.pdf",
+        "input": {
+          "name": "laporan.pdf",
+          "size": 1000
+        },
+        "expected": null
+      },
+      {
+        "name": "foto.JPG",
+        "input": {
+          "name": "foto.JPG",
+          "size": 1000
+        },
+        "expected": null
+      },
+      {
+        "name": "skrip.exe",
+        "input": {
+          "name": "skrip.exe",
+          "size": 10
+        },
+        "expected": "Format .exe tidak didukung. Gunakan PDF, DOCX, XLSX, PNG, JPG, atau MP4."
+      },
+      {
+        "name": "tanpa",
+        "input": {
+          "name": "tanpa",
+          "size": 10
+        },
+        "expected": "Format .tanpa tidak didukung. Gunakan PDF, DOCX, XLSX, PNG, JPG, atau MP4."
+      },
+      {
+        "name": "besar.mp4",
+        "input": {
+          "name": "besar.mp4",
+          "size": 22020096
+        },
+        "expected": "Ukuran berkas melebihi 20 MB."
+      }
+    ],
+    "canEditComment": [
+      {
+        "name": "author at 2027-02-03T09:12",
+        "input": {
+          "db": "$demo",
+          "commentId": "cm-1",
+          "userId": "usr-rafi",
+          "at": "2027-02-03T09:12"
+        },
+        "expected": true
+      },
+      {
+        "name": "other at 2027-02-03T09:12",
+        "input": {
+          "db": "$demo",
+          "commentId": "cm-1",
+          "userId": "usr-x",
+          "at": "2027-02-03T09:12"
+        },
+        "expected": false
+      },
+      {
+        "name": "author at 2027-02-03T09:27",
+        "input": {
+          "db": "$demo",
+          "commentId": "cm-1",
+          "userId": "usr-rafi",
+          "at": "2027-02-03T09:27"
+        },
+        "expected": true
+      },
+      {
+        "name": "other at 2027-02-03T09:27",
+        "input": {
+          "db": "$demo",
+          "commentId": "cm-1",
+          "userId": "usr-x",
+          "at": "2027-02-03T09:27"
+        },
+        "expected": false
+      },
+      {
+        "name": "author at 2027-02-03T09:28",
+        "input": {
+          "db": "$demo",
+          "commentId": "cm-1",
+          "userId": "usr-rafi",
+          "at": "2027-02-03T09:28"
+        },
+        "expected": false
+      },
+      {
+        "name": "other at 2027-02-03T09:28",
+        "input": {
+          "db": "$demo",
+          "commentId": "cm-1",
+          "userId": "usr-x",
+          "at": "2027-02-03T09:28"
+        },
+        "expected": false
+      }
+    ]
+  }
+}
