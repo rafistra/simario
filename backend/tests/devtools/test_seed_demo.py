@@ -72,5 +72,10 @@ def test_seed_demo_as_of_drops_later_rows() -> None:
 
 def test_seed_demo_refused_without_dev_tools(settings: Any) -> None:
     settings.SIMARIO_DEV_TOOLS = False
-    with pytest.raises(CommandError):
+    with pytest.raises(CommandError, match="SIMARIO_DEV_TOOLS"):
         call_command("seed_demo")
+
+
+def test_seed_demo_command_loads_data() -> None:
+    call_command("seed_demo")
+    assert User.objects.filter(nip="198204172008011003").exists()

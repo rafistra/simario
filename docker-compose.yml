@@ -19,6 +19,8 @@ x-backend: &backend
     - ./backend/manage.py:/app/manage.py
     - ./backend/config:/app/config
     - ./backend/simario:/app/simario
+    # seed_reference reads the Rapim templates and score options from docs/seed.
+    - ./docs/seed:/docs/seed:ro
   depends_on:
     db:
       condition: service_healthy
