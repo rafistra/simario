@@ -9,6 +9,7 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
       '@seed': fileURLToPath(new URL('../docs/seed', import.meta.url)),
+      '@vectors': fileURLToPath(new URL('../shared/test-vectors', import.meta.url)),
     },
   },
   server: {

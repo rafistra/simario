@@ -20,7 +20,11 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
     "baseUrl": ".",
-    "paths": { "@/*": ["src/*"], "@seed/*": ["../docs/seed/*"] }
+    "paths": {
+      "@/*": ["src/*"],
+      "@seed/*": ["../docs/seed/*"],
+      "@vectors/*": ["../shared/test-vectors/*"]
+    }
   },
   "include": ["src"]
 }

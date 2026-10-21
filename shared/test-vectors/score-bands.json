@@ -1,0 +1,59 @@
+{
+  "source": "frontend/src/domain/scoreBands.ts",
+  "rules": {
+    "predicateFor": [
+      { "name": "0 is kurang (closed lower bound)", "input": { "score": 0, "bands": "active" }, "expected": "kurang" },
+      { "name": "2.0 is kurang (upper inclusive)", "input": { "score": 2.0, "bands": "active" }, "expected": "kurang" },
+      { "name": "2.1 is cukup (lower exclusive)", "input": { "score": 2.1, "bands": "active" }, "expected": "cukup" },
+      { "name": "3.0 is cukup", "input": { "score": 3.0, "bands": "active" }, "expected": "cukup" },
+      { "name": "3.1 is terkendali", "input": { "score": 3.1, "bands": "active" }, "expected": "terkendali" },
+      { "name": "4.0 is terkendali", "input": { "score": 4.0, "bands": "active" }, "expected": "terkendali" },
+      { "name": "above 4 has no predicate", "input": { "score": 4.5, "bands": "active" }, "expected": null },
+      { "name": "negative has no predicate", "input": { "score": -1, "bands": "active" }, "expected": null }
+    ],
+    "validateBands": [
+      { "name": "active bands are valid", "input": { "bands": "active" }, "expected": [] },
+      {
+        "name": "gap between kurang and cukup",
+        "input": {
+          "bands": [
+            { "lowerExclusive": null, "upperInclusive": 2.0, "order": 1, "predicate": "kurang" },
+            { "lowerExclusive": 2.5, "upperInclusive": 3.0, "order": 2, "predicate": "cukup" },
+            { "lowerExclusive": 3.0, "upperInclusive": 4.0, "order": 3, "predicate": "terkendali" }
+          ]
+        },
+        "expected": [{ "kind": "gap", "from": 2.0, "to": 2.5 }]
+      },
+      {
+        "name": "overlap between kurang and cukup",
+        "input": {
+          "bands": [
+            { "lowerExclusive": null, "upperInclusive": 2.0, "order": 1, "predicate": "kurang" },
+            { "lowerExclusive": 1.5, "upperInclusive": 3.0, "order": 2, "predicate": "cukup" },
+            { "lowerExclusive": 3.0, "upperInclusive": 4.0, "order": 3, "predicate": "terkendali" }
+          ]
+        },
+        "expected": [{ "kind": "overlap", "from": 1.5, "to": 2.0 }]
+      },
+      {
+        "name": "last band stops short of 4",
+        "input": {
+          "bands": [
+            { "lowerExclusive": null, "upperInclusive": 2.0, "order": 1, "predicate": "kurang" },
+            { "lowerExclusive": 2.0, "upperInclusive": 3.0, "order": 2, "predicate": "cukup" },
+            { "lowerExclusive": 3.0, "upperInclusive": 3.5, "order": 3, "predicate": "terkendali" }
+          ]
+        },
+        "expected": [{ "kind": "gap", "from": 3.5, "to": 4 }]
+      },
+      { "name": "no bands", "input": { "bands": [] }, "expected": [{ "kind": "range", "from": 0, "to": 4 }] }
+    ]
+  },
+  "fixtures": {
+    "active": [
+      { "lowerExclusive": null, "upperInclusive": 2.0, "order": 1, "predicate": "kurang" },
+      { "lowerExclusive": 2.0, "upperInclusive": 3.0, "order": 2, "predicate": "cukup" },
+      { "lowerExclusive": 3.0, "upperInclusive": 4.0, "order": 3, "predicate": "terkendali" }
+    ]
+  }
+}
