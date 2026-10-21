@@ -1,0 +1,797 @@
+{
+  "source": "frontend/src/domain/rules/register.ts",
+  "notes": "\"$demo\" = the prototype seed. registerGaps/completeStages take a register id; assessedInQuarter maps quarter id -> assessed for one risk; deactivationQuarter takes the current quarter id.",
+  "rules": {
+    "registerGaps": [
+      {
+        "name": "reg-ppk-a1-2026",
+        "input": {
+          "db": "$demo",
+          "registerId": "reg-ppk-a1-2026"
+        },
+        "expected": [
+          {
+            "kind": "subsection",
+            "stageId": "stg-PPK-T1",
+            "riskType": "kinerja_anggaran",
+            "anchor": "sub-stg-PPK-T1-kinerja_anggaran",
+            "message": "Tahap 1 · Kinerja Anggaran — belum ada risiko atau pernyataan “Tidak ada risiko pada jenis ini”."
+          },
+          {
+            "kind": "subsection",
+            "stageId": "stg-PPK-T1",
+            "riskType": "ketidakpatuhan",
+            "anchor": "sub-stg-PPK-T1-ketidakpatuhan",
+            "message": "Tahap 1 · Ketidakpatuhan — belum ada risiko atau pernyataan “Tidak ada risiko pada jenis ini”."
+          },
+          {
+            "kind": "subsection",
+            "stageId": "stg-PPK-T2",
+            "riskType": "ketidakpatuhan",
+            "anchor": "sub-stg-PPK-T2-ketidakpatuhan",
+            "message": "Tahap 2 · Ketidakpatuhan — belum ada risiko atau pernyataan “Tidak ada risiko pada jenis ini”."
+          },
+          {
+            "kind": "subsection",
+            "stageId": "stg-PPK-T2",
+            "riskType": "kecurangan",
+            "anchor": "sub-stg-PPK-T2-kecurangan",
+            "message": "Tahap 2 · Kecurangan — belum ada risiko atau pernyataan “Tidak ada risiko pada jenis ini”."
+          },
+          {
+            "kind": "subsection",
+            "stageId": "stg-PPK-T3",
+            "riskType": "ketidakpatuhan",
+            "anchor": "sub-stg-PPK-T3-ketidakpatuhan",
+            "message": "Tahap 3 · Ketidakpatuhan — belum ada risiko atau pernyataan “Tidak ada risiko pada jenis ini”."
+          },
+          {
+            "kind": "subsection",
+            "stageId": "stg-PPK-T3",
+            "riskType": "kecurangan",
+            "anchor": "sub-stg-PPK-T3-kecurangan",
+            "message": "Tahap 3 · Kecurangan — belum ada risiko atau pernyataan “Tidak ada risiko pada jenis ini”."
+          },
+          {
+            "kind": "subsection",
+            "stageId": "stg-PPK-T4",
+            "riskType": "kinerja_anggaran",
+            "anchor": "sub-stg-PPK-T4-kinerja_anggaran",
+            "message": "Tahap 4 · Kinerja Anggaran — belum ada risiko atau pernyataan “Tidak ada risiko pada jenis ini”."
+          },
+          {
+            "kind": "subsection",
+            "stageId": "stg-PPK-T4",
+            "riskType": "ketidakpatuhan",
+            "anchor": "sub-stg-PPK-T4-ketidakpatuhan",
+            "message": "Tahap 4 · Ketidakpatuhan — belum ada risiko atau pernyataan “Tidak ada risiko pada jenis ini”."
+          },
+          {
+            "kind": "subsection",
+            "stageId": "stg-PPK-T4",
+            "riskType": "kecurangan",
+            "anchor": "sub-stg-PPK-T4-kecurangan",
+            "message": "Tahap 4 · Kecurangan — belum ada risiko atau pernyataan “Tidak ada risiko pada jenis ini”."
+          },
+          {
+            "kind": "subsection",
+            "stageId": "stg-PPK-T5",
+            "riskType": "kinerja_anggaran",
+            "anchor": "sub-stg-PPK-T5-kinerja_anggaran",
+            "message": "Tahap 5 · Kinerja Anggaran — belum ada risiko atau pernyataan “Tidak ada risiko pada jenis ini”."
+          },
+          {
+            "kind": "subsection",
+            "stageId": "stg-PPK-T5",
+            "riskType": "ketidakpatuhan",
+            "anchor": "sub-stg-PPK-T5-ketidakpatuhan",
+            "message": "Tahap 5 · Ketidakpatuhan — belum ada risiko atau pernyataan “Tidak ada risiko pada jenis ini”."
+          },
+          {
+            "kind": "subsection",
+            "stageId": "stg-PPK-T5",
+            "riskType": "kecurangan",
+            "anchor": "sub-stg-PPK-T5-kecurangan",
+            "message": "Tahap 5 · Kecurangan — belum ada risiko atau pernyataan “Tidak ada risiko pada jenis ini”."
+          }
+        ]
+      },
+      {
+        "name": "reg-ppk-a1-2027",
+        "input": {
+          "db": "$demo",
+          "registerId": "reg-ppk-a1-2027"
+        },
+        "expected": []
+      },
+      {
+        "name": "reg-ppk-a2-2027",
+        "input": {
+          "db": "$demo",
+          "registerId": "reg-ppk-a2-2027"
+        },
+        "expected": [
+          {
+            "kind": "dataUmum",
+            "field": "sumber_dana",
+            "anchor": "du-sumber_dana",
+            "message": "Data Umum — Sumber Dana wajib diisi sebelum register diterbitkan."
+          }
+        ]
+      },
+      {
+        "name": "reg-kpa-a-2026",
+        "input": {
+          "db": "$demo",
+          "registerId": "reg-kpa-a-2026"
+        },
+        "expected": []
+      },
+      {
+        "name": "reg-pokja-03-2027",
+        "input": {
+          "db": "$demo",
+          "registerId": "reg-pokja-03-2027"
+        },
+        "expected": [
+          {
+            "kind": "dataUmum",
+            "field": "besarAnggaran",
+            "anchor": "du-besarAnggaran",
+            "message": "Data Umum — Besar Anggaran wajib diisi sebelum register diterbitkan."
+          },
+          {
+            "kind": "dataUmum",
+            "field": "target",
+            "anchor": "du-target",
+            "message": "Data Umum — Target wajib diisi sebelum register diterbitkan."
+          },
+          {
+            "kind": "subsection",
+            "stageId": "stg-POKJA-T1",
+            "riskType": "ketidakpatuhan",
+            "anchor": "sub-stg-POKJA-T1-ketidakpatuhan",
+            "message": "Tahap 1 · Ketidakpatuhan — belum ada risiko atau pernyataan “Tidak ada risiko pada jenis ini”."
+          },
+          {
+            "kind": "subsection",
+            "stageId": "stg-POKJA-T1",
+            "riskType": "kecurangan",
+            "anchor": "sub-stg-POKJA-T1-kecurangan",
+            "message": "Tahap 1 · Kecurangan — belum ada risiko atau pernyataan “Tidak ada risiko pada jenis ini”."
+          },
+          {
+            "kind": "subsection",
+            "stageId": "stg-POKJA-T2",
+            "riskType": "kinerja_anggaran",
+            "anchor": "sub-stg-POKJA-T2-kinerja_anggaran",
+            "message": "Tahap 2 · Kinerja Anggaran — belum ada risiko atau pernyataan “Tidak ada risiko pada jenis ini”."
+          },
+          {
+            "kind": "subsection",
+            "stageId": "stg-POKJA-T2",
+            "riskType": "ketidakpatuhan",
+            "anchor": "sub-stg-POKJA-T2-ketidakpatuhan",
+            "message": "Tahap 2 · Ketidakpatuhan — belum ada risiko atau pernyataan “Tidak ada risiko pada jenis ini”."
+          },
+          {
+            "kind": "subsection",
+            "stageId": "stg-POKJA-T2",
+            "riskType": "kecurangan",
+            "anchor": "sub-stg-POKJA-T2-kecurangan",
+            "message": "Tahap 2 · Kecurangan — belum ada risiko atau pernyataan “Tidak ada risiko pada jenis ini”."
+          },
+          {
+            "kind": "subsection",
+            "stageId": "stg-POKJA-T3",
+            "riskType": "kinerja_anggaran",
+            "anchor": "sub-stg-POKJA-T3-kinerja_anggaran",
+            "message": "Tahap 3 · Kinerja Anggaran — belum ada risiko atau pernyataan “Tidak ada risiko pada jenis ini”."
+          },
+          {
+            "kind": "subsection",
+            "stageId": "stg-POKJA-T3",
+            "riskType": "ketidakpatuhan",
+            "anchor": "sub-stg-POKJA-T3-ketidakpatuhan",
+            "message": "Tahap 3 · Ketidakpatuhan — belum ada risiko atau pernyataan “Tidak ada risiko pada jenis ini”."
+          },
+          {
+            "kind": "subsection",
+            "stageId": "stg-POKJA-T3",
+            "riskType": "kecurangan",
+            "anchor": "sub-stg-POKJA-T3-kecurangan",
+            "message": "Tahap 3 · Kecurangan — belum ada risiko atau pernyataan “Tidak ada risiko pada jenis ini”."
+          }
+        ]
+      },
+      {
+        "name": "reg-pjp-b-2027",
+        "input": {
+          "db": "$demo",
+          "registerId": "reg-pjp-b-2027"
+        },
+        "expected": []
+      }
+    ],
+    "completeStages": [
+      {
+        "name": "reg-ppk-a1-2026",
+        "input": {
+          "db": "$demo",
+          "registerId": "reg-ppk-a1-2026"
+        },
+        "expected": {
+          "complete": 0,
+          "total": 5
+        }
+      },
+      {
+        "name": "reg-ppk-a1-2027",
+        "input": {
+          "db": "$demo",
+          "registerId": "reg-ppk-a1-2027"
+        },
+        "expected": {
+          "complete": 5,
+          "total": 5
+        }
+      },
+      {
+        "name": "reg-ppk-a2-2027",
+        "input": {
+          "db": "$demo",
+          "registerId": "reg-ppk-a2-2027"
+        },
+        "expected": {
+          "complete": 5,
+          "total": 5
+        }
+      },
+      {
+        "name": "reg-kpa-a-2026",
+        "input": {
+          "db": "$demo",
+          "registerId": "reg-kpa-a-2026"
+        },
+        "expected": {
+          "complete": 5,
+          "total": 5
+        }
+      },
+      {
+        "name": "reg-pokja-03-2027",
+        "input": {
+          "db": "$demo",
+          "registerId": "reg-pokja-03-2027"
+        },
+        "expected": {
+          "complete": 0,
+          "total": 3
+        }
+      },
+      {
+        "name": "reg-pjp-b-2027",
+        "input": {
+          "db": "$demo",
+          "registerId": "reg-pjp-b-2027"
+        },
+        "expected": {
+          "complete": 1,
+          "total": 1
+        }
+      }
+    ],
+    "deactivationQuarter": [
+      {
+        "name": "q-2027-1",
+        "input": {
+          "quarters": "$quarters",
+          "currentId": "q-2027-1"
+        },
+        "expected": "q-2027-2"
+      },
+      {
+        "name": "q-2027-2",
+        "input": {
+          "quarters": "$quarters",
+          "currentId": "q-2027-2"
+        },
+        "expected": "q-2027-3"
+      },
+      {
+        "name": "q-2027-3",
+        "input": {
+          "quarters": "$quarters",
+          "currentId": "q-2027-3"
+        },
+        "expected": "q-2027-4"
+      },
+      {
+        "name": "q-2027-4",
+        "input": {
+          "quarters": "$quarters",
+          "currentId": "q-2027-4"
+        },
+        "expected": null
+      }
+    ],
+    "assessedInQuarter": [
+      {
+        "name": "rr26-pemecahan",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr26-pemecahan"
+        },
+        "expected": {
+          "q-2026-1": true,
+          "q-2026-2": true,
+          "q-2026-3": true,
+          "q-2026-4": true,
+          "q-2027-1": false,
+          "q-2027-2": false,
+          "q-2027-3": false,
+          "q-2027-4": false
+        }
+      },
+      {
+        "name": "rr26-penyerapan",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr26-penyerapan"
+        },
+        "expected": {
+          "q-2026-1": true,
+          "q-2026-2": true,
+          "q-2026-3": true,
+          "q-2026-4": true,
+          "q-2027-1": false,
+          "q-2027-2": false,
+          "q-2027-3": false,
+          "q-2027-4": false
+        }
+      },
+      {
+        "name": "rr26-pembayaran",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr26-pembayaran"
+        },
+        "expected": {
+          "q-2026-1": true,
+          "q-2026-2": true,
+          "q-2026-3": true,
+          "q-2026-4": true,
+          "q-2027-1": false,
+          "q-2027-2": false,
+          "q-2027-3": false,
+          "q-2027-4": false
+        }
+      },
+      {
+        "name": "rr26-pl",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr26-pl"
+        },
+        "expected": {
+          "q-2026-1": true,
+          "q-2026-2": true,
+          "q-2026-3": true,
+          "q-2026-4": true,
+          "q-2027-1": false,
+          "q-2027-2": false,
+          "q-2027-3": false,
+          "q-2027-4": false
+        }
+      },
+      {
+        "name": "rr-a1-dipa",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr-a1-dipa"
+        },
+        "expected": {
+          "q-2026-1": false,
+          "q-2026-2": false,
+          "q-2026-3": false,
+          "q-2026-4": false,
+          "q-2027-1": true,
+          "q-2027-2": true,
+          "q-2027-3": true,
+          "q-2027-4": true
+        }
+      },
+      {
+        "name": "rr-a1-rpd",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr-a1-rpd"
+        },
+        "expected": {
+          "q-2026-1": false,
+          "q-2026-2": false,
+          "q-2026-3": false,
+          "q-2026-4": false,
+          "q-2027-1": true,
+          "q-2027-2": false,
+          "q-2027-3": false,
+          "q-2027-4": false
+        }
+      },
+      {
+        "name": "rr-a1-pemecahan",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr-a1-pemecahan"
+        },
+        "expected": {
+          "q-2026-1": false,
+          "q-2026-2": false,
+          "q-2026-3": false,
+          "q-2026-4": false,
+          "q-2027-1": true,
+          "q-2027-2": true,
+          "q-2027-3": true,
+          "q-2027-4": true
+        }
+      },
+      {
+        "name": "rr-a1-penyerapan",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr-a1-penyerapan"
+        },
+        "expected": {
+          "q-2026-1": false,
+          "q-2026-2": false,
+          "q-2026-3": false,
+          "q-2026-4": false,
+          "q-2027-1": true,
+          "q-2027-2": true,
+          "q-2027-3": true,
+          "q-2027-4": true
+        }
+      },
+      {
+        "name": "rr-a1-berulang",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr-a1-berulang"
+        },
+        "expected": {
+          "q-2026-1": false,
+          "q-2026-2": false,
+          "q-2026-3": false,
+          "q-2026-4": false,
+          "q-2027-1": false,
+          "q-2027-2": false,
+          "q-2027-3": false,
+          "q-2027-4": false
+        }
+      },
+      {
+        "name": "rr-a1-pembayaran",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr-a1-pembayaran"
+        },
+        "expected": {
+          "q-2026-1": false,
+          "q-2026-2": false,
+          "q-2026-3": false,
+          "q-2026-4": false,
+          "q-2027-1": true,
+          "q-2027-2": true,
+          "q-2027-3": true,
+          "q-2027-4": true
+        }
+      },
+      {
+        "name": "rr-a1-material",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr-a1-material"
+        },
+        "expected": {
+          "q-2026-1": false,
+          "q-2026-2": false,
+          "q-2026-3": false,
+          "q-2026-4": false,
+          "q-2027-1": true,
+          "q-2027-2": true,
+          "q-2027-3": true,
+          "q-2027-4": true
+        }
+      },
+      {
+        "name": "rr-a1-penyuapan",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr-a1-penyuapan"
+        },
+        "expected": {
+          "q-2026-1": false,
+          "q-2026-2": false,
+          "q-2026-3": false,
+          "q-2026-4": false,
+          "q-2027-1": true,
+          "q-2027-2": true,
+          "q-2027-3": true,
+          "q-2027-4": true
+        }
+      },
+      {
+        "name": "rr-a2-kebutuhan",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr-a2-kebutuhan"
+        },
+        "expected": {
+          "q-2026-1": false,
+          "q-2026-2": false,
+          "q-2026-3": false,
+          "q-2026-4": false,
+          "q-2027-1": true,
+          "q-2027-2": true,
+          "q-2027-3": true,
+          "q-2027-4": true
+        }
+      },
+      {
+        "name": "rr-a2-luar-rencana",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr-a2-luar-rencana"
+        },
+        "expected": {
+          "q-2026-1": false,
+          "q-2026-2": false,
+          "q-2026-3": false,
+          "q-2026-4": false,
+          "q-2027-1": true,
+          "q-2027-2": true,
+          "q-2027-3": true,
+          "q-2027-4": true
+        }
+      },
+      {
+        "name": "rr-a2-markup",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr-a2-markup"
+        },
+        "expected": {
+          "q-2026-1": false,
+          "q-2026-2": false,
+          "q-2026-3": false,
+          "q-2026-4": false,
+          "q-2027-1": true,
+          "q-2027-2": true,
+          "q-2027-3": true,
+          "q-2027-4": true
+        }
+      },
+      {
+        "name": "rr26-kpa-blokir",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr26-kpa-blokir"
+        },
+        "expected": {
+          "q-2026-1": true,
+          "q-2026-2": true,
+          "q-2026-3": true,
+          "q-2026-4": true,
+          "q-2027-1": false,
+          "q-2027-2": false,
+          "q-2027-3": false,
+          "q-2027-4": false
+        }
+      },
+      {
+        "name": "rr26-kpa-rpd",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr26-kpa-rpd"
+        },
+        "expected": {
+          "q-2026-1": true,
+          "q-2026-2": true,
+          "q-2026-3": true,
+          "q-2026-4": true,
+          "q-2027-1": false,
+          "q-2027-2": false,
+          "q-2027-3": false,
+          "q-2027-4": false
+        }
+      },
+      {
+        "name": "rr26-kpa-rup",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr26-kpa-rup"
+        },
+        "expected": {
+          "q-2026-1": true,
+          "q-2026-2": true,
+          "q-2026-3": true,
+          "q-2026-4": true,
+          "q-2027-1": false,
+          "q-2027-2": false,
+          "q-2027-3": false,
+          "q-2027-4": false
+        }
+      },
+      {
+        "name": "rr26-kpa-sasaran",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr26-kpa-sasaran"
+        },
+        "expected": {
+          "q-2026-1": true,
+          "q-2026-2": true,
+          "q-2026-3": true,
+          "q-2026-4": true,
+          "q-2027-1": false,
+          "q-2027-2": false,
+          "q-2027-3": false,
+          "q-2027-4": false
+        }
+      },
+      {
+        "name": "rr26-kpa-konflik",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr26-kpa-konflik"
+        },
+        "expected": {
+          "q-2026-1": true,
+          "q-2026-2": true,
+          "q-2026-3": true,
+          "q-2026-4": true,
+          "q-2027-1": false,
+          "q-2027-2": false,
+          "q-2027-3": false,
+          "q-2027-4": false
+        }
+      },
+      {
+        "name": "rr26-kpa-serapan",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr26-kpa-serapan"
+        },
+        "expected": {
+          "q-2026-1": true,
+          "q-2026-2": true,
+          "q-2026-3": true,
+          "q-2026-4": true,
+          "q-2027-1": false,
+          "q-2027-2": false,
+          "q-2027-3": false,
+          "q-2027-4": false
+        }
+      },
+      {
+        "name": "rr26-kpa-tagihan",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr26-kpa-tagihan"
+        },
+        "expected": {
+          "q-2026-1": true,
+          "q-2026-2": true,
+          "q-2026-3": true,
+          "q-2026-4": true,
+          "q-2027-1": false,
+          "q-2027-2": false,
+          "q-2027-3": false,
+          "q-2027-4": false
+        }
+      },
+      {
+        "name": "rr26-kpa-suap",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr26-kpa-suap"
+        },
+        "expected": {
+          "q-2026-1": true,
+          "q-2026-2": true,
+          "q-2026-3": true,
+          "q-2026-4": true,
+          "q-2027-1": false,
+          "q-2027-2": false,
+          "q-2027-3": false,
+          "q-2027-4": false
+        }
+      },
+      {
+        "name": "rr26-kpa-rencana",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr26-kpa-rencana"
+        },
+        "expected": {
+          "q-2026-1": true,
+          "q-2026-2": true,
+          "q-2026-3": false,
+          "q-2026-4": false,
+          "q-2027-1": false,
+          "q-2027-2": false,
+          "q-2027-3": false,
+          "q-2027-4": false
+        }
+      },
+      {
+        "name": "rr-pokja-kak",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr-pokja-kak"
+        },
+        "expected": {
+          "q-2026-1": false,
+          "q-2026-2": false,
+          "q-2026-3": false,
+          "q-2026-4": false,
+          "q-2027-1": false,
+          "q-2027-2": false,
+          "q-2027-3": false,
+          "q-2027-4": false
+        }
+      },
+      {
+        "name": "rr-pjp-pemilihan",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr-pjp-pemilihan"
+        },
+        "expected": {
+          "q-2026-1": false,
+          "q-2026-2": false,
+          "q-2026-3": false,
+          "q-2026-4": false,
+          "q-2027-1": true,
+          "q-2027-2": true,
+          "q-2027-3": true,
+          "q-2027-4": true
+        }
+      },
+      {
+        "name": "rr-pjp-evaluasi",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr-pjp-evaluasi"
+        },
+        "expected": {
+          "q-2026-1": false,
+          "q-2026-2": false,
+          "q-2026-3": false,
+          "q-2026-4": false,
+          "q-2027-1": true,
+          "q-2027-2": true,
+          "q-2027-3": true,
+          "q-2027-4": true
+        }
+      },
+      {
+        "name": "rr-pjp-konflik",
+        "input": {
+          "db": "$demo",
+          "riskId": "rr-pjp-konflik"
+        },
+        "expected": {
+          "q-2026-1": false,
+          "q-2026-2": false,
+          "q-2026-3": false,
+          "q-2026-4": false,
+          "q-2027-1": true,
+          "q-2027-2": true,
+          "q-2027-3": true,
+          "q-2027-4": true
+        }
+      }
+    ]
+  }
+}
