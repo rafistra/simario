@@ -158,3 +158,108 @@ class DataUmumFormView(APIView):
             b.get("objective_enabled", False),
         )
         return Response({"version": version})
+
+
+# ---------- Score bands and statements ----------
+
+PREDICATES = ["kurang", "cukup", "terkendali"]
+
+
+class BandInputSerializer(serializers.Serializer[None]):
+    lower_exclusive = serializers.FloatField(allow_null=True)
+    upper_inclusive = serializers.FloatField()
+    predicate = serializers.ChoiceField(choices=PREDICATES)
+    order = serializers.IntegerField()
+    guidance = serializers.CharField(allow_blank=True, required=False, default="")
+
+
+class OptionInputSerializer(serializers.Serializer[None]):
+    id = serializers.CharField()
+    value = serializers.FloatField()
+    label = serializers.CharField(allow_blank=True, trim_whitespace=False)  # type: ignore[assignment]
+
+
+class BandDraftCreateSerializer(serializers.Serializer[None]):
+    effective_from = serializers.DateField()
+
+
+class BandVersionSerializer(serializers.Serializer[None]):
+    effective_from = serializers.DateField()
+    bands = BandInputSerializer(many=True)
+    options = OptionInputSerializer(many=True)
+
+
+class GuidanceSerializer(serializers.Serializer[None]):
+    guidance = serializers.CharField(allow_blank=True, trim_whitespace=False)
+
+
+class LabelSerializer(serializers.Serializer[None]):
+    label = serializers.CharField(allow_blank=True, trim_whitespace=False)  # type: ignore[assignment]
+
+
+def _version_input(request: Request) -> dict[str, Any]:
+    b = body(BandVersionSerializer, request)
+    return {
+        "effective_from": b["effective_from"],
+        "bands": [dict(x) for x in b["bands"]],
+        "options": [dict(x) for x in b["options"]],
+    }
+
+
+class BandVersionListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(request=BandDraftCreateSerializer, responses=IdSerializer, tags=["master"])
+    def post(self, request: Request) -> Response:
+        actor = _actor(request, 14)
+        effective = body(BandDraftCreateSerializer, request)["effective_from"]
+        return Response({"id": services.create_band_draft(actor, effective)})
+
+
+class BandVersionView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(request=BandVersionSerializer, responses={204: None}, tags=["master"])
+    def put(self, request: Request, pk: Any) -> Response:
+        actor = _actor(request, 14)
+        v = _version_input(request)
+        services.update_band_draft(actor, pk, v["bands"], v["effective_from"], v["options"])
+        return Response(status=204)
+
+    @extend_schema(responses={204: None}, tags=["master"])
+    def delete(self, request: Request, pk: Any) -> Response:
+        services.discard_band_draft(_actor(request, 14), pk)
+        return Response(status=204)
+
+
+class BandVersionScheduleView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(request=BandVersionSerializer, responses={204: None}, tags=["master"])
+    def post(self, request: Request, pk: Any) -> Response:
+        actor = _actor(request, 14)
+        v = _version_input(request)
+        services.save_band_version(actor, pk, v["effective_from"], v["bands"], v["options"])
+        return Response(status=204)
+
+
+class ActiveGuidanceView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(request=GuidanceSerializer, responses={204: None}, tags=["master"])
+    def patch(self, request: Request, predicate: str) -> Response:
+        actor = _actor(request, 14)
+        services.update_active_guidance(
+            actor, predicate, body(GuidanceSerializer, request)["guidance"]
+        )
+        return Response(status=204)
+
+
+class OptionLabelView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(request=LabelSerializer, responses={204: None}, tags=["master"])
+    def patch(self, request: Request, pk: Any) -> Response:
+        actor = _actor(request, 14)
+        services.update_option_label(actor, pk, body(LabelSerializer, request)["label"])
+        return Response(status=204)

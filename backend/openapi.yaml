@@ -615,6 +615,161 @@ paths:
                 type: object
                 additionalProperties: {}
           description: ''
+  /api/v1/score-band-versions:
+    post:
+      operationId: score_band_versions_create
+      tags:
+      - master
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BandDraftCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BandDraftCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BandDraftCreateRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Id'
+          description: ''
+  /api/v1/score-band-versions/{id}:
+    put:
+      operationId: score_band_versions_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - master
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BandVersionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BandVersionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BandVersionRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+    delete:
+      operationId: score_band_versions_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - master
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/score-band-versions/{id}/schedule:
+    post:
+      operationId: score_band_versions_schedule_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - master
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BandVersionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BandVersionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BandVersionRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/score-bands/{predicate}:
+    patch:
+      operationId: score_bands_partial_update
+      parameters:
+      - in: path
+        name: predicate
+        schema:
+          type: string
+        required: true
+      tags:
+      - master
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedGuidanceRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedGuidanceRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedGuidanceRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/score-options/{id}:
+    patch:
+      operationId: score_options_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - master
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedLabelRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedLabelRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedLabelRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/stages:
     post:
       operationId: stages_create
@@ -718,6 +873,54 @@ components:
       required:
       - devTools
       - oidcEnabled
+    BandDraftCreateRequest:
+      type: object
+      properties:
+        effectiveFrom:
+          type: string
+          format: date
+      required:
+      - effectiveFrom
+    BandInputRequest:
+      type: object
+      properties:
+        lowerExclusive:
+          type: number
+          format: double
+          nullable: true
+        upperInclusive:
+          type: number
+          format: double
+        predicate:
+          $ref: '#/components/schemas/PredicateEnum'
+        order:
+          type: integer
+        guidance:
+          type: string
+          default: ''
+      required:
+      - lowerExclusive
+      - order
+      - predicate
+      - upperInclusive
+    BandVersionRequest:
+      type: object
+      properties:
+        effectiveFrom:
+          type: string
+          format: date
+        bands:
+          type: array
+          items:
+            $ref: '#/components/schemas/BandInputRequest'
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/OptionInputRequest'
+      required:
+      - bands
+      - effectiveFrom
+      - options
     CapacityEnum:
       enum:
       - pejabat
@@ -991,6 +1194,21 @@ components:
       - targetUrl
       - text
       - userId
+    OptionInputRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+        value:
+          type: number
+          format: double
+        label:
+          type: string
+      required:
+      - id
+      - label
+      - value
     PaginatedNotificationList:
       type: object
       required:
@@ -1025,6 +1243,16 @@ components:
       properties:
         active:
           type: boolean
+    PatchedGuidanceRequest:
+      type: object
+      properties:
+        guidance:
+          type: string
+    PatchedLabelRequest:
+      type: object
+      properties:
+        label:
+          type: string
     PatchedStagePatchRequest:
       type: object
       properties:
@@ -1159,6 +1387,16 @@ components:
       required:
       - code
       - name
+    PredicateEnum:
+      enum:
+      - kurang
+      - cukup
+      - terkendali
+      type: string
+      description: |-
+        * `kurang` - kurang
+        * `cukup` - cukup
+        * `terkendali` - terkendali
     Quarter:
       type: object
       description: Shape of `Quarter` in frontend/src/domain/types.ts.

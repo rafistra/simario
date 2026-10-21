@@ -37,6 +37,7 @@ STATUS_BY_CODE: dict[str, int] = {
     "stage_in_use": 409,
     "stage_has_templates": 409,
     "template_used": 409,
+    "draft_exists": 409,
     "nothing": 409,
     "server": 500,
 }

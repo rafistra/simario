@@ -18,4 +18,13 @@ urlpatterns = [
         views.DataUmumFormView.as_view(),
         name="data-umum-forms",
     ),
+    path("score-band-versions", views.BandVersionListView.as_view(), name="band-versions"),
+    path("score-band-versions/<uuid:pk>", views.BandVersionView.as_view(), name="band-version"),
+    path(
+        "score-band-versions/<uuid:pk>/schedule",
+        views.BandVersionScheduleView.as_view(),
+        name="band-version-schedule",
+    ),
+    path("score-bands/<str:predicate>", views.ActiveGuidanceView.as_view(), name="band-guidance"),
+    path("score-options/<uuid:pk>", views.OptionLabelView.as_view(), name="score-option"),
 ]

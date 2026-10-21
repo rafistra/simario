@@ -86,7 +86,11 @@ class ScoreBandVersion(UUIDModel):
             # INV-3: exactly one active version.
             models.UniqueConstraint(
                 fields=["status"], condition=Q(status="active"), name="uniq_active_band_version"
-            )
+            ),
+            # At most one draft at a time (two managers starting a draft together).
+            models.UniqueConstraint(
+                fields=["status"], condition=Q(status="draft"), name="uniq_draft_band_version"
+            ),
         ]
 
 

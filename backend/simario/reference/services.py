@@ -1,19 +1,30 @@
 """Stages, risk templates and Data Umum forms (FR-MST-001…006). Ports masterApi in
 frontend/src/data/api/master.ts: same checks, error copy and audit actions."""
 
+import datetime as dt
 import re
 import uuid
 from typing import Any
 
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.db.models import Max
 
 from simario.audit.services import record_by
 from simario.core.errors import ApiError
 from simario.core.permissions import Actor
+from simario.domain.score_bands import validate_bands
+from simario.domain.score_options import sort_options, validate_options
 from simario.registers import usage
 
-from .models import DataUmumForm, MitigationTemplate, RiskTemplate, Stage
+from .models import (
+    DataUmumForm,
+    MitigationTemplate,
+    RiskTemplate,
+    ScoreBand,
+    ScoreBandVersion,
+    ScoreOption,
+    Stage,
+)
 
 
 def _norm(s: str) -> str:
@@ -273,3 +284,207 @@ def save_data_umum_form(
         {"version": version, "fields": len(fields)},
     )
     return version
+
+
+# ---------- Score bands and statements (FR-MST-007, PRD v2.8) ----------
+
+DRAFT_EXISTS = "Sudah ada draf versi. Lanjutkan atau buang draf tersebut terlebih dahulu."
+
+
+def _band_rows(version_id: Any) -> list[dict[str, Any]]:
+    return [
+        {
+            "lower_exclusive": float(b.lower_exclusive) if b.lower_exclusive is not None else None,
+            "upper_inclusive": float(b.upper_inclusive),
+            "predicate": b.predicate,
+            "order": b.order,
+            "guidance": b.guidance,
+        }
+        for b in ScoreBand.objects.filter(version_id=version_id).order_by("order")
+    ]
+
+
+def _replace_bands_and_options(
+    version: ScoreBandVersion, bands: list[dict[str, Any]], options: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    ScoreBand.objects.filter(version=version).delete()
+    ScoreBand.objects.bulk_create(
+        ScoreBand(
+            version=version,
+            lower_exclusive=b.get("lower_exclusive"),
+            upper_inclusive=b["upper_inclusive"],
+            predicate=b["predicate"],
+            order=b["order"],
+            guidance=b.get("guidance", ""),
+        )
+        for b in bands
+    )
+    ScoreOption.objects.filter(version=version).delete()
+    saved = [
+        ScoreOption(version=version, value=o["value"], label=o["label"].strip(), order=i + 1)
+        for i, o in enumerate(sort_options(options))
+    ]
+    ScoreOption.objects.bulk_create(saved)
+    return [
+        {"id": str(o.id), "value": float(o.value), "label": o.label, "order": o.order}
+        for o in saved
+    ]
+
+
+@transaction.atomic
+def create_band_draft(actor: Actor, effective_from: dt.date) -> uuid.UUID:
+    if ScoreBandVersion.objects.filter(status="draft").exists():
+        raise ApiError("draft_exists", DRAFT_EXISTS)
+    if effective_from < actor.at.date():
+        raise ApiError("validation", "Tanggal berlaku tidak boleh sebelum hari ini.")
+    active = ScoreBandVersion.objects.get(status="active")
+    number = (ScoreBandVersion.objects.aggregate(m=Max("number"))["m"] or 0) + 1
+    try:
+        with transaction.atomic():
+            draft = ScoreBandVersion.objects.create(
+                number=number, effective_from=effective_from, status="draft"
+            )
+    except IntegrityError as e:
+        raise ApiError("draft_exists", DRAFT_EXISTS) from e
+    ScoreBand.objects.bulk_create(
+        ScoreBand(
+            version=draft,
+            lower_exclusive=b.lower_exclusive,
+            upper_inclusive=b.upper_inclusive,
+            predicate=b.predicate,
+            order=b.order,
+            guidance=b.guidance,
+        )
+        for b in active.bands.all()
+    )
+    ScoreOption.objects.bulk_create(
+        ScoreOption(version=draft, value=o.value, label=o.label, order=o.order)
+        for o in active.options.all()
+    )
+    record_by(
+        actor,
+        "buat_draf_skala",
+        "ScoreBandVersion",
+        draft.id,
+        None,
+        {
+            "number": number,
+            "effective_from": effective_from.isoformat(),
+            "copied_from": active.number,
+        },
+    )
+    return draft.id
+
+
+@transaction.atomic
+def save_band_version(
+    actor: Actor,
+    version_id: uuid.UUID,
+    effective_from: dt.date,
+    bands: list[dict[str, Any]],
+    options: list[dict[str, Any]],
+) -> None:
+    """A valid draft becomes `scheduled`; the score_bands task activates it on its date."""
+    version = ScoreBandVersion.objects.select_for_update().filter(pk=version_id).first()
+    if version is None or version.status != "draft":
+        raise ApiError("validation", "Hanya draf versi yang dapat disimpan.")
+    problems = validate_bands(bands)  # type: ignore[arg-type]
+    if effective_from < actor.at.date():
+        raise ApiError("validation", "Tanggal berlaku tidak boleh sebelum hari ini.")
+    if problems:
+        raise ApiError("bands_invalid", "Rentang tidak dapat disimpan", problems)
+    option_problems = validate_options(options, bands)  # type: ignore[arg-type]
+    if option_problems:
+        raise ApiError("options_invalid", "Pilihan penilaian tidak dapat disimpan", option_problems)
+    version.effective_from = effective_from
+    version.status = "scheduled"
+    version.save(update_fields=["effective_from", "status"])
+    saved = _replace_bands_and_options(version, bands, options)
+    record_by(
+        actor,
+        "simpan_versi_skala",
+        "ScoreBandVersion",
+        version.id,
+        {"status": "draft"},
+        {
+            "status": "scheduled",
+            "effective_from": effective_from.isoformat(),
+            "bands": bands,
+            "options": saved,
+        },
+    )
+
+
+@transaction.atomic
+def update_band_draft(
+    actor: Actor,
+    version_id: uuid.UUID,
+    bands: list[dict[str, Any]],
+    effective_from: dt.date,
+    options: list[dict[str, Any]],
+) -> None:
+    """Keeps draft edits without validation (autosave of the table and guidance)."""
+    version = ScoreBandVersion.objects.select_for_update().get(pk=version_id)
+    if version.status != "draft":
+        return
+    version.effective_from = effective_from
+    version.save(update_fields=["effective_from"])
+    _replace_bands_and_options(version, bands, options)
+
+
+@transaction.atomic
+def discard_band_draft(actor: Actor, version_id: uuid.UUID) -> None:
+    version = ScoreBandVersion.objects.filter(pk=version_id).first()
+    if version is None or version.status not in ("draft", "scheduled"):
+        return
+    number = version.number
+    version.delete()
+    record_by(actor, "buang_draf_skala", "ScoreBandVersion", version_id, {"number": number}, None)
+
+
+@transaction.atomic
+def update_active_guidance(actor: Actor, predicate: str, guidance: str) -> None:
+    active = ScoreBandVersion.objects.get(status="active")
+    band = ScoreBand.objects.select_for_update().get(version=active, predicate=predicate)
+    record_by(
+        actor,
+        "ubah_panduan_skala",
+        "ScoreBand",
+        f"{active.id}:{predicate}",
+        {"guidance": band.guidance},
+        {"guidance": guidance},
+    )
+    band.guidance = guidance
+    band.save(update_fields=["guidance"])
+
+
+@transaction.atomic
+def update_option_label(actor: Actor, option_id: uuid.UUID, label: str) -> None:
+    """Statement text of the active version; values change only through a new version."""
+    option = ScoreOption.objects.select_related("version").filter(pk=option_id).first()
+    if option is None or option.version.status != "active":
+        raise ApiError("validation", "Kalimat hanya dapat diubah langsung pada versi aktif.")
+    siblings: list[dict[str, Any]] = [
+        {"id": str(o.id), "value": float(o.value), "label": o.label}
+        for o in ScoreOption.objects.filter(version=option.version).exclude(pk=option.id)
+    ]
+    # validate_options flags the later of two duplicates, so the edited option goes last.
+    siblings.append({"id": str(option.id), "value": float(option.value), "label": label})
+    bands = _band_rows(option.version_id)
+    problems = [
+        p
+        for p in validate_options(siblings, bands)  # type: ignore[arg-type]
+        if p.get("option_id") == str(option.id)
+    ]
+    if problems:
+        raise ApiError("options_invalid", "Kalimat tidak dapat disimpan", problems)
+    record_by(
+        actor,
+        "ubah_kalimat_penilaian",
+        "ScoreOption",
+        option.id,
+        {"label": option.label},
+        {"label": label.strip()},
+    )
+    option.label = label.strip()
+    option.save(update_fields=["label"])

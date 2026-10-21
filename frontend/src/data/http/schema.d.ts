@@ -410,6 +410,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/score-band-versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["score_band_versions_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/score-band-versions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["score_band_versions_update"];
+        post?: never;
+        delete: operations["score_band_versions_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/score-band-versions/{id}/schedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["score_band_versions_schedule_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/score-bands/{predicate}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["score_bands_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/score-options/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["score_options_partial_update"];
+        trace?: never;
+    };
     "/api/v1/stages": {
         parameters: {
             query?: never;
@@ -458,6 +538,26 @@ export interface components {
         AuthConfig: {
             devTools: boolean;
             oidcEnabled: boolean;
+        };
+        BandDraftCreateRequest: {
+            /** Format: date */
+            effectiveFrom: string;
+        };
+        BandInputRequest: {
+            /** Format: double */
+            lowerExclusive: number | null;
+            /** Format: double */
+            upperInclusive: number;
+            predicate: components["schemas"]["PredicateEnum"];
+            order: number;
+            /** @default  */
+            guidance: string;
+        };
+        BandVersionRequest: {
+            /** Format: date */
+            effectiveFrom: string;
+            bands: components["schemas"]["BandInputRequest"][];
+            options: components["schemas"]["OptionInputRequest"][];
         };
         /**
          * @description * `pejabat` - pejabat
@@ -570,6 +670,12 @@ export interface components {
             createdAt: string;
             eventKey: string;
         };
+        OptionInputRequest: {
+            id: string;
+            /** Format: double */
+            value: number;
+            label: string;
+        };
         PaginatedNotificationList: {
             results: components["schemas"]["Notification"][];
             page: number;
@@ -582,6 +688,12 @@ export interface components {
         };
         PatchedActiveRequest: {
             active?: boolean;
+        };
+        PatchedGuidanceRequest: {
+            guidance?: string;
+        };
+        PatchedLabelRequest: {
+            label?: string;
         };
         PatchedStagePatchRequest: {
             name?: string;
@@ -637,6 +749,13 @@ export interface components {
                 [key: string]: string;
             };
         };
+        /**
+         * @description * `kurang` - kurang
+         *     * `cukup` - cukup
+         *     * `terkendali` - terkendali
+         * @enum {string}
+         */
+        PredicateEnum: "kurang" | "cukup" | "terkendali";
         /** @description Shape of `Quarter` in frontend/src/domain/types.ts. */
         Quarter: {
             /** Format: uuid */
@@ -1335,6 +1454,155 @@ export interface operations {
                         [key: string]: unknown;
                     };
                 };
+            };
+        };
+    };
+    score_band_versions_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BandDraftCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["BandDraftCreateRequest"];
+                "multipart/form-data": components["schemas"]["BandDraftCreateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Id"];
+                };
+            };
+        };
+    };
+    score_band_versions_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BandVersionRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["BandVersionRequest"];
+                "multipart/form-data": components["schemas"]["BandVersionRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    score_band_versions_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    score_band_versions_schedule_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BandVersionRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["BandVersionRequest"];
+                "multipart/form-data": components["schemas"]["BandVersionRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    score_bands_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                predicate: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedGuidanceRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedGuidanceRequest"];
+                "multipart/form-data": components["schemas"]["PatchedGuidanceRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    score_options_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedLabelRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedLabelRequest"];
+                "multipart/form-data": components["schemas"]["PatchedLabelRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

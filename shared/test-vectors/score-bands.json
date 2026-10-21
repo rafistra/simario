@@ -2,58 +2,409 @@
   "source": "frontend/src/domain/scoreBands.ts",
   "rules": {
     "predicateFor": [
-      { "name": "0 is kurang (closed lower bound)", "input": { "score": 0, "bands": "active" }, "expected": "kurang" },
-      { "name": "2.0 is kurang (upper inclusive)", "input": { "score": 2.0, "bands": "active" }, "expected": "kurang" },
-      { "name": "2.1 is cukup (lower exclusive)", "input": { "score": 2.1, "bands": "active" }, "expected": "cukup" },
-      { "name": "3.0 is cukup", "input": { "score": 3.0, "bands": "active" }, "expected": "cukup" },
-      { "name": "3.1 is terkendali", "input": { "score": 3.1, "bands": "active" }, "expected": "terkendali" },
-      { "name": "4.0 is terkendali", "input": { "score": 4.0, "bands": "active" }, "expected": "terkendali" },
-      { "name": "above 4 has no predicate", "input": { "score": 4.5, "bands": "active" }, "expected": null },
-      { "name": "negative has no predicate", "input": { "score": -1, "bands": "active" }, "expected": null }
+      {
+        "name": "0 is kurang (closed lower bound)",
+        "input": {
+          "score": 0,
+          "bands": "active"
+        },
+        "expected": "kurang"
+      },
+      {
+        "name": "2.0 is kurang (upper inclusive)",
+        "input": {
+          "score": 2,
+          "bands": "active"
+        },
+        "expected": "kurang"
+      },
+      {
+        "name": "2.1 is cukup (lower exclusive)",
+        "input": {
+          "score": 2.1,
+          "bands": "active"
+        },
+        "expected": "cukup"
+      },
+      {
+        "name": "3.0 is cukup",
+        "input": {
+          "score": 3,
+          "bands": "active"
+        },
+        "expected": "cukup"
+      },
+      {
+        "name": "3.1 is terkendali",
+        "input": {
+          "score": 3.1,
+          "bands": "active"
+        },
+        "expected": "terkendali"
+      },
+      {
+        "name": "4.0 is terkendali",
+        "input": {
+          "score": 4,
+          "bands": "active"
+        },
+        "expected": "terkendali"
+      },
+      {
+        "name": "above 4 has no predicate",
+        "input": {
+          "score": 4.5,
+          "bands": "active"
+        },
+        "expected": null
+      },
+      {
+        "name": "negative has no predicate",
+        "input": {
+          "score": -1,
+          "bands": "active"
+        },
+        "expected": null
+      }
     ],
     "validateBands": [
-      { "name": "active bands are valid", "input": { "bands": "active" }, "expected": [] },
+      {
+        "name": "active bands are valid",
+        "input": {
+          "bands": "active"
+        },
+        "expected": []
+      },
       {
         "name": "gap between kurang and cukup",
         "input": {
           "bands": [
-            { "lowerExclusive": null, "upperInclusive": 2.0, "order": 1, "predicate": "kurang" },
-            { "lowerExclusive": 2.5, "upperInclusive": 3.0, "order": 2, "predicate": "cukup" },
-            { "lowerExclusive": 3.0, "upperInclusive": 4.0, "order": 3, "predicate": "terkendali" }
+            {
+              "lowerExclusive": null,
+              "upperInclusive": 2,
+              "order": 1,
+              "predicate": "kurang"
+            },
+            {
+              "lowerExclusive": 2.5,
+              "upperInclusive": 3,
+              "order": 2,
+              "predicate": "cukup"
+            },
+            {
+              "lowerExclusive": 3,
+              "upperInclusive": 4,
+              "order": 3,
+              "predicate": "terkendali"
+            }
           ]
         },
-        "expected": [{ "kind": "gap", "from": 2.0, "to": 2.5 }]
+        "expected": [
+          {
+            "kind": "gap",
+            "from": 2,
+            "to": 2.5
+          }
+        ]
       },
       {
         "name": "overlap between kurang and cukup",
         "input": {
           "bands": [
-            { "lowerExclusive": null, "upperInclusive": 2.0, "order": 1, "predicate": "kurang" },
-            { "lowerExclusive": 1.5, "upperInclusive": 3.0, "order": 2, "predicate": "cukup" },
-            { "lowerExclusive": 3.0, "upperInclusive": 4.0, "order": 3, "predicate": "terkendali" }
+            {
+              "lowerExclusive": null,
+              "upperInclusive": 2,
+              "order": 1,
+              "predicate": "kurang"
+            },
+            {
+              "lowerExclusive": 1.5,
+              "upperInclusive": 3,
+              "order": 2,
+              "predicate": "cukup"
+            },
+            {
+              "lowerExclusive": 3,
+              "upperInclusive": 4,
+              "order": 3,
+              "predicate": "terkendali"
+            }
           ]
         },
-        "expected": [{ "kind": "overlap", "from": 1.5, "to": 2.0 }]
+        "expected": [
+          {
+            "kind": "overlap",
+            "from": 1.5,
+            "to": 2
+          }
+        ]
       },
       {
         "name": "last band stops short of 4",
         "input": {
           "bands": [
-            { "lowerExclusive": null, "upperInclusive": 2.0, "order": 1, "predicate": "kurang" },
-            { "lowerExclusive": 2.0, "upperInclusive": 3.0, "order": 2, "predicate": "cukup" },
-            { "lowerExclusive": 3.0, "upperInclusive": 3.5, "order": 3, "predicate": "terkendali" }
+            {
+              "lowerExclusive": null,
+              "upperInclusive": 2,
+              "order": 1,
+              "predicate": "kurang"
+            },
+            {
+              "lowerExclusive": 2,
+              "upperInclusive": 3,
+              "order": 2,
+              "predicate": "cukup"
+            },
+            {
+              "lowerExclusive": 3,
+              "upperInclusive": 3.5,
+              "order": 3,
+              "predicate": "terkendali"
+            }
           ]
         },
-        "expected": [{ "kind": "gap", "from": 3.5, "to": 4 }]
+        "expected": [
+          {
+            "kind": "gap",
+            "from": 3.5,
+            "to": 4
+          }
+        ]
       },
-      { "name": "no bands", "input": { "bands": [] }, "expected": [{ "kind": "range", "from": 0, "to": 4 }] }
+      {
+        "name": "no bands",
+        "input": {
+          "bands": []
+        },
+        "expected": [
+          {
+            "kind": "range",
+            "from": 0,
+            "to": 4
+          }
+        ]
+      }
+    ],
+    "validateOptions": [
+      {
+        "name": "valid statements",
+        "input": {
+          "options": [
+            {
+              "id": "o1",
+              "value": 0,
+              "label": "A"
+            },
+            {
+              "id": "o2",
+              "value": 2,
+              "label": "B"
+            },
+            {
+              "id": "o3",
+              "value": 3,
+              "label": "C"
+            },
+            {
+              "id": "o4",
+              "value": 4,
+              "label": "D"
+            }
+          ],
+          "bands": "active"
+        },
+        "expected": []
+      },
+      {
+        "name": "empty label",
+        "input": {
+          "options": [
+            {
+              "id": "o1",
+              "value": 0,
+              "label": " "
+            },
+            {
+              "id": "o3",
+              "value": 3,
+              "label": "C"
+            },
+            {
+              "id": "o4",
+              "value": 4,
+              "label": "D"
+            }
+          ],
+          "bands": "active"
+        },
+        "expected": [
+          {
+            "kind": "empty-label",
+            "optionId": "o1"
+          }
+        ]
+      },
+      {
+        "name": "duplicate label ignores case",
+        "input": {
+          "options": [
+            {
+              "id": "o1",
+              "value": 0,
+              "label": "A"
+            },
+            {
+              "id": "o2",
+              "value": 1,
+              "label": "a "
+            },
+            {
+              "id": "o3",
+              "value": 3,
+              "label": "C"
+            },
+            {
+              "id": "o4",
+              "value": 4,
+              "label": "D"
+            }
+          ],
+          "bands": "active"
+        },
+        "expected": [
+          {
+            "kind": "duplicate-label",
+            "optionId": "o2"
+          }
+        ]
+      },
+      {
+        "name": "duplicate value",
+        "input": {
+          "options": [
+            {
+              "id": "o1",
+              "value": 0,
+              "label": "A"
+            },
+            {
+              "id": "o2",
+              "value": 0,
+              "label": "B"
+            },
+            {
+              "id": "o3",
+              "value": 3,
+              "label": "C"
+            },
+            {
+              "id": "o4",
+              "value": 4,
+              "label": "D"
+            }
+          ],
+          "bands": "active"
+        },
+        "expected": [
+          {
+            "kind": "duplicate-value",
+            "optionId": "o2"
+          }
+        ]
+      },
+      {
+        "name": "out of range and two decimals",
+        "input": {
+          "options": [
+            {
+              "id": "o1",
+              "value": 0,
+              "label": "A"
+            },
+            {
+              "id": "o2",
+              "value": 2.55,
+              "label": "B"
+            },
+            {
+              "id": "o3",
+              "value": 3,
+              "label": "C"
+            },
+            {
+              "id": "o4",
+              "value": 4.5,
+              "label": "D"
+            }
+          ],
+          "bands": "active"
+        },
+        "expected": [
+          {
+            "kind": "out-of-range",
+            "optionId": "o2"
+          },
+          {
+            "kind": "out-of-range",
+            "optionId": "o4"
+          },
+          {
+            "kind": "band-uncovered",
+            "predicate": "terkendali"
+          }
+        ]
+      },
+      {
+        "name": "predicate without statement",
+        "input": {
+          "options": [
+            {
+              "id": "o1",
+              "value": 0,
+              "label": "A"
+            },
+            {
+              "id": "o2",
+              "value": 1,
+              "label": "B"
+            },
+            {
+              "id": "o4",
+              "value": 4,
+              "label": "D"
+            }
+          ],
+          "bands": "active"
+        },
+        "expected": [
+          {
+            "kind": "band-uncovered",
+            "predicate": "cukup"
+          }
+        ]
+      }
     ]
   },
   "fixtures": {
     "active": [
-      { "lowerExclusive": null, "upperInclusive": 2.0, "order": 1, "predicate": "kurang" },
-      { "lowerExclusive": 2.0, "upperInclusive": 3.0, "order": 2, "predicate": "cukup" },
-      { "lowerExclusive": 3.0, "upperInclusive": 4.0, "order": 3, "predicate": "terkendali" }
+      {
+        "lowerExclusive": null,
+        "upperInclusive": 2,
+        "order": 1,
+        "predicate": "kurang"
+      },
+      {
+        "lowerExclusive": 2,
+        "upperInclusive": 3,
+        "order": 2,
+        "predicate": "cukup"
+      },
+      {
+        "lowerExclusive": 3,
+        "upperInclusive": 4,
+        "order": 3,
+        "predicate": "terkendali"
+      }
     ]
   }
 }
