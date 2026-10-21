@@ -1,7 +1,7 @@
 import uuid
 
 from simario.registers import usage
-from tests.demo import uid
+from simario.devtools.seed import legacy_uuid as uid
 
 
 def test_usage_reads_registers(demo: None) -> None:
