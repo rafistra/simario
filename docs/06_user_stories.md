@@ -34,7 +34,7 @@ Kolom "Coba" memakai id persona dan parameter URL dari [05_local_dev_and_testing
 
 | ID | Sebagai … saya ingin … | FR | Status | Coba |
 |---|---|---|---|---|
-| US-AUT-001 | Sebagai pengguna, saya ingin masuk dengan akun Otorita IKN yang sudah ada agar tidak perlu mengingat kata sandi lain | FR-AUT-001, 006 | 🟨 SSO disimulasikan dengan pemilih persona; Keycloak belum ada | `/login` → "Masuk dengan Akun Otorita IKN" |
+| US-AUT-001 | Sebagai pengguna, saya ingin masuk dengan akun Otorita IKN yang sudah ada agar tidak perlu mengingat kata sandi lain | FR-AUT-001, 006 | 🟨 SSO lewat Keycloak lokal (realm `otorita-ikn`, cocok lewat NIP); `sso.ikn.go.id` menunggu akses | `/login` → "Masuk dengan Akun Otorita IKN" → NIP persona + `simario-demo` |
 | US-AUT-002 | Sebagai pengguna tanpa entri di realm, saya ingin akun lokal agar celah SSO tidak mengunci saya | FR-AUT-002 | ✅ | `/login` → "Masuk dengan akun lokal", NIP Admin DKB; 5× salah → terkunci 15 menit |
 | US-AUT-003 | Sebagai pengguna akun lokal, saya ingin dipaksa mengganti kata sandi awal | FR-AUT-003, 004, 005 | ✅ | Masuk sebagai Lestari → `/ganti-kata-sandi` tanpa sidebar |
 | US-AUT-004 | Sebagai pengguna dengan lebih dari satu peran, saya ingin mengganti tampilan peran agar menu sesuai pekerjaan saya | FR-AUT-007 | ✅ (tidak ada persona seed dengan > 1 tampilan peran, U-17) | Admin DKB memberi Andi peran manual Pengelola Master Data → menu ⋯ Andi |

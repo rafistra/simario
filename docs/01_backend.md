@@ -4,7 +4,7 @@
 
 ## 1. Status: backend belum ada
 
-**Kerangka backend sedang dibangun (tahap B0); belum ada model domain.** Rencana dan keputusan yang dikunci: [spec integrasi backend](superpowers/specs/2026-10-21-backend-integration-design.md). Sampai modulnya dipindah, semua yang biasanya dikerjakan server saat ini disimulasikan di browser oleh lapisan data frontend:
+**Fondasi backend sudah ada (tahap B1): identitas, organisasi, kalender, data referensi, audit, notifikasi, sesi, SSO, jam simulasi, dan data demo; modul REG/PPN/NIL/RWY/LBR/ADM/MST belum (B2–B8; `RiskProposal` di B3).** Rencana dan keputusan yang dikunci: [spec integrasi backend](superpowers/specs/2026-10-21-backend-integration-design.md). Sampai modulnya dipindah, semua yang biasanya dikerjakan server saat ini disimulasikan di browser oleh lapisan data frontend:
 
 | Tanggung jawab server | Di mana sekarang (prototipe) |
 |---|---|

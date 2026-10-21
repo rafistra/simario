@@ -110,7 +110,9 @@ Pola wajib PRD §2.4 yang sudah ada sebagai komponen:
 
 ### 4.3 Konteks pengguna dan jabatan aktif
 
-`useAuth()` (`state/useAuth.ts`) memberi `user`, `holdings`, `active` (holding yang dipilih di kartu "JABATAN AKTIF"), `permissions`/`can(kode)`, `roleViews`/`roleView`, `currentQuarter`. Tampilan peran hanya mengubah menu (`layout/nav.ts`), **tidak pernah** dipakai untuk izin (FR-AUT-007). Halaman ruang kerja mendapat `WorkspaceOutletContext` dari `layout/Workspace.tsx` (jabatan, TA, tab Papan · Register · Penilaian · Riwayat · Lembar).
+**Transisi ke backend (B1–B9).** `data/http/` berisi `client.ts` (`apiFetch`: cookie sesi, CSRF, amplop galat → `ApiError`, latensi/luring/gagal dari DevPanel, waktu server → `YYYY-MM-DDTHH:mm` WITA) dan namespace yang sudah pindah (`authApi`, `notificationApi`, `meApi`, `devApi`). `legacyIds.ts` menerjemahkan UUID backend ↔ ID prototipe di batas HTTP agar modul lokal tetap bekerja (dihapus di B9). Setelah `/me` dimuat, pengguna yang sama juga "masuk" di sesi lokal. Notifikasi: satu store (`state/notifications.ts`) untuk lonceng, panel, dan `/notifikasi`. Uji Vitest memakai backend palsu (`src/test/fakeBackend.ts` + `meFromLocal.ts`) di atas store lokal.
+
+`useAuth()` (`state/useAuth.ts`) dibangun dari `GET /api/v1/me` (`state/me.ts`, `useMe`; B1) dan memberi `user`, `holdings`, `active` (holding yang dipilih di kartu "JABATAN AKTIF"), `permissions`/`can(kode)`, `roleViews`/`roleView`, `currentQuarter`. Tampilan peran hanya mengubah menu (`layout/nav.ts`), **tidak pernah** dipakai untuk izin (FR-AUT-007). Halaman ruang kerja mendapat `WorkspaceOutletContext` dari `layout/Workspace.tsx` (jabatan, TA, tab Papan · Register · Penilaian · Riwayat · Lembar).
 
 `usePageMeta(crumbs, contextAction)` mengisi breadcrumb dan tombol kontekstual di Topbar.
 

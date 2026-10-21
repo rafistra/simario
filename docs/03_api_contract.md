@@ -52,14 +52,14 @@ Semua galat dilempar sebagai `ApiError(code, message, details?)`. `message` adal
 
 Tampilan: galat baca → `InlineAlert` merah + "Coba Lagi"; galat tulis → toast atau daftar celah (PRD §2.4).
 
-## 3. Konteks pengguna (belum ada di repository)
+## 3. Konteks pengguna (diputuskan, B1)
 
-Halaman mendapatkan pengguna, holding, izin + cakupan, tampilan peran, dan triwulan berjalan dari `useAuth()` (`state/useAuth.ts`), yang menghitungnya langsung dari seluruh basis data lokal. Backend perlu satu endpoint:
+Halaman mendapatkan pengguna, holding, izin + cakupan, tampilan peran, dan triwulan berjalan dari `useAuth()` (`state/useAuth.ts`), yang kini dibangun dari `GET /api/v1/me` (`state/me.ts`, `useMe`). Jabatan aktif dan tampilan peran tetap dipilih di klien.
 
-| Usulan | Isi | Sumber logika |
+| Endpoint | Isi | Sumber logika (backend) |
 |---|---|---|
-| `GET /api/me` | `user`, `holdings[]` (jabatan, lini, kapasitas Pejabat/Operator, `isFiller`), `permissions` (kode → cakupan), `roleViews`, `currentQuarter`, nama Pejabat untuk "Dilakukan oleh [Nama Pejabat]" | `buildAuthContext`, `holdingsOf`, `permissionScopes`, `finalisingOfficial` |
-| `PUT /api/me/active-position` | Jabatan terakhir dipakai (FR-AUT-009) | `useSession.setActivePosition` (sekarang di browser) |
+| `GET /api/v1/me` | `user` (`id`, `nip`, `email`, `fullName`, `isLocalAccount`, `mustChangePassword`, `orgUnitId`), `serverNow` (ISO + offset), `today`, `devTools`, `holdings[]` (`kind`, `id`, `positionId`, `capacity`, `line`, `isFiller`, `position` berbentuk `Position`, `unitCode`, `officialName`, `roleView`), `activePositionId`, `permissions[]` (`{code, scope}`), `roleViews` (urut PMR, PMT, PJM, PMD, SAD), `currentQuarter` (`Quarter` atau null). Komponen skema `Me` | `accounts/selectors.py` `build_me` → `simario/domain/access.py` |
+| `PUT /api/v1/me/active-position` | `{positionId}` → 204; jabatan yang tidak dipegang → 403 `forbidden` (FR-AUT-009) | `User.last_position` |
 
 ## 4. Namespace
 
@@ -74,13 +74,17 @@ Kolom **Izin**: kode FR-ADM-002. "Konten(n)" = `checkAction(n)`: izin + holding 
 | `changePassword` | `userId, {oldPassword?, newPassword}` | `void` | Akun lokal | Audit `ganti_kata_sandi` (tanpa nilai) | FR-AUT-003/004 | `POST /api/auth/password` |
 | `signOut` | — | `void` | — | — | — | `POST /api/auth/logout` |
 
+**Diputuskan (B1):** `GET /api/v1/auth/config` → `{devTools, oidcEnabled}` dan memasang cookie CSRF; `POST /api/v1/auth/login` → `{ok, userId}` atau galat `login_failed` (401, "NIP atau kata sandi tidak sesuai" / "Akun Anda tidak aktif. Hubungi Superadmin.") dan `locked_out` (423, pesan kunci prototipe); `POST /api/v1/auth/password` → 204 atau `not_local`/`old_password`/`too_short`/`same` (422), menaikkan `auth_epoch` (sesi lain berakhir); `POST /api/v1/auth/logout` → 204. SSO: peramban ke `/oidc/authenticate/?next=…` (mozilla-django-oidc, Keycloak), kembali lewat `/oidc/callback/`; penolakan diarahkan ke `/login?alasan=belum-terdaftar|tidak-aktif|sso-gagal`. Klien hanya mengalihkan ke `/login?alasan=sesi-berakhir` untuk 401 `unauthenticated`. `signInSso` di frontend kini berarti masuk sebagai persona (pengembangan): `POST /api/v1/dev/impersonate {nip}`.
+
+**Alat pengembangan (B1, hanya bila `SIMARIO_DEV_TOOLS`; selain itu 404):** `GET /api/v1/dev/personas`, `POST /api/v1/dev/impersonate {nip}`, `POST /api/v1/dev/clock {at}` → `{serverNow, ran}` (menjalankan tugas terjadwal), `POST /api/v1/dev/reset {asOf?}` → `{counts}` (memuat ulang data demo dan mengakhiri sesi pemanggil).
+
 ### 4.2 `notificationApi`, `preferenceApi` — Notifikasi & preferensi (NTF)
 
 | Metode | Masukan | Keluaran | Catatan | PRD | Usulan REST |
 |---|---|---|---|---|---|
-| `notificationApi.list` | `userId` | `Notification[]` terbaru dulu | Panel & `/notifikasi` saat ini membaca store langsung (lihat §5) | FR-NTF-013/014 | `GET /api/notifications?kind=&read=&page=` |
-| `notificationApi.markRead` | `id` | `void` | | FR-NTF-013 | `POST /api/notifications/{id}/read` |
-| `notificationApi.markAllRead` | `userId` | `void` | | FR-NTF-013 | `POST /api/notifications/read-all` |
+| `notificationApi.list` | `userId` | `Notification[]` terbaru dulu | **HTTP (B1)**; lonceng, panel, dan `/notifikasi` memakai satu store (`state/notifications.ts`) | FR-NTF-013/014 | `GET /api/v1/notifications?page=` (milik sendiri, terbaru dulu; filter jenis/status di klien) |
+| `notificationApi.markRead` | `id` | `void` | **HTTP (B1)**; milik orang lain → 404 | FR-NTF-013 | `POST /api/v1/notifications/{id}/read` |
+| `notificationApi.markAllRead` | `userId` | `void` | **HTTP (B1)** | FR-NTF-013 | `POST /api/v1/notifications/read-all` |
 | `preferenceApi.get/set` | `userId, key[, value]` | nilai | Sinkron; filter papan per jabatan, sidebar diciutkan, pilihan foto (`userId='*'`) | FR-PPN-001, FR-LBR-005 | `GET/PUT /api/preferences/{key}` |
 
 ### 4.3 `masterApi` — Master Data (MST)
@@ -192,8 +196,7 @@ Prinsip CLAUDE.md §4 ("halaman tidak pernah menyentuh `localStorage` langsung")
 
 | Berkas | Data yang dibaca | Usulan endpoint |
 |---|---|---|
-| `layout/Sidebar.tsx`, `layout/Topbar.tsx`, `layout/Workspace.tsx`, `state/useAuth.ts` | Holding, izin, jabatan dalam cakupan, nama Pejabat, pencarian global | `GET /api/me`, `GET /api/positions/{id}`, `GET /api/search?q=` |
-| `components/NotificationPanel`, `pages/notifications/NotificationsPage.tsx` | Notifikasi pengguna | `GET /api/notifications` (sudah ada di `notificationApi.list`, belum dipakai) |
+| `layout/Sidebar.tsx`, `layout/Topbar.tsx`, `layout/Workspace.tsx` | Jabatan dalam cakupan dan pencarian global (konteks pengguna sudah dari `GET /api/v1/me`, B1) | `GET /api/positions/{id}`, `GET /api/search?q=` |
 | `pages/register/RegisterPage.tsx`, `RiskCard.tsx`, `DataUmumSection.tsx` | Read model terfilter dari `buildRegisterView` (sinkron, bukan `registerApi.view`); selain itu register TA sebelumnya (banner salin), kuartal, nama pengguna, template & formulir Data Umum, `wouldFlagNoMitigation` | `GET /api/registers/{pos}/{ta}` (= `registerApi.view`) ditambah info TA sebelumnya |
 | `pages/master/*` (Jabatan, Tahap, Template, TemplateEditor, Usulan, Data Umum, Skala) | Jenis jabatan, jabatan, tahap, template + hitungan pemakaian (`templateUsage`), usulan, formulir, versi pita & pilihan | `GET /api/position-types`, `/positions`, `/stages`, `/risk-templates?type=&stage=`, `/proposals`, `/data-umum-forms`, `/score-band-versions` |
 | `pages/admin/*` (Pengguna, Peran, Penugasan, Tahun Anggaran, Jabatan Saya, Audit, Metrik) | Pengguna + holding, peran + izin, penugasan, TA + kuartal + status arsip (`archiveStatus`, `quarterProblems`), filter audit | `GET /api/users`, `/roles`, `/monitoring-assignments`, `/fiscal-years`, `/me/positions` |

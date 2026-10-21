@@ -12,7 +12,7 @@ Repositori ini saat ini berisi **prototipe frontend saja**:
 | Bagian | Keadaan sekarang | Target produksi (PRD §2.1) |
 |---|---|---|
 | Frontend | ✅ React 18 + Vite + TypeScript, semua modul PRD | Sama (kode dapat dipakai ulang) |
-| Backend / API | 🟨 **Kerangka (B0):** proyek Django, konvensi API, layanan Docker Compose; belum ada model domain. Perannya masih disimulasikan di browser (`frontend/src/data/`) | Django 5.2 + Django REST Framework |
+| Backend / API | 🟨 **Fondasi (B1):** identitas, organisasi, kalender, referensi, audit, notifikasi, sesi + SSO Keycloak, `/me`; modul lain masih disimulasikan di browser (`frontend/src/data/`) | Django 5.2 + Django REST Framework |
 | Basis data | `localStorage` browser, satu kunci per koleksi (`simario:v1:*`) | PostgreSQL 16 |
 | Tugas terjadwal | Evaluator di browser (`data/local/scheduler.ts`) | Celery + Redis, Celery Beat |
 | Penyimpanan berkas | Hanya metadata; isi berkas tidak disimpan | RustFS (S3; PRD: MinIO) + pemindaian ClamAV |
@@ -195,6 +195,8 @@ Perbedaan bentuk data prototipe terhadap PRD dicatat di [01_backend.md §4](01_b
 | A-10 | Penyebaran demo di Netlify sebagai SPA statis dengan `noindex` | Berbagi prototipe; data fiktif saja | `netlify.toml` |
 | A-11 | Stack backend: Python 3.12, Django 5.2 LTS + DRF, PostgreSQL 16, Celery + Redis, Keycloak, ClamAV; sesi cookie di server (BFF), kontrak OpenAPI → tipe TS | Melengkapi PRD §2.1 dengan versi dan pola integrasi | [01_backend.md §2.1](01_backend.md#21-keputusan-stack-21-okt-2026) |
 | A-12 | Penyimpanan objek RustFS lewat API S3 standar, bukan MinIO | Keputusan pengguna 21 Okt 2026; lisensi Apache 2.0, edisi komunitas MinIO dikurangi; **berbeda dari PRD** (risiko R-09) | [01_backend.md §2.1](01_backend.md#21-keputusan-stack-21-okt-2026) |
+| A-13 | Data demo backend = ekspor otomatis `buildSeed()` prototipe (`npm run seed:export` → `demo.json`) dengan UUID `uuid5` dari ID prototipe; data referensi produksi dari `docs/seed` + `catalog.json` | Satu sumber data contoh, tautan demo dan vektor uji stabil | [rencana B1](superpowers/plans/2026-10-21-backend-b1-fondasi.md) |
+| A-14 | Jembatan ID sementara di frontend (UUID ↔ ID prototipe) selama modul dipindah bertahap | Modul lokal tetap bekerja tanpa flag sumber data; dihapus di B9 | [rencana B1](superpowers/plans/2026-10-21-backend-b1-fondasi.md) |
 
 ## 7. Dokumen terkait
 

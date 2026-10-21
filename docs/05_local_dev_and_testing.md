@@ -1,7 +1,7 @@
 # 05 — Pengembangan Lokal dan Pengujian
 
 > Status dokumen: 21 Okt 2026 · kode `frontend/` per komit `7bebb66`.
-> Hasil pemeriksaan terakhir (21 Okt 2026, checkpoint B0): `npm run test` **27 berkas / 219 uji lulus**, `npm run lint` lulus (termasuk `api:check`), `npm run build` lulus (dengan peringatan ukuran bundel, U-10); backend `uv run pytest` **31 uji lulus**, `ruff` dan `mypy` bersih.
+> Hasil pemeriksaan terakhir (21 Okt 2026, checkpoint B1): `npm run test` **36 berkas / 308 uji lulus**, `npm run lint` lulus (termasuk `api:check`), `npm run build` lulus (dengan peringatan ukuran bundel, U-10); backend `uv run pytest` lulus, `ruff` dan `mypy` bersih; uji asap SSO lulus.
 
 ## 1. Prasyarat
 
@@ -60,7 +60,7 @@ Start pertama butuh waktu: image diunduh dan ClamAV mengunduh basis data virus (
 |---|---|---|
 | Frontend (Vite) | http://localhost:5173 | `npm run dev` di host; proxy `/api` dan `/oidc` → API, `/storage` → RustFS |
 | API (Django) | http://localhost:8100/api/v1/health | Port host 8100 (8000 sering terpakai); skema `/api/v1/schema`, Swagger `/api/v1/docs` |
-| Keycloak | http://localhost:8080 | Konsol admin `admin`/`admin`; realm `otorita-ikn` diimpor dari `infra/keycloak/realm-export.json` |
+| Keycloak | http://127.0.0.1:8080 | Konsol admin `admin`/`admin`; realm `otorita-ikn` diimpor dari `infra/keycloak/realm-export.json`. Pakai `127.0.0.1`, bukan `localhost` (port hanya terikat IPv4) |
 | RustFS | http://localhost:9100 (S3), http://localhost:9101 (konsol) | Port host 9100/9101 (9000/9001 sering terpakai) |
 | PostgreSQL | localhost:5432 | `simario`/`simario` |
 | Redis | localhost:6379 | — |
@@ -97,6 +97,17 @@ npm run api:types
 ```
 
 Vektor uji bersama ada di `shared/test-vectors/` (format di README-nya); Vitest dan pytest membaca berkas yang sama.
+
+### Data, persona, dan SSO (B1)
+
+- **Data demo backend** = ekspor otomatis seed prototipe. Setelah seed frontend berubah, jalankan `npm run seed:export` (dari `frontend/`): menulis `backend/simario/devtools/fixtures/demo.json`, `frontend/src/data/http/legacy-ids.json` (jembatan ID sementara), dan pengguna realm di `infra/keycloak/realm-export.json`. Lalu `uv run python manage.py build_catalog` bila peran, izin, jenis jabatan, formulir Data Umum, atau pita berubah.
+- **Memuat data demo** (hanya bila `SIMARIO_DEV_TOOLS=true`; menghapus semua data): `docker compose exec api python manage.py seed_demo`, opsional `--as-of 2027-03-18T09:00`. Jam simulasi diatur ke 6 Apr 2027 09.00 WITA (atau `--as-of`).
+- **Data referensi** untuk semua lingkungan (tidak pernah menimpa): `docker compose exec api python manage.py seed_reference`.
+- **Masuk lewat Keycloak lokal:** tombol "Masuk dengan Akun Otorita IKN" → nama pengguna = NIP persona, kata sandi `simario-demo` (khusus lokal). NIP Galih Pratama (`199812012024011001`) ada di Keycloak tetapi tidak di SIMARIO, untuk mencoba pesan "Akun Anda belum terdaftar".
+- **Masuk sebagai persona tanpa Keycloak:** tombol "Masuk sebagai persona (mode pengembangan)" di `/login`, menu DevPanel "Masuk sebagai", atau tautan demo `?sebagai=usr-andi&waktu=2027-03-18T09:00&data=sesuai` (semuanya lewat `/api/v1/dev/*`).
+- **Impor ulang realm** setelah `realm-export.json` berubah: `docker compose rm -sf keycloak && docker compose up -d keycloak`.
+- **Uji asap SSO** (butuh `npm run dev`): `uv run python scripts/oidc_smoke.py 198204172008011003` → berakhir dengan `GET /api/v1/me` 200; dengan NIP Galih → `refused: belum-terdaftar`.
+- Selama transisi, modul yang belum pindah masih memakai data `localStorage`; DevPanel menggeser jam dan mengatur ulang data di kedua sisi.
 
 Mengatur ulang semua data backend (basis data, bucket, basis data ClamAV, Keycloak):
 

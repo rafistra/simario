@@ -32,7 +32,7 @@ Ringkasan keadaan kode dan rancangan, diturunkan dari PRD dan kode. Baca dokumen
 | Berkas | Isi | Perbarui bila |
 |---|---|---|
 | [`docs/00_arsitektur.md`](docs/00_arsitektur.md) | Arsitektur prototipe vs target, lapisan, modul, prinsip, keputusan arsitektur | Lapisan, alur data, atau keputusan arsitektur berubah |
-| [`docs/01_backend.md`](docs/01_backend.md) | Status backend (B0 berjalan), keputusan stack (Django/Celery/RustFS/Keycloak), model data PRD vs prototipe, tugas terjadwal | Entitas, tugas terjadwal, atau rencana backend berubah |
+| [`docs/01_backend.md`](docs/01_backend.md) | Status backend (B1 selesai), keputusan stack (Django/Celery/RustFS/Keycloak), model data PRD vs prototipe, tugas terjadwal | Entitas, tugas terjadwal, atau rencana backend berubah |
 | [`docs/02_frontend.md`](docs/02_frontend.md) | Stack, struktur folder, rute, pola halaman, komponen, gaya, aksesibilitas | Rute, komponen, atau pola halaman baru |
 | [`docs/03_api_contract.md`](docs/03_api_contract.md) | Kontrak `data/repository.ts` per namespace, galat, usulan endpoint REST, data yang masih dibaca langsung dari store | Metode repository ditambah atau diubah |
 | [`docs/04_risk_and_debt.md`](docs/04_risk_and_debt.md) | Risiko produk/teknis dan utang teknis (R-P, R, U) | Menemukan atau menyelesaikan risiko/utang |
@@ -89,7 +89,7 @@ docker-compose.yml     layanan lokal
 ## 5. Waktu, sesi, persona
 
 - **Tanggal simulasi** (`state/clock`) menggantikan `new Date()` di seluruh aturan bisnis. Default: **6 Apr 2027**. DevPanel bisa menggesernya; tugas terjadwal (pembukaan perbandingan, Terlambat, deteksi Berulang, versi lembar otomatis, arsip) dievaluasi ulang setiap tanggal berubah dan pada setiap event tuntaskan.
-- **Login**: `/login` tampil sesuai mockup. Tombol SSO membuka pemilih persona; akun lokal menerima NIP + kata sandi seed. Tidak ada Keycloak.
+- **Login**: `/login` tampil sesuai mockup. Sejak B1, tombol SSO membuka Keycloak lokal (persona: NIP + `simario-demo`); tombol "Masuk sebagai persona (mode pengembangan)" membuka pemilih persona (`/api/v1/dev/impersonate`); akun lokal menerima NIP + kata sandi seed.
 - Sesi berakhir setelah 60 menit tidak aktif (bisa dipercepat di DevPanel) → `/login?alasan=sesi-berakhir`.
 - Persona seed (konsisten dengan mockup):
   - Andi Wirawan — Pejabat PPK A-1 · DDKB (Lini 1)
@@ -368,13 +368,13 @@ Hasil:
 - [x] Realm Keycloak lokal
 - [x] Vektor uji bersama — pita skor sebagai contoh pertama
 
-### Tahap B1 — Fondasi ⬜
+### Tahap B1 — Fondasi ✅
 
 Hasil:
-- [ ] Model `accounts`, `org`, `calendar`, `reference`, `audit` (+ trigger), `notifications`; izin 1–26; `domain/access.py` + vektor
-- [ ] Sesi, OIDC Keycloak lokal (persona di realm), akun lokal, lockout, `auth_epoch`; `GET /me`; endpoint baca notifikasi
-- [ ] Jam simulasi (`DevClock`) + `devtools`; `seed_reference`, `seed_demo`
-- [ ] Frontend: `data/http/client.ts`, `authApi`, `useAuth` → `/me`, Sidebar/Topbar/Workspace, lonceng, DevPanel
+- [x] Model `accounts`, `org`, `calendar`, `reference`, `audit` (+ trigger), `notifications`; izin 1–26; `domain/access.py` + vektor
+- [x] Sesi, OIDC Keycloak lokal (persona di realm), akun lokal, lockout, `auth_epoch`; `GET /me`; endpoint baca notifikasi
+- [x] Jam simulasi (`DevClock`) + `devtools`; `seed_reference`, `seed_demo`
+- [x] Frontend: `data/http/client.ts`, `authApi`, `useAuth` → `/me`, Sidebar/Topbar/Workspace, lonceng, DevPanel
 
 ### Tahap B2 — Master & Administrasi ⬜
 
