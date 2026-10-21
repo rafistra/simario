@@ -6,4 +6,4 @@ class AssessmentsConfig(AppConfig):
     label = "assessments"
 
     def ready(self) -> None:
-        from . import archive, tasks  # noqa: F401  (registers scheduled tasks and the archive hook)
+        from . import archive, reminders, tasks  # noqa: F401  (scheduled tasks, archive hook)
