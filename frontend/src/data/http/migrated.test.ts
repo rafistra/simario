@@ -14,7 +14,7 @@ describe('module gate', () => {
 
   it('hides unmigrated modules only in the trial build, including deep links', () => {
     expect(pathVisible('/jabatan/x/lembar/2027/1', false)).toBe(true);
-    expect(pathVisible('/jabatan/x/lembar/2027/1', true)).toBe(false);
+    expect(pathVisible('/jabatan/x/lembar/2027/1', true)).toBe(true);
     expect(pathVisible('/jabatan/x/riwayat', true)).toBe(true);
     expect(pathVisible('/pantauan', true)).toBe(true);
     expect(pathVisible('/penilaian', true)).toBe(true);

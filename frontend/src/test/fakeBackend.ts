@@ -12,6 +12,7 @@ import { localAuthApi, localNotificationApi } from '@/data/local/authApi';
 import { ASSESSMENT_ROUTES } from './fakeAssessmentRoutes';
 import { BOARD_ROUTES } from './fakeBoardRoutes';
 import { HOME_ROUTES } from './fakeHomeRoutes';
+import { SHEET_ROUTES } from './fakeSheetRoutes';
 import { REGISTER_ROUTES } from './fakeRegisterRoutes';
 import { getDb, useDb } from '@/data/local/store';
 import { staffDirectory } from '@/data/seed';
@@ -468,6 +469,7 @@ export function installFakeBackend() {
       ...BOARD_ROUTES,
       ...ASSESSMENT_ROUTES,
       ...HOME_ROUTES,
+      ...SHEET_ROUTES,
     ]) {
       const match = method === m ? path.match(re) : null;
       if (!match) continue;

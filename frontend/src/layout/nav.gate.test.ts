@@ -26,6 +26,7 @@ describe('trial build menu', () => {
       'Register',
       'Penilaian Triwulan',
       'Riwayat Risiko',
+      'Lembar Komunikasi',
     ]);
   });
 });

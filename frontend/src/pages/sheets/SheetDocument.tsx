@@ -1,3 +1,4 @@
+import { attachmentUrl } from '@/data/repository';
 import type { SnapshotInfo } from '@/data/api/sheets';
 import { QUARTER_ROMAN } from '@/domain/calendar';
 import {
@@ -156,7 +157,7 @@ export function KomunikasiDocument({
     <div className="doc__photos">
       {payload.photos[sec].map((p) => (
         <figure key={p.id} className="doc__photo">
-          <span className="doc__photo-img" aria-hidden />
+          <img className="doc__photo-img" src={attachmentUrl(p.id)} alt="" />
           <figcaption className="t-mono">{p.name}</figcaption>
         </figure>
       ))}

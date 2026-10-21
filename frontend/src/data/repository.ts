@@ -28,7 +28,7 @@ export { boardApi } from './http/board';
 export { assessmentApi, useAssessmentRevision } from './http/assessment';
 export { historyApi } from './http/history';
 export { homeApi } from './http/home';
-export { sheetApi } from './api/sheets';
+export { sheetApi, useSheetRevision } from './http/sheets';
 export { adminApi } from './http/admin';
 export { calendarApi } from './http/calendar';
 export { importApi } from './http/importer';

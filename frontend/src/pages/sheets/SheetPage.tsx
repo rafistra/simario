@@ -14,17 +14,15 @@ import {
   toast,
 } from '@/components';
 import type { SheetView } from '@/data/api/sheets';
-import { sheetApi } from '@/data/repository';
-import { getDb } from '@/data/local/store';
+import { sheetApi, useSheetRevision } from '@/data/repository';
 import { QUARTER_ROMAN } from '@/domain/calendar';
-import { maskPayloadFor, type SheetPayload, type SheetSection } from '@/domain/rules/sheetPayload';
+import type { SheetPayload, SheetSection } from '@/domain/rules/sheetPayload';
 import type { PrintSnapshot } from '@/domain/types';
 import type { WorkspaceOutletContext } from '@/layout/Workspace';
 import { usePageMeta } from '@/layout/pageMeta';
 import { formatDateTime } from '@/lib/format';
 import { useQuery } from '@/lib/useQuery';
 import { now } from '@/state/clock';
-import { useAuth } from '@/state/useAuth';
 import { KomunikasiDocument, MutuDocument, type DocMeta } from './SheetDocument';
 import './Sheets.css';
 
@@ -41,9 +39,10 @@ export default function SheetPage() {
   usePageMeta(['Lembar Komunikasi', `${position.name} · ${unitCode}`]);
   const [params] = useSearchParams();
   const snapshotId = params.get('salinan');
+  const revision = useSheetRevision((s) => s.revision);
   const q = useQuery(
     () => sheetApi.view(position.id, fiscalYear, quarter, snapshotId),
-    [position.id, fiscalYear, quarter, snapshotId],
+    [position.id, fiscalYear, quarter, snapshotId, revision],
   );
   if (q.loading && !q.data)
     return (
@@ -61,7 +60,6 @@ export default function SheetPage() {
 }
 
 function Sheet({ view, positionId }: { view: SheetView; positionId: string }) {
-  const auth = useAuth();
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const kind: PrintSnapshot['kind'] =
@@ -103,7 +101,6 @@ function Sheet({ view, positionId }: { view: SheetView; positionId: string }) {
     signatures: view.payload.signatures,
   });
 
-  const lini3 = auth.holdings.filter((h) => h.line === 3).map((h) => h.positionId);
   const doPrint = async () => {
     setPrintAsk(false);
     if (view.snapshot) {
@@ -115,29 +112,21 @@ function Sheet({ view, positionId }: { view: SheetView; positionId: string }) {
     }
     try {
       const ids = await sheetApi.print(positionId, q.fiscalYear, q.number, printKinds);
-      const db = getDb();
-      const docs = ids.map((id) => {
-        const s = db.snapshots.find((x) => x.id === id)!;
-        const masked = maskPayloadFor(s.payload as SheetPayload, lini3);
+      // Each new snapshot is read back as the server serves it (masked per viewer, VIS-9).
+      const copies = await Promise.all(
+        ids.map((id) => sheetApi.view(positionId, q.fiscalYear, q.number, id)),
+      );
+      const docs = copies.map((c) => {
+        const s = c.snapshot!;
         return {
-          payload: masked.payload,
+          payload: c.payload,
           kind: s.kind,
           meta: {
-            snapshot: {
-              id: s.id,
-              number: s.number,
-              kind: s.kind,
-              version: s.version,
-              trigger: s.trigger,
-              isProvisional: s.isProvisional,
-              supersededByVersion: null,
-              createdBy: auth.user.fullName,
-              createdAt: s.createdAt,
-            },
+            snapshot: s,
             latestVersion: s.version,
             printedAt: s.createdAt,
-            masked: masked.masked.length > 0,
-            signatures: (s.payload as SheetPayload).signatures,
+            masked: c.masked.length > 0,
+            signatures: c.payload.signatures,
             print: true,
           },
         };
