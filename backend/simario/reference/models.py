@@ -1,6 +1,7 @@
 """Reference data (PRD §2.8.1, FR-MST): stages and templates from the Rapim deck, Data Umum
 forms, score bands and the statements assessors choose (PRD v2.8)."""
 
+from django.conf import settings
 from django.db import models
 from django.db.models import Q
 
@@ -115,3 +116,20 @@ class ScoreOption(UUIDModel):
             models.UniqueConstraint(fields=["version", "value"], name="uniq_option_value"),
             models.UniqueConstraint(fields=["version", "label"], name="uniq_option_label"),
         ]
+
+
+class RiskProposal(UUIDModel):
+    """A custom risk offered as a template when its register is published (FR-MST-005)."""
+
+    STATUSES = [(s, s) for s in ("pending", "accepted", "rejected")]
+
+    source_register_risk = models.ForeignKey(
+        "registers.RegisterRisk", on_delete=models.PROTECT, related_name="proposals"
+    )
+    description = models.TextField()
+    proposer = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
+    )
+    status = models.CharField(max_length=16, choices=STATUSES, default="pending")
+    rejection_reason = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField()

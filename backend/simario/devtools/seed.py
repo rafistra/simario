@@ -43,6 +43,12 @@ COLLECTIONS = [
     "dataUmumForms",
     "riskTemplates",
     "mitigationTemplates",
+    "registers",
+    "declarations",
+    "risks",
+    "mitigations",
+    "proposals",
+    "riskQuarters",
     "notifications",
     "audit",
 ]
@@ -68,6 +74,12 @@ MODELS = {
     "dataUmumForms": "reference.DataUmumForm",
     "riskTemplates": "reference.RiskTemplate",
     "mitigationTemplates": "reference.MitigationTemplate",
+    "registers": "registers.Register",
+    "declarations": "registers.RegisterStageDeclaration",
+    "risks": "registers.RegisterRisk",
+    "mitigations": "registers.RegisterMitigation",
+    "proposals": "reference.RiskProposal",
+    "riskQuarters": "assessments.RiskQuarter",
     "notifications": "notifications.Notification",
     "audit": "audit.AuditLog",
 }
@@ -85,9 +97,29 @@ RENAMES: dict[str, dict[str, str]] = {
     "quarterAssessors": {"excluded_by_user_id": "excluded_by_id"},
     "scoreBands": {"version_id": "version_id"},
     "audit": {"actor_user_id": "actor_id"},
+    "registers": {
+        "fiscal_year": "fiscal_year_id",
+        "copied_from_register_id": "copied_from_id",
+        "published_by_user_id": "published_by_id",
+        "updated_by_user_id": "updated_by_id",
+        "ready_by_user_id": "ready_by_id",
+    },
+    "risks": {"created_by_user_id": "created_by_id"},
+    "mitigations": {"created_by_user_id": "created_by_id"},
+    "proposals": {"proposer_user_id": "proposer_id"},
 }
 
-DATETIME_FIELDS = {"archived_at", "deactivated_at", "read_at", "created_at", "at"}
+DATETIME_FIELDS = {
+    "archived_at",
+    "deactivated_at",
+    "read_at",
+    "created_at",
+    "at",
+    "published_at",
+    "updated_at",
+    "ready_at",
+    "first_opened_at",
+}
 DATE_ONLY = {"dataUmumForms": {"created_at"}}
 
 _CAMEL = re.compile(r"(?<!^)(?=[A-Z])")
@@ -155,7 +187,18 @@ def convert_row(collection: str, row: dict[str, Any], known: set[str]) -> dict[s
 
 
 def _truncate() -> None:
-    labels = {"accounts", "org", "calendar", "reference", "audit", "notifications", "devtools"}
+    labels = {
+        "accounts",
+        "org",
+        "calendar",
+        "reference",
+        "audit",
+        "notifications",
+        "devtools",
+        "imports",
+        "registers",
+        "assessments",
+    }
     tables = [m._meta.db_table for m in apps.get_models() if m._meta.app_label in labels]
     tables.append("django_session")
     with connection.cursor() as cursor:
@@ -174,6 +217,9 @@ def _create(collection: str, rows: list[dict[str, Any]], known: set[str]) -> int
         row = convert_row(collection, raw, known)
         if collection == "users":
             row["password"] = make_password(row.pop("password", None))
+        if collection == "registers":
+            # Data Umum keys are fields (snake_case); `extra` keys are form field keys (data).
+            row["data_umum"] = {snake(k): v for k, v in row["data_umum"].items()}
         if collection == "stages":
             row["code"] = raw["id"].removeprefix("stg-")
         for s in row.pop("supports", None) or []:
