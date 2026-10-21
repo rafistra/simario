@@ -408,10 +408,12 @@ Hasil:
 
 Catatan Tahap B4s: `config/settings/deployed.py` (HTTPS di belakang nginx, cookie Secure, HSTS, CSRF trusted origins) lulus `check --deploy`. Stack produksi diuji di `https://localhost:8443` dengan `infra/smoke.py` (SPA + deep link, health, akun lokal + ganti kata sandi wajib, `/me`, unduhan pre-signed lewat `/storage`). Uji asap ini menemukan bug B1: penerima `user_logged_in` dipegang lemah sehingga sesi berakhir di gunicorn — diperbaiki. Perintah baru `create_superadmin`. Gerbang modul `migrated.ts` + Beranda sementara untuk build uji coba. Keluar kini juga mengakhiri sesi Keycloak (R-10). Panduan di `docs/05` §2b, kebutuhan server di `docs/07_staging_requirements.md`. U-20 tetap terbuka (`docs/seed` dipasang sebagai volume).
 
-### Tahap B5 — Penilaian ⬜
+### Tahap B5 — Penilaian ✅
 
 Hasil:
-- [ ] NIL penuh, `comparisons`, Berulang, penjelasan, tampilan buta, antrean; uji INV-16/17
+- [x] NIL penuh, `comparisons`, Berulang, penjelasan, tampilan buta, antrean; uji INV-16/17
+
+Catatan Tahap B5: aturan penilaian & perbandingan dipindah ke `simario/domain/{assessment,comparison}.py` dengan vektor bersama `assessment.json` (`evaluate_opening` murni; layanan menyimpan hasilnya). Uji API INV-16 (draf buta tidak pernah terkirim, termasuk kalimat pilihan) dan INV-17 (bukti konfidensial hanya hitungan) lulus. Tampilan buta dicatat server pada setiap `GET …?blind=1`; teks draf penjelasan hanya dikirim ke pemegang Lini 1. Mutasi dan `run_comparisons` mengunci `RiskQuarter` (diuji dengan dua utas). Reset demo "Sesuaikan data ke tanggal ini" kini memangkas data di backend seperti `seed/asOf.ts`. Arsip TA menutup penilaian dan penjelasan (`assessments/archive.py`); U-21 selesai. Endpoint baru `finalise-preview` menggantikan pembacaan store di dialog Tuntaskan. Modul `penilaian` masuk gerbang build uji coba.
 
 ### Tahap B6 — Riwayat, Notifikasi, Beranda ⬜
 

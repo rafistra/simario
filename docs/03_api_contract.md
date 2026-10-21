@@ -140,21 +140,22 @@ Backend: `simario/registers/selectors.py` (`build_register_view`), `services.py`
 
 Lampiran (spec §4.7): isi diperiksa di server (ekstensi, ukuran ≤ 20 MB, ≤ 10 berkas, MIME dari isi lewat `puremagic`), disimpan di RustFS `attachments/<pos>/<ta>/<uuid>`, kuota 1 GB per jabatan per TA (galat `quota`, 413). Unduh: `GET /attachments/{id}/download` → 302 ke URL pre-signed 5 menit di `/storage/…`; berkas `pending`/`quarantined`, konfidensial tanpa izin 10, atau di luar cakupan baca → 404. Lampiran demo tanpa isi diunduh sebagai berkas contoh.
 
-### 4.6 `assessmentApi` — Penilaian (NIL)
+### 4.6 `assessmentApi` — Penilaian (NIL) — diputuskan, B5
 
-| Metode | Masukan | Keluaran / efek | Izin | PRD | Usulan REST |
+| Metode | Masukan | Keluaran / efek | Izin | PRD | REST (`/v1`) |
 |---|---|---|---|---|---|
-| `page` | `positionId, fiscalYear, tw, blind?` | `AssessmentView` (strip header, `RowView` per risiko, `CellView` per kolom sesuai VIS-1/2/5/9, `ExplanationView`) ; `blind=true` hanya untuk izin 24 | Cakupan baca (§5) | FR-NIL-001, 012 | `GET /api/positions/{pos}/assessments/{ta}/{tw}` |
-| `queue` | `quarterId` (null = bawaan) | `QueueView` antrean Lini 3 | Rute dijaga izin 8; direktorat dari holding Lini 3 | FR-NIL-010 | `GET /api/assessment-queue?quarter=` |
-| `saveCell` | `rqId, assessorPositionId, CellPatch {score?, notRelevant?, notRelevantReason?, note?}` | Autosave; `ready` → `draft`; skor di luar pilihan ditolak "Pilihan penilaian tidak dikenal." | Konten(4) Lini 1 / Konten(8) Lini 3; dalam jendela; belum beku | FR-NIL-002, 005, INV-18 | `PUT /api/risk-quarters/{rq}/assessments/{pos}` |
-| `addFiles`, `removeFile` | `rqId, assessorPositionId, NewFile[]` / `attachmentId` | Lampiran Lini 3 konfidensial bawaan | idem | NFR-009, VIS-4 | `POST/DELETE …/attachments` |
-| `markReady` | `lini1PositionId, quarterId, assessorPositionId` | Baris draf berskor → `ready`; mengembalikan jumlah baris; notifikasi Pejabat | Konten(4/8) (tombolnya hanya untuk Operator) | FR-NIL-003, 006 | `POST …/mark-ready` |
-| `finalise` | idem | Menuntaskan baris berskor/"Belum relevan" saja; `no_evidence`; keterlambatan dipatok; `runComparisons` | Konten(5/9) — Pejabat | FR-NIL-003, 006 | `POST …/finalise` |
-| `reopen` | `assessmentId` | Selama hasil belum dibuka | Konten(5/9) | FR-NIL-004 | `POST /api/assessments/{id}/reopen` |
-| `saveExplanation`, `markExplanationsReady`, `sendExplanations` | `resultId(s)`, `{reason, plan}` | Kirim: kekal (INV-23), keterlambatan, notifikasi Lini 2/3 (FR-NTF-010) | Konten(4) / Konten(5) | FR-NIL-008 | `PATCH /api/comparison-results/{id}/explanation`, `POST …/send` |
-| `logBlindView` | `positionId, quarterId` | Audit setiap tampilan buta | 24 | FR-NIL-012 | dicatat server saat `GET …?blind=1` |
+| `page` | `positionId, fiscalYear, tw, blind?` | `AssessmentView` (strip header, `RowView` per risiko, `CellView` per kolom sesuai VIS-1/2/5/9, `ExplanationView`); draf penjelasan hanya untuk pemegang Lini 1; `blind=true` hanya untuk izin 24 dan setiap pemuatan dicatat `lihat_penilaian_sebelum_dibuka` | Cakupan baca (§5) | FR-NIL-001, 012 | `GET /positions/{pos}/assessments/{ta}/{tw}[?blind=1]` |
+| `finalisePreview` | `positionId, fiscalYear, tw, assessorPositionId` | `FinalisePreview {toFinalise, unscored, noEvidence[], missingReason[]}` untuk dialog Tuntaskan | Konten(4/8) pada jabatan penilai; Lini 1 hanya jabatan pemilik risiko | FR-NIL-003 | `GET /positions/{pos}/assessments/{ta}/{tw}/finalise-preview?assessorPositionId=` |
+| `queue` | `quarterId` (null = bawaan) | `QueueView` antrean Lini 3 | Direktorat dari holding Lini 3 | FR-NIL-010 | `GET /assessment-queue[?quarterId=]` |
+| `saveCell` | `rqId, assessorPositionId, CellPatch {score?, notRelevant?, notRelevantReason?, note?}` | Autosave; `ready` → `draft`; skor di luar pilihan ditolak "Pilihan penilaian tidak dikenal." | Konten(4) Lini 1 / Konten(8) Lini 3; dalam jendela; belum beku (`frozen`, 409) | FR-NIL-002, 005, INV-18 | `PATCH /risk-quarters/{rq}/assessments/{pos}` |
+| `addFiles`, `removeFile` | `rqId, assessorPositionId, NewFile[]` / `attachmentId` | Multipart seperti komentar (`files` + `data` = `{confidential: [...]}`); RustFS + ClamAV; Lini 3 konfidensial bawaan; kuota bersama | idem | NFR-009, VIS-4 | `POST /risk-quarters/{rq}/assessments/{pos}/files`, `DELETE /assessment-files/{id}` |
+| `markReady` | `lini1PositionId, quarterId, assessorPositionId` | Baris draf berskor → `ready`; `{count}`; notifikasi Pejabat | Konten(4/8) | FR-NIL-003, 006 | `POST /positions/{pos}/quarters/{q}/assessments/{a}/ready` |
+| `finalise` | idem | Menuntaskan baris berskor/"Belum relevan" saja; `no_evidence`; keterlambatan dipatok; `run_comparisons` untuk baris itu | Konten(5/9) — Pejabat | FR-NIL-003, 006 | `POST …/finalise` |
+| `reopen` | `assessmentId` | Selama hasil belum dibuka | Konten(5/9) | FR-NIL-004 | `POST /assessments/{id}/reopen` |
+| `saveExplanation`, `markExplanationsReady`, `sendExplanations` | `resultId` + `{reason?, plan?}` / `lini1PositionId, resultIds[]` | Kirim: kekal (INV-23), keterlambatan, notifikasi Lini 2/3 (FR-NTF-010); siap diaudit pada entitas Position | Konten(4) / Konten(5) | FR-NIL-008 | `PATCH /results/{id}/explanation`, `POST /positions/{pos}/explanations/ready`, `POST /positions/{pos}/explanations/send` |
+| `logBlindView` | `positionId, quarterId` | Tanpa panggilan (server mencatat saat `GET …?blind=1`) | 24 | FR-NIL-012 | — |
 
-Fungsi bantu di halaman: `finalisePreview(getDb(), …)` untuk dialog ringkasan — perlu endpoint `GET …/finalise-preview`.
+Baris penilaian dan perbandingan dikunci per `RiskQuarter` (`select_for_update`) pada setiap mutasi dan pada `run_comparisons`, sehingga dua direktorat yang menuntaskan bersamaan membuka setiap hasil sekali.
 
 ### 4.7 `historyApi`, `homeApi`, `sheetApi` — Riwayat, Beranda, Lembar (RWY, BRD, LBR)
 
