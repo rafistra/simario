@@ -680,4 +680,17 @@ def finalise_preview(
     db = assessment_db([position_id])
     quarter = _quarter(db, fiscal_year, tw)
     assert_can_read(user, str(position_id), fiscal_year)
+    line = line_of(db, assessor_position_id)
+    # The counts describe the assessor's drafts: only its own holders may see them (INV-16).
+    own = line == 3 or assessor_position_id == str(position_id)
+    check = access.check_action(
+        db,
+        permission_rows(),
+        str(user.id),
+        4 if line == 1 else 8,
+        assessor_position_id,
+        now_iso()[:10],
+    )
+    if not own or not check["ok"]:
+        raise ApiError("forbidden", "Tindakan ini hanya untuk pemegang jabatan penilai.")
     return finalise_preview_of(db, str(position_id), quarter, assessor_position_id, now_iso())

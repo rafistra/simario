@@ -255,10 +255,17 @@ def run_comparisons(as_of: dt.datetime, rq_ids: Iterable[Any] | None = None) -> 
     )
     if rq_ids is not None:
         qs = qs.filter(pk__in=[str(i) for i in rq_ids])
-    # Serialises concurrent finalises and task runs over the same risk-quarters.
-    locked = list(qs.select_for_update().order_by("pk").values_list("id", flat=True))
-    if not locked:
+    ids = list(qs.values_list("id", flat=True))
+    if not ids:
         return
+    # Serialises concurrent finalises and task runs over the same risk-quarters. Locked without
+    # joins, so Quarter and FiscalYear rows stay free (archive, other quarters' finalises).
+    locked = list(
+        RiskQuarter.objects.select_for_update()
+        .filter(pk__in=ids)
+        .order_by("pk")
+        .values_list("id", flat=True)
+    )
     positions = set(
         RiskQuarter.objects.filter(pk__in=locked).values_list(
             "register_risk__register__position_id", flat=True

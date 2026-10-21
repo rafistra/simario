@@ -121,8 +121,11 @@ def _window_error(q: Row, line: int) -> ApiError:
 
 
 def _assert_writable(db: Db, rq_id: str, assessor_position_id: str, at_iso: str) -> tuple[Row, int]:
-    _, q, _, _ = _context(db, rq_id)
+    _, q, _, reg = _context(db, rq_id)
     line = line_of(db, assessor_position_id)
+    if line == 1 and assessor_position_id != reg["position_id"]:
+        # Lini 1 assesses only its own position's risks.
+        raise ApiError("forbidden", FORBIDDEN["holding"])
     if not rules.window_open(q, line, at_iso[:10]):
         raise _window_error(q, line)
     if line == 3 and assessor_position_id not in board_rules.expected_lini3(db, q["id"]):
@@ -354,6 +357,11 @@ def _remove_file(user: User, attachment_id: Any) -> str | None:
 # ---------- Ready, finalise, reopen ----------
 
 
+def _own_lini1(line: int, assessor_position_id: str, lini1_position_id: str) -> None:
+    if line == 1 and assessor_position_id != lini1_position_id:
+        raise ApiError("forbidden", FORBIDDEN["holding"])
+
+
 def _quarter_rqs(lini1_position_id: str, quarter_id: str) -> list[str]:
     return [
         str(i)
@@ -387,6 +395,7 @@ def mark_ready(
     _lock(_quarter_rqs(l1, qid))
     db = assessment_db([l1])
     line = line_of(db, pos)
+    _own_lini1(line, pos, l1)
     a = _actor(user, db, 4 if line == 1 else 8, pos)
     q = _find(db["quarters"], "id", qid)
     if q is None:
@@ -420,6 +429,7 @@ def finalise(user: User, lini1_position_id: Any, quarter_id: Any, assessor_posit
     _lock(_quarter_rqs(l1, qid))
     db = assessment_db([l1])
     line = line_of(db, pos)
+    _own_lini1(line, pos, l1)
     a = _actor(user, db, 5 if line == 1 else 9, pos)
     q = _find(db["quarters"], "id", qid)
     if q is None:
