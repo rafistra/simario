@@ -3,6 +3,7 @@ import { useEffect, useState, type DragEvent } from 'react';
 import { Button, ConfirmDialog, InlineAlert, SlideOver, Textarea, toast } from '@/components';
 import { masterApi } from '@/data/repository';
 import { templateEverUsed, templateUsage } from '@/data/derive/master';
+import { useUsageOf } from '@/data/http/master';
 import { useGateDb } from '@/components/DataGate/gateDb';
 import { RISK_TYPE_LABEL, type RiskType } from '@/domain/types';
 import { useAuth } from '@/state/useAuth';
@@ -30,6 +31,7 @@ export function TemplateEditor({
 }) {
   const db = useGateDb();
   const auth = useAuth();
+  const usageHints = useUsageOf(auth.currentFiscalYear);
   const [description, setDescription] = useState('');
   const [mitigations, setMitigations] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -57,8 +59,9 @@ export function TemplateEditor({
   if (!target) return null;
   const type = db.positionTypes.find((t) => t.id === target.positionTypeId)!;
   const stage = db.stages.find((s) => s.id === target.stageId)!;
-  const usage = target.id ? templateUsage(db, target.id, auth.currentFiscalYear) : 0;
-  const deletable = target.id !== null && !templateEverUsed(db, target.id);
+  const usage = target.id && usageHints ? templateUsage(usageHints, target.id) : 0;
+  // Unknown until the hints arrive: no delete offered meanwhile (the server refuses anyway).
+  const deletable = target.id !== null && !!usageHints && !templateEverUsed(usageHints, target.id);
 
   const move = (from: number, to: number) => {
     if (to < 0 || to >= mitigations.length) return;

@@ -14,6 +14,7 @@ import {
 } from '@/components';
 import { masterApi } from '@/data/repository';
 import { templateEverUsed, templateUsage } from '@/data/derive/master';
+import { useUsageOf } from '@/data/http/master';
 import { useGateDb } from '@/components/DataGate/gateDb';
 import { RISK_TYPES, RISK_TYPE_LABEL, type RiskTemplate, type RiskType } from '@/domain/types';
 import { usePageMeta } from '@/layout/pageMeta';
@@ -35,6 +36,7 @@ export default function TemplatesPage() {
   usePageMeta(['Master Data', 'Template']);
   const auth = useAuth();
   const db = useGateDb();
+  const usage = useUsageOf(auth.currentFiscalYear);
   const types = db.positionTypes.filter((t) => t.line === 1 && t.hasTemplates);
   const stagesOf = (typeId: string) =>
     db.stages
@@ -98,11 +100,14 @@ export default function TemplatesPage() {
       header: `Pemakaian TA ${auth.currentFiscalYear}`,
       width: 210,
       render: (t) => {
-        const n = templateUsage(db, t.id, auth.currentFiscalYear);
+        if (!usage) return <span className="usage-badge usage-badge--idle">…</span>;
+        const n = templateUsage(usage, t.id);
         if (n > 0) return <span className="usage-badge">Dipakai {n} jabatan</span>;
         return (
           <span className="usage-badge usage-badge--idle">
-            {templateEverUsed(db, t.id) ? 'Tidak dipakai TA ini' : 'Tidak dipakai · dapat dihapus'}
+            {templateEverUsed(usage, t.id)
+              ? 'Tidak dipakai TA ini'
+              : 'Tidak dipakai · dapat dihapus'}
           </span>
         );
       },

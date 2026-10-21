@@ -6,7 +6,12 @@ import { ApiError } from '@/data/errors';
 import { adminApi as localAdminApi } from '@/test/fake/api/admin';
 import { calendarApi as localCalendarApi } from '@/test/fake/api/calendar';
 import { importApi as localImportApi, type ImportKind } from '@/test/fake/api/importer';
-import { masterApi as localMasterApi, type PositionInput } from '@/test/fake/api/master';
+import {
+  masterApi as localMasterApi,
+  masterUsageOf,
+  positionDeactivationImpact,
+  type PositionInput,
+} from '@/test/fake/api/master';
 import { localAuthApi, localNotificationApi } from '@/test/fake/local/authApi';
 import { ASSESSMENT_ROUTES } from './fakeAssessmentRoutes';
 import { BOARD_ROUTES } from './fakeBoardRoutes';
@@ -40,6 +45,16 @@ const userId = () => useSession.getState().userId;
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- request bodies are untyped JSON */
 const MASTER_ROUTES: [string, RegExp, Handler][] = [
+  [
+    'GET',
+    /^\/api\/v1\/master-usage$/,
+    (_, b) => json(masterUsageOf(getDb(), Number(b.fiscalYear))),
+  ],
+  [
+    'GET',
+    /^\/api\/v1\/positions\/([^/]+)\/impact$/,
+    (m) => json(positionDeactivationImpact(getDb(), m[1]!, today())),
+  ],
   [
     'PATCH',
     /^\/api\/v1\/position-types\/([^/]+)$/,

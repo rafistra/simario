@@ -12,6 +12,7 @@ urlpatterns = [
     ),
     path("risk-templates", views.TemplateListView.as_view(), name="risk-templates"),
     path("risk-templates/usage", views.TemplateUsageView.as_view(), name="risk-template-usage"),
+    path("master-usage", views.MasterUsageView.as_view(), name="master-usage"),
     path("risk-templates/<uuid:pk>", views.TemplateView.as_view(), name="risk-template"),
     path(
         "position-types/<uuid:pk>/data-umum-forms",

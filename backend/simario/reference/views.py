@@ -1,6 +1,6 @@
 from typing import Any, cast
 
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import serializers
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
@@ -312,3 +312,17 @@ class ProposalAcceptView(APIView):
         actor = _actor(request, 12, 13)
         tid = proposals.accept_proposal(actor, pk, body(TemplateSerializer, request))
         return Response({"id": tid})
+
+
+class MasterUsageView(APIView):
+    """GET: usage hints for the template and stage pages (izin 12 or 15)."""
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        parameters=[OpenApiParameter("fiscalYear", int)], responses={200: dict}, tags=["master"]
+    )
+    def get(self, request: Request) -> Response:
+        _actor(request, 12, 15)
+        year = int(request.query_params.get("fiscalYear") or 0)
+        return Response(services.master_usage(year))

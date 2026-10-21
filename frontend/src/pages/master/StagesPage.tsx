@@ -3,6 +3,7 @@ import { useState, type DragEvent, type KeyboardEvent } from 'react';
 import { Button, ConfirmDialog, LineChip, PageHeader, Toggle, toast } from '@/components';
 import { masterApi } from '@/data/repository';
 import { stageUsedByRegister } from '@/data/derive/master';
+import { useUsageOf } from '@/data/http/master';
 import { useGateDb } from '@/components/DataGate/gateDb';
 import type { PositionType, Stage } from '@/domain/types';
 import { usePageMeta } from '@/layout/pageMeta';
@@ -55,6 +56,8 @@ function TypeSection({
   onToggle: () => void;
 }) {
   const db = useGateDb();
+  const auth = useAuth();
+  const usage = useUsageOf(auth.currentFiscalYear);
   const all = db.stages.filter((s) => s.positionTypeId === type.id);
   const active = all.filter((s) => s.active).sort((a, b) => a.order - b.order);
   const inactive = all.filter((s) => !s.active);
@@ -175,7 +178,7 @@ function TypeSection({
             <Pencil aria-hidden />
           </button>
         )}
-        {!stageUsedByRegister(db, s.id) && templates(s.id) === 0 && (
+        {usage && !stageUsedByRegister(usage, s.id) && templates(s.id) === 0 && (
           <button
             type="button"
             className="icon-btn"

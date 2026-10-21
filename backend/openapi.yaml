@@ -643,6 +643,28 @@ paths:
               schema:
                 type: string
           description: ''
+  /api/v1/master-usage:
+    get:
+      operationId: master_usage_retrieve
+      description: 'GET: usage hints for the template and stage pages (izin 12 or
+        15).'
+      parameters:
+      - in: query
+        name: fiscalYear
+        schema:
+          type: integer
+      tags:
+      - master
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
   /api/v1/me:
     get:
       operationId: me_retrieve

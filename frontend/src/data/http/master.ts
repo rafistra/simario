@@ -3,7 +3,10 @@
 // through useCollections show the result as they did with the local store. Risk proposals (B3)
 // are read through proposalApi.list.
 
-import type { OptionInput, PositionInput } from '@/test/fake/api/master';
+import { useEffect } from 'react';
+import { create } from 'zustand';
+import type { MasterUsage } from '@/data/derive/master';
+import type { DeactivationImpact, OptionInput, PositionInput } from '@/test/fake/api/master';
 import type { DataUmumField, RiskProposal, RiskType, ScoreBand } from '@/domain/types';
 import { useCollectionCache } from '@/lib/useCollections';
 import { apiFetch, type FetchInit } from './client';
@@ -16,7 +19,34 @@ const BANDS: CollectionName[] = ['scoreBandVersions', 'scoreBands', 'scoreOption
 async function mutate<T>(path: string, init: FetchInit, changes: CollectionName[]): Promise<T> {
   const result = await apiFetch<T>(path, init);
   await useCollectionCache.getState().load(changes);
+  useMasterUsage.setState({ byYear: {} });
   return result;
+}
+
+interface UsageCache {
+  byYear: Record<number, MasterUsage>;
+}
+
+/** Usage hints per fiscal year, shared by the template, editor and stage views (B9). */
+export const useMasterUsage = create<UsageCache>(() => ({ byYear: {} }));
+
+/** The usage hints of `fiscalYear` for a component; undefined until they arrive. */
+export function useUsageOf(fiscalYear: number): MasterUsage | undefined {
+  const usage = useMasterUsage((s) => s.byYear[fiscalYear]);
+  useEffect(() => {
+    if (!usage) void loadMasterUsage(fiscalYear).catch(() => undefined);
+  }, [fiscalYear, usage]);
+  return usage;
+}
+
+/** The usage hints of `fiscalYear`, loading them once. */
+export function loadMasterUsage(fiscalYear: number): Promise<MasterUsage> {
+  const hit = useMasterUsage.getState().byYear[fiscalYear];
+  if (hit) return Promise.resolve(hit);
+  return apiFetch<MasterUsage>('/master-usage', { query: { fiscalYear } }).then((u) => {
+    useMasterUsage.setState((s) => ({ byYear: { ...s.byYear, [fiscalYear]: u } }));
+    return u;
+  });
 }
 
 type BandInput = Pick<
@@ -37,6 +67,10 @@ const bandBody = (effectiveFrom: string, bands: BandInput[], options: OptionInpu
 });
 
 export const masterApi = {
+  /** What deactivating a position would affect (FR-MST-009 dialog). */
+  positionImpact: (positionId: string) =>
+    apiFetch<DeactivationImpact>(`/positions/${positionId}/impact`),
+
   setPositionTypeActive: (typeId: string, active: boolean) =>
     mutate<void>(`/position-types/${typeId}`, { method: 'PATCH', body: { active } }, [
       'positionTypes',

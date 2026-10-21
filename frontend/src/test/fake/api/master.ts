@@ -18,19 +18,44 @@ import { ApiError, call } from '../local/call';
 import { getDb, mutateDb } from '../local/store';
 import { newId, writeAudit, writeNotification } from '../local/writers';
 import {
-  templateUsage,
-  templateEverUsed,
-  stageUsedByRegister,
   activePositionsOfType,
   positionDeactivationImpact,
+  type MasterUsage,
 } from '@/data/derive/master';
-export {
-  templateUsage,
-  templateEverUsed,
-  stageUsedByRegister,
-  activePositionsOfType,
-  positionDeactivationImpact,
-};
+export { activePositionsOfType, positionDeactivationImpact };
+
+/** Registers of the fiscal year that use a template (the server computes this since B9). */
+export function templateUsage(db: DB, templateId: string, fiscalYear: number): number {
+  const registerIds = new Set(
+    db.risks.filter((r) => r.riskTemplateId === templateId).map((r) => r.registerId),
+  );
+  return db.registers.filter((r) => registerIds.has(r.id) && r.fiscalYear === fiscalYear).length;
+}
+
+export function templateEverUsed(db: DB, templateId: string): boolean {
+  return db.risks.some((r) => r.riskTemplateId === templateId);
+}
+
+export function stageUsedByRegister(db: DB, stageId: string): boolean {
+  return (
+    db.risks.some((r) => r.stageId === stageId) ||
+    db.declarations.some((d) => d.stageId === stageId)
+  );
+}
+
+/** GET /api/v1/master-usage for the fake backend. */
+export function masterUsageOf(db: DB, fiscalYear: number): MasterUsage {
+  const templates: Record<string, number> = {};
+  for (const t of db.riskTemplates) {
+    const n = templateUsage(db, t.id, fiscalYear);
+    if (n) templates[t.id] = n;
+  }
+  return {
+    templates,
+    everUsed: [...new Set(db.risks.map((r) => r.riskTemplateId).filter((x): x is string => !!x))],
+    stagesUsed: db.stages.filter((s) => stageUsedByRegister(db, s.id)).map((s) => s.id),
+  };
+}
 
 const audit = (
   d: DB,

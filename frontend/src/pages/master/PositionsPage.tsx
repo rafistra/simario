@@ -19,12 +19,13 @@ import {
   type Column,
 } from '@/components';
 import { ApiError, masterApi } from '@/data/repository';
-import { activePositionsOfType, positionDeactivationImpact } from '@/data/derive/master';
+import { activePositionsOfType } from '@/data/derive/master';
 import type { PositionInput } from '@/test/fake/api/master';
 import { useGateDb } from '@/components/DataGate/gateDb';
 import { officialsOf } from '@/domain/rules/access';
 import type { Line, Position, PositionType } from '@/domain/types';
 import { usePageMeta } from '@/layout/pageMeta';
+import { useQuery } from '@/lib/useQuery';
 import { useAuth } from '@/state/useAuth';
 import './Master.css';
 
@@ -306,7 +307,11 @@ export default function PositionsPage() {
         (r) => inUse.some((p) => p.id === r.positionId) && r.fiscalYear === auth.currentFiscalYear,
       ).length
     : 0;
-  const impact = deactivating ? positionDeactivationImpact(db, deactivating.id, auth.today) : null;
+  const impactQuery = useQuery(
+    () => (deactivating ? masterApi.positionImpact(deactivating.id) : Promise.resolve(null)),
+    [deactivating?.id ?? null],
+  );
+  const impact = deactivating ? (impactQuery.data ?? null) : null;
   const current = impact?.publishedRegisters.find((r) => r.fiscalYear === auth.currentFiscalYear);
 
   const roleName = (t: PositionType) => db.roles.find((r) => r.id === t.defaultRoleId)?.name ?? '';

@@ -7,7 +7,7 @@ import uuid
 from typing import Any
 
 from django.db import IntegrityError, transaction
-from django.db.models import Max
+from django.db.models import Count, Max
 
 from simario.audit.services import record_by
 from simario.core.errors import ApiError
@@ -491,3 +491,28 @@ def update_option_label(actor: Actor, option_id: uuid.UUID, label: str) -> None:
     )
     option.label = label.strip()
     option.save(update_fields=["label"])
+
+
+def master_usage(fiscal_year: int) -> dict[str, Any]:
+    """Hints of the master pages in three queries: registers of `fiscal_year` per template,
+    templates ever used, and stages used by any register (FR-MST-002/003)."""
+    from simario.registers.models import RegisterRisk, RegisterStageDeclaration
+
+    per_year = (
+        RegisterRisk.objects.filter(
+            register__fiscal_year_id=fiscal_year, risk_template__isnull=False
+        )
+        .values("risk_template_id")
+        .annotate(n=Count("register_id", distinct=True))
+    )
+    ever = RegisterRisk.objects.filter(risk_template__isnull=False).values_list(
+        "risk_template_id", flat=True
+    )
+    stages = set(RegisterRisk.objects.values_list("stage_id", flat=True)) | set(
+        RegisterStageDeclaration.objects.values_list("stage_id", flat=True)
+    )
+    return {
+        "templates": {str(r["risk_template_id"]): r["n"] for r in per_year},
+        "ever_used": sorted({str(t) for t in ever}),
+        "stages_used": sorted(str(s) for s in stages),
+    }

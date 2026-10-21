@@ -5,24 +5,23 @@ import type { Position } from '@/domain/types';
 import type { DeactivationImpact } from '@/test/fake/api/master';
 import type { DB } from '@/test/fake/db';
 
+/** Usage hints of the master pages, from GET /api/v1/master-usage (B9). */
+export interface MasterUsage {
+  /** Registers of the fiscal year per template id (non-zero only). */
+  templates: Record<string, number>;
+  everUsed: string[];
+  stagesUsed: string[];
+}
+
 /** Registers of the current fiscal year that use a template ("Dipakai [N] jabatan", FR-MST-003). */
-export function templateUsage(db: DB, templateId: string, fiscalYear: number): number {
-  const registerIds = new Set(
-    db.risks.filter((r) => r.riskTemplateId === templateId).map((r) => r.registerId),
-  );
-  return db.registers.filter((r) => registerIds.has(r.id) && r.fiscalYear === fiscalYear).length;
-}
+export const templateUsage = (u: MasterUsage, templateId: string): number =>
+  u.templates[templateId] ?? 0;
 
-export function templateEverUsed(db: DB, templateId: string): boolean {
-  return db.risks.some((r) => r.riskTemplateId === templateId);
-}
+export const templateEverUsed = (u: MasterUsage, templateId: string): boolean =>
+  u.everUsed.includes(templateId);
 
-export function stageUsedByRegister(db: DB, stageId: string): boolean {
-  return (
-    db.risks.some((r) => r.stageId === stageId) ||
-    db.declarations.some((d) => d.stageId === stageId)
-  );
-}
+export const stageUsedByRegister = (u: MasterUsage, stageId: string): boolean =>
+  u.stagesUsed.includes(stageId);
 
 export function activePositionsOfType(db: DB, typeId: string): Position[] {
   return db.positions.filter((p) => p.positionTypeId === typeId && p.active);

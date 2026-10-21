@@ -1,2 +1,0 @@
-# Netlify drag-and-drop deploys of dist/: every route serves the SPA (see netlify.toml).
-/*  /index.html  200
