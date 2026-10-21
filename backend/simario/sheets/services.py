@@ -169,6 +169,12 @@ def _freeze(
     at_iso = _iso(as_of)
     today = at_iso[:10]
     made = 0
+    # Lock the positions first, so the "content changed" check reads committed state and two
+    # triggers on one position cannot both freeze stale content.
+    targets = Position.objects.filter(position_type__line=1)
+    if positions is not None:
+        targets = targets.filter(pk__in=list(positions))
+    list(targets.select_for_update(of=("self",)).order_by("pk").values_list("id", flat=True))
     # One position (an event trigger) loads only its rows; the scheduled run loads all.
     only = next(iter(positions)) if positions and len(positions) == 1 else None
     db = sheet_db(only)
@@ -190,7 +196,6 @@ def _freeze(
             last = latest_auto(p["id"], q["id"], "komunikasi")
             if last is not None and _stripped(last.payload) == _stripped(payload):
                 continue
-            _lock_position(p["id"])
             for kind in ("komunikasi", "mutu"):
                 _create(db, kind, p["id"], q, payload, trigger, None, as_of)
             made += 1

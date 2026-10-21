@@ -105,7 +105,11 @@ def build_sheet_view(
         try:
             snap = (
                 PrintSnapshot.objects.select_related("superseded_by", "created_by")
-                .filter(pk=uuid.UUID(str(snapshot_id)), position_id=position_id)
+                .filter(
+                    pk=uuid.UUID(str(snapshot_id)),
+                    position_id=position_id,
+                    quarter_id=quarter["id"],
+                )
                 .first()
             )
         except ValueError:

@@ -18,9 +18,22 @@ def register(name: str) -> Callable[[Task], Task]:
     return decorate
 
 
+# The prototype's order (frontend/src/data/local/scheduler.ts): openings and sheet versions come
+# before the calendar may archive a year; tasks not listed run afterwards in registration order.
+ORDER = (
+    "attachment_scan",
+    "risk_quarters",
+    "score_bands",
+    "comparisons",
+    "reminders",
+    "sheet_freeze",
+    "calendar",
+    "delegations",
+)
+
+
 def run_all(as_of: dt.datetime) -> list[str]:
-    ran = []
-    for name, fn in list(_TASKS.items()):
-        fn(as_of)
-        ran.append(name)
-    return ran
+    names = [n for n in ORDER if n in _TASKS] + [n for n in _TASKS if n not in ORDER]
+    for name in names:
+        _TASKS[name](as_of)
+    return names
