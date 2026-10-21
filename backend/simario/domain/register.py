@@ -2,11 +2,11 @@
 shared vectors in shared/test-vectors/register.json. Rows are plain dicts with snake_case keys,
 string ids and ISO date strings."""
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from typing import Any
 
 Row = dict[str, Any]
-Db = dict[str, list[Row]]
+Db = Mapping[str, Sequence[Row]]
 
 RISK_TYPES = ("kinerja_anggaran", "ketidakpatuhan", "kecurangan")
 RISK_TYPE_LABEL = {
