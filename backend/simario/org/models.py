@@ -134,3 +134,23 @@ class UserRole(models.Model):
     role = models.ForeignKey(Role, on_delete=models.PROTECT, related_name="+")
     source = models.CharField(max_length=16, choices=SOURCES)
     source_ref = models.CharField(max_length=64, null=True, blank=True)
+
+
+class MonitoringAssignment(UUIDModel):
+    """Lini 2 lead (+ supports) for a Lini 1 position over a quarter range (FR-ADM-006)."""
+
+    target_position = models.ForeignKey(Position, on_delete=models.PROTECT, related_name="+")
+    lead_position = models.ForeignKey(Position, on_delete=models.PROTECT, related_name="+")
+    quarter_from = models.ForeignKey("calendar.Quarter", on_delete=models.PROTECT, related_name="+")
+    quarter_to = models.ForeignKey("calendar.Quarter", on_delete=models.PROTECT, related_name="+")
+    decree_no = models.CharField(max_length=200, blank=True)
+
+
+class MonitoringSupport(models.Model):
+    DOMAINS = [("budget_performance", "budget_performance"), ("procurement", "procurement")]
+
+    assignment = models.ForeignKey(
+        MonitoringAssignment, on_delete=models.CASCADE, related_name="supports"
+    )
+    position = models.ForeignKey(Position, on_delete=models.PROTECT, related_name="+")
+    domain = models.CharField(max_length=24, choices=DOMAINS)

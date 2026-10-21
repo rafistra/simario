@@ -28,6 +28,8 @@ INSTALLED_APPS = [
     "simario.core",
     "simario.accounts",
     "simario.org",
+    "simario.calendar",
+    "simario.reference",
 ]
 
 MIDDLEWARE = [
