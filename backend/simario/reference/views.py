@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from simario.accounts.models import User
+from simario.core.api import ActiveSerializer, IdSerializer, body
 from simario.core.permissions import require_permission
 
 from . import services
@@ -17,16 +18,6 @@ RISK_TYPES = ["kinerja_anggaran", "ketidakpatuhan", "kecurangan"]
 
 def _actor(request: Request, *codes: int) -> Any:
     return require_permission(cast(User, request.user), *codes)
-
-
-def _body(serializer: type[serializers.Serializer[None]], request: Request) -> dict[str, Any]:
-    body = serializer(data=request.data)
-    body.is_valid(raise_exception=True)
-    return dict(body.validated_data)
-
-
-class IdSerializer(serializers.Serializer[None]):
-    id = serializers.UUIDField()
 
 
 class StageCreateSerializer(serializers.Serializer[None]):
@@ -53,10 +44,6 @@ class TemplateSerializer(serializers.Serializer[None]):
     )
 
 
-class ActiveSerializer(serializers.Serializer[None]):
-    active = serializers.BooleanField()
-
-
 class DataUmumFieldSerializer(serializers.Serializer[None]):
     key = serializers.CharField(allow_blank=True, required=False)
     label = serializers.CharField(allow_blank=True, trim_whitespace=False)  # type: ignore[assignment]
@@ -81,7 +68,7 @@ class StageListView(APIView):
     @extend_schema(request=StageCreateSerializer, responses=IdSerializer, tags=["master"])
     def post(self, request: Request) -> Response:
         actor = _actor(request, 15)
-        b = _body(StageCreateSerializer, request)
+        b = body(StageCreateSerializer, request)
         return Response({"id": services.add_stage(actor, b["position_type_id"], b["name"])})
 
 
@@ -91,7 +78,7 @@ class StageView(APIView):
     @extend_schema(request=StagePatchSerializer, responses={204: None}, tags=["master"])
     def patch(self, request: Request, pk: Any) -> Response:
         actor = _actor(request, 15)
-        b = _body(StagePatchSerializer, request)
+        b = body(StagePatchSerializer, request)
         if "name" in b:
             services.rename_stage(actor, pk, b["name"])
         if "active" in b:
@@ -110,7 +97,7 @@ class StageOrderView(APIView):
     @extend_schema(request=StageOrderSerializer, responses={204: None}, tags=["master"])
     def put(self, request: Request, pk: Any) -> Response:
         actor = _actor(request, 15)
-        ids = [str(i) for i in _body(StageOrderSerializer, request)["ordered_ids"]]
+        ids = [str(i) for i in body(StageOrderSerializer, request)["ordered_ids"]]
         services.reorder_stages(actor, pk, ids)
         return Response(status=204)
 
@@ -121,7 +108,7 @@ class TemplateListView(APIView):
     @extend_schema(request=TemplateSerializer, responses=IdSerializer, tags=["master"])
     def post(self, request: Request) -> Response:
         actor = _actor(request, 12)
-        return Response({"id": services.save_template(actor, _body(TemplateSerializer, request))})
+        return Response({"id": services.save_template(actor, body(TemplateSerializer, request))})
 
 
 class TemplateView(APIView):
@@ -130,13 +117,13 @@ class TemplateView(APIView):
     @extend_schema(request=TemplateSerializer, responses=IdSerializer, tags=["master"])
     def put(self, request: Request, pk: Any) -> Response:
         actor = _actor(request, 12)
-        data = _body(TemplateSerializer, request)
+        data = body(TemplateSerializer, request)
         return Response({"id": services.save_template(actor, data, pk)})
 
     @extend_schema(request=ActiveSerializer, responses={204: None}, tags=["master"])
     def patch(self, request: Request, pk: Any) -> Response:
         actor = _actor(request, 12)
-        services.set_template_active(actor, pk, _body(ActiveSerializer, request)["active"])
+        services.set_template_active(actor, pk, body(ActiveSerializer, request)["active"])
         return Response(status=204)
 
     @extend_schema(responses={204: None}, tags=["master"])
@@ -162,7 +149,7 @@ class DataUmumFormView(APIView):
     @extend_schema(request=DataUmumFormSerializer, responses=VersionSerializer, tags=["master"])
     def post(self, request: Request, pk: Any) -> Response:
         actor = _actor(request, 16)
-        b = _body(DataUmumFormSerializer, request)
+        b = body(DataUmumFormSerializer, request)
         version = services.save_data_umum_form(
             actor,
             pk,

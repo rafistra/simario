@@ -310,6 +310,68 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/position-types/{id}/data-umum-forms:
+    post:
+      operationId: position_types_data_umum_forms_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - master
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataUmumFormRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DataUmumFormRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DataUmumFormRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Version'
+          description: ''
+  /api/v1/position-types/{id}/stage-order:
+    put:
+      operationId: position_types_stage_order_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - master
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StageOrderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StageOrderRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StageOrderRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/positions:
     post:
       operationId: positions_create
@@ -436,6 +498,193 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/risk-templates:
+    post:
+      operationId: risk_templates_create
+      tags:
+      - master
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TemplateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TemplateRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Id'
+          description: ''
+  /api/v1/risk-templates/{id}:
+    put:
+      operationId: risk_templates_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - master
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TemplateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TemplateRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Id'
+          description: ''
+    patch:
+      operationId: risk_templates_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - master
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedActiveRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedActiveRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedActiveRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+    delete:
+      operationId: risk_templates_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - master
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/risk-templates/usage:
+    get:
+      operationId: risk_templates_usage_retrieve
+      tags:
+      - master
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/stages:
+    post:
+      operationId: stages_create
+      tags:
+      - master
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StageCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StageCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StageCreateRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Id'
+          description: ''
+  /api/v1/stages/{id}:
+    patch:
+      operationId: stages_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - master
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStagePatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStagePatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStagePatchRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+    delete:
+      operationId: stages_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - master
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
 components:
   schemas:
     ActivePositionRequest:
@@ -498,11 +747,59 @@ components:
       required:
       - ran
       - serverNow
+    DataUmumFieldKindEnum:
+      enum:
+      - text
+      - number
+      - currency
+      - date
+      - list
+      type: string
+      description: |-
+        * `text` - text
+        * `number` - number
+        * `currency` - currency
+        * `date` - date
+        * `list` - list
+    DataUmumFieldRequest:
+      type: object
+      properties:
+        key:
+          type: string
+        label:
+          type: string
+        kind:
+          $ref: '#/components/schemas/DataUmumFieldKindEnum'
+        mandatory:
+          type: boolean
+        options:
+          type: array
+          items:
+            type: string
+      required:
+      - kind
+      - label
+      - mandatory
+    DataUmumFormRequest:
+      type: object
+      properties:
+        defaultObjective:
+          type: string
+        fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataUmumFieldRequest'
+        objectiveEnabled:
+          type: boolean
+          default: false
+      required:
+      - defaultObjective
+      - fields
     Holding:
       type: object
       properties:
         kind:
-          $ref: '#/components/schemas/KindEnum'
+          $ref: '#/components/schemas/HoldingKindEnum'
         id:
           type: string
           format: uuid
@@ -536,6 +833,14 @@ components:
       - positionId
       - roleView
       - unitCode
+    HoldingKindEnum:
+      enum:
+      - occupancy
+      - delegate
+      type: string
+      description: |-
+        * `occupancy` - occupancy
+        * `delegate` - delegate
     Id:
       type: object
       properties:
@@ -557,14 +862,6 @@ components:
       required:
       - activeOperators
       - publishedRegisters
-    KindEnum:
-      enum:
-      - occupancy
-      - delegate
-      type: string
-      description: |-
-        * `occupancy` - occupancy
-        * `delegate` - delegate
     LoginRequest:
       type: object
       properties:
@@ -726,6 +1023,13 @@ components:
     PatchedActiveRequest:
       type: object
       properties:
+        active:
+          type: boolean
+    PatchedStagePatchRequest:
+      type: object
+      properties:
+        name:
+          type: string
         active:
           type: boolean
     PermissionScope:
@@ -931,6 +1235,16 @@ components:
             type: integer
       required:
       - counts
+    RiskTypeEnum:
+      enum:
+      - kinerja_anggaran
+      - ketidakpatuhan
+      - kecurangan
+      type: string
+      description: |-
+        * `kinerja_anggaran` - kinerja_anggaran
+        * `ketidakpatuhan` - ketidakpatuhan
+        * `kecurangan` - kecurangan
     SignInResult:
       type: object
       properties:
@@ -942,6 +1256,49 @@ components:
       required:
       - ok
       - userId
+    StageCreateRequest:
+      type: object
+      properties:
+        positionTypeId:
+          type: string
+          format: uuid
+        name:
+          type: string
+      required:
+      - name
+      - positionTypeId
+    StageOrderRequest:
+      type: object
+      properties:
+        orderedIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+      - orderedIds
+    TemplateRequest:
+      type: object
+      properties:
+        positionTypeId:
+          type: string
+          format: uuid
+        stageId:
+          type: string
+          format: uuid
+        riskType:
+          $ref: '#/components/schemas/RiskTypeEnum'
+        description:
+          type: string
+        mitigations:
+          type: array
+          items:
+            type: string
+      required:
+      - description
+      - positionTypeId
+      - riskType
+      - stageId
     Unregistered:
       type: object
       properties:
@@ -952,6 +1309,13 @@ components:
       required:
       - fullName
       - nip
+    Version:
+      type: object
+      properties:
+        version:
+          type: integer
+      required:
+      - version
   securitySchemes:
     cookieAuth:
       type: apiKey

@@ -250,6 +250,38 @@ export interface paths {
         patch: operations["position_types_partial_update"];
         trace?: never;
     };
+    "/api/v1/position-types/{id}/data-umum-forms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["position_types_data_umum_forms_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/position-types/{id}/stage-order": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["position_types_stage_order_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/positions": {
         parameters: {
             query?: never;
@@ -330,6 +362,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/risk-templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["risk_templates_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/risk-templates/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["risk_templates_update"];
+        post?: never;
+        delete: operations["risk_templates_destroy"];
+        options?: never;
+        head?: never;
+        patch: operations["risk_templates_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/risk-templates/usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["risk_templates_usage_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/stages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["stages_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/stages/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["stages_destroy"];
+        options?: never;
+        head?: never;
+        patch: operations["stages_partial_update"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -360,8 +472,30 @@ export interface components {
             serverNow: string;
             ran: string[];
         };
+        /**
+         * @description * `text` - text
+         *     * `number` - number
+         *     * `currency` - currency
+         *     * `date` - date
+         *     * `list` - list
+         * @enum {string}
+         */
+        DataUmumFieldKindEnum: "text" | "number" | "currency" | "date" | "list";
+        DataUmumFieldRequest: {
+            key?: string;
+            label: string;
+            kind: components["schemas"]["DataUmumFieldKindEnum"];
+            mandatory: boolean;
+            options?: string[];
+        };
+        DataUmumFormRequest: {
+            defaultObjective: string;
+            fields: components["schemas"]["DataUmumFieldRequest"][];
+            /** @default false */
+            objectiveEnabled: boolean;
+        };
         Holding: {
-            kind: components["schemas"]["KindEnum"];
+            kind: components["schemas"]["HoldingKindEnum"];
             /** Format: uuid */
             id: string;
             /** Format: uuid */
@@ -374,6 +508,12 @@ export interface components {
             officialName: string | null;
             roleView: string | null;
         };
+        /**
+         * @description * `occupancy` - occupancy
+         *     * `delegate` - delegate
+         * @enum {string}
+         */
+        HoldingKindEnum: "occupancy" | "delegate";
         Id: {
             /** Format: uuid */
             id: string;
@@ -384,12 +524,6 @@ export interface components {
             }[];
             activeOperators: number;
         };
-        /**
-         * @description * `occupancy` - occupancy
-         *     * `delegate` - delegate
-         * @enum {string}
-         */
-        KindEnum: "occupancy" | "delegate";
         LoginRequest: {
             nip: string;
             password: string;
@@ -447,6 +581,10 @@ export interface components {
             newPassword: string;
         };
         PatchedActiveRequest: {
+            active?: boolean;
+        };
+        PatchedStagePatchRequest: {
+            name?: string;
             active?: boolean;
         };
         PermissionScope: {
@@ -532,14 +670,41 @@ export interface components {
                 [key: string]: number;
             };
         };
+        /**
+         * @description * `kinerja_anggaran` - kinerja_anggaran
+         *     * `ketidakpatuhan` - ketidakpatuhan
+         *     * `kecurangan` - kecurangan
+         * @enum {string}
+         */
+        RiskTypeEnum: "kinerja_anggaran" | "ketidakpatuhan" | "kecurangan";
         SignInResult: {
             ok: boolean;
             /** Format: uuid */
             userId: string;
         };
+        StageCreateRequest: {
+            /** Format: uuid */
+            positionTypeId: string;
+            name: string;
+        };
+        StageOrderRequest: {
+            orderedIds: string[];
+        };
+        TemplateRequest: {
+            /** Format: uuid */
+            positionTypeId: string;
+            /** Format: uuid */
+            stageId: string;
+            riskType: components["schemas"]["RiskTypeEnum"];
+            description: string;
+            mitigations?: string[];
+        };
         Unregistered: {
             nip: string;
             fullName: string;
+        };
+        Version: {
+            version: number;
         };
     };
     responses: never;
@@ -882,6 +1047,59 @@ export interface operations {
             };
         };
     };
+    position_types_data_umum_forms_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DataUmumFormRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["DataUmumFormRequest"];
+                "multipart/form-data": components["schemas"]["DataUmumFormRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Version"];
+                };
+            };
+        };
+    };
+    position_types_stage_order_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StageOrderRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["StageOrderRequest"];
+                "multipart/form-data": components["schemas"]["StageOrderRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     positions_create: {
         parameters: {
             query?: never;
@@ -991,6 +1209,196 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    risk_templates_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TemplateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["TemplateRequest"];
+                "multipart/form-data": components["schemas"]["TemplateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Id"];
+                };
+            };
+        };
+    };
+    risk_templates_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TemplateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["TemplateRequest"];
+                "multipart/form-data": components["schemas"]["TemplateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Id"];
+                };
+            };
+        };
+    };
+    risk_templates_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    risk_templates_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedActiveRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedActiveRequest"];
+                "multipart/form-data": components["schemas"]["PatchedActiveRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    risk_templates_usage_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    stages_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StageCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["StageCreateRequest"];
+                "multipart/form-data": components["schemas"]["StageCreateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Id"];
+                };
+            };
+        };
+    };
+    stages_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    stages_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedStagePatchRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedStagePatchRequest"];
+                "multipart/form-data": components["schemas"]["PatchedStagePatchRequest"];
+            };
+        };
         responses: {
             /** @description No response body */
             204: {
