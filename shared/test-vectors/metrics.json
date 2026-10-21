@@ -1,0 +1,593 @@
+{
+  "source": "frontend/src/data/api/insights.ts (buildMetrics)",
+  "notes": "\"$demo\" = the prototype seed at 2027-04-06T09:00.",
+  "rules": {
+    "buildMetrics": [
+      {
+        "name": "2027 2027-04-06T09:00",
+        "input": {
+          "db": "$demo",
+          "year": 2027,
+          "at": "2027-04-06T09:00"
+        },
+        "expected": [
+          {
+            "objective": 1,
+            "title": "Risiko dari template pusat",
+            "target": "≥ 80%",
+            "query": "RegisterRisk terbit TA terpilih: risk_template_id terisi ÷ semua",
+            "value": 0.8461538461538461,
+            "unit": "percent",
+            "status": "Memenuhi target",
+            "insufficient": null,
+            "points": [
+              {
+                "label": "TA 2027",
+                "value": 0.8461538461538461,
+                "numerator": 11,
+                "denominator": 13
+              }
+            ]
+          },
+          {
+            "objective": 2,
+            "title": "Risiko dengan Langkah Lini 1 per triwulan",
+            "target": "≥ 80%",
+            "query": "Risiko dinilai pada triwulan (RB-REG-006) dengan ≥ 1 komentar Langkah Lini 1 pada triwulan itu ÷ semua",
+            "value": 0.08333333333333333,
+            "unit": "percent",
+            "status": "Di bawah target",
+            "insufficient": null,
+            "points": [
+              {
+                "label": "TW I",
+                "value": 0.46153846153846156,
+                "numerator": 6,
+                "denominator": 13
+              },
+              {
+                "label": "TW II",
+                "value": 0.08333333333333333,
+                "numerator": 1,
+                "denominator": 12
+              }
+            ]
+          },
+          {
+            "objective": 3,
+            "title": "Penilaian Lini 1 dengan bukti",
+            "target": "≥ 90%",
+            "query": "Assessment Lini 1 final (bukan Belum relevan) tanpa penanda no_evidence ÷ semua final",
+            "value": 0.9166666666666666,
+            "unit": "percent",
+            "status": "Memenuhi target",
+            "insufficient": null,
+            "points": [
+              {
+                "label": "TW I",
+                "value": 0.9166666666666666,
+                "numerator": 11,
+                "denominator": 12
+              },
+              {
+                "label": "TW II",
+                "value": null,
+                "numerator": 0,
+                "denominator": 0
+              }
+            ]
+          },
+          {
+            "objective": 4,
+            "title": "Risiko Berulang terdeteksi",
+            "target": "Semua ditandai & diberitahukan",
+            "query": "RiskQuarter recurring = true (hasil terbuka) · dengan penjelasan terkirim",
+            "value": 1,
+            "unit": "count",
+            "status": "0 dari 1 menerima penjelasan",
+            "insufficient": null,
+            "points": [
+              {
+                "label": "TW I",
+                "value": 1,
+                "numerator": 0,
+                "denominator": 1
+              },
+              {
+                "label": "TW II",
+                "value": 0,
+                "numerator": 0,
+                "denominator": 0
+              }
+            ]
+          },
+          {
+            "objective": 8,
+            "title": "Median waktu menuntaskan penilaian triwulan",
+            "target": "< 30 menit",
+            "query": "Median waktu-di-halaman per jabatan per triwulan hingga Tuntaskan Penilaian",
+            "value": null,
+            "unit": "minutes",
+            "status": "",
+            "insufficient": "Instrumentasi waktu-di-halaman belum tersedia di prototipe; angka tidak ditebak dari selisih waktu.",
+            "points": []
+          },
+          {
+            "objective": 9,
+            "title": "Tingkat kesesuaian Lini 1 dan Lini 3",
+            "target": "Tanpa target v1.0 — garis dasar",
+            "query": "ComparisonResult terbuka: Sesuai ÷ (Sesuai + Tidak Sesuai), per triwulan dan per direktorat",
+            "value": 0.6666666666666666,
+            "unit": "percent",
+            "status": "",
+            "insufficient": null,
+            "points": [
+              {
+                "label": "TW I",
+                "value": 0.6666666666666666,
+                "numerator": 14,
+                "denominator": 21
+              },
+              {
+                "label": "TW I · KEP",
+                "value": 0.8333333333333334,
+                "numerator": 10,
+                "denominator": 12
+              },
+              {
+                "label": "TW I · PAI",
+                "value": 0.4444444444444444,
+                "numerator": 4,
+                "denominator": 9
+              },
+              {
+                "label": "TW II",
+                "value": null,
+                "numerator": 0,
+                "denominator": 0
+              },
+              {
+                "label": "TW II · KEP",
+                "value": null,
+                "numerator": 0,
+                "denominator": 0
+              },
+              {
+                "label": "TW II · PAI",
+                "value": null,
+                "numerator": 0,
+                "denominator": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "2027 2027-07-10T09:00",
+        "input": {
+          "db": "$demo",
+          "year": 2027,
+          "at": "2027-07-10T09:00"
+        },
+        "expected": [
+          {
+            "objective": 1,
+            "title": "Risiko dari template pusat",
+            "target": "≥ 80%",
+            "query": "RegisterRisk terbit TA terpilih: risk_template_id terisi ÷ semua",
+            "value": 0.8461538461538461,
+            "unit": "percent",
+            "status": "Memenuhi target",
+            "insufficient": null,
+            "points": [
+              {
+                "label": "TA 2027",
+                "value": 0.8461538461538461,
+                "numerator": 11,
+                "denominator": 13
+              }
+            ]
+          },
+          {
+            "objective": 2,
+            "title": "Risiko dengan Langkah Lini 1 per triwulan",
+            "target": "≥ 80%",
+            "query": "Risiko dinilai pada triwulan (RB-REG-006) dengan ≥ 1 komentar Langkah Lini 1 pada triwulan itu ÷ semua",
+            "value": 0.08333333333333333,
+            "unit": "percent",
+            "status": "Di bawah target",
+            "insufficient": null,
+            "points": [
+              {
+                "label": "TW I",
+                "value": 0.46153846153846156,
+                "numerator": 6,
+                "denominator": 13
+              },
+              {
+                "label": "TW II",
+                "value": 0.08333333333333333,
+                "numerator": 1,
+                "denominator": 12
+              },
+              {
+                "label": "TW III",
+                "value": null,
+                "numerator": 0,
+                "denominator": 0
+              }
+            ]
+          },
+          {
+            "objective": 3,
+            "title": "Penilaian Lini 1 dengan bukti",
+            "target": "≥ 90%",
+            "query": "Assessment Lini 1 final (bukan Belum relevan) tanpa penanda no_evidence ÷ semua final",
+            "value": 0.9166666666666666,
+            "unit": "percent",
+            "status": "Memenuhi target",
+            "insufficient": null,
+            "points": [
+              {
+                "label": "TW I",
+                "value": 0.9166666666666666,
+                "numerator": 11,
+                "denominator": 12
+              },
+              {
+                "label": "TW II",
+                "value": null,
+                "numerator": 0,
+                "denominator": 0
+              },
+              {
+                "label": "TW III",
+                "value": null,
+                "numerator": 0,
+                "denominator": 0
+              }
+            ]
+          },
+          {
+            "objective": 4,
+            "title": "Risiko Berulang terdeteksi",
+            "target": "Semua ditandai & diberitahukan",
+            "query": "RiskQuarter recurring = true (hasil terbuka) · dengan penjelasan terkirim",
+            "value": 1,
+            "unit": "count",
+            "status": "0 dari 1 menerima penjelasan",
+            "insufficient": null,
+            "points": [
+              {
+                "label": "TW I",
+                "value": 1,
+                "numerator": 0,
+                "denominator": 1
+              },
+              {
+                "label": "TW II",
+                "value": 0,
+                "numerator": 0,
+                "denominator": 0
+              },
+              {
+                "label": "TW III",
+                "value": 0,
+                "numerator": 0,
+                "denominator": 0
+              }
+            ]
+          },
+          {
+            "objective": 8,
+            "title": "Median waktu menuntaskan penilaian triwulan",
+            "target": "< 30 menit",
+            "query": "Median waktu-di-halaman per jabatan per triwulan hingga Tuntaskan Penilaian",
+            "value": null,
+            "unit": "minutes",
+            "status": "",
+            "insufficient": "Instrumentasi waktu-di-halaman belum tersedia di prototipe; angka tidak ditebak dari selisih waktu.",
+            "points": []
+          },
+          {
+            "objective": 9,
+            "title": "Tingkat kesesuaian Lini 1 dan Lini 3",
+            "target": "Tanpa target v1.0 — garis dasar",
+            "query": "ComparisonResult terbuka: Sesuai ÷ (Sesuai + Tidak Sesuai), per triwulan dan per direktorat",
+            "value": 0.6666666666666666,
+            "unit": "percent",
+            "status": "",
+            "insufficient": null,
+            "points": [
+              {
+                "label": "TW I",
+                "value": 0.6666666666666666,
+                "numerator": 14,
+                "denominator": 21
+              },
+              {
+                "label": "TW I · KEP",
+                "value": 0.8333333333333334,
+                "numerator": 10,
+                "denominator": 12
+              },
+              {
+                "label": "TW I · PAI",
+                "value": 0.4444444444444444,
+                "numerator": 4,
+                "denominator": 9
+              },
+              {
+                "label": "TW II",
+                "value": null,
+                "numerator": 0,
+                "denominator": 0
+              },
+              {
+                "label": "TW II · KEP",
+                "value": null,
+                "numerator": 0,
+                "denominator": 0
+              },
+              {
+                "label": "TW II · PAI",
+                "value": null,
+                "numerator": 0,
+                "denominator": 0
+              },
+              {
+                "label": "TW III",
+                "value": null,
+                "numerator": 0,
+                "denominator": 0
+              },
+              {
+                "label": "TW III · KEP",
+                "value": null,
+                "numerator": 0,
+                "denominator": 0
+              },
+              {
+                "label": "TW III · PAI",
+                "value": null,
+                "numerator": 0,
+                "denominator": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "2026 2027-04-06T09:00",
+        "input": {
+          "db": "$demo",
+          "year": 2026,
+          "at": "2027-04-06T09:00"
+        },
+        "expected": [
+          {
+            "objective": 1,
+            "title": "Risiko dari template pusat",
+            "target": "≥ 80%",
+            "query": "RegisterRisk terbit TA terpilih: risk_template_id terisi ÷ semua",
+            "value": 0.9230769230769231,
+            "unit": "percent",
+            "status": "Memenuhi target",
+            "insufficient": null,
+            "points": [
+              {
+                "label": "TA 2026",
+                "value": 0.9230769230769231,
+                "numerator": 12,
+                "denominator": 13
+              }
+            ]
+          },
+          {
+            "objective": 2,
+            "title": "Risiko dengan Langkah Lini 1 per triwulan",
+            "target": "≥ 80%",
+            "query": "Risiko dinilai pada triwulan (RB-REG-006) dengan ≥ 1 komentar Langkah Lini 1 pada triwulan itu ÷ semua",
+            "value": 0,
+            "unit": "percent",
+            "status": "Di bawah target",
+            "insufficient": null,
+            "points": [
+              {
+                "label": "TW I",
+                "value": 0,
+                "numerator": 0,
+                "denominator": 4
+              },
+              {
+                "label": "TW II",
+                "value": 0,
+                "numerator": 0,
+                "denominator": 4
+              },
+              {
+                "label": "TW III",
+                "value": 0,
+                "numerator": 0,
+                "denominator": 4
+              },
+              {
+                "label": "TW IV",
+                "value": 0,
+                "numerator": 0,
+                "denominator": 4
+              }
+            ]
+          },
+          {
+            "objective": 3,
+            "title": "Penilaian Lini 1 dengan bukti",
+            "target": "≥ 90%",
+            "query": "Assessment Lini 1 final (bukan Belum relevan) tanpa penanda no_evidence ÷ semua final",
+            "value": 1,
+            "unit": "percent",
+            "status": "Memenuhi target",
+            "insufficient": null,
+            "points": [
+              {
+                "label": "TW I",
+                "value": 1,
+                "numerator": 4,
+                "denominator": 4
+              },
+              {
+                "label": "TW II",
+                "value": 1,
+                "numerator": 4,
+                "denominator": 4
+              },
+              {
+                "label": "TW III",
+                "value": 1,
+                "numerator": 4,
+                "denominator": 4
+              },
+              {
+                "label": "TW IV",
+                "value": 1,
+                "numerator": 4,
+                "denominator": 4
+              }
+            ]
+          },
+          {
+            "objective": 4,
+            "title": "Risiko Berulang terdeteksi",
+            "target": "Semua ditandai & diberitahukan",
+            "query": "RiskQuarter recurring = true (hasil terbuka) · dengan penjelasan terkirim",
+            "value": 0,
+            "unit": "count",
+            "status": "0 dari 0 menerima penjelasan",
+            "insufficient": null,
+            "points": [
+              {
+                "label": "TW I",
+                "value": 0,
+                "numerator": 0,
+                "denominator": 0
+              },
+              {
+                "label": "TW II",
+                "value": 0,
+                "numerator": 0,
+                "denominator": 0
+              },
+              {
+                "label": "TW III",
+                "value": 0,
+                "numerator": 0,
+                "denominator": 0
+              },
+              {
+                "label": "TW IV",
+                "value": 0,
+                "numerator": 0,
+                "denominator": 0
+              }
+            ]
+          },
+          {
+            "objective": 8,
+            "title": "Median waktu menuntaskan penilaian triwulan",
+            "target": "< 30 menit",
+            "query": "Median waktu-di-halaman per jabatan per triwulan hingga Tuntaskan Penilaian",
+            "value": null,
+            "unit": "minutes",
+            "status": "",
+            "insufficient": "Instrumentasi waktu-di-halaman belum tersedia di prototipe; angka tidak ditebak dari selisih waktu.",
+            "points": []
+          },
+          {
+            "objective": 9,
+            "title": "Tingkat kesesuaian Lini 1 dan Lini 3",
+            "target": "Tanpa target v1.0 — garis dasar",
+            "query": "ComparisonResult terbuka: Sesuai ÷ (Sesuai + Tidak Sesuai), per triwulan dan per direktorat",
+            "value": 0.75,
+            "unit": "percent",
+            "status": "",
+            "insufficient": null,
+            "points": [
+              {
+                "label": "TW I",
+                "value": 1,
+                "numerator": 8,
+                "denominator": 8
+              },
+              {
+                "label": "TW I · KEP",
+                "value": 1,
+                "numerator": 4,
+                "denominator": 4
+              },
+              {
+                "label": "TW I · PAI",
+                "value": 1,
+                "numerator": 4,
+                "denominator": 4
+              },
+              {
+                "label": "TW II",
+                "value": 1,
+                "numerator": 8,
+                "denominator": 8
+              },
+              {
+                "label": "TW II · KEP",
+                "value": 1,
+                "numerator": 4,
+                "denominator": 4
+              },
+              {
+                "label": "TW II · PAI",
+                "value": 1,
+                "numerator": 4,
+                "denominator": 4
+              },
+              {
+                "label": "TW III",
+                "value": 0.875,
+                "numerator": 7,
+                "denominator": 8
+              },
+              {
+                "label": "TW III · KEP",
+                "value": 0.75,
+                "numerator": 3,
+                "denominator": 4
+              },
+              {
+                "label": "TW III · PAI",
+                "value": 1,
+                "numerator": 4,
+                "denominator": 4
+              },
+              {
+                "label": "TW IV",
+                "value": 0.75,
+                "numerator": 6,
+                "denominator": 8
+              },
+              {
+                "label": "TW IV · KEP",
+                "value": 0.75,
+                "numerator": 3,
+                "denominator": 4
+              },
+              {
+                "label": "TW IV · PAI",
+                "value": 0.75,
+                "numerator": 3,
+                "denominator": 4
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
