@@ -453,6 +453,28 @@ paths:
               schema:
                 $ref: '#/components/schemas/ArchiveStatus'
           description: ''
+  /api/v1/home:
+    get:
+      operationId: home_retrieve
+      description: 'GET: the home cards for the active holding (`HomeView`, FR-BRD-001
+        … 010).'
+      parameters:
+      - in: query
+        name: position
+        schema:
+          type: string
+      tags:
+      - home
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
   /api/v1/imports:
     get:
       operationId: imports_list
@@ -649,6 +671,23 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/my-positions:
+    get:
+      operationId: my_positions_retrieve
+      description: 'GET: Lini 1 positions in the viewer''s scope (`PositionListRow[]`,
+        FR-BRD-011).'
+      tags:
+      - home
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
   /api/v1/notifications:
     get:
       operationId: notifications_list

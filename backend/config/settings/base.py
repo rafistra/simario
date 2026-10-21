@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "simario.registers",
     "simario.assessments",
     "simario.board",
+    "simario.home",
     "simario.devtools",
     "simario.audit",
     "simario.notifications",
