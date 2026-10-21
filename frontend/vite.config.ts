@@ -13,6 +13,15 @@ export default defineConfig({
   },
   server: {
     fs: { allow: ['..'] },
+    // Backend services from docker-compose.yml, served on the same origin (session cookie, CSRF).
+    proxy: {
+      '/api': 'http://localhost:8100',
+      '/oidc': 'http://localhost:8100',
+      '/storage': {
+        target: 'http://localhost:9100',
+        rewrite: (path) => path.replace(/^\/storage/, ''),
+      },
+    },
   },
   test: {
     globals: true,

@@ -116,3 +116,24 @@ SPECTACULAR_SETTINGS = {
         }
     },
 }
+
+CELERY_BROKER_URL = REDIS_URL
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "endpoint_url": S3_ENDPOINT_URL,
+            "access_key": S3_ACCESS_KEY,
+            "secret_key": S3_SECRET_KEY,
+            "bucket_name": S3_BUCKET,
+            "region_name": "us-east-1",
+            "addressing_style": "path",
+            "querystring_expire": 300,
+            "file_overwrite": False,
+        },
+    },
+    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+}
