@@ -947,6 +947,35 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/registers/{id}/{year}:
+    get:
+      operationId: registers_retrieve
+      description: 'GET: the register as the signed-in viewer may see it (`RegisterView`,
+        FR-REG-012).'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - registers
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
   /api/v1/risk-templates:
     post:
       operationId: risk_templates_create
