@@ -57,6 +57,7 @@ COLLECTIONS = [
     "threadViews",
     "notifications",
     "audit",
+    "snapshots",
 ]
 
 MODELS = {
@@ -94,6 +95,7 @@ MODELS = {
     "threadViews": "board.ThreadView",
     "notifications": "notifications.Notification",
     "audit": "audit.AuditLog",
+    "snapshots": "sheets.PrintSnapshot",
 }
 
 # Prototype field → model field, where the generic camelCase → snake_case rule is not enough.
@@ -123,6 +125,7 @@ RENAMES: dict[str, dict[str, str]] = {
     "results": {"explanation_sent_by_user_id": "explanation_sent_by_id"},
     "comments": {"author_user_id": "author_id", "withdrawn_by_user_id": "withdrawn_by_id"},
     "attachments": {"size_bytes": "size"},
+    "snapshots": {"created_by_user_id": "created_by_id"},
 }
 
 DATETIME_FIELDS = {
@@ -176,6 +179,18 @@ def to_uuids(value: Any, known: set[str]) -> Any:
     return value
 
 
+def payload_keys(value: Any, parent: str = "") -> Any:
+    """A prototype sheet payload with snake_case keys, as the backend stores it; the photo
+    section keys A/B/C stay as they are."""
+    if isinstance(value, dict):
+        return {
+            (k if parent == "photos" else snake(k)): payload_keys(v, k) for k, v in value.items()
+        }
+    if isinstance(value, list):
+        return [payload_keys(v, parent) for v in value]
+    return value
+
+
 def load_raw() -> dict[str, Any]:
     data: dict[str, Any] = json.loads(DEMO_PATH.read_text(encoding="utf-8"))
     return data
@@ -205,6 +220,9 @@ def convert_row(collection: str, row: dict[str, Any], known: set[str]) -> dict[s
         ):
             out[field] = clock.parse_local(value)
             continue
+        if collection == "snapshots" and field == "payload":
+            out[field] = to_uuids(payload_keys(value), known)
+            continue
         out[field] = to_uuids(value, known) if collection in ("notifications", "audit") else value
     return out
 
@@ -222,6 +240,7 @@ def _truncate() -> None:
         "registers",
         "assessments",
         "board",
+        "sheets",
     }
     tables = [m._meta.db_table for m in apps.get_models() if m._meta.app_label in labels]
     tables.append("django_session")
@@ -377,6 +396,7 @@ def as_of(db: dict[str, list[dict[str, Any]]], cutoff: str) -> dict[str, list[di
         "audit": [a for a in db["audit"] if not after(a["at"])],
         "threadViews": [v for v in db["threadViews"] if not after(v["lastSeenAt"])],
         "proposals": [x for x in db["proposals"] if not after(x["createdAt"])],
+        "snapshots": [x for x in db["snapshots"] if not after(x["createdAt"])],
         "fiscalYears": fiscal_years,
     }
 
