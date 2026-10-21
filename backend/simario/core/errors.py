@@ -40,6 +40,7 @@ STATUS_BY_CODE: dict[str, int] = {
     "draft_exists": 409,
     "filler": 409,
     "inv5": 409,
+    "inv13": 409,
     "nothing": 409,
     "server": 500,
 }

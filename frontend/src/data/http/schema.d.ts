@@ -86,6 +86,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/delegates/{id}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["delegates_revoke_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/dev/clock": {
         parameters: {
             query?: never;
@@ -185,6 +201,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/positions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["me_positions_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/notifications": {
         parameters: {
             query?: never;
@@ -228,6 +260,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["notifications_read_all_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/occupancies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["occupancies_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -330,6 +378,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/positions/{id}/delegates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["positions_delegates_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/positions/{id}/filler": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["positions_filler_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/positions/{id}/impact": {
         parameters: {
             query?: never;
@@ -356,6 +436,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["positions_reactivate_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/positions/{id}/replace-official": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["positions_replace_official_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -635,6 +731,34 @@ export interface components {
             message: string;
             details: unknown;
         };
+        AppointInputRequest: {
+            nip: string;
+            letterNo: string;
+            /** Format: date */
+            letterDate: string | null;
+            letterFile: string | null;
+            /** Format: date */
+            endDate?: string | null;
+        };
+        AssignInputRequest: {
+            /** Format: uuid */
+            userId: string;
+            /** Format: uuid */
+            positionId: string;
+            decreeNo: string;
+            /** Format: date */
+            decreeDate: string | null;
+            decreeFile?: string | null;
+            /** Format: date */
+            startDate: string;
+            isFiller: boolean;
+        };
+        AssignResult: {
+            /** Format: uuid */
+            occupancyId: string;
+            promoted: number;
+            fillerChanged: number;
+        };
         AuthConfig: {
             devTools: boolean;
             oidcEnabled: boolean;
@@ -705,6 +829,10 @@ export interface components {
             appointedOperators: number;
             fillerBlock: string | null;
         };
+        FillerInputRequest: {
+            /** Format: uuid */
+            toOccupancyId: string;
+        };
         Holding: {
             kind: components["schemas"]["HoldingKindEnum"];
             /** Format: uuid */
@@ -763,6 +891,10 @@ export interface components {
             /** Format: uuid */
             orgUnitId: string | null;
         };
+        MyPositions: {
+            officials: components["schemas"]["OfficialCard"][];
+            operatorOf: components["schemas"]["OperatorCard"][];
+        };
         NipRequest: {
             nip: string;
         };
@@ -780,6 +912,59 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
             eventKey: string;
+        };
+        OfficialCard: {
+            /** Format: uuid */
+            occupancyId: string;
+            /** Format: uuid */
+            positionId: string;
+            positionName: string;
+            line: number;
+            decreeNo: string;
+            /** Format: date */
+            decreeDate: string | null;
+            hasDecreeFile: boolean;
+            /** Format: date */
+            startDate: string;
+            isFiller: boolean;
+            isMulti: boolean;
+            canManage: boolean;
+            operators: components["schemas"]["OperatorRow"][];
+        };
+        OperatorCard: {
+            /** Format: uuid */
+            delegateId: string;
+            /** Format: uuid */
+            positionId: string;
+            positionName: string;
+            line: number;
+            appointedBy: string;
+            letterNo: string;
+            /** Format: date */
+            letterDate: string | null;
+            /** Format: date */
+            startDate: string;
+            /** Format: date */
+            endDate: string | null;
+        };
+        OperatorRow: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            userId: string;
+            fullName: string;
+            letterNo: string;
+            /** Format: date */
+            letterDate: string | null;
+            /** Format: date */
+            startDate: string;
+            /** Format: date */
+            endDate: string | null;
+            endReason: string | null;
+            current: boolean;
+        };
+        OperatorsEnded: {
+            operatorsEnded: number;
         };
         OptionInputRequest: {
             id: string;
@@ -891,6 +1076,22 @@ export interface components {
         };
         ReasonRequest: {
             reason: string;
+        };
+        ReplaceInputRequest: {
+            /** Format: uuid */
+            outgoingOccupancyId: string;
+            /** Format: uuid */
+            incomingUserId: string;
+            /** Format: date */
+            effectiveDate: string;
+            decreeNo: string;
+            /** Format: date */
+            decreeDate: string | null;
+            decreeFile?: string | null;
+        };
+        ReplaceResult: {
+            operatorsEnded: number;
+            promoted: number;
         };
         ResetRequest: {
             asOf?: string;
@@ -1074,6 +1275,26 @@ export interface operations {
             };
         };
     };
+    delegates_revoke_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     dev_clock_create: {
         parameters: {
             query?: never;
@@ -1211,6 +1432,25 @@ export interface operations {
             };
         };
     };
+    me_positions_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyPositions"];
+                };
+            };
+        };
+    };
     notifications_list: {
         parameters: {
             query?: {
@@ -1268,6 +1508,31 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    occupancies_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["AssignInputRequest"];
+                "multipart/form-data": components["schemas"]["AssignInputRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssignResult"];
+                };
             };
         };
     };
@@ -1428,6 +1693,60 @@ export interface operations {
             };
         };
     };
+    positions_delegates_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppointInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["AppointInputRequest"];
+                "multipart/form-data": components["schemas"]["AppointInputRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Id"];
+                };
+            };
+        };
+    };
+    positions_filler_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FillerInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["FillerInputRequest"];
+                "multipart/form-data": components["schemas"]["FillerInputRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OperatorsEnded"];
+                };
+            };
+        };
+    };
     positions_impact_retrieve: {
         parameters: {
             query?: never;
@@ -1466,6 +1785,33 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    positions_replace_official_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplaceInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ReplaceInputRequest"];
+                "multipart/form-data": components["schemas"]["ReplaceInputRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReplaceResult"];
+                };
             };
         };
     };

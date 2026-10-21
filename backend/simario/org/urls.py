@@ -17,4 +17,18 @@ urlpatterns = [
         views.PositionReactivateView.as_view(),
         name="position-reactivate",
     ),
+    path("occupancies", views.OccupancyListView.as_view(), name="occupancies"),
+    path(
+        "positions/<uuid:pk>/replace-official",
+        views.ReplaceOfficialView.as_view(),
+        name="position-replace-official",
+    ),
+    path("positions/<uuid:pk>/filler", views.FillerView.as_view(), name="position-filler"),
+    path(
+        "positions/<uuid:pk>/delegates",
+        views.DelegateListView.as_view(),
+        name="position-delegates",
+    ),
+    path("delegates/<uuid:pk>/revoke", views.DelegateRevokeView.as_view(), name="delegate-revoke"),
+    path("me/positions", views.MyPositionsView.as_view(), name="me-positions"),
 ]

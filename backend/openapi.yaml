@@ -101,6 +101,23 @@ paths:
                 type: object
                 additionalProperties: {}
           description: ''
+  /api/v1/delegates/{id}/revoke:
+    post:
+      operationId: delegates_revoke_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/dev/clock:
     post:
       operationId: dev_clock_create
@@ -233,6 +250,20 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/me/positions:
+    get:
+      operationId: me_positions_retrieve
+      tags:
+      - admin
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyPositions'
+          description: ''
   /api/v1/notifications:
     get:
       operationId: notifications_list
@@ -282,6 +313,32 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/occupancies:
+    post:
+      operationId: occupancies_create
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AssignInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AssignInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignResult'
+          description: ''
   /api/v1/position-types/{id}:
     patch:
       operationId: position_types_partial_update
@@ -460,6 +517,72 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/positions/{id}/delegates:
+    post:
+      operationId: positions_delegates_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppointInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AppointInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AppointInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Id'
+          description: ''
+  /api/v1/positions/{id}/filler:
+    post:
+      operationId: positions_filler_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FillerInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FillerInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FillerInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorsEnded'
+          description: ''
   /api/v1/positions/{id}/impact:
     get:
       operationId: positions_impact_retrieve
@@ -498,6 +621,39 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/positions/{id}/replace-official:
+    post:
+      operationId: positions_replace_official_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplaceInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReplaceInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReplaceInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReplaceResult'
+          description: ''
   /api/v1/risk-templates:
     post:
       operationId: risk_templates_create
@@ -1001,6 +1157,74 @@ components:
           type: string
         details:
           nullable: true
+    AppointInputRequest:
+      type: object
+      properties:
+        nip:
+          type: string
+        letterNo:
+          type: string
+        letterDate:
+          type: string
+          format: date
+          nullable: true
+        letterFile:
+          type: string
+          nullable: true
+        endDate:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - letterDate
+      - letterFile
+      - letterNo
+      - nip
+    AssignInputRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        positionId:
+          type: string
+          format: uuid
+        decreeNo:
+          type: string
+        decreeDate:
+          type: string
+          format: date
+          nullable: true
+        decreeFile:
+          type: string
+          nullable: true
+          minLength: 1
+        startDate:
+          type: string
+          format: date
+        isFiller:
+          type: boolean
+      required:
+      - decreeDate
+      - decreeNo
+      - isFiller
+      - positionId
+      - startDate
+      - userId
+    AssignResult:
+      type: object
+      properties:
+        occupancyId:
+          type: string
+          format: uuid
+        promoted:
+          type: integer
+        fillerChanged:
+          type: integer
+      required:
+      - fillerChanged
+      - occupancyId
+      - promoted
     AuthConfig:
       type: object
       properties:
@@ -1165,6 +1389,14 @@ components:
       - delegations
       - fillerBlock
       - occupancies
+    FillerInputRequest:
+      type: object
+      properties:
+        toOccupancyId:
+          type: string
+          format: uuid
+      required:
+      - toOccupancyId
     Holding:
       type: object
       properties:
@@ -1315,6 +1547,20 @@ components:
       - mustChangePassword
       - nip
       - orgUnitId
+    MyPositions:
+      type: object
+      properties:
+        officials:
+          type: array
+          items:
+            $ref: '#/components/schemas/OfficialCard'
+        operatorOf:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperatorCard'
+      required:
+      - officials
+      - operatorOf
     NipRequest:
       type: object
       properties:
@@ -1361,6 +1607,137 @@ components:
       - targetUrl
       - text
       - userId
+    OfficialCard:
+      type: object
+      properties:
+        occupancyId:
+          type: string
+          format: uuid
+        positionId:
+          type: string
+          format: uuid
+        positionName:
+          type: string
+        line:
+          type: integer
+        decreeNo:
+          type: string
+        decreeDate:
+          type: string
+          format: date
+          nullable: true
+        hasDecreeFile:
+          type: boolean
+        startDate:
+          type: string
+          format: date
+        isFiller:
+          type: boolean
+        isMulti:
+          type: boolean
+        canManage:
+          type: boolean
+        operators:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperatorRow'
+      required:
+      - canManage
+      - decreeDate
+      - decreeNo
+      - hasDecreeFile
+      - isFiller
+      - isMulti
+      - line
+      - occupancyId
+      - operators
+      - positionId
+      - positionName
+      - startDate
+    OperatorCard:
+      type: object
+      properties:
+        delegateId:
+          type: string
+          format: uuid
+        positionId:
+          type: string
+          format: uuid
+        positionName:
+          type: string
+        line:
+          type: integer
+        appointedBy:
+          type: string
+        letterNo:
+          type: string
+        letterDate:
+          type: string
+          format: date
+          nullable: true
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - appointedBy
+      - delegateId
+      - endDate
+      - letterDate
+      - letterNo
+      - line
+      - positionId
+      - positionName
+      - startDate
+    OperatorRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        letterNo:
+          type: string
+        letterDate:
+          type: string
+          format: date
+          nullable: true
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+          nullable: true
+        endReason:
+          type: string
+          nullable: true
+        current:
+          type: boolean
+      required:
+      - current
+      - endDate
+      - endReason
+      - fullName
+      - id
+      - letterDate
+      - letterNo
+      - startDate
+      - userId
+    OperatorsEnded:
+      type: object
+      properties:
+        operatorsEnded:
+          type: integer
+      required:
+      - operatorsEnded
     OptionInputRequest:
       type: object
       properties:
@@ -1624,6 +2001,44 @@ components:
           type: string
       required:
       - reason
+    ReplaceInputRequest:
+      type: object
+      properties:
+        outgoingOccupancyId:
+          type: string
+          format: uuid
+        incomingUserId:
+          type: string
+          format: uuid
+        effectiveDate:
+          type: string
+          format: date
+        decreeNo:
+          type: string
+        decreeDate:
+          type: string
+          format: date
+          nullable: true
+        decreeFile:
+          type: string
+          nullable: true
+          minLength: 1
+      required:
+      - decreeDate
+      - decreeNo
+      - effectiveDate
+      - incomingUserId
+      - outgoingOccupancyId
+    ReplaceResult:
+      type: object
+      properties:
+        operatorsEnded:
+          type: integer
+        promoted:
+          type: integer
+      required:
+      - operatorsEnded
+      - promoted
     ResetRequest:
       type: object
       properties:

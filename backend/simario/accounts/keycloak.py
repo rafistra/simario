@@ -81,3 +81,8 @@ def search_staff(query: str) -> list[dict[str, str]]:
     for row in rows:
         row["org_unit_id"] = str(units[row["nip"]] or "") if row["nip"] in units else ""
     return rows
+
+
+def find_staff(nip: str) -> dict[str, str] | None:
+    """The directory entry with exactly this NIP (Operator appointment, FR-ADM-010)."""
+    return next((row for row in search_staff(nip) if row["nip"] == nip), None)
