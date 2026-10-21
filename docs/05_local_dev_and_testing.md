@@ -59,14 +59,14 @@ Start pertama butuh waktu: image diunduh dan ClamAV mengunduh basis data virus (
 | Layanan | Alamat di host | Catatan |
 |---|---|---|
 | Frontend (Vite) | http://localhost:5173 | `npm run dev` di host; proxy `/api` dan `/oidc` → API, `/storage` → RustFS |
-| API (Django) | http://localhost:8100/api/v1/health/ | Port host 8100 (8000 sering terpakai); skema `/api/v1/schema/`, Swagger `/api/v1/docs/` |
+| API (Django) | http://localhost:8100/api/v1/health | Port host 8100 (8000 sering terpakai); skema `/api/v1/schema`, Swagger `/api/v1/docs` |
 | Keycloak | http://localhost:8080 | Konsol admin `admin`/`admin`; realm `otorita-ikn` diimpor dari `infra/keycloak/realm-export.json` |
 | RustFS | http://localhost:9100 (S3), http://localhost:9101 (konsol) | Port host 9100/9101 (9000/9001 sering terpakai) |
 | PostgreSQL | localhost:5432 | `simario`/`simario` |
 | Redis | localhost:6379 | — |
 | ClamAV | hanya di jaringan compose (`clamav:3310`) | — |
 
-`GET /api/v1/health/` menjawab `200 {"status":"ok"}` bila basis data, Redis, storage, dan ClamAV siap; `503 "degraded"` menyebut pemeriksaan yang gagal.
+Semua port host hanya terikat ke `127.0.0.1` (tidak terjangkau dari jaringan kantor). `GET /api/v1/health` menjawab `200 {"status":"ok"}` bila basis data, Redis, storage, dan ClamAV siap; `503 "degraded"` menyebut pemeriksaan yang gagal.
 
 Uji dan lint backend berjalan di host (`uv` memasang Python 3.12 sendiri), dari `backend/`, dengan service `db` menyala:
 
@@ -270,6 +270,6 @@ Setiap pengunjung memegang salinan data sendiri di browsernya dan dapat masuk se
 | Token CSS berubah tidak sesuai `.pen` | `tokens.css` diedit tangan | Ambil ulang `GetVariables()` → `scripts/pencil-variables.json` → `npm run tokens` |
 | Uji lambat (± 1 menit) | jsdom dibuat per berkas | Jalankan berkas tertentu saja; lihat U-15 |
 | `docker compose up` gagal "port is already allocated" | Proyek lain memakai port host yang sama | Hentikan proyek itu atau ubah pemetaan port di `docker-compose.yml` (lalu `.env` dan `vite.config.ts`) |
-| `/api/v1/health/` 503 dengan `clamav: error` | ClamAV masih mengunduh basis data virus | Tunggu `docker compose ps` menunjukkan `clamav` `healthy` |
+| `/api/v1/health` 503 dengan `clamav: error` | ClamAV masih mengunduh basis data virus | Tunggu `docker compose ps` menunjukkan `clamav` `healthy` |
 | `test_committed_schema_is_current` gagal | `openapi.yaml` basi | Jalankan `spectacular --file openapi.yaml`, lalu `npm run api:types` |
 | Halaman langsung ke `/login?alasan=sesi-berakhir` | Batas sesi tidak aktif tercapai (bawaan 60 menit, bisa dipercepat di DevPanel) | Masuk lagi; periksa setelan batas sesi di DevPanel |

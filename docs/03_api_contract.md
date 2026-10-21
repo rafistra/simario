@@ -32,7 +32,7 @@ Semua galat dilempar sebagai `ApiError(code, message, details?)`. `message` adal
 
 **Backend (diputuskan, B0):** setiap jawaban galat di bawah `/api/` berbadan `{"code", "message", "details"}` dengan status HTTP dari kolom "HTTP" di bawah (`simario/core/errors.py`: `ApiError`, `STATUS_BY_CODE`, `api_exception_handler`; `ApiErrorMiddleware` untuk path tak dikenal dan galat tak tertangani). Komponen skema OpenAPI: `ApiError`. Pesan bawaan bila service tidak memberi pesan sendiri: `unauthenticated` "Sesi Anda berakhir. Silakan masuk kembali.", `forbidden` "Anda tidak memiliki akses untuk tindakan ini." (keduanya dari prototipe), `not_found` "Data tidak ditemukan.", `validation` "Isian belum valid." (`details` = galat per isian, camelCase), `server` "Terjadi kesalahan pada server. Silakan coba lagi." (500; detail galat hanya di log).
 
-**Paginasi (diputuskan, B0):** `?page=n`; badan `{"results": [...], "page", "pageSize", "total"}`; 25 baris, komentar 50 (`simario/core/pagination.py`). Prefix `/api/v1/`, JSON camelCase dua arah.
+**Paginasi (diputuskan, B0):** `?page=n`; badan `{"results": [...], "page", "pageSize", "total"}`; 25 baris, komentar 50 (`simario/core/pagination.py`). Prefix `/api/v1/`, **tanpa garis miring di akhir** (`APPEND_SLASH = False`; varian bergaris miring dijawab 404 `not_found`), JSON camelCase dua arah.
 
 | `code` | Arti | HTTP |
 |---|---|---|

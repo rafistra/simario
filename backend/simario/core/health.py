@@ -1,4 +1,4 @@
-"""Dependency checks for GET /api/v1/health/. Each check returns False instead of raising."""
+"""Dependency checks for GET /api/v1/health. Each check returns False instead of raising."""
 
 import socket
 from collections.abc import Callable

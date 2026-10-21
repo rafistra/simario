@@ -37,6 +37,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "config.urls"
+# API paths have no trailing slash (docs/03_api_contract.md); a slashed variant is a 404.
+APPEND_SLASH = False
 WSGI_APPLICATION = "config.wsgi.application"
 
 TEMPLATES = [

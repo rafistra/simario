@@ -1,3 +1,4 @@
+from django.http import HttpRequest, HttpResponse
 from django.urls import path
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.exceptions import ValidationError
@@ -49,9 +50,17 @@ def items(request: Request) -> Response:
 
 
 urlpatterns = [
-    path("api/v1/archived/", archived),
-    path("api/v1/invalid/", invalid),
-    path("api/v1/boom/", boom),
-    path("api/v1/echo/", echo),
-    path("api/v1/items/", items),
+    path("api/v1/archived", archived),
+    path("api/v1/invalid", invalid),
+    path("api/v1/boom", boom),
+    path("api/v1/echo", echo),
+    path("api/v1/items", items),
 ]
+
+
+def plain_html_error(request: HttpRequest) -> HttpResponse:
+    """Stands in for HTML errors produced outside DRF (middleware, Django internals)."""
+    return HttpResponse("<h1>Server Error</h1>", status=500, content_type="text/html")
+
+
+urlpatterns.append(path("api/v1/plain-html-error", plain_html_error))

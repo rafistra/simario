@@ -14,9 +14,11 @@ x-backend: &backend
     REDIS_URL: redis://redis:6379/0
     S3_ENDPOINT_URL: http://storage:9000
     CLAMAV_HOST: clamav
+  # Mount source only: the image keeps its own /app/.venv, so --build picks up new dependencies.
   volumes:
-    - ./backend:/app
-    - /app/.venv
+    - ./backend/manage.py:/app/manage.py
+    - ./backend/config:/app/config
+    - ./backend/simario:/app/simario
   depends_on:
     db:
       condition: service_healthy
@@ -33,7 +35,7 @@ services:
       POSTGRES_USER: simario
       POSTGRES_PASSWORD: simario
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -45,7 +47,7 @@ services:
   redis:
     image: redis:7
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -60,8 +62,8 @@ services:
       RUSTFS_CONSOLE_ENABLE: "true"
     ports:
       # 9000/9001 on the host are often taken; containers use storage:9000.
-      - "9100:9000"
-      - "9101:9001"
+      - "127.0.0.1:9100:9000"
+      - "127.0.0.1:9101:9001"
     volumes:
       - rustfs-data:/data
     healthcheck:
@@ -89,7 +91,7 @@ services:
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
       KC_HEALTH_ENABLED: "true"
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     volumes:
       - ./infra/keycloak:/opt/keycloak/data/import:ro
     healthcheck:
@@ -116,7 +118,7 @@ services:
         condition: service_completed_successfully
     ports:
       # 8000 on the host is often taken.
-      - "8100:8000"
+      - "127.0.0.1:8100:8000"
 
   worker:
     <<: *backend

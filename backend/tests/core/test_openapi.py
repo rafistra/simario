@@ -8,13 +8,13 @@ COMMITTED = Path(__file__).resolve().parents[2] / "openapi.yaml"
 
 
 def test_schema_endpoint(client: APIClient) -> None:
-    res = client.get("/api/v1/schema/")
+    res = client.get("/api/v1/schema")
     assert res.status_code == 200
     assert "openapi: 3" in res.content.decode()
 
 
 def test_schema_has_api_error_component(client: APIClient) -> None:
-    body = client.get("/api/v1/schema/").content.decode()
+    body = client.get("/api/v1/schema").content.decode()
     assert "ApiError:" in body
 
 
