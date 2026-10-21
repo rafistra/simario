@@ -65,9 +65,15 @@ def test_monitoring_assignment_spans_quarters() -> None:
 def test_only_one_active_score_band_version() -> None:
     ScoreBandVersion.objects.create(number=1, effective_from=D(2026, 1, 1), status="active")
     ScoreBandVersion.objects.create(number=2, effective_from=D(2027, 1, 1), status="draft")
-    ScoreBandVersion.objects.create(number=3, effective_from=D(2027, 1, 1), status="draft")
+    ScoreBandVersion.objects.create(number=3, effective_from=D(2027, 1, 1), status="retired")
     with pytest.raises(IntegrityError), transaction.atomic():
         ScoreBandVersion.objects.create(number=4, effective_from=D(2027, 1, 1), status="active")
+
+
+def test_only_one_draft_score_band_version() -> None:
+    ScoreBandVersion.objects.create(number=1, effective_from=D(2027, 1, 1), status="draft")
+    with pytest.raises(IntegrityError), transaction.atomic():
+        ScoreBandVersion.objects.create(number=2, effective_from=D(2027, 1, 1), status="draft")
 
 
 def test_quarter_number_unique_per_year() -> None:

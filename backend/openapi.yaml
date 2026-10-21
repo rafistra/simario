@@ -213,6 +213,91 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResetResult'
           description: ''
+  /api/v1/fiscal-years:
+    post:
+      operationId: fiscal_years_create
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/YearRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/YearRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/YearRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/fiscal-years/{year}:
+    patch:
+      operationId: fiscal_years_partial_update
+      parameters:
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedFiscalYearPatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedFiscalYearPatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedFiscalYearPatchRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/fiscal-years/{year}/archive:
+    post:
+      operationId: fiscal_years_archive_create
+      parameters:
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - admin
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/fiscal-years/{year}/archive-status:
+    get:
+      operationId: fiscal_years_archive_status_retrieve
+      parameters:
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - admin
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArchiveStatus'
+          description: ''
   /api/v1/me:
     get:
       operationId: me_retrieve
@@ -693,6 +778,69 @@ paths:
               schema:
                 $ref: '#/components/schemas/ReplaceResult'
           description: ''
+  /api/v1/quarters/{id}:
+    patch:
+      operationId: quarters_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedQuarterPatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedQuarterPatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedQuarterPatchRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/quarters/{id}/assessors/{position_id}/exclude:
+    post:
+      operationId: quarters_assessors_exclude_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: position_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/risk-templates:
     post:
       operationId: risk_templates_create
@@ -1296,6 +1444,32 @@ components:
       - letterFile
       - letterNo
       - nip
+    ArchiveStatus:
+      type: object
+      properties:
+        year:
+          type: integer
+        status:
+          type: string
+        tw4Complete:
+          type: boolean
+        blockers:
+          type: array
+          items:
+            type: string
+        baseHardLimit:
+          type: string
+          format: date
+        projected:
+          type: string
+          format: date
+      required:
+      - baseHardLimit
+      - blockers
+      - projected
+      - status
+      - tw4Complete
+      - year
     AssignInputRequest:
       type: object
       properties:
@@ -1944,6 +2118,13 @@ components:
       properties:
         active:
           type: boolean
+    PatchedFiscalYearPatchRequest:
+      type: object
+      properties:
+        toleranceDays:
+          type: integer
+        archiveGraceDays:
+          type: integer
     PatchedGuidanceRequest:
       type: object
       properties:
@@ -1954,6 +2135,32 @@ components:
       properties:
         label:
           type: string
+    PatchedQuarterPatchRequest:
+      type: object
+      properties:
+        startsOn:
+          type: string
+          format: date
+        endsOn:
+          type: string
+          format: date
+        lini1OpensOn:
+          type: string
+          format: date
+        lini1Deadline:
+          type: string
+          format: date
+        lini3OpensOn:
+          type: string
+          format: date
+        lini3Deadline:
+          type: string
+          format: date
+        explanationWorkdays:
+          type: integer
+        confirmPastDeadline:
+          type: boolean
+          default: false
     PatchedStagePatchRequest:
       type: object
       properties:
@@ -2386,6 +2593,15 @@ components:
           type: integer
       required:
       - version
+    YearRequest:
+      type: object
+      properties:
+        year:
+          type: integer
+          maximum: 2100
+          minimum: 2000
+      required:
+      - year
   securitySchemes:
     cookieAuth:
       type: apiKey

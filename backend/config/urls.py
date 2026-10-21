@@ -11,6 +11,7 @@ urlpatterns = [
     path("api/v1/", include("simario.devtools.urls")),
     path("api/v1/", include("simario.org.urls")),
     path("api/v1/", include("simario.reference.urls")),
+    path("api/v1/", include("simario.calendar.urls")),
 ]
 
 if settings.DEBUG:

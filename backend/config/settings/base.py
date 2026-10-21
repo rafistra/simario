@@ -107,7 +107,7 @@ REST_FRAMEWORK = {
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
     # Keys inside these values are data (identity fields, audit snapshots), not field names.
     "JSON_UNDERSCOREIZE": {
-        "no_underscore_before_number": False,
+        "no_underscore_before_number": True,  # lini1OpensOn -> lini1_opens_on
         "ignore_fields": ("identity", "identity_schema", "before", "after", "extra"),
         "ignore_keys": None,
     },

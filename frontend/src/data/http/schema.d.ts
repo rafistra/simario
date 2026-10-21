@@ -168,6 +168,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/fiscal-years": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["fiscal_years_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/fiscal-years/{year}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["fiscal_years_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/fiscal-years/{year}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["fiscal_years_archive_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/fiscal-years/{year}/archive-status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["fiscal_years_archive_status_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me": {
         parameters: {
             query?: never;
@@ -484,6 +548,38 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["positions_replace_official_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/quarters/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["quarters_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/quarters/{id}/assessors/{position_id}/exclude": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["quarters_assessors_exclude_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -820,6 +916,16 @@ export interface components {
             /** Format: date */
             endDate?: string | null;
         };
+        ArchiveStatus: {
+            year: number;
+            status: string;
+            tw4Complete: boolean;
+            blockers: string[];
+            /** Format: date */
+            baseHardLimit: string;
+            /** Format: date */
+            projected: string;
+        };
         AssignInputRequest: {
             /** Format: uuid */
             userId: string;
@@ -1082,11 +1188,32 @@ export interface components {
         PatchedActiveRequest: {
             active?: boolean;
         };
+        PatchedFiscalYearPatchRequest: {
+            toleranceDays?: number;
+            archiveGraceDays?: number;
+        };
         PatchedGuidanceRequest: {
             guidance?: string;
         };
         PatchedLabelRequest: {
             label?: string;
+        };
+        PatchedQuarterPatchRequest: {
+            /** Format: date */
+            startsOn?: string;
+            /** Format: date */
+            endsOn?: string;
+            /** Format: date */
+            lini1OpensOn?: string;
+            /** Format: date */
+            lini1Deadline?: string;
+            /** Format: date */
+            lini3OpensOn?: string;
+            /** Format: date */
+            lini3Deadline?: string;
+            explanationWorkdays?: number;
+            /** @default false */
+            confirmPastDeadline: boolean;
         };
         PatchedStagePatchRequest: {
             name?: string;
@@ -1272,6 +1399,9 @@ export interface components {
         };
         Version: {
             version: number;
+        };
+        YearRequest: {
+            year: number;
         };
     };
     responses: never;
@@ -1501,6 +1631,97 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ResetResult"];
+                };
+            };
+        };
+    };
+    fiscal_years_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["YearRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["YearRequest"];
+                "multipart/form-data": components["schemas"]["YearRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    fiscal_years_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedFiscalYearPatchRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedFiscalYearPatchRequest"];
+                "multipart/form-data": components["schemas"]["PatchedFiscalYearPatchRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    fiscal_years_archive_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    fiscal_years_archive_status_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                year: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArchiveStatus"];
                 };
             };
         };
@@ -1972,6 +2193,59 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ReplaceResult"];
                 };
+            };
+        };
+    };
+    quarters_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedQuarterPatchRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedQuarterPatchRequest"];
+                "multipart/form-data": components["schemas"]["PatchedQuarterPatchRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    quarters_assessors_exclude_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                position_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReasonRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ReasonRequest"];
+                "multipart/form-data": components["schemas"]["ReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

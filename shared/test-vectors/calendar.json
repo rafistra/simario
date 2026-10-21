@@ -1,6 +1,6 @@
 {
   "source": "frontend/src/domain/calendar.ts",
-  "notes": "\"$quarters\" = the prototype seed quarters; quarterContaining compares the quarter id.",
+  "notes": "\"$quarters\" = the prototype seed quarters; quarterContaining compares the quarter id. defaultQuarters omits id, fiscalYear and scoreBandVersionId; quarterProblems inputs carry ids q1..q4.",
   "rules": {
     "quarterContaining": [
       {
@@ -50,6 +50,288 @@
           "day": "2025-06-01"
         },
         "expected": null
+      }
+    ],
+    "defaultQuarters": [
+      {
+        "name": "TA 2027 matches the DesignBrief timeline",
+        "input": {
+          "year": 2027
+        },
+        "expected": [
+          {
+            "number": 1,
+            "startsOn": "2027-01-01",
+            "endsOn": "2027-03-31",
+            "lini1OpensOn": "2027-03-01",
+            "lini1Deadline": "2027-03-26",
+            "lini3OpensOn": "2027-01-01",
+            "lini3Deadline": "2027-04-02",
+            "explanationWorkdays": 5
+          },
+          {
+            "number": 2,
+            "startsOn": "2027-04-01",
+            "endsOn": "2027-06-30",
+            "lini1OpensOn": "2027-06-01",
+            "lini1Deadline": "2027-06-25",
+            "lini3OpensOn": "2027-04-01",
+            "lini3Deadline": "2027-07-02",
+            "explanationWorkdays": 5
+          },
+          {
+            "number": 3,
+            "startsOn": "2027-07-01",
+            "endsOn": "2027-09-30",
+            "lini1OpensOn": "2027-09-01",
+            "lini1Deadline": "2027-09-24",
+            "lini3OpensOn": "2027-07-01",
+            "lini3Deadline": "2027-10-01",
+            "explanationWorkdays": 5
+          },
+          {
+            "number": 4,
+            "startsOn": "2027-10-01",
+            "endsOn": "2027-12-31",
+            "lini1OpensOn": "2027-12-01",
+            "lini1Deadline": "2027-12-31",
+            "lini3OpensOn": "2027-10-01",
+            "lini3Deadline": "2028-01-07",
+            "explanationWorkdays": 5
+          }
+        ]
+      }
+    ],
+    "addWorkdays": [
+      {
+        "name": "Friday plus one is Monday",
+        "input": {
+          "iso": "2027-04-02",
+          "workdays": 1
+        },
+        "expected": "2027-04-05"
+      },
+      {
+        "name": "Friday plus five",
+        "input": {
+          "iso": "2027-04-02",
+          "workdays": 5
+        },
+        "expected": "2027-04-09"
+      },
+      {
+        "name": "Saturday plus one is Monday",
+        "input": {
+          "iso": "2027-04-03",
+          "workdays": 1
+        },
+        "expected": "2027-04-05"
+      },
+      {
+        "name": "zero stays",
+        "input": {
+          "iso": "2027-04-03",
+          "workdays": 0
+        },
+        "expected": "2027-04-03"
+      },
+      {
+        "name": "across the year end",
+        "input": {
+          "iso": "2027-12-31",
+          "workdays": 1
+        },
+        "expected": "2028-01-03"
+      }
+    ],
+    "latenessAt": [
+      {
+        "name": "on the deadline day",
+        "input": {
+          "at": "2027-03-26T23:00:00+08:00",
+          "deadline": "2027-03-26",
+          "toleranceDays": 7
+        },
+        "expected": null
+      },
+      {
+        "name": "within tolerance",
+        "input": {
+          "at": "2027-04-02T09:00:00+08:00",
+          "deadline": "2027-03-26",
+          "toleranceDays": 7
+        },
+        "expected": "terlambat"
+      },
+      {
+        "name": "past tolerance",
+        "input": {
+          "at": "2027-04-03T00:00:00+08:00",
+          "deadline": "2027-03-26",
+          "toleranceDays": 7
+        },
+        "expected": "sangat_terlambat"
+      }
+    ],
+    "quarterProblems": [
+      {
+        "name": "defaults are valid",
+        "input": {
+          "year": 2027,
+          "quarters": "year2027"
+        },
+        "expected": []
+      },
+      {
+        "name": "Lini 3 deadline before Lini 1 and a gap",
+        "input": {
+          "year": 2027,
+          "quarters": [
+            {
+              "id": "q1",
+              "number": 1,
+              "startsOn": "2027-01-01",
+              "endsOn": "2027-03-31",
+              "lini1OpensOn": "2027-03-01",
+              "lini1Deadline": "2027-03-26",
+              "lini3OpensOn": "2027-01-01",
+              "lini3Deadline": "2027-04-02",
+              "explanationWorkdays": 5
+            },
+            {
+              "id": "q2",
+              "number": 2,
+              "startsOn": "2027-04-01",
+              "endsOn": "2027-06-30",
+              "lini1OpensOn": "2027-06-01",
+              "lini1Deadline": "2027-06-25",
+              "lini3OpensOn": "2027-04-01",
+              "lini3Deadline": "2027-06-20",
+              "explanationWorkdays": 5
+            },
+            {
+              "id": "q3",
+              "number": 3,
+              "startsOn": "2027-07-02",
+              "endsOn": "2027-09-30",
+              "lini1OpensOn": "2027-09-01",
+              "lini1Deadline": "2027-09-24",
+              "lini3OpensOn": "2027-07-01",
+              "lini3Deadline": "2027-10-01",
+              "explanationWorkdays": 5
+            },
+            {
+              "id": "q4",
+              "number": 4,
+              "startsOn": "2027-10-01",
+              "endsOn": "2027-12-31",
+              "lini1OpensOn": "2027-12-01",
+              "lini1Deadline": "2027-12-31",
+              "lini3OpensOn": "2027-10-01",
+              "lini3Deadline": "2028-01-07",
+              "explanationWorkdays": 5
+            }
+          ]
+        },
+        "expected": [
+          {
+            "quarterId": "q2",
+            "field": "lini3Deadline",
+            "message": "TW II: tenggat Lini 3 harus sesudah tenggat Lini 1."
+          },
+          {
+            "quarterId": "q3",
+            "field": "startsOn",
+            "message": "TW III: triwulan harus bersambung dengan triwulan sebelumnya."
+          }
+        ]
+      },
+      {
+        "name": "wrong year",
+        "input": {
+          "year": 2028,
+          "quarters": "year2027"
+        },
+        "expected": [
+          {
+            "quarterId": "q1",
+            "field": "startsOn",
+            "message": "TW I: triwulan harus berada di tahun 2028."
+          },
+          {
+            "quarterId": "q2",
+            "field": "startsOn",
+            "message": "TW II: triwulan harus berada di tahun 2028."
+          },
+          {
+            "quarterId": "q3",
+            "field": "startsOn",
+            "message": "TW III: triwulan harus berada di tahun 2028."
+          },
+          {
+            "quarterId": "q4",
+            "field": "startsOn",
+            "message": "TW IV: triwulan harus berada di tahun 2028."
+          },
+          {
+            "quarterId": "q1",
+            "field": "startsOn",
+            "message": "TW I dimulai 1 Januari."
+          },
+          {
+            "quarterId": "q4",
+            "field": "endsOn",
+            "message": "TW IV berakhir 31 Desember."
+          }
+        ]
+      }
+    ]
+  },
+  "fixtures": {
+    "year2027": [
+      {
+        "id": "q1",
+        "number": 1,
+        "startsOn": "2027-01-01",
+        "endsOn": "2027-03-31",
+        "lini1OpensOn": "2027-03-01",
+        "lini1Deadline": "2027-03-26",
+        "lini3OpensOn": "2027-01-01",
+        "lini3Deadline": "2027-04-02",
+        "explanationWorkdays": 5
+      },
+      {
+        "id": "q2",
+        "number": 2,
+        "startsOn": "2027-04-01",
+        "endsOn": "2027-06-30",
+        "lini1OpensOn": "2027-06-01",
+        "lini1Deadline": "2027-06-25",
+        "lini3OpensOn": "2027-04-01",
+        "lini3Deadline": "2027-07-02",
+        "explanationWorkdays": 5
+      },
+      {
+        "id": "q3",
+        "number": 3,
+        "startsOn": "2027-07-01",
+        "endsOn": "2027-09-30",
+        "lini1OpensOn": "2027-09-01",
+        "lini1Deadline": "2027-09-24",
+        "lini3OpensOn": "2027-07-01",
+        "lini3Deadline": "2027-10-01",
+        "explanationWorkdays": 5
+      },
+      {
+        "id": "q4",
+        "number": 4,
+        "startsOn": "2027-10-01",
+        "endsOn": "2027-12-31",
+        "lini1OpensOn": "2027-12-01",
+        "lini1Deadline": "2027-12-31",
+        "lini3OpensOn": "2027-10-01",
+        "lini3Deadline": "2028-01-07",
+        "explanationWorkdays": 5
       }
     ]
   }
