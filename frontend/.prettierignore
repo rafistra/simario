@@ -4,3 +4,4 @@ node_modules
 package-lock.json
 src/styles/tokens.css
 scripts/pencil-variables.json
+src/data/http/schema.d.ts

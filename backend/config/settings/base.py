@@ -91,3 +91,28 @@ REST_FRAMEWORK = {
     "EXCEPTION_HANDLER": "simario.core.errors.api_exception_handler",
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
 }
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "SIMARIO API",
+    "VERSION": "1",
+    "SCHEMA_PATH_PREFIX": "/api/v1",
+    "COMPONENT_SPLIT_REQUEST": True,
+    "SERVE_INCLUDE_SCHEMA": False,
+    "POSTPROCESSING_HOOKS": [
+        "drf_spectacular.hooks.postprocess_schema_enums",
+        "drf_spectacular.contrib.djangorestframework_camel_case.camelize_serializer_fields",
+    ],
+    "APPEND_COMPONENTS": {
+        "schemas": {
+            "ApiError": {
+                "type": "object",
+                "required": ["code", "message", "details"],
+                "properties": {
+                    "code": {"type": "string"},
+                    "message": {"type": "string"},
+                    "details": {"nullable": True},
+                },
+            }
+        }
+    },
+}
