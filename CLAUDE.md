@@ -422,10 +422,12 @@ Hasil:
 
 Catatan Tahap B6: Lembar Mutu pindah ke `simario/domain/sheets.py` (vektor `sheets.json`, dipakai lagi di B7). `GET /positions/{pos}/history/{ta}`, `GET /home`, `GET /my-positions` mem-port `history.ts`/`home.ts` dengan VIS-9 di selector; hasil di riwayat memakai penyamaran draf penjelasan yang sama dengan halaman penilaian. Tugas `reminders` (FR-NTF-005/006/009 H-1/012) ada di `assessments/reminders.py`, idempoten per kunci dan tidak memunculkan peristiwa > 3 hari. Beranda sementara (`TrialHome`) dihapus; build uji coba kini menampilkan Beranda penuh, Riwayat, `/jabatan`, dan `/pantauan` (tautan Lembar di kartu Lini 1 masih 404 sampai B7). Semua event NTF lain sudah berjalan di backend sejak B3–B5.
 
-### Tahap B7 — Lembar & Cetak ⬜
+### Tahap B7 — Lembar & Cetak ✅
 
 Hasil:
-- [ ] LBR, snapshot, nomor, `sheet_freeze`, foto asli
+- [x] LBR, snapshot, nomor, `sheet_freeze`, foto asli
+
+Catatan Tahap B7: payload lembar pindah ke `simario/domain/sheet_payload.py` (vektor `sheet-payload.json`); blok tanda tangan Lini 3 kini diturunkan dari jabatan Lini 3 aktif (prototipe menulis id langsung). App `simario.sheets` menyimpan `PrintSnapshot` (payload snake_case, tidak pernah diubah selain `superseded_by`) dan `SheetPhotoSelection`. Penyamaran VIS-9 diterapkan di server, juga pada salinan beku dan salinan yang baru dicetak. Nomor cetak dikunci per jabatan + unik. `sheet_freeze` berjalan terjadwal dan langsung setelah Kirim Penjelasan serta pembukaan hasil (U-07 selesai); arsip TA membuat versi `archive` bila isi berubah. Pilihan foto hanya menerima gambar bersih non-konfidensial dari utas lini itu; foto ditampilkan dari berkas asli lewat unduhan pre-signed. Modul `lembar` masuk gerbang build uji coba.
 
 ### Tahap B8 — Metrik & Jejak Audit ⬜
 

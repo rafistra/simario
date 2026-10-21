@@ -55,7 +55,6 @@ Sebagian besar bersumber dari PRD (§1.2, §1.3, §1.11, Lampiran E).
 | U-24 | **Reset data dev tidak mengosongkan bucket** (B4): baris lampiran hilang, objek di RustFS tetap ada | `simario/devtools/seed.py` | Rendah | Hapus prefix `attachments/` dan `quarantine/` saat `POST /api/v1/dev/reset` |
 | U-05 | FR-MST-008 "Tambah Jenis" (membuat jenis jabatan baru) **belum ada**; hanya aktif/nonaktif jenis bawaan | `pages/master/PositionsPage.tsx`, `masterApi` | Sedang | Tambah formulir jenis (nama, lini, peran bawaan, multi-Pejabat, isian identitas) |
 | U-06 | FR-AUT-006: menu "Sunting" pengguna hanya mengubah peran manual; ubah NIP/nama/email oleh Superadmin belum ada | `pages/admin/UsersPage.tsx` | Sedang | Tambah dialog sunting identitas + audit |
-| U-07 | Versi lembar otomatis (`runSheetFreeze`) hanya dievaluasi saat aplikasi dimulai atau jam simulasi digeser, tidak langsung setelah "Kirim Penjelasan" atau hasil Lini 3 terlambat terbuka | `data/local/scheduler.ts`, `data/api/assessment.ts` | Sedang | Panggil setelah event terkait (seperti `runComparisons`) |
 | U-08 | Isi lampiran tidak disimpan (field `blobKey`/IndexedDB disiapkan tetapi tidak dipakai); gambar = placeholder; alur karantina pemindaian gagal tidak pernah terjadi | `domain/types.ts` (`Attachment`), `data/api/thread.ts` | Sedang | Backend RustFS + ClamAV; di prototipe opsional simpan gambar ≤ 500 KB di IndexedDB (CLAUDE.md §4) |
 | U-09 | Bentuk data prototipe menyimpang dari PRD §2.8.1 di beberapa entitas (`mentionUserIds`, `supports[]` tertanam, `PrintPhotoSelection` di preferensi `userId='*'`, tanpa `ImportJob`, tanpa `no_step_flag`, dll.) | `domain/types.ts` | Sedang | Ikuti tabel [01_backend.md §4.2](01_backend.md#42-perbedaan-bentuk-yang-harus-diputuskan-saat-membangun-backend) |
 | U-10 | Bundel JavaScript tunggal **812 kB** (gzip 228 kB) — Vite memperingatkan > 500 kB; hanya galeri komponen yang dimuat malas; template seed 120 kB ikut dibundel | `src/App.tsx`, `vite.config.ts` | Rendah | `lazy()` per modul halaman; di produksi seed tidak dibundel |
@@ -71,6 +70,7 @@ Sebagian besar bersumber dari PRD (§1.2, §1.3, §1.11, Lampiran E).
 
 | Tanggal | Butir | Catatan |
 |---|---|---|
+| 22 Okt 2026 | **U-07** — versi lembar otomatis tidak langsung setelah event | B7: backend menjalankan `sheet_freeze` untuk jabatan terkait setelah Kirim Penjelasan dan setiap pembukaan hasil (termasuk hasil Lini 3 terlambat), selain tugas terjadwal |
 | 22 Okt 2026 | **U-21** — stub pemakaian penilaian | B5: `simario/assessments/usage.py` membaca penilaian sungguhan; arsip TA menutup penilaian dan penjelasan lewat `assessments/archive.py` (`on_archive`) |
 | 22 Okt 2026 | **R-10** — "Keluar" tidak mengakhiri sesi Keycloak | B4s: `POST /api/v1/auth/logout` mengembalikan URL end-session Keycloak (`id_token_hint`, `post_logout_redirect_uri=/login`) setelah masuk lewat SSO; klien mengikutinya. Uji `test_sso_sign_out_ends_the_keycloak_session` |
 | 22 Okt 2026 | Penerima sinyal `user_logged_in` (B1) dipegang lemah dan hilang di gunicorn, sehingga setiap sesi langsung berakhir | B4s: `weak=False`; ditemukan saat uji asap stack produksi. Uji `test_epoch_receiver_is_held_strongly` |
