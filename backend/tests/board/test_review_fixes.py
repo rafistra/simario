@@ -100,7 +100,9 @@ def test_mitigation_must_belong_to_the_risk(demo: None, storage: dict[str, bytes
 
 
 def test_poll_returns_ids_and_rejects_bad_since(demo: None) -> None:
-    comment = Comment.objects.filter(register_risk__id=RISK).exclude(author=user("usr-andi")).first()
+    comment = (
+        Comment.objects.filter(register_risk__id=RISK).exclude(author=user("usr-andi")).first()
+    )
     assert comment is not None
     since = comment.created_at.astimezone(clock.WITA).strftime("%Y-%m-%dT%H:%M")
     res = client_for("usr-andi").get(f"/api/v1/register-risks/{RISK}/thread", {"since": since})
