@@ -20,7 +20,7 @@ beforeEach(() => {
     useClock.getState().setNow('2027-04-06T09:00');
     useDb.getState().reset();
     useCollectionCache.setState({ data: {}, errors: {} });
-    useRegisterViews.setState({ views: {}, errors: {} });
+    useRegisterViews.setState({ views: {}, errors: {}, generation: 0 });
   });
 });
 

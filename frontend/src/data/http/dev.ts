@@ -2,6 +2,7 @@
 
 import { authApi } from './auth';
 import { apiFetch } from './client';
+import { useRegisterViews } from './register';
 
 export interface Persona {
   userId: string;
@@ -19,15 +20,21 @@ export const devApi = {
     ),
   impersonate: (nip: string) => authApi.signInSso(nip),
   /** `at` = 'YYYY-MM-DDTHH:mm' (WITA); also runs the scheduled tasks. */
-  setClock: (at: string) =>
-    apiFetch<{ serverNow: string; ran: string[] }>('/dev/clock', {
+  setClock: async (at: string) => {
+    const res = await apiFetch<{ serverNow: string; ran: string[] }>('/dev/clock', {
       method: 'POST',
       body: { at },
-    }),
+    });
+    useRegisterViews.getState().clear();
+    return res;
+  },
   /** Reloads the demo seed (optionally as of a moment) and signs everyone out. */
-  reset: (asOf?: string) =>
-    apiFetch<{ counts: Record<string, number> }>('/dev/reset', {
+  reset: async (asOf?: string) => {
+    const res = await apiFetch<{ counts: Record<string, number> }>('/dev/reset', {
       method: 'POST',
       body: asOf ? { asOf } : {},
-    }),
+    });
+    useRegisterViews.getState().clear();
+    return res;
+  },
 };

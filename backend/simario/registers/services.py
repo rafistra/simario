@@ -104,6 +104,8 @@ def _register_of(position: Position, fiscal_year: int, lock: bool = True) -> Reg
 
 def ensure_register(a: ContentActor, fiscal_year: int) -> Register:
     """Creates the register on first edit (INV-1: one per position per fiscal year)."""
+    # No register row to lock yet: the position row serialises two first edits.
+    Position.objects.select_for_update().get(pk=a.position.pk)
     existing = _register_of(a.position, fiscal_year)
     if existing:
         return existing
@@ -185,8 +187,10 @@ def _is_published(m: RegisterMitigation) -> bool:
 def _risk_context(
     user: User, risk_id: Any, code: int
 ) -> tuple[RegisterRisk, Register, ContentActor]:
-    risk = RegisterRisk.objects.select_related("register__position").get(pk=risk_id)
-    reg = risk.register
+    register_id = RegisterRisk.objects.values_list("register_id", flat=True).get(pk=risk_id)
+    # Lock the register first so edits wait for a publish in progress (INV-7), then re-read.
+    reg = Register.objects.select_for_update().select_related("position").get(pk=register_id)
+    risk = RegisterRisk.objects.select_for_update().get(pk=risk_id)
     a = require_content(user, code, reg.position)
     _assert_writable(reg.fiscal_year_id)
     return risk, reg, a
@@ -705,12 +709,12 @@ def copy_from_previous(user: User, position_id: Any, fiscal_year: int) -> dict[s
     reg.copied_from = prev
     for decl in prev.declarations.all():
         if stages[decl.stage_id].active:
-            RegisterStageDeclaration.objects.create(
+            # A declaration the empty register already has stays as it is.
+            RegisterStageDeclaration.objects.get_or_create(
                 register=reg,
                 stage_id=decl.stage_id,
                 risk_type=decl.risk_type,
-                kind=decl.kind,
-                reason=decl.reason,
+                defaults={"kind": decl.kind, "reason": decl.reason},
             )
     for r in source:
         if not stages[r.stage_id].active:

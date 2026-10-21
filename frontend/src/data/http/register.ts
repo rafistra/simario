@@ -4,23 +4,33 @@
 
 import { create } from 'zustand';
 import type { DataUmumValues, RiskType } from '@/domain/types';
+import { useSession } from '@/state/session';
 import type { CopySummary, PublishSummary, RegisterKey } from '../api/register';
 import type { RegisterView } from '../api/registerView';
 import { apiFetch, type FetchInit } from './client';
 
-const keyOf = (key: RegisterKey) => `${key.positionId}:${key.fiscalYear}`;
+/** Views are per viewer (FR-REG-012): the cache key carries the signed-in user. */
+export const registerViewKey = (key: RegisterKey) =>
+  `${useSession.getState().userId ?? ''}|${key.positionId}:${key.fiscalYear}`;
+const keyOf = registerViewKey;
 const base = (key: RegisterKey) => `/registers/${key.positionId}/${key.fiscalYear}`;
 
 interface ViewCache {
   views: Record<string, RegisterView | undefined>;
   errors: Record<string, string | undefined>;
+  /** Bumped by clear(); the page reloads when it changes. */
+  generation: number;
   load: (key: RegisterKey) => Promise<void>;
   reloadAll: () => Promise<void>;
+  /** After the clock or the data change (DevPanel), every cached view is stale. */
+  clear: () => void;
 }
 
 export const useRegisterViews = create<ViewCache>((set, get) => ({
   views: {},
   errors: {},
+  generation: 0,
+  clear: () => set((s) => ({ views: {}, errors: {}, generation: s.generation + 1 })),
   load: async (key) => {
     const k = keyOf(key);
     try {
@@ -32,10 +42,12 @@ export const useRegisterViews = create<ViewCache>((set, get) => ({
   },
   reloadAll: async () => {
     await Promise.all(
-      Object.keys(get().views).map((k) => {
-        const [positionId, year] = k.split(':');
-        return get().load({ positionId: positionId!, fiscalYear: Number(year) });
-      }),
+      Object.keys(get().views)
+        .filter((k) => k.startsWith(`${useSession.getState().userId ?? ''}|`))
+        .map((k) => {
+          const [positionId, year] = k.split('|')[1]!.split(':');
+          return get().load({ positionId: positionId!, fiscalYear: Number(year) });
+        }),
     );
   },
 }));

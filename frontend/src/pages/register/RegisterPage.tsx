@@ -15,7 +15,8 @@ import {
   type StatusKind,
 } from '@/components';
 import { useGateDb } from '@/components/DataGate/gateDb';
-import { ApiError, registerApi, useRegisterViews } from '@/data/repository';
+import { ApiError, registerApi, registerViewKey, useRegisterViews } from '@/data/repository';
+import { useSession } from '@/state/session';
 import type { CopySummary, RegisterKey } from '@/data/api/register';
 import type { RegisterView } from '@/data/api/registerView';
 import { QUARTER_ROMAN } from '@/domain/calendar';
@@ -47,12 +48,14 @@ export default function RegisterPage() {
     () => ({ positionId: position.id, fiscalYear }),
     [position.id, fiscalYear],
   );
-  const k = `${key.positionId}:${key.fiscalYear}`;
+  const userId = useSession((s) => s.userId);
+  const k = useMemo(() => registerViewKey(key), [key, userId]); // eslint-disable-line react-hooks/exhaustive-deps
   const view = useRegisterViews((s) => s.views[k]);
   const error = useRegisterViews((s) => s.errors[k]);
+  const generation = useRegisterViews((s) => s.generation);
   const load = () => void useRegisterViews.getState().load(key);
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- reload when the register changes
-  useEffect(load, [k]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- reload per viewer, register and clear()
+  useEffect(load, [k, generation]);
   if (error && !view)
     return (
       <InlineAlert variant="error" title="Register gagal dimuat" onRetry={load}>
@@ -68,7 +71,16 @@ export default function RegisterPage() {
         </div>
       </LoadingRegion>
     );
-  return <RegisterContent registerKey={key} view={view} />;
+  return (
+    <>
+      {error && (
+        <InlineAlert variant="error" title="Data terbaru gagal dimuat" onRetry={load}>
+          {error}
+        </InlineAlert>
+      )}
+      <RegisterContent registerKey={key} view={view} />
+    </>
+  );
 }
 
 function RegisterContent({
