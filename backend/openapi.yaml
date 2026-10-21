@@ -1135,6 +1135,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/OperatorsEnded'
           description: ''
+  /api/v1/positions/{id}/history/{year}:
+    get:
+      operationId: positions_history_retrieve
+      description: 'GET: the risk history of a position and fiscal year (`HistoryView`,
+        FR-RWY-001).'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: year
+        schema:
+          type: integer
+        required: true
+      tags:
+      - assessments
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
   /api/v1/positions/{id}/impact:
     get:
       operationId: positions_impact_retrieve
