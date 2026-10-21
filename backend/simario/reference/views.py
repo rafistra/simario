@@ -8,10 +8,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from simario.accounts.models import User
-from simario.core.api import ActiveSerializer, IdSerializer, body
+from simario.core.api import ActiveSerializer, IdSerializer, ReasonSerializer, body
 from simario.core.permissions import require_permission
 
-from . import services
+from . import proposals, services
 
 RISK_TYPES = ["kinerja_anggaran", "ketidakpatuhan", "kecurangan"]
 
@@ -263,3 +263,52 @@ class OptionLabelView(APIView):
         actor = _actor(request, 14)
         services.update_option_label(actor, pk, body(LabelSerializer, request)["label"])
         return Response(status=204)
+
+
+class ProposalRowSerializer(serializers.Serializer[Any]):
+    id = serializers.UUIDField()
+    source_register_risk_id = serializers.UUIDField()
+    description = serializers.CharField()
+    proposer_user_id = serializers.UUIDField()
+    proposer_name = serializers.CharField()
+    status = serializers.CharField()
+    rejection_reason = serializers.CharField(allow_null=True)
+    created_at = serializers.DateTimeField()
+    position_id = serializers.UUIDField()
+    position_name = serializers.CharField()
+    position_type_id = serializers.UUIDField()
+    position_type_name = serializers.CharField()
+    stage_id = serializers.UUIDField()
+    stage_name = serializers.CharField()
+    risk_type = serializers.CharField()
+    mitigations = serializers.ListField(child=serializers.CharField())
+
+
+class ProposalListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(responses=ProposalRowSerializer(many=True), tags=["master"])
+    def get(self, request: Request) -> Response:
+        _actor(request, 13)
+        rows = proposals.list_proposals(request.query_params.get("status"))
+        return Response(ProposalRowSerializer(rows, many=True).data)
+
+
+class ProposalRejectView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(request=ReasonSerializer, responses={204: None}, tags=["master"])
+    def post(self, request: Request, pk: Any) -> Response:
+        actor = _actor(request, 13)
+        proposals.reject_proposal(actor, pk, body(ReasonSerializer, request)["reason"])
+        return Response(status=204)
+
+
+class ProposalAcceptView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(request=TemplateSerializer, responses=IdSerializer, tags=["master"])
+    def post(self, request: Request, pk: Any) -> Response:
+        actor = _actor(request, 12, 13)
+        tid = proposals.accept_proposal(actor, pk, body(TemplateSerializer, request))
+        return Response({"id": tid})

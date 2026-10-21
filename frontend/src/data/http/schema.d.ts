@@ -618,6 +618,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/proposals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["proposals_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/proposals/{id}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["proposals_accept_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/proposals/{id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["proposals_reject_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/quarters/{id}": {
         parameters: {
             query?: never;
@@ -1637,6 +1685,31 @@ export interface components {
          * @enum {string}
          */
         PredicateEnum: "kurang" | "cukup" | "terkendali";
+        ProposalRow: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            sourceRegisterRiskId: string;
+            description: string;
+            /** Format: uuid */
+            proposerUserId: string;
+            proposerName: string;
+            status: string;
+            rejectionReason: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: uuid */
+            positionId: string;
+            positionName: string;
+            /** Format: uuid */
+            positionTypeId: string;
+            positionTypeName: string;
+            /** Format: uuid */
+            stageId: string;
+            stageName: string;
+            riskType: string;
+            mitigations: string[];
+        };
         PublishSummary: {
             risks: number;
             mitigations: number;
@@ -2675,6 +2748,78 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ReplaceResult"];
                 };
+            };
+        };
+    };
+    proposals_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalRow"][];
+                };
+            };
+        };
+    };
+    proposals_accept_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TemplateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["TemplateRequest"];
+                "multipart/form-data": components["schemas"]["TemplateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Id"];
+                };
+            };
+        };
+    };
+    proposals_reject_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReasonRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ReasonRequest"];
+                "multipart/form-data": components["schemas"]["ReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

@@ -27,4 +27,7 @@ urlpatterns = [
     ),
     path("score-bands/<str:predicate>", views.ActiveGuidanceView.as_view(), name="band-guidance"),
     path("score-options/<uuid:pk>", views.OptionLabelView.as_view(), name="score-option"),
+    path("proposals", views.ProposalListView.as_view(), name="proposals"),
+    path("proposals/<uuid:pk>/reject", views.ProposalRejectView.as_view(), name="proposal-reject"),
+    path("proposals/<uuid:pk>/accept", views.ProposalAcceptView.as_view(), name="proposal-accept"),
 ]

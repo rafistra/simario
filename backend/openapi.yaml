@@ -884,6 +884,84 @@ paths:
               schema:
                 $ref: '#/components/schemas/ReplaceResult'
           description: ''
+  /api/v1/proposals:
+    get:
+      operationId: proposals_list
+      tags:
+      - master
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProposalRow'
+          description: ''
+  /api/v1/proposals/{id}/accept:
+    post:
+      operationId: proposals_accept_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - master
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TemplateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TemplateRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Id'
+          description: ''
+  /api/v1/proposals/{id}/reject:
+    post:
+      operationId: proposals_reject_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - master
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/quarters/{id}:
     patch:
       operationId: quarters_partial_update
@@ -3039,6 +3117,68 @@ components:
         * `kurang` - kurang
         * `cukup` - cukup
         * `terkendali` - terkendali
+    ProposalRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        sourceRegisterRiskId:
+          type: string
+          format: uuid
+        description:
+          type: string
+        proposerUserId:
+          type: string
+          format: uuid
+        proposerName:
+          type: string
+        status:
+          type: string
+        rejectionReason:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        positionId:
+          type: string
+          format: uuid
+        positionName:
+          type: string
+        positionTypeId:
+          type: string
+          format: uuid
+        positionTypeName:
+          type: string
+        stageId:
+          type: string
+          format: uuid
+        stageName:
+          type: string
+        riskType:
+          type: string
+        mitigations:
+          type: array
+          items:
+            type: string
+      required:
+      - createdAt
+      - description
+      - id
+      - mitigations
+      - positionId
+      - positionName
+      - positionTypeId
+      - positionTypeName
+      - proposerName
+      - proposerUserId
+      - rejectionReason
+      - riskType
+      - sourceRegisterRiskId
+      - stageId
+      - stageName
+      - status
     PublishSummary:
       type: object
       properties:
