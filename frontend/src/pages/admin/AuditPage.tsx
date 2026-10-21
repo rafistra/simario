@@ -14,8 +14,7 @@ import {
 } from '@/components';
 import type { AuditFilter, AuditRow } from '@/data/api/insights';
 import { insightsApi } from '@/data/repository';
-import { useDb } from '@/data/local/store';
-import { hasPermission } from '@/domain/rules/access';
+import { useGateDb } from '@/components/DataGate/gateDb';
 import { usePageMeta } from '@/layout/pageMeta';
 import { formatDateTime } from '@/lib/format';
 import { useQuery } from '@/lib/useQuery';
@@ -36,16 +35,17 @@ const label = (action: string) => action.replace(/_/g, ' ');
 export default function AuditPage() {
   usePageMeta(['Jejak Audit']);
   const auth = useAuth();
-  const db = useDb((s) => s.db);
+  const db = useGateDb();
   const [filter, setFilter] = useState<AuditFilter>({});
   const [original, setOriginal] = useState(false);
   const [ask, setAsk] = useState(false);
   const [open, setOpen] = useState<Set<string>>(new Set());
   const [page, setPage] = useState(1);
   const q = useQuery(() => insightsApi.audit(filter, original), [filter, original]);
-  const canOriginal = hasPermission(db, auth.user.id, 24, auth.today);
-  const actions = [...new Set(db.audit.map((a) => a.action))].sort();
-  const types = [...new Set(db.audit.map((a) => a.entityType))].sort();
+  const canOriginal = auth.can(24);
+  const facets = useQuery(() => insightsApi.auditFacets(), []);
+  const actions = facets.data?.actions ?? [];
+  const types = facets.data?.entityTypes ?? [];
   const set = (patch: AuditFilter) => {
     setFilter({ ...filter, ...patch });
     setPage(1);

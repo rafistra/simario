@@ -19,7 +19,7 @@ describe('module gate', () => {
     expect(pathVisible('/pantauan', true)).toBe(true);
     expect(pathVisible('/penilaian', true)).toBe(true);
     expect(pathVisible('/jabatan/x/penilaian/2027/1', true)).toBe(true);
-    expect(pathVisible('/metrik', true)).toBe(false);
+    expect(pathVisible('/metrik', true)).toBe(true);
     expect(pathVisible('/jabatan/x/register/2027', true)).toBe(true);
     expect(pathVisible('/master/template', true)).toBe(true);
     expect(pathVisible('/', true)).toBe(true);

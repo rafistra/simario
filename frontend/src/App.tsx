@@ -294,7 +294,9 @@ export default function App() {
               path="metrik"
               element={
                 <RequirePermission anyOf={[22]}>
-                  <MetricsPage />
+                  <CollectionGate names={['fiscalYears']}>
+                    <MetricsPage />
+                  </CollectionGate>
                 </RequirePermission>
               }
             />
@@ -302,7 +304,9 @@ export default function App() {
               path="jejak-audit"
               element={
                 <RequirePermission anyOf={[23]}>
-                  <AuditPage />
+                  <CollectionGate names={['users', 'positions']}>
+                    <AuditPage />
+                  </CollectionGate>
                 </RequirePermission>
               }
             />

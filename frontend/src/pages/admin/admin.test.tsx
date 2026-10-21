@@ -81,7 +81,7 @@ describe('Administrasi', () => {
 
   it('logs "Tampilkan nilai asli" in the audit trail', async () => {
     signIn('usr-admin');
-    wrap(<AuditPage />);
+    gated(['users', 'positions'], <AuditPage />);
     fireEvent.click(await screen.findByRole('button', { name: 'Tampilkan nilai asli' }));
     fireEvent.click(
       within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Tampilkan dan Catat' }),

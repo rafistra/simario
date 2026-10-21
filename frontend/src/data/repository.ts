@@ -32,4 +32,4 @@ export { sheetApi, useSheetRevision } from './http/sheets';
 export { adminApi } from './http/admin';
 export { calendarApi } from './http/calendar';
 export { importApi } from './http/importer';
-export { insightsApi } from './api/insights';
+export { insightsApi } from './http/insights';

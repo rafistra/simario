@@ -11,7 +11,7 @@ import {
 } from '@/components';
 import { metricsCsv, type MetricCard } from '@/data/api/insights';
 import { insightsApi } from '@/data/repository';
-import { useDb } from '@/data/local/store';
+import { useGateDb } from '@/components/DataGate/gateDb';
 import { usePageMeta } from '@/layout/pageMeta';
 import { useQuery } from '@/lib/useQuery';
 import { useAuth } from '@/state/useAuth';
@@ -33,8 +33,8 @@ const BOM = String.fromCharCode(0xfeff);
 export default function MetricsPage() {
   usePageMeta(['Metrik']);
   const auth = useAuth();
-  const years = useDb((s) => s.db.fiscalYears)
-    .map((f) => f.year)
+  const years = useGateDb()
+    .fiscalYears.map((f) => f.year)
     .sort((a, b) => b - a);
   const [year, setYear] = useState(Number(auth.today.slice(0, 4)));
   const q = useQuery(() => insightsApi.metrics(year), [year]);
