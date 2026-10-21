@@ -19,6 +19,7 @@ import type {
   ScoreOptionItem,
 } from '@/data/api/assessment';
 import type { NewFile } from '@/data/api/thread';
+import { attachmentUrl } from '@/data/repository';
 import { RISK_TYPE_LABEL } from '@/domain/types';
 import { formatDate, formatDateTime, formatFileSize } from '@/lib/format';
 
@@ -135,6 +136,7 @@ function AssessorCell({
       size: f.size,
       mime: f.type || 'application/octet-stream',
       confidential: c.line === 3,
+      file: f,
     }));
     e.target.value = '';
     if (files.length) actions.addFiles(rqId, c.positionId, files);
@@ -175,7 +177,7 @@ function AssessorCell({
                 meta={`${f.filename.split('.').pop()?.toUpperCase()} · ${formatFileSize(f.sizeBytes)}`}
                 scanning={scanning}
                 confidential={f.isConfidential}
-                href={`data:${f.mimeType};charset=utf-8,${encodeURIComponent(`Berkas contoh SIMARIO: ${f.filename}`)}`}
+                href={scanning ? undefined : attachmentUrl(f.id)}
               />
               {c.editable && (
                 <button

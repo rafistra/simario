@@ -17,13 +17,14 @@ export type ModuleKey =
   | 'metrik'
   | 'audit';
 
-/** Updated as each stage moves a module (B2 master/admin, B3 register, B4 papan). */
+/** Updated as each stage moves a module (B2 master/admin, B3 register, B4 papan, B5 penilaian). */
 export const MIGRATED: ReadonlySet<ModuleKey> = new Set<ModuleKey>([
   'notifikasi',
   'master',
   'admin',
   'register',
   'papan',
+  'penilaian',
 ]);
 
 export const hideUnmigrated = (): boolean => import.meta.env.VITE_HIDE_UNMIGRATED === 'true';

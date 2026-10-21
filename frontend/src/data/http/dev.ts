@@ -2,6 +2,7 @@
 
 import { authApi } from './auth';
 import { apiFetch } from './client';
+import { useAssessmentRevision } from './assessment';
 import { useBoardRevision } from './board';
 import { useRegisterViews } from './register';
 
@@ -28,6 +29,7 @@ export const devApi = {
     });
     useRegisterViews.getState().clear();
     useBoardRevision.getState().bump();
+    useAssessmentRevision.getState().bump();
     return res;
   },
   /** Reloads the demo seed (optionally as of a moment) and signs everyone out. */
@@ -38,6 +40,7 @@ export const devApi = {
     });
     useRegisterViews.getState().clear();
     useBoardRevision.getState().bump();
+    useAssessmentRevision.getState().bump();
     return res;
   },
 };

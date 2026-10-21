@@ -16,9 +16,8 @@ import {
   Toggle,
   toast,
 } from '@/components';
-import { finalisePreview, type AssessmentView, type FinalisePreview } from '@/data/api/assessment';
-import { assessmentApi } from '@/data/repository';
-import { getDb } from '@/data/local/store';
+import type { AssessmentView, FinalisePreview } from '@/data/api/assessment';
+import { assessmentApi, useAssessmentRevision } from '@/data/repository';
 import { QUARTER_ROMAN } from '@/domain/calendar';
 import type { WorkspaceOutletContext } from '@/layout/Workspace';
 import { usePageMeta } from '@/layout/pageMeta';
@@ -37,9 +36,10 @@ export default function AssessmentPage() {
   const { position, unitCode, fiscalYear, quarter } = useOutletContext<WorkspaceOutletContext>();
   usePageMeta(['Penilaian Triwulan', `${position.name} · ${unitCode}`]);
   const [blind, setBlind] = useState(false);
+  const revision = useAssessmentRevision((s) => s.revision);
   const q = useQuery(
     () => assessmentApi.page(position.id, fiscalYear, quarter, blind),
-    [position.id, fiscalYear, quarter, blind],
+    [position.id, fiscalYear, quarter, blind, revision],
   );
 
   if (q.loading && !q.data) return <AssessmentSkeleton />;
@@ -123,9 +123,13 @@ function Assessment({
   const ownOverdue =
     view.mode === 'lini3' && view.rows.some((r) => r.cells.find((c) => c.own)?.overdue);
 
-  const openFinalise = () => {
+  const openFinalise = async () => {
     if (!own) return;
-    const p = finalisePreview(getDb(), view.positionId, qv, own, now());
+    const p = await run(
+      assessmentApi.finalisePreview(view.positionId, qv.fiscalYear, qv.number, own),
+      'Ringkasan penuntasan gagal dimuat',
+    );
+    if (!p) return;
     if (p.missingReason.length) {
       setGaps(p.missingReason);
       return;

@@ -25,7 +25,7 @@ export { masterApi, proposalApi, type ProposalRow } from './http/master';
 export { registerApi, registerViewKey, useRegisterViews } from './http/register';
 export { threadApi, attachmentUrl, useBoardRevision } from './http/board';
 export { boardApi } from './http/board';
-export { assessmentApi } from './api/assessment';
+export { assessmentApi, useAssessmentRevision } from './http/assessment';
 export { historyApi } from './api/history';
 export { homeApi } from './api/home';
 export { sheetApi } from './api/sheets';

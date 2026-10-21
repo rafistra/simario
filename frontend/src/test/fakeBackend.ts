@@ -9,6 +9,7 @@ import { calendarApi as localCalendarApi } from '@/data/api/calendar';
 import { importApi as localImportApi, type ImportKind } from '@/data/api/importer';
 import { masterApi as localMasterApi, type PositionInput } from '@/data/api/master';
 import { localAuthApi, localNotificationApi } from '@/data/local/authApi';
+import { ASSESSMENT_ROUTES } from './fakeAssessmentRoutes';
 import { BOARD_ROUTES } from './fakeBoardRoutes';
 import { REGISTER_ROUTES } from './fakeRegisterRoutes';
 import { getDb, useDb } from '@/data/local/store';
@@ -464,6 +465,7 @@ export function installFakeBackend() {
       ...ADMIN_ROUTES,
       ...REGISTER_ROUTES,
       ...BOARD_ROUTES,
+      ...ASSESSMENT_ROUTES,
     ]) {
       const match = method === m ? path.match(re) : null;
       if (!match) continue;

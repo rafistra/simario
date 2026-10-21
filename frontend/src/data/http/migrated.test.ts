@@ -16,7 +16,8 @@ describe('module gate', () => {
     expect(pathVisible('/jabatan/x/lembar/2027/1', false)).toBe(true);
     expect(pathVisible('/jabatan/x/lembar/2027/1', true)).toBe(false);
     expect(pathVisible('/jabatan/x/riwayat', true)).toBe(false);
-    expect(pathVisible('/penilaian', true)).toBe(false);
+    expect(pathVisible('/penilaian', true)).toBe(true);
+    expect(pathVisible('/jabatan/x/penilaian/2027/1', true)).toBe(true);
     expect(pathVisible('/metrik', true)).toBe(false);
     expect(pathVisible('/jabatan/x/register/2027', true)).toBe(true);
     expect(pathVisible('/master/template', true)).toBe(true);
