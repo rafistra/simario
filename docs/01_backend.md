@@ -4,7 +4,7 @@
 
 ## 1. Status: backend belum ada
 
-**Belum ada kode backend di repositori ini.** Tidak ada folder `backend/`, tidak ada proyek Django, migrasi, Celery, atau konfigurasi Docker. Semua yang biasanya dikerjakan server saat ini disimulasikan di browser oleh lapisan data frontend:
+**Kerangka backend sedang dibangun (tahap B0); belum ada model domain.** Rencana dan keputusan yang dikunci: [spec integrasi backend](superpowers/specs/2026-10-21-backend-integration-design.md). Sampai modulnya dipindah, semua yang biasanya dikerjakan server saat ini disimulasikan di browser oleh lapisan data frontend:
 
 | Tanggung jawab server | Di mana sekarang (prototipe) |
 |---|---|
@@ -65,7 +65,7 @@ Pola integrasi:
 1. **Sesi cookie di server (BFF).** Django menjalankan alur OIDC dan memberi cookie sesi `httpOnly`; token tidak pernah disimpan di browser. Memenuhi CSRF, sesi 60 menit, dan pembatalan sesi saat peran berubah (NFR-008, U-04).
 2. **Ganti implementasi, bukan antarmuka.** `data/http/` memenuhi antarmuka `repository.ts` yang sama; `VITE_DATA_SOURCE=local|http` memilih implementasi, sehingga prototipe tetap bisa didemokan dan modul dipindah satu per satu.
 3. **Backend satu-satunya sumber kebenaran aturan.** Aturan `domain/rules/*` ditulis ulang di Python; kasus uji `*.test.ts` diekspor sebagai vektor uji JSON yang dijalankan Vitest dan pytest selama masa pemindahan.
-4. **Jam simulasi di backend.** Layanan `clock` yang dapat di-override per sesi hanya di staging (untuk demo dan UAT seperti DevPanel); mati di produksi.
+4. **Jam simulasi di backend.** Satu jam global (`DevClock`), aktif hanya bila `SIMARIO_DEV_TOOLS` menyala. Di staging jam ini mati saat uji coba PPK dan boleh dinyalakan untuk UAT; di produksi selalu mati (spec §4.5).
 5. **Hanya API S3 standar.** Tidak memakai fitur khas RustFS, agar penggantinya (SeaweedFS, Garage, Ceph RGW, atau S3 internal OIKN) cukup lewat konfigurasi. Kuota 1 GB per jabatan (NFR-012) dihitung dari tabel `Attachment`, bukan dari storage.
 
 ## 3. Struktur aplikasi Django (usulan)

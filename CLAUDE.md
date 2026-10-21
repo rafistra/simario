@@ -7,12 +7,13 @@ Panduan kerja untuk Claude di repositori ini. Baca seluruhnya sebelum menulis ko
 **SIMARIO** (Sistem Informasi Mitigasi Risiko Otorita IKN) — **prototipe frontend** yang terasa seperti aplikasi asli, untuk demo dan uji pengguna.
 
 - Semua modul PRD masuk cakupan (AUT, BRD, REG, PPN, NIL, RWY, LBR, MST, NTF, ADM), dikerjakan bertahap dengan checkpoint (§9).
-- **Tanpa backend.** Data disimpan di `localStorage` (berkas besar opsional di IndexedDB).
-- Bukan kode produksi, tetapi strukturnya harus mudah dipindah ke Django REST nanti: semua akses data lewat satu lapisan repository.
+- Prototipe frontend selesai (Tahap 0–10): data disimpan di `localStorage` lewat satu lapisan repository.
+- **Integrasi backend sedang berjalan** di branch `feat/backend-integration`, menurut spec `docs/superpowers/specs/2026-10-21-backend-integration-design.md` (Django + DRF, PostgreSQL, Celery, RustFS, Keycloak, ClamAV; tahap B0–B9, §9b). Mode `localStorage` tetap jalan selama transisi dan dihapus di B9.
 
 ## 2. Sumber kebenaran (urutan prioritas)
 
 1. `docs/PRD_SIMARIO_v2.9.md` — perilaku, aturan, salinan teks (copy), FR/VIS/INV. **PRD menang** bila ada perbedaan.
+1a. `docs/superpowers/specs/2026-10-21-backend-integration-design.md` — keputusan integrasi backend yang dikunci (§4 spec). Menyimpang darinya hanya setelah bertanya ke pengguna.
 2. `docs/DesignSystem_SIMARIO.md` — warna, tipografi, radius, bayangan, komponen (berbasis Aksara).
 3. `Simario.pen` (Pencil) — mockup 99 frame. Bacanya **hanya lewat MCP Pencil** (`mcp__pencil__execute` dengan `Get`/`Print`/`TakeScreenshot`), jangan dengan Read/Grep. Catatan penting di dalamnya:
    - `DesignBrief` (THmWq): keputusan desain, persona, linimasa data contoh.
@@ -31,7 +32,7 @@ Ringkasan keadaan kode dan rancangan, diturunkan dari PRD dan kode. Baca dokumen
 | Berkas | Isi | Perbarui bila |
 |---|---|---|
 | [`docs/00_arsitektur.md`](docs/00_arsitektur.md) | Arsitektur prototipe vs target, lapisan, modul, prinsip, keputusan arsitektur | Lapisan, alur data, atau keputusan arsitektur berubah |
-| [`docs/01_backend.md`](docs/01_backend.md) | Status backend (**belum ada**), keputusan stack (Django/Celery/RustFS/Keycloak), model data PRD vs prototipe, tugas terjadwal | Entitas, tugas terjadwal, atau rencana backend berubah |
+| [`docs/01_backend.md`](docs/01_backend.md) | Status backend (B0 berjalan), keputusan stack (Django/Celery/RustFS/Keycloak), model data PRD vs prototipe, tugas terjadwal | Entitas, tugas terjadwal, atau rencana backend berubah |
 | [`docs/02_frontend.md`](docs/02_frontend.md) | Stack, struktur folder, rute, pola halaman, komponen, gaya, aksesibilitas | Rute, komponen, atau pola halaman baru |
 | [`docs/03_api_contract.md`](docs/03_api_contract.md) | Kontrak `data/repository.ts` per namespace, galat, usulan endpoint REST, data yang masih dibaca langsung dari store | Metode repository ditambah atau diubah |
 | [`docs/04_risk_and_debt.md`](docs/04_risk_and_debt.md) | Risiko produk/teknis dan utang teknis (R-P, R, U) | Menemukan atau menyelesaikan risiko/utang |
@@ -58,6 +59,23 @@ frontend/src/
   dev/           DevPanel (ganti persona, geser tanggal, reset data)
 ```
 
+Backend (spec §4.1):
+
+```
+backend/
+  pyproject.toml, uv.lock, manage.py, openapi.yaml (dihasilkan, dikomit)
+  config/        settings/{base,local,test,staging,production}.py, urls.py, celery.py
+  simario/
+    core/        clock, errors (ApiError), pagination, health, storage
+    domain/      aturan murni Python (tanpa ORM), padanan frontend/src/domain/rules/*
+    accounts/ org/ calendar/ reference/ registers/ board/ assessments/
+    sheets/ notifications/ audit/ insights/ imports/ home/ devtools/
+  tests/         pytest (PostgreSQL sungguhan)
+shared/test-vectors/   vektor uji JSON yang dijalankan Vitest dan pytest
+infra/                 keycloak/ (realm lokal), nginx/ (produksi)
+docker-compose.yml     layanan lokal
+```
+
 ## 4. Lapisan data
 
 - `data/repository.ts` mendefinisikan antarmuka per agregat (`registers`, `comments`, `assessments`, …). Halaman **tidak pernah** menyentuh `localStorage` langsung.
@@ -66,6 +84,7 @@ frontend/src/
 - Setiap mutasi menulis `AuditLog` (append-only; tidak ada fungsi update/delete untuk audit) dan, bila relevan, `Notification` sesuai FR-NTF.
 - Lampiran: simpan metadata (nama, ukuran, MIME, `scan_status`). Isi berkas gambar kecil (≤500 KB) boleh di IndexedDB; selebihnya placeholder. Status "Memindai…" disimulasikan ±2 detik lalu `clean`.
 - Simulasi asinkron ringan (latensi 150–400 ms) agar skeleton dan "Menyimpan…" terlihat; bisa dimatikan di DevPanel.
+- **Transisi ke backend:** namespace dipindah dari implementasi lokal ke `data/http/` per tahap B (tanda tangan metode sama); `repository.ts` mengganti impornya. Tidak ada flag sumber data.
 
 ## 5. Waktu, sesi, persona
 
@@ -143,8 +162,8 @@ Pekerjaan dibagi menjadi 10 tahap mengikuti PRD Lampiran E. **Setiap tahap diakh
 Sebuah tahap boleh dilaporkan selesai hanya bila:
 
 1. Semua butir "Hasil" tahap itu tercentang di berkas ini (`- [x]`). Perbarui centang di CLAUDE.md sebagai bagian dari komit tahap.
-2. `npm run build`, `npm run test`, dan `npm run lint` lulus.
-3. Setiap halaman di tahap itu sudah dibandingkan dengan frame `.pen`-nya (screenshot frame lewat MCP Pencil vs. tampilan di browser) pada 1440 px dan 390 px.
+2. `npm run build`, `npm run test`, dan `npm run lint` lulus. Untuk tahap backend (§9b) juga `uv run pytest`, `uv run ruff check .`, `uv run ruff format --check .`, dan `uv run mypy .` dari `backend/`.
+3. (Bila tahap mengubah halaman.) Setiap halaman di tahap itu sudah dibandingkan dengan frame `.pen`-nya (screenshot frame lewat MCP Pencil vs. tampilan di browser) pada 1440 px dan 390 px.
 4. Semua keadaan di note frame tersedia: kosong, memuat (skeleton), galat (+ "Coba Lagi"), Operator, read-only/arsip — sesuai yang berlaku.
 5. Sudah dicoba manual dengan persona yang relevan (lihat "Skenario uji" tiap tahap).
 6. Ada komit git dengan pesan `feat: <ringkasan> (checkpoint N)`.
@@ -334,6 +353,79 @@ Catatan pascatahap (unit kerja): seed memakai nama unit kerja resmi Otorita IKN 
 
 Skenario uji: alur penuh TW I dari pengisian sampai cetak Lembar dengan mengganti persona dan tanggal, tanpa galat konsol.
 
+## 9b. Tahapan Backend
+
+Spec: `docs/superpowers/specs/2026-10-21-backend-integration-design.md` (§6). Aturan checkpoint §9 berlaku; pesan komit checkpoint `feat: <ringkasan> (checkpoint Bn)`. Rencana kerja per tahap di `docs/superpowers/plans/`.
+
+### Tahap B0 — Kerangka 🟨
+
+Hasil:
+- [ ] Aturan kerja backend di CLAUDE.md dan dokumen
+- [ ] Proyek Django, settings, health check, gerbang kualitas
+- [ ] Konvensi API — amplop galat, camelCase, paginasi
+- [ ] Pipeline OpenAPI → tipe TypeScript
+- [ ] Semua layanan di Docker Compose, Celery, bucket, proxy Vite
+- [ ] Realm Keycloak lokal
+- [ ] Vektor uji bersama — pita skor sebagai contoh pertama
+
+### Tahap B1 — Fondasi ⬜
+
+Hasil:
+- [ ] Model `accounts`, `org`, `calendar`, `reference`, `audit` (+ trigger), `notifications`; izin 1–26; `domain/access.py` + vektor
+- [ ] Sesi, OIDC Keycloak lokal (persona di realm), akun lokal, lockout, `auth_epoch`; `GET /me`; endpoint baca notifikasi
+- [ ] Jam simulasi (`DevClock`) + `devtools`; `seed_reference`, `seed_demo`
+- [ ] Frontend: `data/http/client.ts`, `authApi`, `useAuth` → `/me`, Sidebar/Topbar/Workspace, lonceng, DevPanel
+
+### Tahap B2 — Master & Administrasi ⬜
+
+Hasil:
+- [ ] MST: jabatan, tahap, template, usulan, Data Umum, skala + pilihan
+- [ ] ADM: pengguna, peran, penugasan, TA/kuartal/arsip, jabatan saya, impor CSV + `ImportJob`
+
+### Tahap B3 — Register ⬜
+
+Hasil:
+- [ ] REG penuh (`registerApi.view` sebagai read model tunggal, terbit, salin, tambahan, nonaktif), `RiskProposal`, `risk_quarters`
+
+### Tahap B4 — Papan, Utas, Lampiran ⬜
+
+Hasil:
+- [ ] PPN penuh, polling 30 detik
+- [ ] RustFS + ClamAV + karantina + URL pre-signed lewat `/storage`, kuota; Beranda sementara
+
+### Tahap B4s — Staging ⬜
+
+Hasil:
+- [ ] `config/settings/staging.py`, `docker-compose.prod.yml` + nginx + HTTPS diuji di lokal
+- [ ] Panduan penyebaran staging, build uji coba dengan gerbang modul, daftar kebutuhan server staging
+
+### Tahap B5 — Penilaian ⬜
+
+Hasil:
+- [ ] NIL penuh, `comparisons`, Berulang, penjelasan, tampilan buta, antrean; uji INV-16/17
+
+### Tahap B6 — Riwayat, Notifikasi, Beranda ⬜
+
+Hasil:
+- [ ] RWY, NTF (semua event + `reminders`), BRD, `/jabatan`, `/pantauan`
+
+### Tahap B7 — Lembar & Cetak ⬜
+
+Hasil:
+- [ ] LBR, snapshot, nomor, `sheet_freeze`, foto asli
+
+### Tahap B8 — Metrik & Jejak Audit ⬜
+
+Hasil:
+- [ ] `insights` (metrik + CSV), audit dengan redaksi VIS-8 dan nilai asli (izin 24)
+
+### Tahap B9 — Pemutusan mode lokal & kesiapan ⬜
+
+Hasil:
+- [ ] Hapus mode lokal dan gerbang modul; migrasi digabung lalu dibekukan
+- [ ] Cadangan & pemulihan diuji; daftar kebutuhan ke tim infrastruktur OIKN
+- [ ] `docs/00–06`, PRD §2.1 (RustFS, bila disetujui), `frontend/README.md` diperbarui
+
 ## 10. Perintah
 
 Jalankan dari `frontend/`:
@@ -356,6 +448,30 @@ npm run lint
 
 `npm run build` (termasuk `tsc --noEmit`) dan `npm run test` harus lulus sebelum melaporkan sebuah tahap selesai.
 
+Backend — layanan dari root repositori, sisanya dari `backend/`:
+
+```bash
+docker compose up -d
+```
+
+```bash
+uv run pytest
+```
+
+```bash
+uv run ruff check .
+```
+
+```bash
+uv run mypy .
+```
+
+```bash
+uv run python manage.py spectacular --file openapi.yaml --validate
+```
+
+Setelah skema berubah, jalankan `npm run api:types` dari `frontend/`.
+
 ## 11. Git
 
 - Repositori di root `simario2/`; `.gitignore` mencakup `node_modules`, `dist`, `.env*`.
@@ -365,7 +481,8 @@ npm run lint
 
 ## 12. Jangan
 
-- Jangan memanggil API eksternal atau menambah backend.
+- Jangan memanggil layanan eksternal selain yang ada di `docker-compose.yml`. Jangan menyimpang dari keputusan §4 spec integrasi backend tanpa bertanya ke pengguna.
+- Di backend, aturan bisnis memakai `simario.core.clock.now()`, tidak pernah `timezone.now()`/`datetime.now()` langsung.
 - Jangan membaca/mengubah `Simario.pen` selain lewat MCP Pencil; jangan mengubah mockup kecuali diminta.
 - Jangan memakai nama peran di logika, hex mentah di komponen, atau `new Date()` di aturan bisnis.
 - Jangan menyembunyikan data buta/konfidensial hanya di tampilan — filter di selector.
