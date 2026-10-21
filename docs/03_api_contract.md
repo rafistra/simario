@@ -96,34 +96,34 @@ Kolom **Izin**: kode FR-ADM-002. "Konten(n)" = `checkAction(n)`: izin + holding 
 | `deactivatePosition` / `reactivatePosition` | `positionId[, reason]` | 18 | FR-MST-009 | `POST /positions/{id}/deactivate` · `/reactivate` |
 | `addStage`, `renameStage`, `setStageActive`, `deleteStage` | per tahap | 15 | FR-MST-001 | `POST/PATCH/DELETE /stages[/{id}]` |
 | `reorderStages` | `positionTypeId, orderedIds[]` | 15 | FR-MST-001 | `PUT /position-types/{id}/stage-order` |
-| `saveTemplate` | `{positionTypeId, stageId, riskType, description, mitigations[]}`, `id?`, `fromProposalId?` | 12 (+13 bila dari usulan) | FR-MST-003, 005 | `POST /risk-templates`, `PUT /risk-templates/{id}`; dari usulan: lokal sampai B3 |
+| `saveTemplate` | `{positionTypeId, stageId, riskType, description, mitigations[]}`, `id?`, `fromProposalId?` | 12 (+13 bila dari usulan) | FR-MST-003, 005 | `POST /risk-templates`, `PUT /risk-templates/{id}`; dari usulan: `POST /proposals/{id}/accept` (B3) |
 | `setTemplateActive`, `deleteTemplate` | `templateId` | 12 | FR-MST-004 | `PATCH/DELETE /risk-templates/{id}` |
-| `rejectProposal` | `proposalId, reason` | 13 | FR-MST-005 | lokal sampai B3 (`RiskProposal`) |
+| `rejectProposal` | `proposalId, reason` | 13 | FR-MST-005 | `POST /proposals/{id}/reject` (B3); daftar: `GET /proposals` (baris + konteks risiko sumber) |
 | `saveDataUmumForm` | `positionTypeId, defaultObjective, fields[], objectiveEnabled` | 16 | FR-MST-006 (versi baru) | `POST /position-types/{id}/data-umum-forms` |
 | `createBandDraft`, `updateBandDraft`, `saveBandVersion`, `discardBandDraft` | versi, pita, pilihan, tanggal berlaku | 14 | FR-MST-007, INV-3, INV-26 | `POST/PUT/DELETE /score-band-versions[/{id}]`, `POST …/{id}/schedule` |
 | `updateActiveGuidance`, `updateOptionLabel` | teks panduan / kalimat versi aktif | 14 | FR-MST-007 | `PATCH /score-bands/{predicate}`, `PATCH /score-options/{id}` |
 
 Baca: `GET /collections/<nama>` (baris berbentuk tipe `domain/types.ts`, untuk pengguna yang masuk; `core/collections.py`), `GET /risk-templates/usage?fiscalYear=` (`{templateId: jumlah}`), `GET /positions/{id}/impact`. Pemakaian oleh register dijawab stub nol sampai B3 (U-21). Semua mutasi master menulis audit dengan aksi yang sama seperti prototipe. Belum ada metode **tambah/ubah jenis jabatan** ("Tambah Jenis", FR-MST-008) — lihat [04_risk_and_debt.md](04_risk_and_debt.md).
 
-### 4.4 `registerApi` — Register (REG)
+### 4.4 `registerApi` — Register (REG) — diputuskan, B3
 
 `RegisterKey = {positionId, fiscalYear}`; register dibuat otomatis saat penulisan pertama (audit `buat_register`).
 
-| Metode | Masukan | Izin | Efek samping | PRD | Usulan REST |
+| Metode | Masukan | Izin | Efek samping | PRD | REST (`/api/v1`) |
 |---|---|---|---|---|---|
-| `view` | `key` | Cakupan baca (§5) | Baca saja. `RegisterView`: `register` (null bila belum ada, atau bagi pembaca bila belum pernah terbit), `unpublishedForReader`, `access`, `stages` (risiko + mitigasi per sub-bagian, terfilter per pembaca), `risks`, `pending` (hanya pemegang jabatan), `gaps` (hanya yang boleh menyusun) | FR-REG-001, 002, 012 | `GET /api/registers/{pos}/{ta}` |
-| `toggleTemplateRisk` | `key, templateId, selected` | Konten(2) | Status kembali `draft` bila `ready` | FR-REG-003 | `POST/DELETE /api/registers/{pos}/{ta}/risks` |
-| `addCustomRisk` | `key, stageId, riskType, description` | Konten(2) | `isCustom = true` | FR-REG-004 | `POST …/risks` |
-| `deleteRisk` | `riskId` | Konten(2) | Hanya draf | FR-REG-011 | `DELETE /api/register-risks/{id}` |
-| `toggleTemplateMitigation`, `addCustomMitigation`, `deleteMitigation` | risiko/mitigasi | Konten(2) | | FR-REG-003, 011 | `…/register-risks/{id}/mitigations` |
-| `setDeclaration`, `setDeclarationReason` | `key, stageId, riskType (null = seluruh tahap), on/reason, force?` | Konten(2) | `force` menghapus pilihan yang bertentangan setelah konfirmasi | FR-REG-002, 005, 008 | `PUT /api/registers/{pos}/{ta}/declarations` |
-| `updateDataUmum` | `key, Partial<DataUmumValues>` | Konten(2) | Diaudit, juga setelah terbit | FR-REG-001 | `PATCH /api/registers/{pos}/{ta}` |
+| `view` | `key` | Cakupan baca (§5) | Baca saja. `RegisterView`: `register` (null bila belum ada, atau bagi pembaca bila belum pernah terbit), `unpublishedForReader`, `access`, `stages` (risiko + mitigasi per sub-bagian, terfilter per pembaca), `risks`, `pending` (hanya pemegang jabatan), `gaps` (hanya yang boleh menyusun) | FR-REG-001, 002, 012 | `GET /registers/{pos}/{ta}` (+ `previousRegister`, `stagesDone`, `flagged`) |
+| `toggleTemplateRisk` | `key, templateId, selected` | Konten(2) | Status kembali `draft` bila `ready` | FR-REG-003 | `PUT /registers/{pos}/{ta}/template-risks/{tplId}` `{selected}` |
+| `addCustomRisk` | `key, stageId, riskType, description` | Konten(2) | `isCustom = true` | FR-REG-004 | `POST /registers/{pos}/{ta}/risks` → `{id}` |
+| `deleteRisk` | `riskId` | Konten(2) | Hanya draf | FR-REG-011 | `DELETE /register-risks/{id}` |
+| `toggleTemplateMitigation`, `addCustomMitigation`, `deleteMitigation` | risiko/mitigasi | Konten(2) | | FR-REG-003, 011 | `PUT /register-risks/{id}/template-mitigations/{tplId}` `{selected}`, `POST /register-risks/{id}/mitigations` `{text}`, `DELETE /register-mitigations/{id}` |
+| `setDeclaration`, `setDeclarationReason` | `key, stageId, riskType (null = seluruh tahap), on/reason, force?` | Konten(2) | `force` menghapus pilihan yang bertentangan setelah konfirmasi | FR-REG-002, 005, 008 | `PUT /registers/{pos}/{ta}/declarations` `{stageId, riskType, on, force}`; alasan: `PATCH` yang sama `{stageId, riskType, reason}` |
+| `updateDataUmum` | `key, Partial<DataUmumValues>` | Konten(2) | Diaudit, juga setelah terbit | FR-REG-001 | `PATCH /registers/{pos}/{ta}` (Data Umum) |
 | `markReady` | `key` | Konten(2) (tombolnya hanya untuk Operator) | `draft` → `ready`; galat `empty`/`nothing`; notifikasi Pejabat (FR-NTF-001) | FR-REG-006 | `POST …/mark-ready` |
 | `publish` | `key` | Konten(3) — Pejabat | Gerbang struktural → `ApiError('validation', details: gaps)`; flag `no_mitigation`; `RiskQuarter` dibuat; `RiskProposal` untuk risiko sendiri; notifikasi Lini 2 (FR-NTF-002); mengembalikan `PublishSummary` | FR-REG-007, 008 | `POST …/publish` |
-| `deactivateRisk`, `deactivateMitigation` | `id, reason` | Konten(3) | `deactivatedFromQuarterId` = triwulan berikut (TW IV: null) | FR-REG-010 | `POST /api/register-risks/{id}/deactivate` |
+| `deactivateRisk`, `deactivateMitigation` | `id, reason` | Konten(3) | `deactivatedFromQuarterId` = triwulan berikut (TW IV: null) | FR-REG-010 | `POST /register-risks/{id}/deactivate`, `POST /register-mitigations/{id}/deactivate` |
 | `copyFromPrevious` | `key` | Konten(2) | Hanya bila register kosong; mengembalikan `CopySummary` | FR-REG-009 | `POST …/copy-from-previous` |
 
-Read model dan fungsi bantunya ada di `data/api/registerView.ts`: `buildRegisterView` (dipakai `registerApi.view` dan, secara sinkron, oleh halaman Register), `registerAccess`, `pendingItems`, `wouldFlagNoMitigation`. Halaman juga memakai `registerGaps`, `completeStages` (`domain/rules/register.ts`).
+Backend: `simario/registers/selectors.py` (`build_register_view`), `services.py`, aturan murni `simario/domain/register.py` + vektor `shared/test-vectors/register.json`. Halaman Register membaca view lewat `useRegisterViews` (`data/http/register.ts`); setiap mutasi memuat ulang view. Prototipe: read model di `data/api/registerView.ts`: `buildRegisterView` (dipakai `registerApi.view` dan, secara sinkron, oleh halaman Register), `registerAccess`, `pendingItems`, `wouldFlagNoMitigation`. Halaman juga memakai `registerGaps`, `completeStages` (`domain/rules/register.ts`).
 
 ### 4.5 `boardApi`, `threadApi` — Papan & Utas (PPN)
 
@@ -199,8 +199,8 @@ Prinsip CLAUDE.md §4 ("halaman tidak pernah menyentuh `localStorage` langsung")
 | Berkas | Data yang dibaca | Usulan endpoint |
 |---|---|---|
 | `layout/Sidebar.tsx`, `layout/Topbar.tsx`, `layout/Workspace.tsx` | Jabatan dalam cakupan dan pencarian global (konteks pengguna sudah dari `GET /api/v1/me`, B1) | `GET /api/positions/{id}`, `GET /api/search?q=` |
-| `pages/register/RegisterPage.tsx`, `RiskCard.tsx`, `DataUmumSection.tsx` | Read model terfilter dari `buildRegisterView` (sinkron, bukan `registerApi.view`); selain itu register TA sebelumnya (banner salin), kuartal, nama pengguna, template & formulir Data Umum, `wouldFlagNoMitigation` | `GET /api/registers/{pos}/{ta}` (= `registerApi.view`) ditambah info TA sebelumnya |
-| `pages/master/*` | **B2:** koleksi master dari `GET /api/v1/collections/<nama>` lewat `CollectionGate`; usulan (`/master/usulan`) dan hitungan pemakaian register tetap dari store lokal sampai B3 | `GET /api/v1/proposals` (B3) |
+| `pages/register/*` | **B3:** view dari `GET /api/v1/registers/{pos}/{ta}`; data master lewat `CollectionGate` | — |
+| `pages/master/*` | **B2/B3:** koleksi master dari backend lewat `CollectionGate`; usulan dari `GET /api/v1/proposals`. Petunjuk pemakaian register ("Dipakai N jabatan", "dapat dihapus", dampak nonaktif) masih dihitung dari store lokal (U-22) | `GET /api/v1/risk-templates/usage`, `/positions/{id}/impact` |
 | `pages/admin/*` | **B2:** Pengguna, Peran, Penugasan, Tahun Anggaran, Jabatan Saya, Impor dari koleksi backend lewat `CollectionGate`; status arsip masih dihitung dari penilaian lokal (B5); Audit dan Metrik lokal (B8) | `GET /api/v1/audit`, `/metrics` (B8) |
 | `pages/board/ThreadPage.tsx` | Peserta untuk @sebut (`threadParticipants`), izin 25 | `GET /api/register-risks/{id}/participants` |
 | `pages/assessment/AssessmentPage.tsx` | `finalisePreview` | `GET …/finalise-preview` |

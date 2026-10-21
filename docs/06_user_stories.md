@@ -54,6 +54,8 @@ Kolom "Coba" memakai id persona dan parameter URL dari [05_local_dev_and_testing
 
 ## 4. Register (REG)
 
+B3: semua cerita REG berjalan di backend (view per pembaca, terbit, tambahan, nonaktif, salin, usulan).
+
 | ID | Sebagai … saya ingin … | FR | Status | Coba |
 |---|---|---|---|---|
 | US-REG-001 | Sebagai Lini 1, saya ingin memilih risiko dan mitigasi dari daftar yang sudah disiapkan untuk setiap tahap saya | FR-REG-002, 003 | ✅ | `?sebagai=usr-hadi` → Register TA 2027 |
@@ -113,7 +115,7 @@ Kolom "Coba" memakai id persona dan parameter URL dari [05_local_dev_and_testing
 
 ## 9. Master Data (MST)
 
-B2: cerita MST berjalan di backend kecuali usulan risiko (US-MST-004, B3).
+B2/B3: semua cerita MST berjalan di backend (usulan risiko sejak B3).
 
 | ID | Sebagai … saya ingin … | FR | Status | Coba |
 |---|---|---|---|---|

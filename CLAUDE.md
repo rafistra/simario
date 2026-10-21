@@ -384,10 +384,12 @@ Hasil:
 
 Catatan Tahap B2: halaman master/admin membaca `GET /api/v1/collections/<nama>` lewat `CollectionGate` (digabung di atas store lokal sampai modul register/penilaian pindah). Pemakaian oleh register dan penilaian dijawab stub (`simario/registers/usage.py`, `simario/assessments/usage.py`; U-21) sampai B3/B5; efek samping arsip mendaftar lewat `calendar.services.on_archive`. Cari pegawai lewat Keycloak Admin REST (service account `simario`, `view-users`). Perubahan holding/peran/izin/penugasan menaikkan `auth_epoch` (U-04, U-19 selesai). Uji manual lewat HTTP terhadap backend lokal; belum diklik di browser.
 
-### Tahap B3 — Register ⬜
+### Tahap B3 — Register ✅
 
 Hasil:
-- [ ] REG penuh (`registerApi.view` sebagai read model tunggal, terbit, salin, tambahan, nonaktif), `RiskProposal`, `risk_quarters`
+- [x] REG penuh (`registerApi.view` sebagai read model tunggal, terbit, salin, tambahan, nonaktif), `RiskProposal`, `risk_quarters`
+
+Catatan Tahap B3: app `registers` (+ `RiskProposal` di `reference`, `RiskQuarter` di `assessments`) memporting `data/api/register.ts` 1:1; aturan murni di `simario/domain/register.py` dengan vektor bersama. View server menambah `previousRegister`, `stagesDone`, `flagged`. Halaman Register membaca view lewat `useRegisterViews`; usulan lewat `GET /api/v1/proposals`. Jembatan ID kini juga menerjemahkan kunci objek yang berupa ID. Petunjuk pemakaian di halaman master masih dari store lokal (U-22). Modul papan/penilaian/lembar masih membaca register lokal sampai tahapnya.
 
 ### Tahap B4 — Papan, Utas, Lampiran ⬜
 

@@ -2,9 +2,9 @@
 
 > Status dokumen: 21 Okt 2026 · PRD v2.9 · kode `frontend/` per komit `7bebb66`.
 
-## 1. Status: backend sebagian (B2)
+## 1. Status: backend sebagian (B3)
 
-**Fondasi backend (B1) serta Master Data dan Administrasi (B2) sudah di backend: identitas, organisasi, kalender (TA, triwulan, pengecualian, arsip), data referensi (tahap, template, Data Umum, skala + pilihan), pengguna, holding, Operator, peran, penugasan, impor CSV (`ImportJob`), audit, notifikasi, sesi, SSO, jam simulasi, dan data demo; modul REG/PPN/NIL/RWY/LBR belum (B3–B7; `RiskProposal` di B3, metrik dan jejak audit di B8).** Pemeriksaan yang bergantung pada register/penilaian memakai stub `simario/registers/usage.py` dan `simario/assessments/usage.py` sampai B3/B5 (U-21); efek samping arsip modul lain mendaftar lewat `calendar.services.on_archive`. Rencana dan keputusan yang dikunci: [spec integrasi backend](superpowers/specs/2026-10-21-backend-integration-design.md). Sampai modulnya dipindah, semua yang biasanya dikerjakan server saat ini disimulasikan di browser oleh lapisan data frontend:
+**Fondasi backend (B1) serta Master Data dan Administrasi (B2) sudah di backend: identitas, organisasi, kalender (TA, triwulan, pengecualian, arsip), data referensi (tahap, template, Data Umum, skala + pilihan), pengguna, holding, Operator, peran, penugasan, impor CSV (`ImportJob`), audit, notifikasi, sesi, SSO, jam simulasi, dan data demo; register (B3: `Register`, deklarasi, risiko, mitigasi, `RiskProposal`, `RiskQuarter`, tugas `risk_quarters`); modul PPN/NIL/RWY/LBR belum (B4–B7; metrik dan jejak audit di B8).** Pemakaian register kini nyata (`simario/registers/usage.py`); pemeriksaan yang bergantung pada penilaian memakai stub `simario/assessments/usage.py` sampai B5 (U-21); efek samping arsip modul lain mendaftar lewat `calendar.services.on_archive`. Rencana dan keputusan yang dikunci: [spec integrasi backend](superpowers/specs/2026-10-21-backend-integration-design.md). Sampai modulnya dipindah, semua yang biasanya dikerjakan server saat ini disimulasikan di browser oleh lapisan data frontend:
 
 | Tanggung jawab server | Di mana sekarang (prototipe) |
 |---|---|
@@ -172,7 +172,7 @@ Prototipe mendaftarkan tugas di `data/local/scheduler.ts` (`registerTask`) dan m
 | Nama tugas | Fungsi | Isi | Pemicu event | PRD |
 |---|---|---|---|---|
 | `attachment-scan` | `finishAttachmentScans` | `pending` → `clean` (prototipe: juga `setTimeout` 2 detik) | Unggah | NFR-010 |
-| `risk-quarters` | `ensureRiskQuarters` | Buat `RiskQuarter` untuk risiko yang dinilai di triwulan yang sudah mulai | Terbit | RB-REG-006 |
+| `risk-quarters` (backend B3: `risk_quarters`, `registers/tasks.py`) | `ensureRiskQuarters` | Buat `RiskQuarter` untuk risiko yang dinilai di triwulan yang sudah mulai | Terbit | RB-REG-006 |
 | `score-bands` (backend B2: `score_bands`, `reference/tasks.py`) | `activateScoreBands` | Versi `scheduled` menjadi `active` pada tanggal berlaku; triwulan mengunci versinya saat jendela pertama dibuka | — | FR-MST-007 |
 | `comparisons` | `runComparisons` (`local/comparisons.ts`) | Pembukaan perbandingan penuh/sebagian, "Tidak dinilai Lini 1", Berulang, notifikasi FR-NTF-007/008/009 | Tuntaskan, kecualikan penilai | §2.5, FR-NIL-007/009/011 |
 | `reminders` | `runReminders` (`local/reminders.ts`) | Buka jendela, H-7, H-1; penjelasan H-1; 14 hari sebelum arsip; tidak memunculkan peristiwa > 3 hari yang lalu | — | FR-NTF-005/006/009/012 |
