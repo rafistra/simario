@@ -128,32 +128,20 @@ function Thread({ view, positionName }: { view: ThreadView; positionName: string
   const participants = people.data ?? [];
   const canUnset = auth.can(25);
 
-  // NFR-015: poll every 30 s for comments by others (they wait behind the banner); while a
-  // file of this viewer is being scanned, check sooner (3 s, backing off to 30 s).
-  const scanning = allIds.some((c) => c.attachments.some((a) => a.scanning));
+  // NFR-015: poll every 30 s for comments by others (they wait behind the banner).
   const latestSeen = allIds.reduce((m, c) => (c.createdAt > m ? c.createdAt : m), '');
   const loadedIds = useMemo(() => new Set(allIds.map((c) => c.id)), [allIds]);
-  const scanPolls = useRef(0);
   useEffect(() => {
-    if (!scanning) scanPolls.current = 0;
-    const delay = scanning
-      ? Math.min(3_000 * 2 ** Math.floor(scanPolls.current / 3), 30_000)
-      : 30_000;
     const timer = setTimeout(() => {
-      if (scanning) {
-        scanPolls.current += 1;
-        useBoardRevision.getState().bump();
-        return;
-      }
       void threadApi
         .since(risk.id, latestSeen || '2000-01-01T00:00')
         .then((r) => {
           if (r.commentIds.some((id) => !loadedIds.has(id))) useBoardRevision.getState().bump();
         })
         .catch(() => undefined);
-    }, delay);
+    }, 30_000);
     return () => clearTimeout(timer);
-  }, [risk.id, latestSeen, scanning, loadedIds, view]);
+  }, [risk.id, latestSeen, loadedIds, view]);
   const canPost = !!view.participation && !!view.postingQuarter && !view.archivedOn;
 
   const send = (mitigationId: string | null) => async (input: ComposerSubmit) => {

@@ -170,14 +170,13 @@ function AssessorCell({
     <>
       {(c.attachments.length > 0 || c.confidentialHidden > 0) && (
         <div className="acell__files">
-          {c.attachments.map(({ attachment: f, scanning }) => (
+          {c.attachments.map(({ attachment: f }) => (
             <span key={f.id} className="acell__file">
               <AttachmentFileChip
                 name={f.filename}
                 meta={`${f.filename.split('.').pop()?.toUpperCase()} · ${formatFileSize(f.sizeBytes)}`}
-                scanning={scanning}
                 confidential={f.isConfidential}
-                href={scanning ? undefined : attachmentUrl(f.id)}
+                href={attachmentUrl(f.id)}
               />
               {c.editable && (
                 <button

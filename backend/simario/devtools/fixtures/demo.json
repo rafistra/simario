@@ -10498,7 +10498,6 @@
         "filename": "Notulen_Rapat_RPD_TW1.pdf",
         "sizeBytes": 655360,
         "mimeType": "application/pdf",
-        "scanStatus": "clean",
         "isConfidential": false,
         "uploadedById": "usr-rafi",
         "uploadedAt": "2027-02-03T09:12"
@@ -10510,7 +10509,6 @@
         "filename": "foto_rapat_rpd.jpg",
         "sizeBytes": 412000,
         "mimeType": "image/jpeg",
-        "scanStatus": "clean",
         "isConfidential": false,
         "uploadedById": "usr-rafi",
         "uploadedAt": "2027-02-03T09:12"
@@ -10522,7 +10520,6 @@
         "filename": "Rekap_Realisasi_Minggu10.xlsx",
         "sizeBytes": 90112,
         "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "scanStatus": "clean",
         "isConfidential": false,
         "uploadedById": "usr-andi",
         "uploadedAt": "2027-03-10T14:00"
@@ -10534,7 +10531,6 @@
         "filename": "RKB_TW2_PPK-A1.pdf",
         "sizeBytes": 312000,
         "mimeType": "application/pdf",
-        "scanStatus": "clean",
         "isConfidential": false,
         "uploadedById": "usr-rafi",
         "uploadedAt": "2027-04-05T11:20"
@@ -10546,7 +10542,6 @@
         "filename": "Kertas_Kerja_Kepatuhan_Paket_Lisensi.xlsx",
         "sizeBytes": 88064,
         "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "scanStatus": "clean",
         "isConfidential": true,
         "uploadedById": "usr-hendra",
         "uploadedAt": "2027-02-20T15:30"
@@ -10558,7 +10553,6 @@
         "filename": "Daftar_Kontrak_Februari.pdf",
         "sizeBytes": 204800,
         "mimeType": "application/pdf",
-        "scanStatus": "clean",
         "isConfidential": false,
         "uploadedById": "usr-hendra",
         "uploadedAt": "2027-02-20T15:30"
@@ -10570,7 +10564,6 @@
         "filename": "SP2D_Termin1_PPK-A1.pdf",
         "sizeBytes": 1258291,
         "mimeType": "application/pdf",
-        "scanStatus": "clean",
         "isConfidential": false,
         "uploadedById": "usr-rafi",
         "uploadedAt": "2027-03-02T10:40"
@@ -10582,7 +10575,6 @@
         "filename": "Pakta_Integritas_Tim_Teknis.pdf",
         "sizeBytes": 540000,
         "mimeType": "application/pdf",
-        "scanStatus": "clean",
         "isConfidential": false,
         "uploadedById": "usr-andi",
         "uploadedAt": "2027-01-28T09:30"
@@ -10594,7 +10586,6 @@
         "filename": "BAST_Termin1_PPK-A1.pdf",
         "sizeBytes": 1887436,
         "mimeType": "application/pdf",
-        "scanStatus": "clean",
         "isConfidential": false,
         "uploadedById": "usr-rafi",
         "uploadedAt": "2027-03-21T10:02"

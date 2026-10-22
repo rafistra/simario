@@ -454,7 +454,6 @@ export interface Attachment {
   filename: string;
   sizeBytes: number;
   mimeType: string;
-  scanStatus: 'pending' | 'clean' | 'quarantined';
   isConfidential: boolean;
   uploadedById: string;
   uploadedAt: ISODateTime;

@@ -1,8 +1,8 @@
-"""Ports of thread.ts checks, plus files (spec §4.7): S3 and clamd are replaced by fakes."""
+"""Ports of thread.ts checks, plus files (spec §4.7): S3 is replaced by a fake."""
 
 import datetime as dt
 import json
-from collections.abc import Callable, Iterator
+from collections.abc import Iterator
 from typing import Any
 
 import pytest
@@ -24,16 +24,8 @@ PDF = b"%PDF-1.4\n1 0 obj\n<<>>\nendobj\ntrailer\n<<>>\n%%EOF\n"
 @pytest.fixture
 def storage(monkeypatch: pytest.MonkeyPatch) -> Iterator[dict[str, Any]]:
     objects: dict[str, bytes] = {}
-    state: dict[str, Any] = {"objects": objects, "clean": True}
+    state: dict[str, Any] = {"objects": objects}
     monkeypatch.setattr(files, "put", lambda key, data, mime: objects.__setitem__(key, data))
-    monkeypatch.setattr(files, "read", lambda key: objects[key])
-
-    def quarantine(key: str) -> str:
-        objects[f"quarantine/{key}"] = objects.pop(key)
-        return f"quarantine/{key}"
-
-    monkeypatch.setattr(files, "quarantine", quarantine)
-    monkeypatch.setattr(files, "clamd_scan", lambda data: state["clean"])
     yield state
 
 
@@ -107,42 +99,22 @@ def test_edit_window_and_withdraw(demo: None, storage: dict[str, Any]) -> None:
     assert mine["body"] is None and mine["withdrawnText"].startswith("Komentar ditarik oleh Andi")
 
 
-def test_confidential_upload_scan_and_download(
+def test_confidential_upload_and_download(
     demo: None,
     storage: dict[str, Any],
-    django_capture_on_commit_callbacks: Callable[..., Any],
 ) -> None:
     refused = _post("usr-andi", files_=[("bukti.pdf", PDF)], confidential=[True])
     assert refused.json()["message"] == "Hanya Lini 3 yang dapat menandai lampiran konfidensial."
-    with django_capture_on_commit_callbacks(execute=True):
-        res = _post("usr-hendra", "Bukti audit", files_=[("bukti.pdf", PDF)], confidential=[True])
+    res = _post("usr-hendra", "Bukti audit", files_=[("bukti.pdf", PDF)], confidential=[True])
     assert res.status_code == 201, res.json()
     att = Attachment.objects.get(owner_id=res.json()["id"])
     assert att.is_confidential and att.mime_type == "application/pdf"
-    assert att.scan_status == "clean"
     assert att.object_key == f"attachments/{uid('pos-ppk-a1')}/2027/{att.id}"
     url = f"/api/v1/attachments/{att.id}/download"
     assert client_for("usr-andi").get(url).status_code == 404
     hendra = client_for("usr-hendra").get(url)
     assert hendra.status_code == 302
     assert hendra["Location"].startswith(f"/storage/simario/{att.object_key}?")
-
-
-def test_infected_file_is_quarantined(
-    demo: None,
-    storage: dict[str, Any],
-    django_capture_on_commit_callbacks: Callable[..., Any],
-) -> None:
-    storage["clean"] = False
-    with django_capture_on_commit_callbacks(execute=True):
-        res = _post("usr-andi", "Lampiran", files_=[("eicar.pdf", PDF)])
-    att = Attachment.objects.get(owner_id=res.json()["id"])
-    assert att.scan_status == "quarantined" and str(att.object_key).startswith("quarantine/")
-    assert Notification.objects.filter(
-        user=user("usr-andi"), kind="attachment_quarantined"
-    ).exists()
-    assert AuditLog.objects.filter(action="karantina_lampiran").exists()
-    assert client_for("usr-andi").get(f"/api/v1/attachments/{att.id}/download").status_code == 404
 
 
 def test_content_must_match_extension(demo: None, storage: dict[str, Any]) -> None:

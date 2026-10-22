@@ -63,7 +63,6 @@ class AttachmentRow(serializers.ModelSerializer[Attachment]):
             "filename",
             "size_bytes",
             "mime_type",
-            "scan_status",
             "is_confidential",
             "uploaded_by_id",
             "uploaded_at",

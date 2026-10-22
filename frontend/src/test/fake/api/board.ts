@@ -183,7 +183,6 @@ export function buildBoard(
 
 export interface ThreadAttachment {
   attachment: Attachment;
-  scanning: boolean;
 }
 
 export interface ThreadComment {
@@ -287,16 +286,11 @@ function attachmentsFor(
   const list: ThreadAttachment[] = [];
   let hidden = 0;
   for (const a of all) {
-    if (a.scanStatus === 'quarantined') continue;
     if (a.isConfidential && !viewer.canSeeConfidential) {
       hidden++;
       continue;
     }
-    if (a.scanStatus === 'pending') {
-      if (a.uploadedById === viewer.userId) list.push({ attachment: a, scanning: true });
-      continue;
-    }
-    if (canSeeAttachment(viewer, a)) list.push({ attachment: a, scanning: false });
+    if (canSeeAttachment(viewer, a)) list.push({ attachment: a });
   }
   return { list, hidden };
 }

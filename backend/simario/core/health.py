@@ -1,6 +1,5 @@
 """Dependency checks for GET /api/v1/health. Each check returns False instead of raising."""
 
-import socket
 from collections.abc import Callable
 
 import redis
@@ -36,20 +35,8 @@ def check_storage() -> bool:
         return False
 
 
-def check_clamav() -> bool:
-    try:
-        with socket.create_connection(
-            (settings.CLAMAV_HOST, settings.CLAMAV_PORT), timeout=TIMEOUT_SECONDS
-        ) as sock:
-            sock.sendall(b"zPING\0")
-            return sock.recv(16).rstrip(b"\0\n") == b"PONG"
-    except Exception:
-        return False
-
-
 CHECKS: dict[str, Callable[[], bool]] = {
     "database": check_database,
     "redis": check_redis,
     "storage": check_storage,
-    "clamav": check_clamav,
 }

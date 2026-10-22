@@ -294,7 +294,6 @@ def _add_files(user: User, rq_id: str, pos: str, stored: list[Stored]) -> None:
             filename=item.upload.name,
             size=len(item.upload.data),
             mime_type=item.mime,
-            scan_status="pending",
             # VIS-4: Lini 3 assessment files are confidential by default.
             is_confidential=item.upload.confidential if line == 3 else False,
             uploaded_by=user,
@@ -319,17 +318,6 @@ def _add_files(user: User, rq_id: str, pos: str, stored: list[Stored]) -> None:
             ],
         },
     )
-    from simario.board.tasks import scan_attachment
-
-    for item in stored:
-
-        def enqueue(aid: str = str(item.id)) -> None:
-            try:
-                scan_attachment.delay(aid)
-            except Exception:  # broker down: the scheduled sweep scans it later
-                log.exception("could not queue the scan of %s", aid)
-
-        transaction.on_commit(enqueue)
 
 
 def remove_file(user: User, attachment_id: Any) -> None:

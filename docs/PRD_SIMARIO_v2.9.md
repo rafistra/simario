@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Version** | 2.9.1 (revision of v2.9 dated 22 October 2026) — object storage RustFS instead of MinIO (§2.1) |
+| **Version** | 2.9.2 (revision of v2.9 dated 22 October 2026) — object storage RustFS instead of MinIO (§2.1, v2.9.1); malware scanning by the server antivirus instead of ClamAV in the application (§2.1, NFR-010, v2.9.2) |
 | **Date** | 22 October 2026 |
 | **Author** | Direktorat Data dan Kecerdasan Buatan, Otorita IKN |
 | **Status** | Ready for development — walkthrough with the process owner completed 11 October 2026 |
@@ -173,7 +173,7 @@ Everyone else within scope reads only. Lini 2 "Own" read scope covers every Lini
 | **BR-011** | Risk owners can track their own risk across quarters and years | Otherwise the application only burdens the person filling it | Medium |
 | **BR-012** | Lateness is made visible, not prevented | A locked form loses the record permanently | Medium |
 | **BR-013** | **Finalising is never blocked on the content of a self-declared judgement** | Hard gates on self-declared data teach users to under-declare | High |
-| **BR-014** | **Attachments are scanned, access-controlled, retained, and recoverable** | The system is the evidentiary record for audit | High |
+| **BR-014** | **Attachments are scanned (by the server antivirus), access-controlled, retained, and recoverable** | The system is the evidentiary record for audit | High |
 | **BR-015** | **Officials may delegate preparation to staff using the staff's own accounts, while finalising stays with the official** | With SSO, account sharing is neither possible nor acceptable | High |
 | **BR-016** | **Coordination between the three lines happens on one shared thread per risk, and that thread is the record** | Coordination today leaves no trace; the Lembar Komunikasi must be derivable, not retyped | High |
 | **BR-017** | **Lini 3 may mark attachments confidential; confidential attachments are visible only to Lini 3 and Superadmin** | Audit evidence may concern individuals or ongoing examinations | High |
@@ -454,11 +454,14 @@ Taken from the OIKN house stack used by LANTARA and Aksara, so the application i
 | Database | PostgreSQL 16 |
 | Frontend | React 18 + Vite + TypeScript |
 | Object storage | RustFS (S3-compatible, Apache 2.0), separate from the database, for attachments and decree/letter files. The application uses only the standard S3 API, so another S3-compatible store can replace it without code changes |
+| Malware scanning | The antivirus already installed on the OIKN virtual machine scans the server, including the object storage volume. The application runs no scanner of its own (v2.9.2) |
 | Authentication | Keycloak (OIDC) against the "Otorita IKN" realm at sso.ikn.go.id, from v1.0. NIP is the stable identifier. Local password accounts are a fallback |
 | Deployment | Docker Compose behind nginx; separate staging and production |
 | Hosting | OIKN internal environment |
 
-**Object storage decision (v2.9.1, 22 October 2026).** RustFS replaces MinIO, the one departure from the house stack. MinIO's community edition has been reduced since 2025 (features moved to the commercial product, community images no longer published as before) and is licensed AGPL-3.0; RustFS is S3-compatible under Apache 2.0 and runs as a single container like MinIO did. Because RustFS is young (stable 1.x only since 2026), the application talks to it only through the standard S3 API (uploads, pre-signed downloads, quarantine by copy and delete), the storage path is covered by integration tests, and backups include every bucket object with a tested restore (NFR-014). If RustFS proves unsuitable before go-live, any S3-compatible store (OIKN internal S3, SeaweedFS, Garage, Ceph RGW) replaces it by configuration only.
+**Object storage decision (v2.9.1, 22 October 2026).** RustFS replaces MinIO, the one departure from the house stack. MinIO's community edition has been reduced since 2025 (features moved to the commercial product, community images no longer published as before) and is licensed AGPL-3.0; RustFS is S3-compatible under Apache 2.0 and runs as a single container like MinIO did. Because RustFS is young (stable 1.x only since 2026), the application talks to it only through the standard S3 API (uploads, pre-signed downloads, deletes), the storage path is covered by integration tests, and backups include every bucket object with a tested restore (NFR-014). If RustFS proves unsuitable before go-live, any S3-compatible store (OIKN internal S3, SeaweedFS, Garage, Ceph RGW) replaces it by configuration only.
+
+**Malware scanning decision (v2.9.2, 22 October 2026).** The OIKN virtual machines already run an antivirus managed by the infrastructure team, so the application no longer bundles ClamAV. Files are checked in the application only for extension, size, count, quota, and that the content matches the format (NFR-009); scanning, quarantine, and alerts are handled by the VM antivirus under the infrastructure team's procedures. An upload is downloadable as soon as it is saved; there is no "Memindai…" state and no scan status on `Attachment`.
 
 ## 2.2 Global Design Provisions
 
@@ -491,7 +494,7 @@ Taken from the OIKN house stack used by LANTARA and Aksara, so the application i
 | NFR-007 | Audit trail | Every data change recorded with timestamp, actor, acting capacity, acting position, and before/after values. Append-only. Before/after values are redacted per VIS-8 |
 | NFR-008 | Session | Ends after 60 minutes of inactivity. Drafts autosave before termination |
 | NFR-009 | Attachment formats | PDF, DOCX, XLSX, PNG, JPG, MP4. Maximum 20 MB per file; **10 files per comment or assessment**. MIME type verified server-side against content |
-| NFR-010 | Attachment scanning | Every file is scanned by ClamAV before becoming downloadable. Until then it shows "Memindai…". A failed scan quarantines the file, notifies the uploader, and records an audit entry |
+| NFR-010 | Attachment scanning | Files are scanned by the antivirus installed on the OIKN virtual machine (§2.1), outside the application. The application has no scan state: a file is downloadable once saved (v2.9.2; previously ClamAV in the application with "Memindai…" and quarantine) |
 | NFR-011 | Attachment access | Served through pre-signed URLs valid for 5 minutes, generated only after a permission check that includes scope **and** the confidentiality rule (§2.7). Buckets are never publicly readable |
 | NFR-012 | Storage quota | 1 GB per Lini 1 position per fiscal year, counting all attachments on its threads and assessments, configurable. At 90% participants are warned; at 100% upload is refused with a message naming the quota |
 | NFR-013 | Retention | Registers, threads, assessments, attachments, and audit entries are retained for the period set by OQ-8, minimum 5 fiscal years. Disposal is a documented administrative action, never automated |
@@ -671,7 +674,7 @@ These override data scope (§1.5). Each is enforced in the API serializer, not o
 
 | Entity | Key fields | Notes |
 |---|---|---|
-| `Attachment` | `id`, `owner_kind`, `owner_id`, `object_key`, `filename`, `size_bytes`, `mime_type`, `scan_status`, `is_confidential`, `uploaded_by_id`, `uploaded_at` | `owner_kind` ∈ {`comment`, `assessment`}. `is_confidential` set only by its uploader acting from a Lini 3 position; cleared only with permission 25 |
+| `Attachment` | `id`, `owner_kind`, `owner_id`, `object_key`, `filename`, `size_bytes`, `mime_type`, `is_confidential`, `uploaded_by_id`, `uploaded_at` | `owner_kind` ∈ {`comment`, `assessment`}. `is_confidential` set only by its uploader acting from a Lini 3 position; cleared only with permission 25 |
 | `PrintSnapshot` | `id`, `number`, `position_id`, `quarter_id`, `kind`, `version`, `trigger`, `is_provisional`, `superseded_by_id`, `payload` (JSONB), `photo_attachment_ids`, `created_by_user_id`, `created_at` | `kind` ∈ {`komunikasi`, `mutu`}; `trigger` ∈ {`print`, `auto_freeze`, `archive`}. Immutable (INV-22). `number` format `SIMARIO/[LK|LM]/[TA]/TW[n]/[kode unit]-[kode jabatan]/[urut]`, unique system-wide |
 | `PrintPhotoSelection` | `position_id`, `quarter_id`, `section`, `attachment_ids`, `updated_by_user_id`, `updated_at` | FR-LBR-005 |
 | `ThreadView` | `user_id`, `register_risk_id`, `last_seen_at` | Unseen-activity dots (FR-PPN-001) |
@@ -708,7 +711,7 @@ A register copied from the previous fiscal year (FR-REG-009) creates new `Regist
 | INV-7 | `description_snapshot` of a `RegisterRisk` or `RegisterMitigation` with `status != 'draft'` never changes |
 | INV-8 | Every `RegisterRisk` carries either a `risk_template_id` or `is_custom = true` |
 | INV-9 | A fiscal year's four quarters are contiguous and within the year; for each quarter `lini1_opens_on` ≤ `lini1_deadline` < `lini3_deadline` and `lini3_opens_on` ≤ `lini3_deadline` |
-| INV-10 | An attachment with `scan_status != 'clean'` is never served |
+| INV-10 | *(Removed in v2.9.2: scanning is done by the VM antivirus outside the application, NFR-010)* |
 | INV-11 | An active `PositionDelegate` requires its appointing `PositionOccupancy` to be active **and** to still have `is_filler = true` |
 | INV-12 | An action whose permission has `requires_official = true` is performed only by a user holding an active `PositionOccupancy` with `is_filler = true` on the acting position |
 | INV-13 | A user never holds both an occupancy and a delegation on the same position |
@@ -952,7 +955,7 @@ Every active risk is a thread; every mitigation under it is a sub-thread. The th
 | **FR-PPN-002** | **Thread page** | One risk and its mitigation sub-threads. | • Header: wording, stage, risk type, status, flags; "Riwayat TA sebelumnya" link when `previous_year_risk_id` exists<br>• Main timeline: risk-level comments, grouped by quarter with dividers "TW I", "TW II"…<br>• Mitigation sub-threads beneath: each collapsible, with wording, comment count, last activity, and its own timeline grouped by quarter<br>• Right panel: per-quarter assessment summary following VIS-1/VIS-2, link to the assessment page<br>• Deep link to a comment scrolls to and highlights it | BR-016 | High |
 | **FR-PPN-003** | **Posting a comment** | Participants (§1.5) post on a risk or a mitigation. | • Plain text with line breaks; up to 5,000 characters<br>• Author line chip is set automatically from the acting holding; Operators show "sebagai Operator [Jabatan]"<br>• Non-participants within scope see the timeline without the composer and the note "Anda dapat membaca utas ini."<br>• While the current quarter's comparison for this risk has not opened, the Lini 3 composer shows: "Perbandingan triwulan ini belum dibuka. Hindari menyebutkan skor atau predikat penilaian Anda di utas ini."<br>• "Terkait TW [n]" selector appears only when an earlier quarter of the same fiscal year has an open comparison or pending explanation for this risk; default is the posting quarter (RB-PPN-004). **"Tandai sebagai Langkah" is unavailable when an earlier quarter is chosen** — a Langkah always belongs to the quarter in which it is posted, so it can never clear an earlier quarter's quiet marker or appear in an earlier Section A<br>• Posting subscribes the author to the thread | BR-016 | High |
 | **FR-PPN-004** | **Langkah** | Lini 1 marks a comment as an action taken. | • "Tandai sebagai Langkah" checkbox in the composer, shown only to Lini 1 participants<br>• Langkah comments carry a "Langkah" badge<br>• A Langkah on a risk or any of its mitigations clears that risk's quiet marker for the quarter | BR-016 | High |
-| **FR-PPN-005** | **Attachments** | Files on a comment. | • Up to 10 files per comment; formats and size per NFR-009<br>• Scanning per NFR-010; "Memindai…" until clean<br>• Images and video show a thumbnail; others an icon with filename and size<br>• Quota per NFR-012 | BR-014 | High |
+| **FR-PPN-005** | **Attachments** | Files on a comment. | • Up to 10 files per comment; formats and size per NFR-009<br>• Scanning per NFR-010 (VM antivirus, outside the application)<br>• Images and video show a thumbnail; others an icon with filename and size<br>• Quota per NFR-012 | BR-014 | High |
 | **FR-PPN-006** | **Confidential attachments** | Lini 3 can restrict files. | • Lini 3 participants see a "Konfidensial" toggle per file in the composer; default off on comments<br>• Confidential files are served per VIS-3/INV-17; others see "[n] lampiran konfidensial"<br>• The toggle can be switched on later by the uploader; switching off requires permission 25, audit-logged | BR-017 | High |
 | **FR-PPN-007** | **Mentions** | Notify a specific participant. | • Typing "@" opens a picker of participants of this position's threads (§1.5), searchable by name or position<br>• Mentioned users receive a notification (FR-NTF-003) and are subscribed<br>• Mentioning a non-participant is not offered | BR-016 | Medium |
 | **FR-PPN-008** | **Edit and withdraw** | | • The author may edit within 15 minutes of posting; "(disunting)" shown afterwards<br>• After 15 minutes the body is immutable (INV-19)<br>• The author may withdraw at any time: the comment becomes "Komentar ditarik oleh [nama] pada [waktu]" (VIS-6); attachments are hidden but retained<br>• Withdrawing a Langkah may re-raise the quiet marker | BR-007 | High |
@@ -1629,7 +1632,7 @@ Key: ✓ = access · — = none · scope after the tick · **P** = only on posit
 1. **Foundation** — Keycloak OIDC and local fallback, users, positions, holdings and delegation, dynamic roles and permissions, fiscal years and quarters with windows, bulk import, audit trail with its append-only trigger
 2. **Master data** — position types, positions, stages, templates, Data Umum forms, score bands; load the final seed data from the Rapim deck
 3. **Risk Register** — Data Umum, stage sections, publish, mid-year additions, copy from previous year
-4. **Risk Board** — threads, mitigation sub-threads, comments, Langkah, attachments with scanning, mentions, subscriptions, quiet marker
+4. **Risk Board** — threads, mitigation sub-threads, comments, Langkah, attachments, mentions, subscriptions, quiet marker
 5. **Quarterly Assessment** — Lini 1 entry and finalise, Lini 3 blind entry, comparison opening task, explanation, recurring detection
 6. **Risk History, Notifications, Home**
 7. **Sheets & Print, Metrics**
@@ -1645,6 +1648,7 @@ The blind-assessment rule (INV-16) and the confidentiality rule (INV-17) are enf
 | 1.0 | 31-08-2026 | Initial version | Direktorat Data dan Kecerdasan Buatan |
 | 2.0 | 02-09-2026 | English rewrite; flags instead of hard gates; data model; SSO in v1.0; attachment security; metrics | Direktorat Data dan Kecerdasan Buatan |
 | 2.1 | 10-10-2026 | Accounts and roles: positions on three lines, Pejabat and Operator, roles following holdings, Lini 2 team assignment, Lini 3 unassigned | Direktorat Data dan Kecerdasan Buatan |
+| 2.9.2 | 22-10-2026 | Malware scanning by the antivirus on the OIKN virtual machine instead of ClamAV in the application (§2.1, NFR-010); no scan state or quarantine on `Attachment`, INV-10 removed | Direktorat Data dan Kecerdasan Buatan |
 | 2.9.1 | 22-10-2026 | Object storage RustFS (S3-compatible, Apache 2.0) replaces MinIO in §2.1, with the reason and the fallback | Direktorat Data dan Kecerdasan Buatan |
 | 2.9 | 13-10-2026 | Collapsible sidebar (72 px icon rail on desktop, remembered per user) whose freed width goes to the content; every page uses the full content width (no narrower single-column pages); register stages collapsed by default with collapsible risk type sub-sections | Direktorat Data dan Kecerdasan Buatan |
 | 2.8 | 13-10-2026 | Assessment by statement: scorers pick a configured statement per score value; numeric scores and averages hidden from all user views; ScoreOption added to score band versions | Direktorat Data dan Kecerdasan Buatan |

@@ -9,17 +9,18 @@ Staging dipakai untuk uji coba PPK (data sungguhan, jam nyata, tanpa data contoh
 | Butir | Minimum | Disarankan | Catatan |
 |---|---|---|---|
 | OS | Linux x86-64 dengan Docker Engine 24+ dan Docker Compose v2 | Ubuntu 24.04 LTS | Semua layanan berjalan sebagai kontainer |
-| CPU | 4 vCPU | 8 vCPU | ClamAV memakai ±1 vCPU saat memperbarui basis data virus |
-| RAM | 8 GB | 16 GB | ClamAV ±1,5 GB; PostgreSQL, gunicorn (3 worker), Celery |
+| CPU | 4 vCPU | 8 vCPU | PostgreSQL, gunicorn, Celery, RustFS, Keycloak |
+| RAM | 8 GB | 16 GB | PostgreSQL, gunicorn (3 worker), Celery |
 | Disk sistem | 40 GB | 80 GB | Image kontainer, log |
 | Disk data | 200 GB | 500 GB | PostgreSQL + RustFS (lampiran: kuota 1 GB per jabatan Lini 1 per TA, NFR-012) |
 | Cadangan | Volume terpisah atau penyimpanan cadangan OIKN | Harian, simpan 30 hari | `infra/backup/backup.sh` (pg_dump + objek bucket + manifest) dan `restore.sh` diuji di B9 (NFR-014); besar ≈ ukuran basis data + lampiran |
+| Antivirus | Antivirus VM yang sudah dikelola tim infrastruktur OIKN | — | SIMARIO tidak membawa pemindai sendiri (PRD v2.9.2, NFR-010). Mohon pastikan volume data RustFS (`rustfs-data`) tidak dihapus/dikarantina otomatis oleh antivirus — cukup dilaporkan — karena berkas di dalamnya adalah format internal RustFS; lihat R-12 di [04_risk_and_debt.md](04_risk_and_debt.md) |
 
 ## 2. Jaringan
 
 - Nama DNS, mis. `simario-staging.ikn.go.id`, mengarah ke server.
-- Port masuk **443** (HTTPS) dan **80** (dialihkan ke HTTPS). Tidak ada port lain yang perlu dibuka; PostgreSQL, Redis, RustFS, dan ClamAV hanya di jaringan internal Docker.
-- Akses keluar: registry image Docker (atau mirror internal), dan `database.clamav.net` untuk pembaruan basis data virus ClamAV (atau mirror internal).
+- Port masuk **443** (HTTPS) dan **80** (dialihkan ke HTTPS). Tidak ada port lain yang perlu dibuka; PostgreSQL, Redis, dan RustFS hanya di jaringan internal Docker.
+- Akses keluar: registry image Docker (atau mirror internal).
 - Bila memakai Keycloak OIKN: server dapat menjangkau `sso.ikn.go.id` (backchannel token dan Admin REST).
 
 ## 3. Sertifikat TLS

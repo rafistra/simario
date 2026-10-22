@@ -16,7 +16,6 @@ x-backend: &backend
     DATABASE_URL: postgres://${POSTGRES_USER:-simario}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-simario}
     REDIS_URL: redis://redis:6379/0
     S3_ENDPOINT_URL: http://storage:9000
-    CLAMAV_HOST: clamav
   volumes:
     # seed_reference reads the Rapim templates and score options (U-20).
     - ./docs/seed:/docs/seed:ro
@@ -68,18 +67,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 20
-
-  clamav:
-    image: clamav/clamav:1.4
-    restart: unless-stopped
-    volumes:
-      - clamav-db:/var/lib/clamav
-    healthcheck:
-      test: ["CMD", "clamdcheck.sh"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 300s
 
   migrate:
     <<: *backend
@@ -139,4 +126,3 @@ services:
 volumes:
   pgdata:
   rustfs-data:
-  clamav-db:

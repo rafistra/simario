@@ -1,7 +1,6 @@
-"""Final-review findings of B4: upload limits, download visibility, read checks, storage cleanup,
-polling and scan robustness."""
+"""Final-review findings of B4: upload limits, download visibility, read checks, storage cleanup
+and polling."""
 
-import datetime as dt
 import json
 from collections.abc import Iterator
 from typing import Any
@@ -10,7 +9,7 @@ import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from simario.assessments.models import Assessment
-from simario.board import files, services, tasks
+from simario.board import files, services
 from simario.board.models import Attachment, Comment
 from simario.core import clock
 from simario.registers.models import RegisterMitigation
@@ -26,8 +25,6 @@ def storage(monkeypatch: pytest.MonkeyPatch) -> Iterator[dict[str, bytes]]:
     objects: dict[str, bytes] = {}
     monkeypatch.setattr(files, "put", lambda key, data, mime: objects.__setitem__(key, data))
     monkeypatch.setattr(files, "delete", lambda key: objects.pop(key, None))
-    monkeypatch.setattr(files, "read", lambda key: objects[key])
-    monkeypatch.setattr(files, "clamd_scan", lambda data: True)
     yield objects
 
 
@@ -60,8 +57,6 @@ def test_storage_cleaned_when_post_fails(
 def test_withdrawn_comment_files_not_downloadable(demo: None, storage: dict[str, bytes]) -> None:
     cid = _post("usr-andi", [SimpleUploadedFile("bukti.pdf", PDF)]).json()["id"]
     att = Attachment.objects.get(owner_id=cid)
-    att.scan_status = "clean"
-    att.save()
     andi = client_for("usr-andi")
     assert andi.get(f"/api/v1/attachments/{att.id}/download").status_code == 302
     andi.post(f"/api/v1/comments/{cid}/withdraw")
@@ -78,7 +73,6 @@ def test_assessment_files_follow_blind_rules(demo: None) -> None:
         filename="bukti.pdf",
         size=10,
         mime_type="application/pdf",
-        scan_status="clean",
         uploaded_by=user("usr-hendra"),
         uploaded_at=clock.now(),
     )
@@ -109,26 +103,3 @@ def test_poll_returns_ids_and_rejects_bad_since(demo: None) -> None:
     assert str(comment.id) in res.json()["commentIds"]
     bad = client_for("usr-andi").get(f"/api/v1/register-risks/{RISK}/thread", {"since": "x"})
     assert bad.status_code == 422
-
-
-def test_sweep_survives_storage_errors(demo: None, monkeypatch: pytest.MonkeyPatch) -> None:
-    from botocore.exceptions import ClientError
-
-    Attachment.objects.create(
-        owner_kind="comment",
-        owner_id=Comment.objects.first().id,  # type: ignore[union-attr]
-        filename="hilang.pdf",
-        size=10,
-        mime_type="application/pdf",
-        scan_status="pending",
-        uploaded_by=user("usr-andi"),
-        uploaded_at=clock.now(),
-        object_key="attachments/missing",
-    )
-
-    def missing(key: str) -> bytes:
-        raise ClientError({"Error": {"Code": "NoSuchKey"}}, "GetObject")
-
-    monkeypatch.setattr(files, "read", missing)
-    tasks.sweep_pending(clock.now() + dt.timedelta(minutes=1))
-    assert Attachment.objects.get(filename="hilang.pdf").scan_status == "pending"

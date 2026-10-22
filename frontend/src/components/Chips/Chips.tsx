@@ -13,7 +13,6 @@ import {
   ClockAlert,
   FileText,
   FileX,
-  LoaderCircle,
   Lock,
   Repeat,
   ShieldOff,
@@ -152,39 +151,30 @@ export function Avatar({ name, size = 32 }: { name: string; size?: number }) {
 export interface AttachmentFileChipProps {
   name: string;
   meta: string;
-  scanning?: boolean;
   confidential?: boolean;
   href?: string;
 }
 
-/** AttachmentChip_File (.pen b3BSy). "Memindai…" while the scan runs (NFR-010). */
-export function AttachmentFileChip({
-  name,
-  meta,
-  scanning,
-  confidential,
-  href,
-}: AttachmentFileChipProps) {
+/** AttachmentChip_File (.pen b3BSy). */
+export function AttachmentFileChip({ name, meta, confidential, href }: AttachmentFileChipProps) {
   const body = (
     <>
       <span className="attachment__icon" aria-hidden>
-        {scanning ? <LoaderCircle className="spin" /> : <FileText />}
+        <FileText />
       </span>
       <span className="attachment__text">
         <span className="attachment__name">{name}</span>
-        <span className="attachment__meta">{scanning ? 'Memindai…' : meta}</span>
+        <span className="attachment__meta">{meta}</span>
       </span>
       {confidential && <Lock className="attachment__lock" aria-label="Konfidensial" />}
     </>
   );
-  return href && !scanning ? (
+  return href ? (
     <a className="attachment attachment--file" href={href} download={name}>
       {body}
     </a>
   ) : (
-    <span className="attachment attachment--file" aria-busy={scanning || undefined}>
-      {body}
-    </span>
+    <span className="attachment attachment--file">{body}</span>
   );
 }
 

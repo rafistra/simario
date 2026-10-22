@@ -92,9 +92,6 @@ S3_BUCKET = env("S3_BUCKET", default="simario")
 S3_PUBLIC_ENDPOINT = env("S3_PUBLIC_ENDPOINT", default="http://127.0.0.1:9100")
 S3_PUBLIC_PREFIX = env("S3_PUBLIC_PREFIX", default="/storage")
 
-CLAMAV_HOST = env("CLAMAV_HOST", default="localhost")
-CLAMAV_PORT = env.int("CLAMAV_PORT", default=3310)
-
 OIDC_ISSUER = env("OIDC_ISSUER", default="")
 OIDC_CLIENT_ID = env("OIDC_CLIENT_ID", default="")
 OIDC_CLIENT_SECRET = env("OIDC_CLIENT_SECRET", default="")

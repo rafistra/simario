@@ -1,5 +1,5 @@
 """Risk threads and attachments (PRD §2.8.1, §6). Nothing is deleted (RB-PPN-003): comments are
-withdrawn; files are quarantined when the scan finds a threat (NFR-010)."""
+withdrawn."""
 
 from django.conf import settings
 from django.db import models
@@ -74,14 +74,12 @@ class ThreadView(models.Model):
 
 class Attachment(UUIDModel):
     OWNER_KINDS = [("comment", "comment"), ("assessment", "assessment")]
-    SCAN_STATUSES = [(s, s) for s in ("pending", "clean", "quarantined")]
 
     owner_kind = models.CharField(max_length=16, choices=OWNER_KINDS)
     owner_id = models.UUIDField(db_index=True)
     filename = models.CharField(max_length=255)
     size = models.PositiveBigIntegerField()
     mime_type = models.CharField(max_length=120)
-    scan_status = models.CharField(max_length=16, choices=SCAN_STATUSES, default="pending")
     is_confidential = models.BooleanField(default=False)
     uploaded_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"

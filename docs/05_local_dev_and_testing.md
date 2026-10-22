@@ -54,7 +54,7 @@ cp .env.example .env
 docker compose up -d --build
 ```
 
-Start pertama butuh waktu: image diunduh dan ClamAV mengunduh basis data virus (± 5 menit; `clamav` berstatus `starting` sampai selesai). Service `migrate` berjalan sekali (migrasi + `init_storage` membuat bucket), lalu `api`, `worker`, dan `beat` mulai.
+Start pertama butuh waktu karena image diunduh. Service `migrate` berjalan sekali (migrasi + `init_storage` membuat bucket), lalu `api`, `worker`, dan `beat` mulai.
 
 | Layanan | Alamat di host | Catatan |
 |---|---|---|
@@ -64,9 +64,8 @@ Start pertama butuh waktu: image diunduh dan ClamAV mengunduh basis data virus (
 | RustFS | http://localhost:9100 (S3), http://localhost:9101 (konsol) | Port host 9100/9101 (9000/9001 sering terpakai) |
 | PostgreSQL | localhost:5432 | `simario`/`simario` |
 | Redis | localhost:6379 | — |
-| ClamAV | hanya di jaringan compose (`clamav:3310`) | — |
 
-Semua port host hanya terikat ke `127.0.0.1` (tidak terjangkau dari jaringan kantor). `GET /api/v1/health` menjawab `200 {"status":"ok"}` bila basis data, Redis, storage, dan ClamAV siap; `503 "degraded"` menyebut pemeriksaan yang gagal.
+Semua port host hanya terikat ke `127.0.0.1` (tidak terjangkau dari jaringan kantor). `GET /api/v1/health` menjawab `200 {"status":"ok"}` bila basis data, Redis, dan storage siap; `503 "degraded"` menyebut pemeriksaan yang gagal.
 
 Uji dan lint backend berjalan di host (`uv` memasang Python 3.12 sendiri), dari `backend/`, dengan service `db` menyala:
 
@@ -107,13 +106,13 @@ Vektor uji bersama ada di `shared/test-vectors/` (format di README-nya); Vitest 
 - **Masuk sebagai persona tanpa Keycloak:** tombol "Masuk sebagai persona (mode pengembangan)" di `/login`, menu DevPanel "Masuk sebagai", atau tautan demo `?sebagai=usr-andi&waktu=2027-03-18T09:00&data=sesuai` (semuanya lewat `/api/v1/dev/*`).
 - **Impor ulang realm** setelah `realm-export.json` berubah: `docker compose rm -sf keycloak && docker compose up -d keycloak`.
 - **Cari pegawai (B2):** `GET /api/v1/staff?q=` (dialog "Tunjuk Operator") memanggil Keycloak Admin REST dengan service account client `simario` (peran realm-management `view-users`, sudah ada di realm lokal). Untuk sso.ikn.go.id client yang sama perlu peran itu; tanpa `OIDC_*` atau bila Keycloak tidak terjangkau, jawabannya 503 "Pencarian pegawai belum tersedia."
-- **Lampiran (B4):** unggahan disimpan di RustFS dan dipindai ClamAV oleh worker Celery (`docker compose logs worker` menampilkan `clamd: stream: OK|… FOUND`). Unduhan diarahkan ke `/storage/…` (proxy Vite → RustFS, URL bertanda tangan untuk `S3_PUBLIC_ENDPOINT`). Uji karantina: unggah DOCX (zip) berisi string EICAR. Setelah dependensi backend berubah: `docker compose up -d --build api worker beat`.
+- **Lampiran (B4):** unggahan disimpan di RustFS dan langsung dapat diunduh; aplikasi tidak memindai (pemindaian malware oleh antivirus VM, PRD v2.9.2). Unduhan diarahkan ke `/storage/…` (proxy Vite → RustFS, URL bertanda tangan untuk `S3_PUBLIC_ENDPOINT`). Setelah dependensi backend berubah: `docker compose up -d --build api worker beat`.
 - **Impor CSV (B2):** `/pengaturan/impor` membuat `ImportJob` uji coba di backend; "Terapkan" memeriksa ulang lalu menerapkan. Pemisah `,` atau `;` (Excel), BOM, dan CRLF diterima. `POST /api/v1/dev/reset` menghapus job dan pengguna baru.
 - **Uji asap SSO** (butuh `npm run dev`): `uv run python scripts/oidc_smoke.py 198204172008011003` → berakhir dengan `GET /api/v1/me` 200; dengan NIP Galih → `refused: belum-terdaftar`.
 - DevPanel menggeser jam server dan mengatur ulang data server (B9: tidak ada lagi data `localStorage`).
 - **Migrasi digabung di B9 dan sejak itu hanya maju.** Basis data dev yang dibuat sebelum B9 harus di-reset sekali: `docker compose exec db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"'`, lalu `migrate`, `seed_reference`, `seed_demo`.
 
-Mengatur ulang semua data backend (basis data, bucket, basis data ClamAV, Keycloak):
+Mengatur ulang semua data backend (basis data, bucket, Keycloak):
 
 ```bash
 docker compose down -v
@@ -121,7 +120,7 @@ docker compose down -v
 
 ## 2b. Staging dan produksi
 
-Satu berkas `docker-compose.prod.yml` untuk staging dan produksi (gunicorn, Celery worker/beat, PostgreSQL, Redis, RustFS, ClamAV, nginx dengan HTTPS). Perbedaannya hanya `.env.prod` (lihat `.env.prod.example`): `DJANGO_SETTINGS_MODULE=config.settings.staging|production`, domain, rahasia, `OIDC_*`. Hanya nginx yang membuka port dan ia menambahkan header keamanan (HSTS sesuai `SECURE_HSTS_SECONDS`, `X-Frame-Options DENY`, `frame-ancestors 'none'`, nosniff) pada setiap respons (`infra/nginx/security-headers.conf`); `/storage` diteruskan ke RustFS dengan Host yang dipakai tanda tangan URL unduhan. Kebutuhan server: [07_staging_requirements.md](07_staging_requirements.md).
+Satu berkas `docker-compose.prod.yml` untuk staging dan produksi (gunicorn, Celery worker/beat, PostgreSQL, Redis, RustFS, nginx dengan HTTPS). Perbedaannya hanya `.env.prod` (lihat `.env.prod.example`): `DJANGO_SETTINGS_MODULE=config.settings.staging|production`, domain, rahasia, `OIDC_*`. Hanya nginx yang membuka port dan ia menambahkan header keamanan (HSTS sesuai `SECURE_HSTS_SECONDS`, `X-Frame-Options DENY`, `frame-ancestors 'none'`, nosniff) pada setiap respons (`infra/nginx/security-headers.conf`); `/storage` diteruskan ke RustFS dengan Host yang dipakai tanda tangan URL unduhan. Kebutuhan server: [07_staging_requirements.md](07_staging_requirements.md).
 
 **Menyebarkan ke staging**
 
@@ -295,6 +294,5 @@ Tidak ada lagi rilis demo statis (Netlify dihapus di B9). Uji coba dan UAT berja
 | Token CSS berubah tidak sesuai `.pen` | `tokens.css` diedit tangan | Ambil ulang `GetVariables()` → `scripts/pencil-variables.json` → `npm run tokens` |
 | Uji lambat (± 1 menit) | jsdom dibuat per berkas | Jalankan berkas tertentu saja; lihat U-15 |
 | `docker compose up` gagal "port is already allocated" | Proyek lain memakai port host yang sama | Hentikan proyek itu atau ubah pemetaan port di `docker-compose.yml` (lalu `.env` dan `vite.config.ts`) |
-| `/api/v1/health` 503 dengan `clamav: error` | ClamAV masih mengunduh basis data virus | Tunggu `docker compose ps` menunjukkan `clamav` `healthy` |
 | `test_committed_schema_is_current` gagal | `openapi.yaml` basi | Jalankan `spectacular --file openapi.yaml`, lalu `npm run api:types` |
 | Halaman langsung ke `/login?alasan=sesi-berakhir` | Batas sesi tidak aktif tercapai (bawaan 60 menit, bisa dipercepat di DevPanel) | Masuk lagi; periksa setelan batas sesi di DevPanel |

@@ -15,7 +15,7 @@ Repositori ini saat ini berisi **prototipe frontend saja**:
 | Backend / API | 🟨 **Fondasi (B1):** identitas, organisasi, kalender, referensi, audit, notifikasi, sesi + SSO Keycloak, `/me`; modul lain masih disimulasikan di browser (`frontend/src/data/`) | Django 5.2 + Django REST Framework |
 | Basis data | `localStorage` browser, satu kunci per koleksi (`simario:v1:*`) | PostgreSQL 16 |
 | Tugas terjadwal | Evaluator di browser (`data/local/scheduler.ts`) | Celery + Redis, Celery Beat |
-| Penyimpanan berkas | Hanya metadata; isi berkas tidak disimpan | RustFS (S3; PRD: MinIO) + pemindaian ClamAV |
+| Penyimpanan berkas | Hanya metadata; isi berkas tidak disimpan | RustFS (S3) + antivirus VM di luar aplikasi |
 | Autentikasi | Pemilih persona + akun lokal dari seed | Keycloak (OIDC) realm "Otorita IKN", akun lokal sebagai cadangan |
 | Penyebaran | Netlify, SPA statis (`netlify.toml`) | Docker Compose di belakang nginx, staging + produksi, lingkungan internal OIKN |
 
@@ -117,8 +117,7 @@ flowchart LR
   CB[Celery Beat] --> RD
   CW --> PG
   DJ -->|pre-signed URL 5 menit| MO[(RustFS<br/>S3)]
-  CW --> AV[ClamAV]
-  AV --> MO
+  AV[Antivirus VM<br/>di luar aplikasi] -.->|memindai volume| MO
   DJ -->|OIDC| KC[Keycloak<br/>sso.ikn.go.id]
 ```
 
@@ -135,7 +134,7 @@ Pemetaan komponen prototipe → produksi:
 | `scheduler.ts` (dipicu jam simulasi) | Celery Beat + task idempoten | Lihat [01_backend.md §5](01_backend.md#5-tugas-terjadwal) |
 | `state/clock.ts` (tanggal simulasi) | Jam server | DevPanel tidak ada di produksi |
 | Pemilih persona / akun lokal seed | Keycloak OIDC, akun lokal ber-hash | FR-AUT-001…005 |
-| `setTimeout` pemindaian 2 detik | ClamAV sebelum berkas dapat diunduh | NFR-010, INV-10 |
+| — (prototipe tidak memindai) | Antivirus VM memindai server di luar aplikasi; berkas dapat diunduh begitu tersimpan | NFR-010 (PRD v2.9.2) |
 | Event `storage` antar-tab | Polling 30 detik di halaman utas | NFR-015 |
 | `data/seed/*` + `docs/seed/*.json` | Fixture / management command Django | FR-MST-010 |
 
@@ -196,7 +195,7 @@ Perbedaan bentuk data prototipe terhadap PRD dicatat di [01_backend.md §4](01_b
 | A-9 | Sidebar dapat diciutkan menjadi rel 72 px; konten melebar hingga 1368 px | PRD v2.9 | PRD §1.8.1, §2.2 |
 | A-10 | ~~Penyebaran demo di Netlify sebagai SPA statis~~ — dihapus di B9 | Aplikasi kini memerlukan backend | — |
 | A-11 | Implementasi prototipe dipertahankan sebagai backend tiruan Vitest (`src/test/fake/`), bukan dihapus | 500+ uji halaman tetap berjalan tanpa server; kode aplikasi hanya boleh mengimpor tipenya (lint) dan bundel diperiksa | Rencana B9 |
-| A-11 | Stack backend: Python 3.12, Django 5.2 LTS + DRF, PostgreSQL 16, Celery + Redis, Keycloak, ClamAV; sesi cookie di server (BFF), kontrak OpenAPI → tipe TS | Melengkapi PRD §2.1 dengan versi dan pola integrasi | [01_backend.md §2.1](01_backend.md#21-keputusan-stack-21-okt-2026) |
+| A-11 | Stack backend: Python 3.12, Django 5.2 LTS + DRF, PostgreSQL 16, Celery + Redis, Keycloak; pemindaian malware oleh antivirus VM (sejak 22 Okt 2026, semula ClamAV); sesi cookie di server (BFF), kontrak OpenAPI → tipe TS | Melengkapi PRD §2.1 dengan versi dan pola integrasi | [01_backend.md §2.1](01_backend.md#21-keputusan-stack-21-okt-2026) |
 | A-12 | Penyimpanan objek RustFS lewat API S3 standar, bukan MinIO | Keputusan pengguna 21 Okt 2026; lisensi Apache 2.0, edisi komunitas MinIO dikurangi; **berbeda dari PRD** (risiko R-09) | [01_backend.md §2.1](01_backend.md#21-keputusan-stack-21-okt-2026) |
 | A-13 | Data demo backend = ekspor otomatis `buildSeed()` prototipe (`npm run seed:export` → `demo.json`) dengan UUID `uuid5` dari ID prototipe; data referensi produksi dari `docs/seed` + `catalog.json` | Satu sumber data contoh, tautan demo dan vektor uji stabil | [rencana B1](superpowers/plans/2026-10-21-backend-b1-fondasi.md) |
 | A-14 | Jembatan ID sementara di frontend (UUID ↔ ID prototipe) selama modul dipindah bertahap | Modul lokal tetap bekerja tanpa flag sumber data; dihapus di B9 | [rencana B1](superpowers/plans/2026-10-21-backend-b1-fondasi.md) |

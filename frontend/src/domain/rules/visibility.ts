@@ -78,7 +78,6 @@ export function canSeeResult(
 
 /** VIS-3 / INV-17: confidential attachments only with permission 10. */
 export function canSeeAttachment(viewer: Viewer, attachment: Attachment): boolean {
-  if (attachment.scanStatus !== 'clean' && attachment.uploadedById !== viewer.userId) return false; // INV-10
   return !attachment.isConfidential || viewer.canSeeConfidential;
 }
 

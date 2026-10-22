@@ -8,7 +8,7 @@ Panduan kerja untuk Claude di repositori ini. Baca seluruhnya sebelum menulis ko
 
 - Semua modul PRD masuk cakupan (AUT, BRD, REG, PPN, NIL, RWY, LBR, MST, NTF, ADM), dikerjakan bertahap dengan checkpoint (§9).
 - Prototipe frontend selesai (Tahap 0–10); sejak B9 datanya di backend (PostgreSQL + RustFS) lewat satu lapisan repository.
-- **Integrasi backend selesai (B0–B9)** di branch `feat/backend-integration`, menurut spec `docs/superpowers/specs/2026-10-21-backend-integration-design.md` (Django + DRF, PostgreSQL, Celery, RustFS, Keycloak, ClamAV; §9b). Sejak B9 aplikasi hanya berjalan di backend; implementasi prototipe tinggal sebagai backend tiruan Vitest (`frontend/src/test/fake/`).
+- **Integrasi backend selesai (B0–B9)** di branch `feat/backend-integration`, menurut spec `docs/superpowers/specs/2026-10-21-backend-integration-design.md` (Django + DRF, PostgreSQL, Celery, RustFS, Keycloak; §9b; pemindaian malware oleh antivirus VM sejak 22 Okt 2026). Sejak B9 aplikasi hanya berjalan di backend; implementasi prototipe tinggal sebagai backend tiruan Vitest (`frontend/src/test/fake/`).
 
 ## 2. Sumber kebenaran (urutan prioritas)
 
@@ -84,7 +84,7 @@ docker-compose.yml     layanan lokal
 - Sejak B9 tidak ada implementasi lokal di aplikasi: semua namespace di `data/http/`. Implementasi prototipe (`src/test/fake/`) hanya menjawab `fetch` di Vitest; kode aplikasi hanya boleh mengimpor tipenya (lint), dan `npm run build` gagal bila store/seed terbundel.
 - Data contoh dimuat `seed_demo` di backend dan bisa di-reset dari DevPanel (`/dev/reset`).
 - Setiap mutasi menulis `AuditLog` (append-only; tidak ada fungsi update/delete untuk audit) dan, bila relevan, `Notification` sesuai FR-NTF.
-- Lampiran disimpan di RustFS, dipindai ClamAV, diunduh lewat URL pre-signed `/storage` (B4).
+- Lampiran disimpan di RustFS dan diunduh lewat URL pre-signed `/storage` (B4). Pemindaian malware dilakukan antivirus VM di luar aplikasi (PRD v2.9.2); tidak ada status pindai atau karantina.
 - DevPanel dapat menambah latensi, menggagalkan panggilan berikutnya, atau menyimulasikan luring pada `apiFetch`.
 
 ## 5. Waktu, sesi, persona
@@ -444,6 +444,8 @@ Hasil:
 - [x] `docs/00–07`, PRD §2.1 (RustFS, v2.9.1 — disetujui pengguna 22 Okt 2026), `frontend/README.md` diperbarui
 
 Catatan Tahap B9: kode aplikasi tidak lagi membaca store lokal atau `localStorage` untuk data — `data/api`, `data/local`, `data/seed`, `db.ts` pindah ke `src/test/fake/` (backend tiruan Vitest; lint hanya mengizinkan impor tipe, `npm run build` gagal bila store/seed terbundel); fungsi bantu murni ke `src/data/derive/`. Backend menambah `GET /positions/{pos}/workspace` dan preferensi server. Jembatan id dihapus (`legacy-ids.json` hanya untuk tautan demo). `useQuery` kini membedakan kueri baru dari muat ulang (`refresh`), sehingga muat ulang setelah mutasi/polling tidak mengosongkan halaman — banner "komentar baru" sebelumnya tidak pernah muncul di backend. Migrasi dibuat ulang per app (trigger audit dipertahankan) dan sejak ini hanya maju; DB dev lama perlu di-reset sekali. Cadangan/pemulihan `infra/backup/` diuji pada stack dev. Netlify dan gerbang modul dihapus. PRD §2.1 diperbarui ke RustFS di v2.9.1 setelah disetujui pengguna.
+
+Catatan pascatahap (antivirus, 22 Okt 2026): atas permintaan pengguna layanan ClamAV dihapus karena VM OIKN sudah punya antivirus (PRD v2.9.2, NFR-010; INV-10 dihapus). Ikut dihapus: `Attachment.scan_status` (migrasi `board/0004`), task `attachment_scan` + sapuan terjadwal, karantina + notifikasi `attachment_quarantined`, cek health `clamav`, dan "Memindai…" di `AttachmentFileChip`. Unggahan langsung dapat diunduh; utas kembali mem-poll tiap 30 detik saja. Risiko yang tersisa dicatat sebagai R-12.
 
 ## 10. Perintah
 

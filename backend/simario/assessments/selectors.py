@@ -125,17 +125,11 @@ def attachments_of(db: Db, viewer: Row, assessment_id: str) -> tuple[list[Row], 
     for f in db["attachments"]:
         if f["owner_kind"] != "assessment" or f["owner_id"] != assessment_id:
             continue
-        if f["scan_status"] == "quarantined":
-            continue
         if f["is_confidential"] and not viewer["can_see_confidential"]:
             hidden += 1
             continue
-        if f["scan_status"] == "pending":
-            if f["uploaded_by_id"] == viewer["user_id"]:
-                out.append({"attachment": f, "scanning": True})
-            continue
         if vis.can_see_attachment(viewer, f):
-            out.append({"attachment": f, "scanning": False})
+            out.append({"attachment": f})
     return out, hidden
 
 

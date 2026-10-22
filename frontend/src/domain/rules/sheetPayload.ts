@@ -102,11 +102,7 @@ const isImage = (a: Attachment) => a.mimeType.startsWith('image/');
 
 function sheetComment(db: DB, c: Comment, at: ISODateTime): SheetComment {
   const files = db.attachments.filter(
-    (a) =>
-      a.ownerKind === 'comment' &&
-      a.ownerId === c.id &&
-      a.scanStatus === 'clean' &&
-      a.uploadedAt <= at,
+    (a) => a.ownerKind === 'comment' && a.ownerId === c.id && a.uploadedAt <= at,
   );
   const user = db.users.find((u) => u.id === c.authorUserId)?.fullName ?? '';
   const pos = db.positions.find((p) => p.id === c.actingPositionId)?.name ?? '';

@@ -92,7 +92,7 @@ B4: semua cerita PPN berjalan di backend, termasuk unggahan sungguhan, pemindaia
 | US-NIL-002 | Sebagai Lini 1, saya ingin menyatakan risiko belum relevan triwulan ini, dengan alasan, daripada mengarang skor | FR-NIL-002 | ✅ | "Belum relevan triwulan ini" + alasan |
 | US-NIL-003 | Sebagai Pejabat, saya ingin Operator menyiapkan penilaian dan saya sendiri yang menuntaskannya | FR-NIL-003, 004 | ✅ | Rafi "Tandai Siap" → Andi "Tuntaskan Penilaian" / "Buka Kembali" |
 | US-NIL-004 | Sebagai Lini 3, saya ingin menilai setiap risiko tanpa melihat penilaian siapa pun | FR-NIL-005, VIS-1, VIS-5 | ✅ | `?sebagai=usr-hendra&waktu=2027-03-22T09:00&data=sesuai` |
-| US-NIL-005 | Sebagai Lini 3, saya ingin menulis alasan saya dan melampirkan bahan konfidensial | FR-NIL-005, VIS-4 | ✅ (backend B5: berkas disimpan di RustFS dan dipindai ClamAV) | Hendra → catatan + lampiran konfidensial bawaan |
+| US-NIL-005 | Sebagai Lini 3, saya ingin menulis alasan saya dan melampirkan bahan konfidensial | FR-NIL-005, VIS-4 | ✅ (backend B5: berkas disimpan di RustFS; pemindaian malware oleh antivirus VM) | Hendra → catatan + lampiran konfidensial bawaan |
 | US-NIL-006 | Sebagai Lini 3, saya ingin antrean semua yang masih harus dinilai direktorat saya di seluruh jabatan | FR-NIL-010 | ✅ | Hendra/Maya → `/penilaian` |
 | US-NIL-007 | Sebagai peserta, saya ingin melihat perbandingan begitu dibuka | FR-NIL-007, 009, FR-NTF-007 | ✅ | Tanggal bawaan 6 Apr 2027 → Penilaian TW I PPK A-1 |
 | US-NIL-008 | Sebagai Lini 1, bila penilaian saya lebih tinggi dari Lini 3, saya ingin menjelaskan kendala dan rencana saya | FR-NIL-008 | ✅ | Andi → blok penjelasan per direktorat → "Kirim Penjelasan" |

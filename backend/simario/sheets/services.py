@@ -113,7 +113,6 @@ def _allowed_photos(position_id: str, quarter_id: str, line: int) -> set[str]:
         for i in Attachment.objects.filter(
             owner_kind="comment",
             owner_id__in=comments,
-            scan_status="clean",
             is_confidential=False,
             mime_type__startswith="image/",
         ).values_list("id", flat=True)

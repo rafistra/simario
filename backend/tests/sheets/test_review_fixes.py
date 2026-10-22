@@ -15,7 +15,7 @@ def test_calendar_runs_after_comparisons_and_freezing(demo: None) -> None:
     order = scheduler.run_all(clock.parse_local("2027-04-06T09:00"))
     assert order.index("calendar") > order.index("comparisons")
     assert order.index("calendar") > order.index("sheet_freeze")
-    assert order[:2] == ["attachment_scan", "risk_quarters"]
+    assert order[0] == "risk_quarters"
 
 
 def test_snapshot_must_belong_to_the_viewed_quarter(demo: None) -> None:

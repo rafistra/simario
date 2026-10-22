@@ -21,7 +21,6 @@ def register(name: str) -> Callable[[Task], Task]:
 # The prototype's order (frontend/src/data/local/scheduler.ts): openings and sheet versions come
 # before the calendar may archive a year; tasks not listed run afterwards in registration order.
 ORDER = (
-    "attachment_scan",
     "risk_quarters",
     "score_bands",
     "comparisons",

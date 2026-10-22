@@ -22,7 +22,6 @@ def storage(monkeypatch: pytest.MonkeyPatch) -> Iterator[dict[str, bytes]]:
     objects: dict[str, bytes] = {}
     monkeypatch.setattr(files, "put", lambda key, data, mime: objects.__setitem__(key, data))
     monkeypatch.setattr(files, "delete", lambda key: objects.pop(key, None))
-    monkeypatch.setattr(files, "clamd_scan", lambda data: True)
     yield objects
 
 

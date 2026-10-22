@@ -56,8 +56,5 @@ def can_see_result(viewer: Row, opened: set[str], expected: list[str]) -> bool:
 
 
 def can_see_attachment(viewer: Row, attachment: Row) -> bool:
-    """VIS-3 / INV-17: confidential files only with permission 10; unscanned files only for
-    their uploader (INV-10)."""
-    if attachment["scan_status"] != "clean" and attachment["uploaded_by_id"] != viewer["user_id"]:
-        return False
+    """VIS-3 / INV-17: confidential files only with permission 10."""
     return not attachment["is_confidential"] or bool(viewer["can_see_confidential"])

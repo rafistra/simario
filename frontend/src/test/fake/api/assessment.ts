@@ -85,7 +85,7 @@ export interface CellView {
   assessment: AssessmentDisplay | null;
   /** The viewer's own chosen value (dropdown key); null for every other column. */
   selectedValue: number | null;
-  attachments: { attachment: Attachment; scanning: boolean }[];
+  attachments: { attachment: Attachment }[];
   confidentialHidden: number;
   /** Lini 3 cells: the opened result as the viewer may see it. */
   result: ComparisonResult | null;
@@ -160,21 +160,16 @@ function sessionUser() {
 }
 
 function attachmentsOf(db: DB, viewer: Viewer, assessmentId: string) {
-  const list: { attachment: Attachment; scanning: boolean }[] = [];
+  const list: { attachment: Attachment }[] = [];
   let hidden = 0;
   for (const a of db.attachments.filter(
     (x) => x.ownerKind === 'assessment' && x.ownerId === assessmentId,
   )) {
-    if (a.scanStatus === 'quarantined') continue;
     if (a.isConfidential && !viewer.canSeeConfidential) {
       hidden++;
       continue;
     }
-    if (a.scanStatus === 'pending') {
-      if (a.uploadedById === viewer.userId) list.push({ attachment: a, scanning: true });
-      continue;
-    }
-    if (canSeeAttachment(viewer, a)) list.push({ attachment: a, scanning: false });
+    if (canSeeAttachment(viewer, a)) list.push({ attachment: a });
   }
   return { list, hidden };
 }
@@ -876,20 +871,16 @@ export const assessmentApi = {
         const p = fileProblem(f.name, f.size);
         if (p) throw new ApiError('validation', `${f.name}: ${p}`);
       }
-      const ids: string[] = [];
       mutateDb((d) => {
         const x = ensureAssessment(d, rqId, assessorPositionId, line, q, a.at);
         for (const f of files) {
-          const id = newId('att');
-          ids.push(id);
           d.attachments.push({
-            id,
+            id: newId('att'),
             ownerKind: 'assessment',
             ownerId: x.id,
             filename: f.name,
             sizeBytes: f.size,
             mimeType: f.mime,
-            scanStatus: 'pending',
             // VIS-4: Lini 3 assessment files are confidential by default.
             isConfidential: line === 3 ? f.confidential : false,
             uploadedById: a.userId,
@@ -902,14 +893,6 @@ export const assessmentApi = {
           files: files.map((f) => f.name),
         });
       });
-      setTimeout(
-        () =>
-          mutateDb((d) => {
-            for (const f of d.attachments)
-              if (ids.includes(f.id) && f.scanStatus === 'pending') f.scanStatus = 'clean';
-          }),
-        2000,
-      );
     }),
 
   removeFile: (attachmentId: string) =>

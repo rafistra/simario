@@ -191,20 +191,19 @@ export function CommentItem({
         )}
         {(c.attachments.length > 0 || c.confidentialHidden > 0) && (
           <div className="comment__files">
-            {c.attachments.map(({ attachment: a, scanning }) => (
+            {c.attachments.map(({ attachment: a }) => (
               <span key={a.id} className="comment__file">
-                {a.mimeType.startsWith('image/') && !scanning ? (
+                {a.mimeType.startsWith('image/') ? (
                   <AttachmentImageChip name={a.filename} />
                 ) : (
                   <AttachmentFileChip
                     name={a.filename}
                     meta={`${EXT_LABEL(a.filename)} · ${formatFileSize(a.sizeBytes)}`}
-                    scanning={scanning}
                     confidential={a.isConfidential}
-                    href={scanning ? undefined : attachmentUrl(a.id)}
+                    href={attachmentUrl(a.id)}
                   />
                 )}
-                {c.isOwn && c.line === 3 && !a.isConfidential && !scanning && (
+                {c.isOwn && c.line === 3 && !a.isConfidential && (
                   <button
                     type="button"
                     className="comment__file-action"

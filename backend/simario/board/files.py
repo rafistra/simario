@@ -1,17 +1,12 @@
-"""Attachment files (NFR-009 … 012, spec §4.7): content checks, storage in RustFS, ClamAV scan,
-quarantine and pre-signed downloads. Only standard S3 calls and the clamd INSTREAM protocol."""
+"""Attachment files (NFR-009 … 012, spec §4.7): content checks, storage in RustFS and pre-signed
+downloads. Only standard S3 calls. Malware scanning is done by the VM antivirus, outside the app."""
 
-import logging
-import socket
-import struct
 from typing import Any
 
 import puremagic
 from django.conf import settings
 
 from simario.core.storage import s3_client
-
-log = logging.getLogger(__name__)
 
 # Extension → MIME types the content may have (NFR-009). DOCX/XLSX are ZIP containers.
 ALLOWED_MIME = {
@@ -61,24 +56,6 @@ def delete(key: str) -> None:
     s3_client().delete_object(Bucket=settings.S3_BUCKET, Key=key)
 
 
-def read(key: str) -> bytes:
-    body = s3_client().get_object(Bucket=settings.S3_BUCKET, Key=key)["Body"]
-    return bytes(body.read())
-
-
-def quarantine(key: str) -> str:
-    """Moves an infected object under quarantine/ (copy + delete: S3 has no move)."""
-    target = f"quarantine/{key}"
-    client = s3_client()
-    client.copy_object(
-        Bucket=settings.S3_BUCKET,
-        Key=target,
-        CopySource={"Bucket": settings.S3_BUCKET, "Key": key},
-    )
-    client.delete_object(Bucket=settings.S3_BUCKET, Key=key)
-    return target
-
-
 def presigned_url(key: str, filename: str) -> str:
     """A 5-minute download URL under the application origin (`/storage/…`): signed for the
     storage host the proxy forwards to, then rebased so RustFS is never exposed directly."""
@@ -104,20 +81,3 @@ def presigned_url(key: str, filename: str) -> str:
     )
     base = settings.S3_PUBLIC_ENDPOINT.rstrip("/")
     return str(url).replace(base, settings.S3_PUBLIC_PREFIX.rstrip("/"), 1)
-
-
-def clamd_scan(data: bytes) -> bool:
-    """True when ClamAV reports the content clean (INSTREAM). Raises OSError when clamd is down."""
-    with socket.create_connection((settings.CLAMAV_HOST, settings.CLAMAV_PORT), timeout=30) as s:
-        s.sendall(b"zINSTREAM\0")
-        for i in range(0, len(data), 64 * 1024):
-            chunk = data[i : i + 64 * 1024]
-            s.sendall(struct.pack(">I", len(chunk)) + chunk)
-        s.sendall(struct.pack(">I", 0))
-        reply = s.recv(4096).rstrip(b"\0\n").decode(errors="replace")
-    log.info("clamd: %s", reply)
-    if reply.endswith("OK"):
-        return True
-    if reply.endswith("FOUND"):
-        return False
-    raise OSError(f"clamd: {reply}")

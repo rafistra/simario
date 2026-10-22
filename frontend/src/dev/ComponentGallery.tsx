@@ -308,7 +308,7 @@ export default function ComponentGallery() {
         </Row>
         <Row label="Lampiran">
           <AttachmentFileChip name="SP2D_Termin1_PPK-A1.pdf" meta="PDF · 1,2 MB" href="#" />
-          <AttachmentFileChip name="Notulen_Rapat_RPD_TW1.pdf" meta="PDF · 640 KB" scanning />
+          <AttachmentFileChip name="Notulen_Rapat_RPD_TW1.pdf" meta="PDF · 640 KB" />
           <AttachmentFileChip name="Kertas_Kerja_Audit.xlsx" meta="XLSX · 88 KB" confidential />
           <AttachmentImageChip name="foto_bast.jpg" />
           <ConfidentialAttachmentsChip count={2} />

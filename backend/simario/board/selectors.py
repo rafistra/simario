@@ -249,17 +249,11 @@ def _attachments_for(db: Db, viewer: Row, owner_id: str) -> tuple[list[Row], int
     for a in db["attachments"]:
         if a["owner_kind"] != "comment" or a["owner_id"] != owner_id:
             continue
-        if a["scan_status"] == "quarantined":
-            continue
         if a["is_confidential"] and not viewer["can_see_confidential"]:
             hidden += 1
             continue
-        if a["scan_status"] == "pending":
-            if a["uploaded_by_id"] == viewer["user_id"]:
-                out.append({"attachment": a, "scanning": True})
-            continue
         if vis.can_see_attachment(viewer, a):
-            out.append({"attachment": a, "scanning": False})
+            out.append({"attachment": a})
     return out, hidden
 
 
@@ -631,11 +625,9 @@ def downloadable(user: User, attachment_id: uuid.UUID) -> Attachment:
     assert_can_read(user, str(risk.register.position_id), risk.register.fiscal_year_id)
     viewer = vis.viewer_for(load_access_db(), str(user.id), clock.today().isoformat())
     row = {
-        "scan_status": a.scan_status,
-        "uploaded_by_id": str(a.uploaded_by_id),
         "is_confidential": a.is_confidential,
     }
-    if a.scan_status != "clean" or not vis.can_see_attachment(viewer, row):
+    if not vis.can_see_attachment(viewer, row):
         raise ApiError("not_found", "Lampiran tidak ditemukan.")
     if a.owner_kind == "assessment":
         # Assessment evidence follows the assessment's own visibility (VIS-1/2/5/9, INV-16).

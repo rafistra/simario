@@ -51,7 +51,6 @@ function c(spec: C) {
       filename: f.name,
       sizeBytes: f.size,
       mimeType: f.mime,
-      scanStatus: 'clean',
       isConfidential: f.confidential ?? false,
       uploadedById: f.by ?? spec.author,
       uploadedAt: spec.at,

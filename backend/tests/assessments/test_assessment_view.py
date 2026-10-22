@@ -92,7 +92,6 @@ def test_inv17_confidential_evidence_hidden(demo: None) -> None:
         filename="temuan-rahasia.pdf",
         size=10,
         mime_type="application/pdf",
-        scan_status="clean",
         is_confidential=True,
         uploaded_by=user("usr-hendra"),
         uploaded_at=clock.now(),

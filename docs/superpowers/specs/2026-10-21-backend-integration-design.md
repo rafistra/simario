@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | Tanggal | 21 Okt 2026 |
-| Status | Disetujui pengguna 21 Okt 2026 |
+| Status | Disetujui pengguna 21 Okt 2026; revisi 22 Okt 2026 (pengguna): ClamAV dihapus, pemindaian oleh antivirus VM (PRD v2.9.2) |
 | Branch | `feat/backend-integration` |
 | Acuan | PRD v2.9 (§2.1, §2.3, §2.5–§2.8), [01_backend.md](../../01_backend.md) (§2.1 keputusan stack), [03_api_contract.md](../../03_api_contract.md), [04_risk_and_debt.md](../../04_risk_and_debt.md) |
 
@@ -44,7 +44,7 @@ Yang membangun dan merawat: **pengguna bersama Claude**. Tidak ada tim lain, seh
 
 ## 3. Batasan
 
-- Stack sesuai [01_backend.md §2.1](../../01_backend.md#21-keputusan-stack-21-okt-2026): Python 3.12, Django 5.2 LTS + DRF, PostgreSQL 16, Celery 5.5 + Redis 7 + `django-celery-beat`, RustFS (API S3), Keycloak (OIDC), ClamAV.
+- Stack sesuai [01_backend.md §2.1](../../01_backend.md#21-keputusan-stack-21-okt-2026): Python 3.12, Django 5.2 LTS + DRF, PostgreSQL 16, Celery 5.5 + Redis 7 + `django-celery-beat`, RustFS (API S3), Keycloak (OIDC). Pemindaian malware dilakukan antivirus yang sudah terpasang di VM OIKN, bukan oleh aplikasi *(revisi 22 Okt 2026, pengguna; semula ClamAV)*.
 - PRD menang bila berbeda dengan prototipe, **kecuali** keputusan pengguna yang sudah tercatat: `objectiveEnabled` (A-8), pilihan kalimat penilaian (A-7), RustFS (A-12).
 - Template risiko hanya dari `docs/seed/template_risiko_rapim.json`; kalimat penilaian dari `docs/seed/pilihan_penilaian.json`. Jangan menyalin teksnya ke kode.
 - Tidak memanggil layanan eksternal selain yang ada di Docker Compose.
@@ -136,14 +136,14 @@ simario2/
 
 - Unggah **multipart lewat Django** (bukan unggah langsung ke storage), agar ukuran, jumlah, ekstensi, dan **MIME dari isi** (`python-magic`) diperiksa di server (NFR-009) sebelum disimpan.
 - Penyimpanan `django-storages` (S3) ke RustFS, bucket privat `simario`; kunci `attachments/<position_id>/<fiscal_year>/<uuid>`; berkas SK/surat di `decrees/…`. Hanya API S3 standar.
-- `scan_status = pending` saat tersimpan → task Celery `attachment_scan` mengirim isi ke `clamd` (INSTREAM) → `clean`, atau `infected` → objek dipindah ke prefix `quarantine/`, pengunggah diberi notifikasi, audit dicatat (NFR-010).
-- Unduh: `GET /api/v1/attachments/{id}/download` memeriksa cakupan baca + VIS-3/4, lalu **302 ke URL pre-signed 5 menit** (NFR-011). URL itu memakai path `/storage/…` di origin aplikasi, bukan alamat RustFS: di lokal Vite mem-proxy `/storage` ke RustFS, di produksi nginx. **RustFS tidak pernah terbuka langsung ke browser**, sehingga tidak bergantung pada kebijakan jaringan OIKN *(keputusan Claude)*. Berkas `pending`/`infected` tidak bisa diunduh. Gambar di Lembar dan utas memakai endpoint yang sama (placeholder prototipe diganti gambar asli).
+- Pemindaian malware oleh antivirus VM di luar aplikasi (NFR-010, PRD v2.9.2). `Attachment` tidak punya status pindai; berkas dapat diunduh begitu tersimpan. *(Revisi 22 Okt 2026, pengguna: semula task Celery `attachment_scan` ke `clamd` dengan karantina.)*
+- Unduh: `GET /api/v1/attachments/{id}/download` memeriksa cakupan baca + VIS-3/4, lalu **302 ke URL pre-signed 5 menit** (NFR-011). URL itu memakai path `/storage/…` di origin aplikasi, bukan alamat RustFS: di lokal Vite mem-proxy `/storage` ke RustFS, di produksi nginx. **RustFS tidak pernah terbuka langsung ke browser**, sehingga tidak bergantung pada kebijakan jaringan OIKN *(keputusan Claude)*. Gambar di Lembar dan utas memakai endpoint yang sama (placeholder prototipe diganti gambar asli).
 - Kuota 1 GB per jabatan Lini 1 per TA (NFR-012) dihitung dari jumlah `Attachment.size` di PostgreSQL.
 
 ### 4.8 Tugas terjadwal
 
-- Setiap tugas di [01_backend.md §5](../../01_backend.md#5-tugas-terjadwal) menjadi fungsi service `run_<nama>(as_of)` yang **idempoten dan aman bila jam melompat jauh**, dibungkus task Celery dengan nama yang sama (`attachment_scan`, `risk_quarters`, `score_bands`, `comparisons`, `reminders`, `sheet_freeze`, `calendar`, `delegations`).
-- Celery Beat menjalankan `run_all(clock.now())` **setiap 15 menit**; `attachment_scan` dipicu langsung saat unggah.
+- Setiap tugas di [01_backend.md §5](../../01_backend.md#5-tugas-terjadwal) menjadi fungsi service `run_<nama>(as_of)` yang **idempoten dan aman bila jam melompat jauh**, dibungkus task Celery dengan nama yang sama (`risk_quarters`, `score_bands`, `comparisons`, `reminders`, `sheet_freeze`, `calendar`, `delegations`).
+- Celery Beat menjalankan `run_all(clock.now())` **setiap 15 menit**.
 - Pemicu event sama seperti prototipe, ditambah yang tercatat sebagai utang U-07: `comparisons` setelah Tuntaskan dan kecualikan penilai; `risk_quarters` setelah terbit; `sheet_freeze` setelah Kirim Penjelasan dan saat hasil terlambat terbuka.
 - Di lokal, `POST /dev/clock` menjalankan `run_all` secara sinkron sebelum menjawab.
 
@@ -165,7 +165,7 @@ simario2/
 
 ### 4.11 Lingkungan
 
-- `docker-compose.yml` (lokal): `db` (postgres:16), `redis` (7), `api` (Django, `runserver`), `worker` dan `beat` (Celery), `storage` (RustFS), `clamav`, `keycloak` (26, `start-dev --import-realm`). Frontend tetap `npm run dev` di host (HMR cepat) dengan proxy ke `api`. Nginx tidak dipakai di lokal *(diputuskan pengguna: lokal dulu)*.
+- `docker-compose.yml` (lokal): `db` (postgres:16), `redis` (7), `api` (Django, `runserver`), `worker` dan `beat` (Celery), `storage` (RustFS), `keycloak` (26, `start-dev --import-realm`). Frontend tetap `npm run dev` di host (HMR cepat) dengan proxy ke `api`. Nginx tidak dipakai di lokal *(diputuskan pengguna: lokal dulu)*.
 - `docker-compose.prod.yml` + `infra/nginx/`: gunicorn, nginx (SPA statis + proxy `/api` dan `/storage`), HTTPS, tanpa Keycloak lokal. Satu berkas untuk **staging dan produksi**; perbedaannya hanya `.env` (`DJANGO_SETTINGS_MODULE=config.settings.staging|production`, `SIMARIO_DEV_TOOLS`, domain, rahasia, parameter OIDC). Disiapkan dan diuji jalan di lokal pada **B4**, sebelum uji coba.
 - **Masuk di staging** *(keputusan Claude)*: akun lokal (FR-AUT-002) untuk PPK uji coba, dibuat lewat impor CSV atau Tambah Pengguna. OIDC aktif bila `OIDC_*` diisi (Keycloak OIKN, bila aksesnya sudah ada). Keycloak lokal tidak disebarkan ke staging.
 - **Migrasi basis data**: karena uji coba sekali pakai, migrasi boleh dirombak atau digabung (`squash`) sampai B9. Sejak B9, migrasi hanya maju. Staging di-reset (basis data + bucket) bila migrasi dirombak.
@@ -189,7 +189,7 @@ Mengikuti aturan checkpoint CLAUDE.md §9: setiap tahap berakhir dengan laporan,
 | **B1 — Fondasi** | Model `accounts`, `org`, `calendar`, `reference`, `audit` (+ trigger), `notifications`; izin 1–26; `domain/access.py` + vektor; sesi, OIDC Keycloak lokal, akun lokal, lockout, `auth_epoch`; `GET /me`; jam + `devtools`; `seed_reference`, `seed_demo`. Frontend: `client.ts`, `authApi`, `useAuth` → `/me`, Sidebar/Topbar/Workspace, DevPanel | Masuk lewat Keycloak lokal dan akun lokal sebagai Andi, Siti, Hendra, Admin DKB; menu sesuai; geser jam |
 | **B2 — Master & Administrasi** | MST (jabatan, tahap, template, usulan, Data Umum, skala + pilihan) dan ADM (pengguna, peran, penugasan, TA/kuartal/arsip, jabatan saya, impor CSV + `ImportJob`) | Skenario uji Tahap 3 dan 9 prototipe; impor CSV pengguna & jabatan |
 | **B3 — Register** | REG penuh (`registerApi.view` sebagai read model tunggal, terbit, salin, tambahan, nonaktif), `RiskProposal`, `risk_quarters` | Skenario uji Tahap 4 prototipe |
-| **B4 — Papan, Utas, Lampiran** | PPN penuh, polling 30 detik, RustFS + ClamAV + karantina + pre-signed, kuota | Skenario uji Tahap 5; berkas EICAR dikarantina |
+| **B4 — Papan, Utas, Lampiran** | PPN penuh, polling 30 detik, RustFS + ClamAV + karantina + pre-signed, kuota (ClamAV dihapus 22 Okt 2026) | Skenario uji Tahap 5; berkas EICAR dikarantina (tidak berlaku lagi) |
 | **B4s — Staging** | `config/settings/staging.py`, `docker-compose.prod.yml` + nginx + HTTPS diuji di lokal, panduan penyebaran staging (`docs/05_…`), build frontend uji coba dengan gerbang modul, daftar kebutuhan server staging | Aplikasi jalan dari konfigurasi produksi di lokal. **Titik uji coba PPK** (lihat §7) |
 | **B5 — Penilaian** | NIL penuh, `comparisons`, Berulang, penjelasan, tampilan buta, antrean; uji INV-16/17 | Skenario uji Tahap 6 |
 | **B6 — Riwayat, Notifikasi, Beranda** | RWY, NTF (semua event + `reminders`), BRD, `/jabatan`, `/pantauan` | Skenario uji Tahap 7 |

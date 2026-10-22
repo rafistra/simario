@@ -99,7 +99,6 @@ def test_photo_selection_rules(demo: None) -> None:
         filename="lokasi.jpg",
         size=10,
         mime_type="image/jpeg",
-        scan_status="clean",
         is_confidential=False,
         uploaded_by=user("usr-andi"),
         uploaded_at=clock.now(),

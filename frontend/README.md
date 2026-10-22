@@ -7,7 +7,7 @@ Dokumentasi teknis lengkap ada di `docs/`: [arsitektur](../docs/00_arsitektur.md
 ## Menjalankan
 
 ```bash
-docker compose up -d        # dari root repositori: PostgreSQL, Redis, RustFS, ClamAV, Keycloak, api
+docker compose up -d        # dari root repositori: PostgreSQL, Redis, RustFS, Keycloak, api
 npm install
 npm run dev
 ```

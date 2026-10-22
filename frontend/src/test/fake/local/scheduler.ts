@@ -28,13 +28,6 @@ export function runScheduledTasks(at: ISODateTime = now()) {
   });
 }
 
-/** NFR-010: a file shows "Memindai…" until the scan finishes (simulated: one minute). */
-export const finishAttachmentScans: ScheduledTask = (draft, at) => {
-  for (const a of draft.attachments) {
-    if (a.scanStatus === 'pending' && a.uploadedAt < at) a.scanStatus = 'clean';
-  }
-};
-
 /**
  * FR-MST-007: a saved (scheduled) band version becomes the single active version on its effective
  * date; each quarter fixes its band version when its first window opens, so a quarter already
@@ -83,7 +76,6 @@ export const ensureRiskQuarters: ScheduledTask = (draft, at) => {
   }
 };
 
-registerTask('attachment-scan', finishAttachmentScans);
 registerTask('risk-quarters', ensureRiskQuarters);
 registerTask('score-bands', activateScoreBands);
 /** §2.5: comparisons open per risk at the Lini 3 deadline or when every assessor has finalised. */

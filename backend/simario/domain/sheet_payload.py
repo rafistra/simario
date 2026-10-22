@@ -56,7 +56,6 @@ def _sheet_comment(db: Db, c: Row, at: str) -> Row:
         for a in db["attachments"]
         if a["owner_kind"] == "comment"
         and a["owner_id"] == c["id"]
-        and a["scan_status"] == "clean"
         and _t(a["uploaded_at"]) <= _t(at)
     ]
     user = _find(db["users"], "id", c["author_user_id"])

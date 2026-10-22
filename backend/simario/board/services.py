@@ -1,7 +1,7 @@
 """Board threads (PRD §6, FR-PPN-003 … 012). Ports threadApi in frontend/src/data/api/thread.ts:
 posting needs participation (§1.5, permission 6) for the comment's quarter; Langkah is Lini 1 only
 and only in the posting quarter (RB-PPN-004); confidential files are Lini 3 (FR-PPN-006). Nothing is
-deleted (RB-PPN-003). Files go to RustFS and are scanned by ClamAV before anyone else sees them."""
+deleted (RB-PPN-003). Files go to RustFS (malware scanning is the VM antivirus's job, NFR-010)."""
 
 import datetime as dt
 import logging
@@ -251,7 +251,6 @@ def _post(user: User, risk_id: Any, data: dict[str, Any], stored: list[Stored]) 
             filename=item.upload.name,
             size=len(item.upload.data),
             mime_type=item.mime,
-            scan_status="pending",
             is_confidential=item.upload.confidential,
             uploaded_by=user,
             uploaded_at=at,
@@ -325,20 +324,6 @@ def _post(user: User, risk_id: Any, data: dict[str, Any], stored: list[Stored]) 
             "files": len(uploads),
         },
     )
-    if stored:
-        from .tasks import scan_attachment
-
-        def scan_later(aid: uuid.UUID) -> None:
-            def enqueue() -> None:
-                try:
-                    scan_attachment.delay(str(aid))
-                except Exception:  # broker down: the scheduled sweep scans it later
-                    log.exception("could not queue the scan of %s", aid)
-
-            transaction.on_commit(enqueue)
-
-        for item in stored:
-            scan_later(item.id)
     return comment.id
 
 

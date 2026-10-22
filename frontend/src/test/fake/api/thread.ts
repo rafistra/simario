@@ -43,9 +43,6 @@ export interface PostInput {
   mentionUserIds: string[];
 }
 
-/** Simulated scan time before an upload becomes "clean" (NFR-010). */
-export const SCAN_MS = 2000;
-
 function sessionUser() {
   const userId = useSession.getState().userId;
   if (!userId) throw new ApiError('unauthenticated', 'Sesi Anda berakhir. Silakan masuk kembali.');
@@ -166,7 +163,6 @@ export const threadApi = {
       );
 
       const id = newId('cm');
-      const fileIds: string[] = [];
       mutateDb((d) => {
         const comment: Comment = {
           id,
@@ -187,16 +183,13 @@ export const threadApi = {
         };
         d.comments.push(comment);
         for (const f of input.files) {
-          const fid = newId('att');
-          fileIds.push(fid);
           d.attachments.push({
-            id: fid,
+            id: newId('att'),
             ownerKind: 'comment',
             ownerId: id,
             filename: f.name,
             sizeBytes: f.size,
             mimeType: f.mime,
-            scanStatus: 'pending',
             isConfidential: f.confidential,
             uploadedById: userId,
             uploadedAt: at,
@@ -255,14 +248,6 @@ export const threadApi = {
           files: input.files.length,
         });
       });
-      // NFR-010: the simulated scan finishes shortly after upload.
-      if (fileIds.length)
-        setTimeout(() => {
-          mutateDb((d) => {
-            for (const a of d.attachments)
-              if (fileIds.includes(a.id) && a.scanStatus === 'pending') a.scanStatus = 'clean';
-          });
-        }, SCAN_MS);
       return id;
     }),
 
